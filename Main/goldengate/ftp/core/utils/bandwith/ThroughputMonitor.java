@@ -362,8 +362,7 @@ public class ThroughputMonitor implements Runnable {
 		}
 	}
 	/**
-	 * If Read is in excess, it will block the read operation until it will be ready again.
-	 * FIXME does not work since it seems to setReadable when the connection is closing too!!!
+	 * If Read is in excess, it will block the read on channel or block until it will be ready again.
 	 * @param recv the size in bytes to read
 	 * @throws InterruptedException 
 	 */
@@ -389,7 +388,7 @@ public class ThroughputMonitor implements Runnable {
 				if (this.runningScheduled <= 1) {
 					//logger.warn("               setReadable FALSE {}",this.runningScheduled);
 					this.monitoredChannel.setReadable(false);
-					// FIXME this DO NOT WORK CORRECTLY if a MemoryAwareThreadPoolExecutor is inserted after with a
+					// this DO NOT WORK CORRECTLY if a MemoryAwareThreadPoolExecutor is inserted after with a
 					// maxChannelMemory != 0 since MATPE will reset setReadable to true at any time. So setReadable FALSE does not prevent next calls
 					//logger.warn("Read will wakeup: {} for {}",wait,this);
 					getExecutorService().schedule(new ReopenRead(this), wait, TimeUnit.MILLISECONDS);
