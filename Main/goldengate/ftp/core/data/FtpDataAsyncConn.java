@@ -38,7 +38,7 @@ public class FtpDataAsyncConn {
 	/**
 	 * Session
 	 */
-	private FtpSession session = null;
+	private final FtpSession session;
 	/**
 	 * Current Data Network Handler
 	 */
@@ -76,7 +76,7 @@ public class FtpDataAsyncConn {
 	/**
 	 * The FtpTransferControl
 	 */
-	private FtpTransferControl transferControl = null;
+	private final FtpTransferControl transferControl;
 	/**
 	 * Session Monitor (set from constructor)
 	 */

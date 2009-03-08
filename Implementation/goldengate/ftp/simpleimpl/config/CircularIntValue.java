@@ -10,8 +10,8 @@ package goldengate.ftp.simpleimpl.config;
  *
  */
 public class CircularIntValue {
-	private int min;
-	private int max;
+	private final int min;
+	private final int max;
 	private int current;
 	/**
 	 * Create a circular range of values

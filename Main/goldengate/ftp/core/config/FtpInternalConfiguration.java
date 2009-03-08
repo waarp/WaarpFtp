@@ -92,11 +92,11 @@ public class FtpInternalConfiguration {
 	/**
 	 * ExecutorService Boss
 	 */
-	private ExecutorService execBoss = Executors.newCachedThreadPool();
+	private final ExecutorService execBoss = Executors.newCachedThreadPool();
 	/**
 	 * ExecutorService Worker
 	 */
-	private ExecutorService execWorker = Executors.newCachedThreadPool();
+	private final ExecutorService execWorker = Executors.newCachedThreadPool();
 	/**
 	 * ChannelFactory for Command part
 	 */
@@ -116,11 +116,11 @@ public class FtpInternalConfiguration {
 	/**
 	 * ExecutorService Data Passive Boss
 	 */
-	private ExecutorService execPassiveDataBoss = Executors.newCachedThreadPool();
+	private final ExecutorService execPassiveDataBoss = Executors.newCachedThreadPool();
 	/**
 	 * ExecutorService Data Passive Worker
 	 */
-	private ExecutorService execPassiveDataWorker = Executors.newCachedThreadPool();
+	private final ExecutorService execPassiveDataWorker = Executors.newCachedThreadPool();
 	/**
 	 * ChannelFactory for Data Passive part
 	 */
@@ -128,11 +128,11 @@ public class FtpInternalConfiguration {
 	/**
 	 * ExecutorService Data Active Boss
 	 */
-	private ExecutorService execActiveDataBoss = Executors.newCachedThreadPool();
+	private final ExecutorService execActiveDataBoss = Executors.newCachedThreadPool();
 	/**
 	 * ExecutorService Data Active Worker
 	 */
-	private ExecutorService execActiveDataWorker = Executors.newCachedThreadPool();
+	private final ExecutorService execActiveDataWorker = Executors.newCachedThreadPool();
 	/**
 	 * ChannelFactory for Data Active part
 	 */
@@ -140,7 +140,7 @@ public class FtpInternalConfiguration {
 	/**
 	 * FtpSession references used by Data Connection process
 	 */
-	private FtpSessionReference ftpSessionReference = new FtpSessionReference();
+	private final FtpSessionReference ftpSessionReference = new FtpSessionReference();
 	/**
 	 * ThreadPoolExecutor for data
 	 */
@@ -156,7 +156,7 @@ public class FtpInternalConfiguration {
 	/**
 	 * Global Monitor (set from global configuration)
 	 */
-	private ThroughputMonitor globalMonitor = new ThroughputMonitor(null, "GLOBAL");
+	private final ThroughputMonitor globalMonitor = new ThroughputMonitor(null, "GLOBAL");
 	/**
 	 * 
 	 * @author frederic
@@ -184,13 +184,13 @@ public class FtpInternalConfiguration {
 	/**
 	 * List of already bind local addresses for Passive connections
 	 */
-	private ConcurrentHashMap<InetSocketAddress, BindAddress> hashBindPassiveDataConn = 
+	private final ConcurrentHashMap<InetSocketAddress, BindAddress> hashBindPassiveDataConn = 
 		new ConcurrentHashMap<InetSocketAddress, BindAddress>();
 	
 	/**
 	 * Global Configuration
 	 */
-	private FtpConfiguration configuration = null;
+	private final FtpConfiguration configuration;
 	/**
 	 * Constructor
 	 * @param configuration

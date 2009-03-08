@@ -38,6 +38,7 @@ public class FtpJdkLogger extends FtpInternalLogger {
     private final String loggerName;
 
     FtpJdkLogger(Logger logger, String loggerName) {
+    	super();
         this.logger = logger;
         this.loggerName = loggerName;
     }

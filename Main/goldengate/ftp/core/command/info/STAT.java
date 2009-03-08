@@ -23,12 +23,6 @@ import java.util.List;
  */
 public class STAT extends AbstractCommand {
 
-	/**
-	 */
-	public STAT() {
-		super();
-	}
-
 	/* (non-Javadoc)
 	 * @see goldengate.ftp.core.command.AbstractCommand#exec()
 	 */

@@ -21,11 +21,11 @@ public class FtpTransfer {
 	/**
 	 * The command to execute
 	 */
-	private FtpCommandCode command = null;
+	private final FtpCommandCode command;
 	/**
 	 * The information (list) on which the command was executed
 	 */
-	private List<String> info = null;
+	private final List<String> info;
 	/**
 	 * The original path on which the command was executed
 	 */
@@ -33,7 +33,7 @@ public class FtpTransfer {
 	/**
 	 * Current Ftp File
 	 */
-	private FtpFile currentFile = null;
+	private final FtpFile currentFile;
 	/**
 	 * The status
 	 */
@@ -47,6 +47,7 @@ public class FtpTransfer {
 		this.command = command;
 		this.info = fileOrInfo;
 		this.path = path;
+		this.currentFile = null;
 	}
 	/**
 	 * @param command
@@ -59,6 +60,7 @@ public class FtpTransfer {
 			this.path = file.getFile();
 		} catch (FtpCommandAbstractException e) {
 		}
+		this.info = null;
 	}
 	/**
 	 * @return the command

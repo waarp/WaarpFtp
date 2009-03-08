@@ -62,6 +62,7 @@ public class NetworkHandler extends SimpleChannelHandler {
 	 * @param session
 	 */
 	public NetworkHandler(FtpSession session) {
+		super();
 		this.session = session;
 		this.businessHandler = session.getBusinessHandler();
 		this.businessHandler.setNetworkHandler(this);

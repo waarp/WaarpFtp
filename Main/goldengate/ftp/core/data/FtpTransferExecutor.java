@@ -27,11 +27,11 @@ public class FtpTransferExecutor implements Runnable {
 	/**
 	 * Ftp Session
 	 */
-	private FtpSession session = null;
+	private final FtpSession session;
 	/**
 	 * FtpTransfer 
 	 */
-	private FtpTransfer executeTransfer = null;
+	private final FtpTransfer executeTransfer;
 	/**
 	 * Create an executor and launch it
 	 * @param session

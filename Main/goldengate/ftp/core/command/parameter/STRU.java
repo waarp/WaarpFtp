@@ -20,12 +20,6 @@ import goldengate.ftp.core.exception.FtpInvalidArgumentException;
  */
 public class STRU extends AbstractCommand {
 
-	/**
-	 */
-	public STRU() {
-		super();
-	}
-
 	/* (non-Javadoc)
 	 * @see goldengate.ftp.core.command.AbstractCommand#exec()
 	 */

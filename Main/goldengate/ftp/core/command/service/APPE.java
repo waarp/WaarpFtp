@@ -21,12 +21,6 @@ import goldengate.ftp.core.utils.FtpCommandUtils;
  */
 public class APPE extends AbstractCommand {
 
-	/**
-	 */
-	public APPE() {
-		super();
-	}
-
 	/* (non-Javadoc)
 	 * @see goldengate.ftp.core.command.AbstractCommand#exec()
 	 */

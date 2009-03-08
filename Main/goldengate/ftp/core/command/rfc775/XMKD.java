@@ -15,9 +15,4 @@ import goldengate.ftp.core.command.service.MKD;
  */
 public class XMKD extends MKD {
 
-	/**
-	 */
-	public XMKD() {
-		super();
-	}
 }

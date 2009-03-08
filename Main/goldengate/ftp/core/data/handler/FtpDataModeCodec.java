@@ -158,7 +158,7 @@ public class FtpDataModeCodec extends FrameDecoder {
 	 * Blocking step between DataNetworkHandler and this Codec in order to
 	 * wait that the DataNetworkHandler is ready
 	 */
-	private FtpFuture codecLocked = new FtpFuture();
+	private final FtpFuture codecLocked = new FtpFuture();
 	/**
 	 * @param mode
 	 * @param structure
@@ -205,11 +205,9 @@ public class FtpDataModeCodec extends FrameDecoder {
 					} else {
 						if (nextbyte == 1) {
 							this.dataBlock.setEOR(true);
-						}
-						if (nextbyte == 2) {
+						} else if (nextbyte == 2) {
 							this.dataBlock.setEOF(true);
-						}
-						if (nextbyte == 3) {
+						} else if (nextbyte == 3) {
 							this.dataBlock.setEOR(true);
 							this.dataBlock.setEOF(true);
 						}
@@ -226,11 +224,9 @@ public class FtpDataModeCodec extends FrameDecoder {
 							} else {
 								if (nextbyte == 1) {
 									this.dataBlock.setEOR(true);
-								}
-								if (nextbyte == 2) {
+								} else if (nextbyte == 2) {
 									this.dataBlock.setEOF(true);
-								}
-								if (nextbyte == 3) {
+								} else if (nextbyte == 3) {
 									this.dataBlock.setEOR(true);
 									this.dataBlock.setEOF(true);
 								}

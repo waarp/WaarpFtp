@@ -49,7 +49,7 @@ public abstract class FtpConfiguration {
 	/**
 	 * Internal configuration
 	 */
-	private FtpInternalConfiguration internalConfiguration = null;
+	private final FtpInternalConfiguration internalConfiguration;
 	/**
 	 * True if the service is going to shutdown
 	 */
@@ -75,7 +75,7 @@ public abstract class FtpConfiguration {
 	/**
 	 * Internal Lock
 	 */
-	private ReentrantLock lock = new ReentrantLock();
+	private final ReentrantLock lock = new ReentrantLock();
 	/**
 	 *  Nb of milliseconds after connexion is in timeout
 	 */
@@ -113,7 +113,7 @@ public abstract class FtpConfiguration {
 	/**
 	 * General Configuration Object
 	 */
-	private HashMap<String, Object> properties = new HashMap<String, Object>();
+	private final HashMap<String, Object> properties = new HashMap<String, Object>();
 	/**
 	 * Simple constructor
 	 * @param classtype Owner

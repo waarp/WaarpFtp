@@ -31,12 +31,6 @@ public class EPSV extends AbstractCommand {
 	private static final FtpInternalLogger logger =
         FtpInternalLoggerFactory.getLogger(EPSV.class);
 	
-	/**
-	 */
-	public EPSV() {
-		super();
-	}
-
 	/* (non-Javadoc)
 	 * @see goldengate.ftp.core.command.AbstractCommand#exec()
 	 */

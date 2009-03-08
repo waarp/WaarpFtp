@@ -17,12 +17,6 @@ import goldengate.ftp.core.command.exception.FtpCommandAbstractException;
  */
 public class PWD extends AbstractCommand {
 
-	/**
-	 */
-	public PWD() {
-		super();
-	}
-
 	/* (non-Javadoc)
 	 * @see goldengate.ftp.core.command.AbstractCommand#exec()
 	 */

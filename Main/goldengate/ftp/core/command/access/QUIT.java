@@ -16,12 +16,6 @@ import goldengate.ftp.core.command.FtpReplyCode;
  */
 public class QUIT extends AbstractCommand {
 
-	/**
-	 */
-	public QUIT() {
-		super();
-	}
-
 	/* (non-Javadoc)
 	 * @see goldengate.ftp.core.command.AbstractCommand#exec()
 	 */

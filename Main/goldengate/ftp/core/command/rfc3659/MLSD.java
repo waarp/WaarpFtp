@@ -19,11 +19,6 @@ import java.util.List;
  */
 public class MLSD extends AbstractCommand {
 
-	/**
-	 */
-	public MLSD() {
-		super();
-	}
 	/* (non-Javadoc)
 	 * @see goldengate.ftp.core.command.AbstractCommand#exec()
 	 */

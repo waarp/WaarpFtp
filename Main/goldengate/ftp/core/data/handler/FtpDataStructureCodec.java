@@ -180,6 +180,7 @@ public class FtpDataStructureCodec extends SimpleChannelHandler {
 	 * @param structure
 	 */
 	public FtpDataStructureCodec(TransferStructure structure) {
+		super();
 		this.structure = structure;
 	}
 

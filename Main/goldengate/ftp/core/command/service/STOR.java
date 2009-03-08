@@ -21,12 +21,6 @@ import goldengate.ftp.core.utils.FtpCommandUtils;
  */
 public class STOR extends AbstractCommand {
 
-	/**
-	 */
-	public STOR() {
-		super();
-	}
-
 	/* (non-Javadoc)
 	 * @see goldengate.ftp.core.command.AbstractCommand#exec()
 	 */

@@ -19,7 +19,7 @@ import sun.misc.SignalHandler;
  * goldengate.ftp.core.control FtpSignalHandler
  * 
  */
-public class FtpSignalHandler implements SignalHandler {
+public final class FtpSignalHandler implements SignalHandler {
 	/**
 	 * Set if the program is in shutdown
 	 */
@@ -35,7 +35,7 @@ public class FtpSignalHandler implements SignalHandler {
 	/**
 	 * Configuration
 	 */
-	private FtpConfiguration configuration = null;
+	private final FtpConfiguration configuration;
 	/**
 	 * 
 	 * @param configuration

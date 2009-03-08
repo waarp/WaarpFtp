@@ -21,8 +21,7 @@ public abstract class FtpInternalLoggerFactory
 	 * @return the FtpInternalLogger
 	 */
 	public static FtpInternalLogger getLogger(Class<?> clazz) {
-		final FtpInternalLogger logger = (FtpInternalLogger) getDefaultFactory().newInstance(clazz.getName());
-        return logger;
+		return (FtpInternalLogger) getDefaultFactory().newInstance(clazz.getName());
     }
 
 }

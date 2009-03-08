@@ -103,8 +103,7 @@ public class FtpChannelUtils {
 		} catch (UnknownHostException e) {
 			return null;
 		}
-		InetSocketAddress inetSocketAddress = new InetSocketAddress(inetAddress,port);
-		return inetSocketAddress;
+		return new InetSocketAddress(inetAddress,port);
 	}
 
 	/**
@@ -194,8 +193,7 @@ public class FtpChannelUtils {
 		} catch (UnknownHostException e) {
 			return null;
 		}
-		InetSocketAddress inetSocketAddress = new InetSocketAddress(inetAddress,port);
-		return inetSocketAddress;
+		return new InetSocketAddress(inetAddress,port);
 	}
 	/**
 	 * Return the (RFC2428) Address in the format compatible with FTP (RFC2428)
@@ -247,8 +245,7 @@ public class FtpChannelUtils {
 	 * @return the current number of command connections
 	 */
 	public static int nbCommandChannels(FtpConfiguration configuration) {
-		int result = configuration.getFtpInternalConfiguration().getCommandChannelGroup().size();
-		return result;
+		return configuration.getFtpInternalConfiguration().getCommandChannelGroup().size();
 	}
 
 	/**
@@ -257,8 +254,7 @@ public class FtpChannelUtils {
 	 * @return the current number of data connections
 	 */
 	public static int nbDataChannels(FtpConfiguration configuration) {
-		int result = configuration.getFtpInternalConfiguration().getDataChannelGroup().size();
-		return result;
+		return configuration.getFtpInternalConfiguration().getDataChannelGroup().size();
 	}
 	/**
 	 * Return the number of still positive command connections

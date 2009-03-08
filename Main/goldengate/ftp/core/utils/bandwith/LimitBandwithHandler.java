@@ -46,6 +46,7 @@ public abstract class LimitBandwithHandler extends SimpleChannelHandler {
 	 * @param sessionMonitor Session Monitor
 	 */
 	public LimitBandwithHandler(ThroughputMonitor globalMonitor, ThroughputMonitor sessionMonitor) {
+		super();
 		this.globalMonitor = globalMonitor;
 		this.sessionMonitor = sessionMonitor;
 	}

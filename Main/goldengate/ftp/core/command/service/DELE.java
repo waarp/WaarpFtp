@@ -21,12 +21,6 @@ import goldengate.ftp.core.file.FtpFile;
  */
 public class DELE extends AbstractCommand {
 
-	/**
-	 */
-	public DELE() {
-		super();
-	}
-
 	/* (non-Javadoc)
 	 * @see goldengate.ftp.core.command.AbstractCommand#exec()
 	 */

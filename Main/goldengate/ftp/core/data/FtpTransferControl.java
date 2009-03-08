@@ -49,11 +49,11 @@ public class FtpTransferControl {
 	/**
 	 * Session
 	 */
-	private FtpSession session = null;
+	private final FtpSession session;
 	/**
 	 * Lock for Transfer Control
 	 */
-	private ReentrantLock lock = new ReentrantLock();
+	private final ReentrantLock lock = new ReentrantLock();
 	/**
 	 * Step in order to wait that the DataNetworkHandler is ready
 	 */
@@ -69,7 +69,7 @@ public class FtpTransferControl {
 	/**
 	 * Concurrent list to wait for the dataChannel to be opened
 	 */
-	private LinkedBlockingQueue<Channel> waitForOpenedDataChannel = 
+	private final LinkedBlockingQueue<Channel> waitForOpenedDataChannel = 
 		new LinkedBlockingQueue<Channel>();
 	/**
 	 * Concurrent list to wait for the dataChannel to be closed

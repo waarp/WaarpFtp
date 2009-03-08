@@ -18,7 +18,7 @@ public abstract class FtpRestart {
 	/**
 	 * Ftp Session
 	 */
-	private FtpSession session = null;
+	private final FtpSession session;
 	/**
 	 * Is the current Restart object in context set
 	 */

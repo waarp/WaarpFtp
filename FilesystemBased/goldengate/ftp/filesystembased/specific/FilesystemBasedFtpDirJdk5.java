@@ -30,7 +30,7 @@ public class FilesystemBasedFtpDirJdk5 extends FilesystemBasedFtpDirJdkAbstract 
 	 */
 	public long getFreeSpace(File directory) {
 		if (FilesystemBasedFtpConfiguration.ueApacheCommonsIo) {
-			return (FilesystemBasedFtpCommonsIo.freeSpace(directory.getAbsolutePath()));
+			return FilesystemBasedFtpCommonsIo.freeSpace(directory.getAbsolutePath());
 		}
 		return (-1);
 	}

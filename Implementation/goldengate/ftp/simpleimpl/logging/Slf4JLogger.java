@@ -18,6 +18,7 @@ public class Slf4JLogger extends FtpInternalLogger {
 	 * @param logger
 	 */
     public Slf4JLogger(org.slf4j.Logger logger) {
+    	super();
         this.logger = (Logger) logger;
     }
     

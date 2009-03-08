@@ -21,12 +21,6 @@ import java.net.InetSocketAddress;
  */
 public class PORT extends AbstractCommand {
 
-	/**
-	 */
-	public PORT() {
-		super();
-	}
-
 	/* (non-Javadoc)
 	 * @see goldengate.ftp.core.command.AbstractCommand#exec()
 	 */

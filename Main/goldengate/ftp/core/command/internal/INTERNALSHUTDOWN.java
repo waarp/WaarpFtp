@@ -27,11 +27,6 @@ public class INTERNALSHUTDOWN extends AbstractCommand {
 	private static final FtpInternalLogger logger =
         FtpInternalLoggerFactory.getLogger(INTERNALSHUTDOWN.class);
 
-	/**
-	 */
-	public INTERNALSHUTDOWN() {
-		super();
-	}
 	/* (non-Javadoc)
 	 * @see goldengate.ftp.core.command.AbstractCommand#exec()
 	 */

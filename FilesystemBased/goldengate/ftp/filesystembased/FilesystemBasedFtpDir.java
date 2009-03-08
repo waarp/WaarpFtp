@@ -219,8 +219,7 @@ public abstract class FilesystemBasedFtpDir extends FtpDir {
 		String newdir = validatePath(path);
 		String truedir = ((FilesystemBasedFtpAuth) this.getFtpSession().getFtpAuth()).getAbsolutePath(newdir);
 		logger.debug("getFile: {}",truedir);
-		File newDir = new File(truedir);
-		return newDir;
+		return new File(truedir);
 	}
 	/**
 	 * Get the relative path (without mount point)
@@ -243,10 +242,10 @@ public abstract class FilesystemBasedFtpDir extends FtpDir {
 	@Override
 	public boolean changeDirectory(String path) throws FtpCommandAbstractException {
 		this.checkIdentify();
-		path = this.consolidatePath(path);
-		List<String> paths = this.wildcardFiles(path);
+		String newpath = this.consolidatePath(path);
+		List<String> paths = this.wildcardFiles(newpath);
 		if (paths.size() != 1) {
-			logger.warn("CD error: {}",path);
+			logger.warn("CD error: {}",newpath);
 			throw new Reply550Exception("Directory not found: "+paths.size()+" founds");
 		}
 		String extDir = paths.get(0);
@@ -271,8 +270,8 @@ public abstract class FilesystemBasedFtpDir extends FtpDir {
 	@Override
 	public String mkdir(String directory) throws FtpCommandAbstractException {
 		this.checkIdentify();
-		directory = this.consolidatePath(directory);
-		File dir = new File(directory);
+		String newdirectory = this.consolidatePath(directory);
+		File dir = new File(newdirectory);
 		String parent = dir.getParentFile().getPath();
 		List<String> paths = this.wildcardFiles(normalizePath(parent));
 		if (paths.size() != 1) {
@@ -292,8 +291,8 @@ public abstract class FilesystemBasedFtpDir extends FtpDir {
 	@Override
 	public String rmdir(String directory) throws FtpCommandAbstractException {
 		this.checkIdentify();
-		directory = this.consolidatePath(directory);
-		List<String> paths = this.wildcardFiles(normalizePath(directory));
+		String newdirectory = this.consolidatePath(directory);
+		List<String> paths = this.wildcardFiles(normalizePath(newdirectory));
 		if (paths.size() != 1) {
 			throw new Reply550Exception("Directory not found: "+paths.size()+" founds");
 		}
@@ -382,8 +381,7 @@ public abstract class FilesystemBasedFtpDir extends FtpDir {
 			sb.append(0);
 		}
 		sb.append(ms);
-		String time = sb.toString();
-		return time;
+		return sb.toString();
 	}
 	/* (non-Javadoc)
 	 * @see goldengate.ftp.core.file.FtpFile#list(java.lang.String)
@@ -392,18 +390,19 @@ public abstract class FilesystemBasedFtpDir extends FtpDir {
 	public List<String> list(String path) throws FtpCommandAbstractException {
 		this.checkIdentify();
 		// First get all base directories
-		if (path.startsWith("-a") || path.startsWith("-A")) {
-			String []args = path.split(" ");
+		String newpath = path;
+		if (newpath.startsWith("-a") || newpath.startsWith("-A")) {
+			String []args = newpath.split(" ");
 			if (args.length > 1) {
-				path = args[1];
+				newpath = args[1];
 			} else {
-				path = this.currentDir;
+				newpath = this.currentDir;
 			}
 		}
-		path = this.consolidatePath(path);
-		logger.debug("List {}",path);
-		List<String> paths = this.wildcardFiles(path);
-		if (paths.size() == 0) {
+		newpath = this.consolidatePath(newpath);
+		logger.debug("List {}",newpath);
+		List<String> paths = this.wildcardFiles(newpath);
+		if (paths.isEmpty()) {
 			throw new Reply550Exception("No files found");
 		}
 		// Now if they are directories, list inside them
@@ -432,20 +431,21 @@ public abstract class FilesystemBasedFtpDir extends FtpDir {
 	public List<String> listFull(String path, boolean lsFormat) throws FtpCommandAbstractException {
 		this.checkIdentify();
 		boolean listAllFiles = false;
-		if (path.startsWith("-a") || path.startsWith("-A")) {
-			String []args = path.split(" ");
+		String newpath = path;
+		if (newpath.startsWith("-a") || newpath.startsWith("-A")) {
+			String []args = newpath.split(" ");
 			if (args.length > 1) {
-				path = args[1];
+				newpath = args[1];
 			} else {
-				path = this.currentDir;
+				newpath = this.currentDir;
 			}
 			listAllFiles = true;
 		}
-		path = this.consolidatePath(path);
-		logger.debug("ListFull {}",path);
+		newpath = this.consolidatePath(newpath);
+		logger.debug("ListFull {}",newpath);
 		// First get all base directories
-		List<String> paths = this.wildcardFiles(path);
-		if (paths.size() == 0) {
+		List<String> paths = this.wildcardFiles(newpath);
+		if (paths.isEmpty()) {
 			throw new Reply550Exception("No files found");
 		}
 		// Now if they are directories, list inside them
@@ -472,7 +472,7 @@ public abstract class FilesystemBasedFtpDir extends FtpDir {
 			}
 		}
 		if (listAllFiles) {
-			File dir = new File(getFileFromPath(path),SEPARATOR+"..");
+			File dir = new File(getFileFromPath(newpath),SEPARATOR+"..");
 			if (lsFormat) {
 				newPaths.add(this.lsInfo(dir));
 			} else {
@@ -488,9 +488,9 @@ public abstract class FilesystemBasedFtpDir extends FtpDir {
 	@Override
 	public String fileFull(String path, boolean lsFormat) throws FtpCommandAbstractException {
 		this.checkIdentify();
-		path = this.consolidatePath(path);
-		logger.debug("FileFull {}",path);
-		List<String> paths = this.wildcardFiles(normalizePath(path));
+		String newpath = this.consolidatePath(path);
+		logger.debug("FileFull {}",newpath);
+		List<String> paths = this.wildcardFiles(normalizePath(newpath));
 		if (paths.size() != 1) {
 			throw new Reply550Exception("No files found "+paths.size()+" founds");
 		}
@@ -658,14 +658,13 @@ public abstract class FilesystemBasedFtpDir extends FtpDir {
 	public FtpFile setFile(String path, boolean append)
 			throws FtpCommandAbstractException {
 		this.checkIdentify();
-		path = this.consolidatePath(path);
-		List<String> paths = this.wildcardFiles(path);
+		String newpath = this.consolidatePath(path);
+		List<String> paths = this.wildcardFiles(newpath);
 		if (paths.size() != 1) {
 			throw new Reply550Exception("File not found: "+paths.size()+" founds");
 		}
 		String extDir = paths.get(0);
-		FtpFile newFile = this.newFtpFile(extDir, append);
-		return newFile;
+		return this.newFtpFile(extDir, append);
 	}
 	/* (non-Javadoc)
 	 * @see goldengate.ftp.core.file.FtpFile#setUniqueFile()
@@ -680,8 +679,7 @@ public abstract class FilesystemBasedFtpDir extends FtpDir {
 			throw new Reply550Exception("Cannot create unique file");
 		}
 		String currentFile = this.getRelativePath(file);
-		FtpFile newFile = this.newFtpFile(normalizePath(currentFile), false);
-		return newFile;
+		return this.newFtpFile(normalizePath(currentFile), false);
 	}
 	/* (non-Javadoc)
 	 * @see goldengate.ftp.core.file.FtpFile#canRead()
@@ -714,8 +712,8 @@ public abstract class FilesystemBasedFtpDir extends FtpDir {
 	@Override
 	public long getCRC(String path) throws FtpCommandAbstractException {
 		this.checkIdentify();
-		path = this.consolidatePath(path);
-		List<String> paths = this.wildcardFiles(normalizePath(path));
+		String newpath = this.consolidatePath(path);
+		List<String> paths = this.wildcardFiles(normalizePath(newpath));
 		if (paths.size() != 1) {
 			throw new Reply550Exception("File not found: "+paths.size()+" founds");
 		}
@@ -738,8 +736,7 @@ public abstract class FilesystemBasedFtpDir extends FtpDir {
             byte[] buf = new byte[this.getFtpSession().getConfiguration().BLOCKSIZE];
             while(cis.read(buf) >= 0) {
             }
-            long checksum = cis.getChecksum().getValue();
-            return checksum;
+            return cis.getChecksum().getValue();
         } catch (IOException e) {
             throw new Reply550Exception("Error while reading file: "+path);
         }
@@ -750,8 +747,8 @@ public abstract class FilesystemBasedFtpDir extends FtpDir {
 	@Override
 	public byte[] getMD5(String path) throws FtpCommandAbstractException {
 		this.checkIdentify();
-		path = this.consolidatePath(path);
-		List<String> paths = this.wildcardFiles(normalizePath(path));
+		String newpath = this.consolidatePath(path);
+		List<String> paths = this.wildcardFiles(normalizePath(newpath));
 		if (paths.size() != 1) {
 			throw new Reply550Exception("File not found: "+paths.size()+" founds");
 		}
@@ -776,8 +773,8 @@ public abstract class FilesystemBasedFtpDir extends FtpDir {
 	@Override
 	public byte[] getSHA1(String path) throws FtpCommandAbstractException {
 		this.checkIdentify();
-		path = this.consolidatePath(path);
-		List<String> paths = this.wildcardFiles(normalizePath(path));
+		String newpath = this.consolidatePath(path);
+		List<String> paths = this.wildcardFiles(normalizePath(newpath));
 		if (paths.size() != 1) {
 			throw new Reply550Exception("File not found: "+paths.size()+" founds");
 		}

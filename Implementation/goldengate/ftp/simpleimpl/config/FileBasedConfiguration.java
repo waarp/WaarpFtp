@@ -122,7 +122,7 @@ public class FileBasedConfiguration extends FilesystemBasedFtpConfiguration {
 	/**
 	 * All authentifications
 	 */
-	private ConcurrentHashMap<String, SimpleAuth> authentifications = null;
+	private final ConcurrentHashMap<String, SimpleAuth> authentifications = new ConcurrentHashMap<String, SimpleAuth>();
 	/**
 	 * @param classtype
 	 * @param businessHandler class that will be used for BusinessHandler
@@ -131,7 +131,6 @@ public class FileBasedConfiguration extends FilesystemBasedFtpConfiguration {
 	public FileBasedConfiguration(Class classtype, Class businessHandler, Class dataBusinessHandler) {
 		super(classtype, businessHandler, dataBusinessHandler);
 		this.computeNbThreads();
-		this.authentifications = new ConcurrentHashMap<String, SimpleAuth>();
 	}
 	/**
 	 * Initiate the configuration from the xml file
@@ -221,7 +220,7 @@ public class FileBasedConfiguration extends FilesystemBasedFtpConfiguration {
 		node = document.selectSingleNode(XML_USEFASTMD5);
 		if (node != null) {
 			useFastMd5 = (Integer.parseInt(node.getText()) == 1) ? true : false;
-			if (useFastMd5 == true) {
+			if (useFastMd5) {
 				node = document.selectSingleNode(XML_FASTMD5);
 				if (node != null) {
 					fastMd5Path = node.getText();
@@ -286,7 +285,7 @@ public class FileBasedConfiguration extends FilesystemBasedFtpConfiguration {
 			String userpasswd = node.getText();
 			List<Node> listaccount = nodebase.selectNodes(XML_AUTHENTIFICATION_ACCOUNT);
 			String [] account = null;
-			if (listaccount.size() > 0) {
+			if (! listaccount.isEmpty()) {
 				account = new String[listaccount.size()];
 				int i = 0;
 				Iterator<Node> iteratoraccount = listaccount.iterator();

@@ -16,12 +16,6 @@ import goldengate.ftp.core.command.FtpReplyCode;
  */
 public class FEAT extends AbstractCommand {
 
-	/**
-	 */
-	public FEAT() {
-		super();
-	}
-
 	/* (non-Javadoc)
 	 * @see goldengate.ftp.core.command.AbstractCommand#exec()
 	 */

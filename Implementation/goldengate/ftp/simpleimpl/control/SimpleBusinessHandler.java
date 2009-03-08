@@ -32,12 +32,6 @@ public class SimpleBusinessHandler extends BusinessHandler {
 	 */
 	private static final FtpInternalLogger logger =
         FtpInternalLoggerFactory.getLogger(SimpleBusinessHandler.class);
-	/**
-	 * 
-	 */
-	public SimpleBusinessHandler() {
-		super();
-	}
 
 	/* (non-Javadoc)
 	 * @see goldengate.ftp.core.control.BusinessHandler#afterRunCommandKo(goldengate.ftp.core.command.exception.FtpCommandAbstractException)

@@ -39,7 +39,7 @@ public abstract class FtpDir {
 	/**
 	 * Ftp Session
 	 */
-	private FtpSession session = null;
+	private final FtpSession session;
 	/**
 	 * Curent Directory
 	 */
@@ -75,7 +75,7 @@ public abstract class FtpDir {
 	 */
 	public void initAfterIdentification() {
 		logger.debug("Init after identification");
-		this.currentDir = this.getFtpSession().getFtpAuth().getBusinessPath();;
+		this.currentDir = this.getFtpSession().getFtpAuth().getBusinessPath();
 	}
 	/**
 	 * Check if the authentification is correct

@@ -25,6 +25,7 @@ public class FtpControlStringEncoder extends StringEncoder {
 	}
 
 	/**
+	 * @see StringEncoder
 	 * @param arg0
 	 */
 	public FtpControlStringEncoder(String arg0) {
@@ -32,6 +33,7 @@ public class FtpControlStringEncoder extends StringEncoder {
 	}
 
 	/**
+	 * @see StringEncoder
 	 * @param arg0
 	 */
 	public FtpControlStringEncoder(Charset arg0) {

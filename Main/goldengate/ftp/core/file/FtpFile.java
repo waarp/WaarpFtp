@@ -38,12 +38,12 @@ public abstract class FtpFile {
 	/**
 	 * Ftp Session
 	 */
-	private FtpSession session = null;
+	private final FtpSession session;
 	/**
 	 * FtpDir associated with this file at creation.
 	 * It is not necessary the directory that owns this file.
 	 */
-	private FtpDir ftpDir = null;
+	private final FtpDir ftpDir;
 	/**
 	 * Current file if any
 	 */
@@ -59,7 +59,7 @@ public abstract class FtpFile {
 	/**
 	 * Retrieve lock
 	 */
-	private ReentrantLock retrieveLock = new ReentrantLock();
+	private final ReentrantLock retrieveLock = new ReentrantLock();
 	/**
 	 * Constructor
 	 * @param session

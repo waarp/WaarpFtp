@@ -18,12 +18,6 @@ import goldengate.ftp.core.command.exception.Reply501Exception;
  */
 public class XCRC extends AbstractCommand {
 
-	/**
-	 */
-	public XCRC() {
-		super();
-	}
-
 	/* (non-Javadoc)
 	 * @see goldengate.ftp.core.command.AbstractCommand#exec()
 	 */

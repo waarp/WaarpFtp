@@ -19,12 +19,6 @@ import goldengate.ftp.core.command.exception.Reply550Exception;
  */
 public class RMD extends AbstractCommand {
 
-	/**
-	 */
-	public RMD() {
-		super();
-	}
-
 	/* (non-Javadoc)
 	 * @see goldengate.ftp.core.command.AbstractCommand#exec()
 	 */

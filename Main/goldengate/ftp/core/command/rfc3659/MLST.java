@@ -17,12 +17,6 @@ import goldengate.ftp.core.command.exception.FtpCommandAbstractException;
  */
 public class MLST extends AbstractCommand {
 
-	/**
-	 */
-	public MLST() {
-		super();
-	}
-
 	/* (non-Javadoc)
 	 * @see goldengate.ftp.core.command.AbstractCommand#exec()
 	 */

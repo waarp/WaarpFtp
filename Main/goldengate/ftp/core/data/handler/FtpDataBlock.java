@@ -50,7 +50,7 @@ public class FtpDataBlock {
 	private boolean isRESTART = false;
 	
 	/**
-	 * 
+	 * Create a simple and empty DataBlock
 	 */
 	public FtpDataBlock() {
 	}

@@ -20,12 +20,6 @@ import goldengate.ftp.core.file.FtpFile;
  */
 public class SIZE extends AbstractCommand {
 
-	/**
-	 */
-	public SIZE() {
-		super();
-	}
-
 	/* (non-Javadoc)
 	 * @see goldengate.ftp.core.command.AbstractCommand#exec()
 	 */

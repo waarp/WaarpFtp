@@ -17,12 +17,6 @@ import goldengate.ftp.core.session.FtpSession;
  * 
  */
 public class NOOP extends AbstractCommand {
-
-	/**
-	 */
-	public NOOP() {
-		super();
-	}
 	/**
 	 * Constructor for empty NOOP
 	 * @param session

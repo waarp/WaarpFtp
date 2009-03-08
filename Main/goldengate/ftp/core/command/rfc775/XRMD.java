@@ -15,9 +15,4 @@ import goldengate.ftp.core.command.service.RMD;
  */
 public class XRMD extends RMD {
 
-	/**
-	 */
-	public XRMD() {
-		super();
-	}
 }

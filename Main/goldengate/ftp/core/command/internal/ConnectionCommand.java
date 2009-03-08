@@ -20,11 +20,6 @@ import goldengate.ftp.core.session.FtpSession;
 public class ConnectionCommand extends AbstractCommand {
 
 	/**
-	 */
-	public ConnectionCommand() {
-		super();
-	}
-	/**
 	 * Create a ConnectionCommand
 	 * @param session
 	 */

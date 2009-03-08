@@ -24,11 +24,6 @@ import goldengate.ftp.core.command.internal.IncorrectCommand;
  * 
  */
 public class SITE extends AbstractCommand {
-	/**
-	 */
-	public SITE() {
-		super();
-	}
 
 	/* (non-Javadoc)
 	 * @see goldengate.ftp.core.command.AbstractCommand#exec()

@@ -166,8 +166,9 @@ public class FtpArgumentCode {
 		case 'L':
 		case 'l':
 			return FtpArgumentCode.TransferType.LENGTH;
+		default:
+			throw new FtpInvalidArgumentException("Argument for TransferType is not allowed: "+type);
 		}
-		throw new FtpInvalidArgumentException("Argument for TransferType is not allowed: "+type);
 	}
 	/**
 	 * Get the TransferSubType according to the char
@@ -186,8 +187,9 @@ public class FtpArgumentCode {
 		case 'T':
 		case 't':
 			return FtpArgumentCode.TransferSubType.TELNET;
+		default:
+			throw new FtpInvalidArgumentException("Argument for TransferSubType is not allowed: "+subType);
 		}
-		throw new FtpInvalidArgumentException("Argument for TransferSubType is not allowed: "+subType);
 	}
 	/**
 	 * Get the TransferStructure according to the char
@@ -206,8 +208,9 @@ public class FtpArgumentCode {
 		case 'R':
 		case 'r':
 			return FtpArgumentCode.TransferStructure.RECORD;
+		default:
+			throw new FtpInvalidArgumentException("Argument for TransferStructure is not allowed: "+structure);
 		}
-		throw new FtpInvalidArgumentException("Argument for TransferStructure is not allowed: "+structure);
 	}
 	/**
 	 * Get the TransferMode according to the char
@@ -226,8 +229,9 @@ public class FtpArgumentCode {
 		case 'S':
 		case 's':
 			return FtpArgumentCode.TransferMode.STREAM;
+		default:
+			throw new FtpInvalidArgumentException("Argument for TransferMode is not allowed: "+mode);
 		}
-		throw new FtpInvalidArgumentException("Argument for TransferMode is not allowed: "+mode);
 	}
 	
 	/**

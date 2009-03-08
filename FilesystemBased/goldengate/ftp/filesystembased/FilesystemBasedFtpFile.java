@@ -54,7 +54,7 @@ public abstract class FilesystemBasedFtpFile extends FtpFile {
 		throws FtpCommandAbstractException {
 		super(session,dir,path,append);
 		File file = this.getFileFromPath(path);
-		if (append == true) {
+		if (append) {
 			try {
 				this.setPosition(file.length());
 			} catch (IOException e) {
@@ -76,8 +76,7 @@ public abstract class FilesystemBasedFtpFile extends FtpFile {
 	protected File getFileFromPath(String path) throws FtpCommandAbstractException {
 		String newdir = this.getFtpDir().validatePath(path);
 		String truedir = ((FilesystemBasedFtpAuth) this.getFtpSession().getFtpAuth()).getAbsolutePath(newdir);
-		File newDir = new File(truedir);
-		return newDir;
+		return new File(truedir);
 	}
 	/**
 	 * Get the relative path (without mount point)
@@ -144,10 +143,8 @@ public abstract class FilesystemBasedFtpFile extends FtpFile {
 	 */
 	@Override
 	public boolean abortFile() throws FtpCommandAbstractException {
-		if (this.isInWriting()) {
-			if (this.getFtpSession().getConfiguration().deleteOnAbort) {
-				this.delete();
-			}
+		if (this.isInWriting() && this.getFtpSession().getConfiguration().deleteOnAbort) {
+			this.delete();
 		}
 		this.closeFile();
 		return true;

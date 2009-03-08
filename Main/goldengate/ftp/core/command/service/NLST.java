@@ -19,12 +19,6 @@ import java.util.List;
  */
 public class NLST extends AbstractCommand {
 
-	/**
-	 */
-	public NLST() {
-		super();
-	}
-
 	/* (non-Javadoc)
 	 * @see goldengate.ftp.core.command.AbstractCommand#exec()
 	 */

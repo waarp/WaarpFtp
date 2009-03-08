@@ -19,12 +19,6 @@ import goldengate.ftp.core.file.FtpDir;
  */
 public class CDUP extends AbstractCommand {
 
-	/**
-	 */
-	public CDUP() {
-		super();
-	}
-
 	/* (non-Javadoc)
 	 * @see goldengate.ftp.core.command.AbstractCommand#exec()
 	 */

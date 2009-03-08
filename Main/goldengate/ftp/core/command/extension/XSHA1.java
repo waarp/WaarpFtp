@@ -19,12 +19,6 @@ import goldengate.ftp.core.file.FtpDir;
  */
 public class XSHA1 extends AbstractCommand {
 
-	/**
-	 */
-	public XSHA1() {
-		super();
-	}
-
 	/* (non-Javadoc)
 	 * @see goldengate.ftp.core.command.AbstractCommand#exec()
 	 */

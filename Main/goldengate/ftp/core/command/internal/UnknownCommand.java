@@ -23,12 +23,6 @@ public class UnknownCommand extends AbstractCommand {
 	private static final FtpInternalLogger logger =
         FtpInternalLoggerFactory.getLogger(UnknownCommand.class);
 
-	/**
-	 */
-	public UnknownCommand() {
-		super();
-	}
-
 	/* (non-Javadoc)
 	 * @see goldengate.ftp.core.command.AbstractCommand#exec()
 	 */

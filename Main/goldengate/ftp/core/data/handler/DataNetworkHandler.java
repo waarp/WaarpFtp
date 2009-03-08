@@ -58,7 +58,7 @@ public class DataNetworkHandler extends SimpleChannelHandler {
 	/**
 	 * Configuration
 	 */
-	private FtpConfiguration configuration = null;
+	private final FtpConfiguration configuration;
 	/**
 	 * Internal store for the Session
 	 */
@@ -82,6 +82,7 @@ public class DataNetworkHandler extends SimpleChannelHandler {
 	 * @param handler
 	 */
 	public DataNetworkHandler(FtpConfiguration configuration, DataBusinessHandler handler) {
+		super();
 		this.configuration = configuration;
 		this.dataBusinessHandler = handler;
 		this.dataBusinessHandler.setDataNetworkHandler(this);

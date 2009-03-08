@@ -15,9 +15,4 @@ import goldengate.ftp.core.command.directory.CDUP;
  */
 public class XCUP extends CDUP {
 
-	/**
-	 */
-	public XCUP() {
-		super();
-	}
 }

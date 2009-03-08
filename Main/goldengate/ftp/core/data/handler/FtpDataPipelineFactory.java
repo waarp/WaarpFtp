@@ -57,11 +57,11 @@ public class FtpDataPipelineFactory implements ChannelPipelineFactory {
 	/**
 	 * Business Handler Class
 	 */
-	private Class dataBusinessHandler = null;
+	private final Class dataBusinessHandler;
 	/**
 	 * Configuration
 	 */
-	private FtpConfiguration configuration = null;
+	private final FtpConfiguration configuration;
 	/**
 	 * Constructor wich Initializes some data
 	 * @param dataBusinessHandler

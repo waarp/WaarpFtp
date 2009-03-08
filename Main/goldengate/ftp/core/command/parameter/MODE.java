@@ -20,12 +20,6 @@ import goldengate.ftp.core.exception.FtpInvalidArgumentException;
  */
 public class MODE extends AbstractCommand {
 
-	/**
-	 */
-	public MODE() {
-		super();
-	}
-
 	/* (non-Javadoc)
 	 * @see goldengate.ftp.core.command.AbstractCommand#exec()
 	 */

@@ -16,12 +16,6 @@ import goldengate.ftp.core.command.FtpReplyCode;
  */
 public class HELP extends AbstractCommand {
 
-	/**
-	 */
-	public HELP() {
-		super();
-	}
-
 	/* (non-Javadoc)
 	 * @see goldengate.ftp.core.command.AbstractCommand#exec()
 	 */

@@ -14,9 +14,5 @@ import goldengate.ftp.core.command.directory.CWD;
  * 
  */
 public class XCWD extends CWD {
-	/**
-	 */
-	public XCWD() {
-		super();
-	}
+	
 }

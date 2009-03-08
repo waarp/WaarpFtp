@@ -11,12 +11,6 @@ package goldengate.ftp.core.utils;
  */
 public class FtpSucceededFuture extends FtpCompletedFuture {
 
-	/**
-	 */
-	public FtpSucceededFuture() {
-		super();
-	}
-
 	/* (non-Javadoc)
 	 * @see org.jboss.netty.channel.ChannelFuture#getCause()
 	 */

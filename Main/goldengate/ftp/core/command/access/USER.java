@@ -20,12 +20,6 @@ import goldengate.ftp.core.utils.FtpCommandUtils;
  */
 public class USER extends AbstractCommand {
 
-	/**
-	 */
-	public USER() {
-		super();
-	}
-
 	/* (non-Javadoc)
 	 * @see goldengate.ftp.core.command.AbstractCommand#exec()
 	 */

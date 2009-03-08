@@ -38,17 +38,17 @@ class MD5State {
   /**
    * 128-bit state 
    */
-  int	state[];
+  protected int	state[];
   
   /**
    * 64-bit character count
    */
-  long count;
+  protected long count;
   
   /**
    * 64-byte buffer (512 bits) for storing to-be-hashed characters
    */
-  byte	buffer[];
+  protected byte	buffer[];
   /**
    * Constructor
    *

@@ -25,11 +25,6 @@ public class CWD extends AbstractCommand {
 	 */
 	private static final FtpInternalLogger logger =
         FtpInternalLoggerFactory.getLogger(CWD.class);
-	/**
-	 */
-	public CWD() {
-		super();
-	}
 
 	/* (non-Javadoc)
 	 * @see goldengate.ftp.core.command.AbstractCommand#exec()

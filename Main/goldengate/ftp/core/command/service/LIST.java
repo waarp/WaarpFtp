@@ -19,13 +19,6 @@ import java.util.List;
  */
 public class LIST extends AbstractCommand {
 
-	/**
-	 */
-	public LIST() {
-		super();
-		// TODO Auto-generated constructor stub
-	}
-
 	/* (non-Javadoc)
 	 * @see goldengate.ftp.core.command.AbstractCommand#exec()
 	 */

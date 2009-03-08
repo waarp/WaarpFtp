@@ -19,12 +19,6 @@ import goldengate.ftp.core.file.FtpDir;
  */
 public class XMD5 extends AbstractCommand {
 
-	/**
-	 */
-	public XMD5() {
-		super();
-	}
-
 	/* (non-Javadoc)
 	 * @see goldengate.ftp.core.command.AbstractCommand#exec()
 	 */

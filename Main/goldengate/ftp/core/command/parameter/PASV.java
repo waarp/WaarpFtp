@@ -31,12 +31,6 @@ public class PASV extends AbstractCommand {
 	private static final FtpInternalLogger logger =
         FtpInternalLoggerFactory.getLogger(PASV.class);
 	
-	/**
-	 */
-	public PASV() {
-		super();
-	}
-
 	/* (non-Javadoc)
 	 * @see goldengate.ftp.core.command.AbstractCommand#exec()
 	 */

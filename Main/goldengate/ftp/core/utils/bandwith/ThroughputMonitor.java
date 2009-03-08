@@ -44,23 +44,23 @@ public class ThroughputMonitor implements Runnable {
 	/**
 	 * Current writing bytes
 	 */
-	private AtomicLong currentWritingBytes = new AtomicLong(0);
+	private final AtomicLong currentWritingBytes = new AtomicLong(0);
 	/**
 	 * Current reading bytes
 	 */
-	private AtomicLong currentReadingBytes = new AtomicLong(0);
+	private final AtomicLong currentReadingBytes = new AtomicLong(0);
 	/**
 	 * Last writing bandwith
 	 */
-	private AtomicLong lastWritingMarker = new AtomicLong(0);
+	private final AtomicLong lastWritingMarker = new AtomicLong(0);
 	/**
 	 * Last reading bandwith
 	 */
-	private AtomicLong lastReadingMarker = new AtomicLong(0);
+	private final AtomicLong lastReadingMarker = new AtomicLong(0);
 	/**
 	 * Last Time Check taken
 	 */
-	private AtomicLong lastTime = new AtomicLong(0);
+	private final AtomicLong lastTime = new AtomicLong(0);
 	/**
 	 * Current Limit in B/s to apply to write
 	 */
@@ -80,7 +80,7 @@ public class ThroughputMonitor implements Runnable {
 	/**
 	 * Name of this Monitor
 	 */
-	private String name = null;
+	private final String name;
 	/**
 	 * Is this monitor for a channel monitoring or for global monitoring
 	 */

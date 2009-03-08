@@ -21,12 +21,6 @@ import goldengate.ftp.core.utils.FtpCommandUtils;
  */
 public class ACCT extends AbstractCommand {
 
-	/**
-	 */
-	public ACCT() {
-		super();
-	}
-
 	/* (non-Javadoc)
 	 * @see goldengate.ftp.core.command.AbstractCommand#exec()
 	 */

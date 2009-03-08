@@ -50,12 +50,6 @@ public abstract class AbstractCommand {
 	 */
 	private FtpCommandCode extraNextCommand = null;
 	/**
-	 * This constructor is to be ca
-	 *
-	 */
-	public AbstractCommand() {
-	}
-	/**
 	 * Set the AbstractCommand from the args
 	 * @param session
 	 * @param command

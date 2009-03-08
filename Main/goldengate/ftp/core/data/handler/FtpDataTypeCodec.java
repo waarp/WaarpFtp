@@ -222,6 +222,7 @@ public class FtpDataTypeCodec extends SimpleChannelHandler {
 	 * @param subType
 	 */
 	public FtpDataTypeCodec(TransferType type, TransferSubType subType) {
+		super();
 		this.setCharset(null);
 		this.type = type;
 		this.subType = subType;

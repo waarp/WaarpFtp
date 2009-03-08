@@ -21,12 +21,6 @@ import java.net.InetSocketAddress;
  */
 public class EPRT extends AbstractCommand {
 
-	/**
-	 */
-	public EPRT() {
-		super();
-	}
-
 	/* (non-Javadoc)
 	 * @see goldengate.ftp.core.command.AbstractCommand#exec()
 	 */

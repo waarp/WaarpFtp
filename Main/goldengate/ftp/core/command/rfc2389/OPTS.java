@@ -17,12 +17,6 @@ import goldengate.ftp.core.command.exception.FtpCommandAbstractException;
  */
 public class OPTS extends AbstractCommand {
 
-	/**
-	 */
-	public OPTS() {
-		super();
-	}
-
 	/* (non-Javadoc)
 	 * @see goldengate.ftp.core.command.AbstractCommand#exec()
 	 */

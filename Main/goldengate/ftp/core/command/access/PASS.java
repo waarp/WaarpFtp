@@ -20,12 +20,6 @@ import goldengate.ftp.core.utils.FtpCommandUtils;
  */
 public class PASS extends AbstractCommand {
 
-	/**
-	 */
-	public PASS() {
-		super();
-	}
-
 	/* (non-Javadoc)
 	 * @see goldengate.ftp.core.command.AbstractCommand#exec()
 	 */

@@ -22,13 +22,6 @@ public class FileSystemBasedDataBusinessHandler extends DataBusinessHandler {
 	private static final FtpInternalLogger logger =
         FtpInternalLoggerFactory.getLogger(FileSystemBasedDataBusinessHandler.class);
 	
-	/**
-	 * 
-	 */
-	public FileSystemBasedDataBusinessHandler() {
-		super();
-	}
-
 	/* (non-Javadoc)
 	 * @see goldengate.ftp.core.data.handler.DataBusinessHandler#cleanSession(goldengate.ftp.core.session.FtpSession)
 	 */

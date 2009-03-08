@@ -107,18 +107,18 @@ public class MD5 {
 	/**
 	 * MD5 state
 	 */
-	MD5State	state;
+	private MD5State	state;
 
 	/**
 	 * If Final() has been called, finals is set to the current finals
 	 * state. Any Update() causes this to be set to null.
 	 */
-	MD5State 	finals;
+	private MD5State 	finals;
 
 	/** 
 	 * Padding for Final()
 	 */
-	static byte	padding[] = {
+	private static byte	padding[] = {
 		(byte) 0x80, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
 		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
 		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0

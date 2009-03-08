@@ -16,12 +16,6 @@ import goldengate.ftp.core.command.FtpReplyCode;
  */
 public class SYST extends AbstractCommand {
 
-	/**
-	 */
-	public SYST() {
-		super();
-	}
-
 	/* (non-Javadoc)
 	 * @see goldengate.ftp.core.command.AbstractCommand#exec()
 	 */

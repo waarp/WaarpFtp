@@ -34,11 +34,11 @@ public class FtpPipelineFactory implements ChannelPipelineFactory {
 	/**
 	 * Business Handler Class if any (Target Mode only)
 	 */
-	private Class businessHandler = null;
+	private final Class businessHandler;
 	/**
 	 * Configuration
 	 */
-	private FtpConfiguration configuration = null;
+	private final FtpConfiguration configuration;
 	/**
 	 * Constructor wich Initializes some data for Server only
 	 * @param businessHandler

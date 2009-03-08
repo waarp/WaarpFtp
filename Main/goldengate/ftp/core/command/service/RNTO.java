@@ -22,12 +22,6 @@ import goldengate.ftp.core.file.FtpFile;
  */
 public class RNTO extends AbstractCommand {
 
-	/**
-	 */
-	public RNTO() {
-		super();
-	}
-
 	/* (non-Javadoc)
 	 * @see goldengate.ftp.core.command.AbstractCommand#exec()
 	 */

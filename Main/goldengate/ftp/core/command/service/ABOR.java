@@ -18,11 +18,6 @@ import goldengate.ftp.core.exception.FtpNoTransferException;
  */
 public class ABOR extends AbstractCommand {
 
-	/**
-	 */
-	public ABOR() {
-		super();
-	}
 
 	/* (non-Javadoc)
 	 * @see goldengate.ftp.core.command.AbstractCommand#exec()

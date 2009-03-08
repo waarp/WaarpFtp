@@ -39,20 +39,18 @@ public class FilesystemBasedFtpRestart extends FtpRestart {
 	public boolean restartMarker(String marker)
 			throws FtpCommandAbstractException {
 		FtpDataAsyncConn dataConn = this.getFtpSession().getDataConn();
-		if (dataConn.getStructure() == TransferStructure.FILE) {
-			if (dataConn.getMode() == TransferMode.STREAM) {
-				if (dataConn.getType() != TransferType.LENGTH) {
-					long newposition = 0;
-					try {
-						newposition = Long.parseLong(marker);
-					} catch (NumberFormatException e) {
-						throw new Reply502Exception("Marker must be length in byte as a position");
-					}
-					this.position = newposition;
-					this.setSet(true);
-					return true;
-				}
+		if ((dataConn.getStructure() == TransferStructure.FILE) &&
+				(dataConn.getMode() == TransferMode.STREAM) &&
+				(dataConn.getType() != TransferType.LENGTH)) {
+			long newposition = 0;
+			try {
+				newposition = Long.parseLong(marker);
+			} catch (NumberFormatException e) {
+				throw new Reply502Exception("Marker must be length in byte as a position");
 			}
+			this.position = newposition;
+			this.setSet(true);
+			return true;
 		}
 		throw new Reply502Exception("Marker not implemented for such Mode, Type and Structure");
 	}

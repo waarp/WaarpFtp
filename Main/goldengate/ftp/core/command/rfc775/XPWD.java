@@ -15,9 +15,4 @@ import goldengate.ftp.core.command.service.PWD;
  */
 public class XPWD extends PWD {
 
-	/**
-	 */
-	public XPWD() {
-		super();
-	}
 }

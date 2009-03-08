@@ -21,12 +21,6 @@ import goldengate.ftp.core.exception.FtpInvalidArgumentException;
  */
 public class TYPE extends AbstractCommand {
 
-	/**
-	 */
-	public TYPE() {
-		super();
-	}
-
 	/* (non-Javadoc)
 	 * @see goldengate.ftp.core.command.AbstractCommand#exec()
 	 */

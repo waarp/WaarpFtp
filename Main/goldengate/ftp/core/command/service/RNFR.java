@@ -20,12 +20,6 @@ import goldengate.ftp.core.file.FtpFile;
  */
 public class RNFR extends AbstractCommand {
 
-	/**
-	 */
-	public RNFR() {
-		super();
-	}
-
 	/* (non-Javadoc)
 	 * @see goldengate.ftp.core.command.AbstractCommand#exec()
 	 */
@@ -37,12 +31,10 @@ public class RNFR extends AbstractCommand {
 		}
 		String filename = this.getArg();
 		FtpFile file = this.getFtpSession().getFtpDir().setFile(filename, false);
-		if (file != null) {
-			if (file.exists()) {
-				this.getFtpSession().setReplyCode(FtpReplyCode.REPLY_350_REQUESTED_FILE_ACTION_PENDING_FURTHER_INFORMATION,
-						"Need RNTO command");
-				return;
-			}
+		if ((file != null) && (file.exists())) {
+			this.getFtpSession().setReplyCode(FtpReplyCode.REPLY_350_REQUESTED_FILE_ACTION_PENDING_FURTHER_INFORMATION,
+					"Need RNTO command");
+			return;
 		}
 		// File name not allowed or not found
 		throw new Reply550Exception("Filename not allowed");

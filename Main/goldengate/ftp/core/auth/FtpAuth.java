@@ -38,7 +38,7 @@ public abstract class FtpAuth {
 	/**
 	 * Ftp Session
 	 */
-	private FtpSession session = null;
+	private final FtpSession session;
 	/**
 	 * Relative Path after Authentification
 	 */

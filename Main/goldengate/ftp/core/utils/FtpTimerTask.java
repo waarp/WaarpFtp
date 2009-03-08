@@ -30,12 +30,13 @@ public class FtpTimerTask extends TimerTask {
 	/**
 	 * Type of execution in run() method
 	 */
-	private int type = 0;
+	private final int type;
 	/**
 	 * Constructor from type
 	 * @param type
 	 */
 	public FtpTimerTask(int type) {
+		super();
 		this.type = type;
 	}
 
@@ -48,6 +49,7 @@ public class FtpTimerTask extends TimerTask {
 			case TIMER_EXIT:
 				logger.error("System will force EXIT");
 				System.exit(1);
+				break;
 			default:
 				logger.warn("Type unknown in TimerTask");
 		}

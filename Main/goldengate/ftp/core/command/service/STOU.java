@@ -21,12 +21,6 @@ import goldengate.ftp.core.utils.FtpCommandUtils;
  */
 public class STOU extends AbstractCommand {
 
-	/**
-	 */
-	public STOU() {
-		super();
-	}
-
 	/* (non-Javadoc)
 	 * @see goldengate.ftp.core.command.AbstractCommand#exec()
 	 */
