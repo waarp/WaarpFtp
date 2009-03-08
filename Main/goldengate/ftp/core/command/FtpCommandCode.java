@@ -1056,7 +1056,7 @@ Replies to the FEAT command MUST comply with the following syntax.
 		 * Limit is written in byte/s. Example: "LIMITBANWIDTH 104857600 104857600" stands for 100MB/s limitation globaly.<br>
 		 * -1 means no limit
 		 */
-	LIMITBANWIDTH (goldengate.ftp.core.command.internal.INTERNALSHUTDOWN.class,
+	LIMITBANWIDTH (goldengate.ftp.core.command.internal.LIMITBANWIDTH.class,
 		null);
 	
 	/**
