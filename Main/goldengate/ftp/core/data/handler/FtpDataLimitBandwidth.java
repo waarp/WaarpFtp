@@ -11,8 +11,8 @@ import org.jboss.netty.channel.ChannelPipelineCoverage;
 import org.jboss.netty.channel.MessageEvent;
 
 /**
- * Channel Handler that allows to limit the global bandwith
- * or per session bandwith. This is to be placed between
+ * Channel Handler that allows to limit the global bandwidth
+ * or per session bandwidth. This is to be placed between
  * the {@link FtpDataModeCodec} and the {@link FtpDataTypeCodec}
  * in order to have {@link FtpDataBlock} object.
  * @author fbregier

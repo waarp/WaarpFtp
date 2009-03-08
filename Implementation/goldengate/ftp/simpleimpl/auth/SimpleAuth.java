@@ -31,6 +31,10 @@ public class SimpleAuth {
 	 */
 	public String [] accounts = null;
 	/**
+	 * Is the current user an administrator (which can shutdown or change bandwidth limitation)
+	 */
+	public boolean isAdmin = false;
+	/**
 	 * @param user
 	 * @param password
 	 * @param accounts
@@ -76,5 +80,12 @@ public class SimpleAuth {
 		}
 		logger.info("No account found");
 		return false;
+	}
+	/**
+	 * 
+	 * @param isAdmin True if the user should be an administrator
+	 */
+	public void setAdmin(boolean isAdmin) {
+		this.isAdmin = isAdmin;
 	}
 }

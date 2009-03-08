@@ -15,7 +15,7 @@ import org.jboss.netty.channel.MessageEvent;
 import org.jboss.netty.channel.SimpleChannelHandler;
 
 /**
- * Channel Handler that allows to limit the global bandwith or per session bandwith.<br> 
+ * Channel Handler that allows to limit the global bandwidth or per session bandwidth.<br> 
  * One method will specified what is the size of the object to be read or write. 
  * It has to be implemented according to the type of object.<br>
  * Global Monitor must be started and stopped explicitely outside this Handler.<br>

@@ -113,6 +113,10 @@ public class FileBasedConfiguration extends FilesystemBasedFtpConfiguration {
 	 * Authentification Fields
 	 */
 	private static final String XML_AUTHENTIFICATION_ACCOUNT = "account";
+	/**
+	 * Authentification Fields
+	 */
+	private static final String XML_AUTHENTIFICATION_ADMIN = "admin";
 	
 	/**
 	 * RANGE of PORT for Passive Mode
@@ -283,6 +287,11 @@ public class FileBasedConfiguration extends FilesystemBasedFtpConfiguration {
 				continue;
 			}
 			String userpasswd = node.getText();
+			node = nodebase.selectSingleNode(XML_AUTHENTIFICATION_ADMIN);
+			boolean isAdmin = false;
+			if (node != null) {
+				isAdmin = (node.getText().equals("1")) ? true : false;
+			}
 			List<Node> listaccount = nodebase.selectNodes(XML_AUTHENTIFICATION_ACCOUNT);
 			String [] account = null;
 			if (! listaccount.isEmpty()) {
@@ -297,6 +306,7 @@ public class FileBasedConfiguration extends FilesystemBasedFtpConfiguration {
 				}
 			}
 			SimpleAuth auth = new SimpleAuth(user,userpasswd,account);
+			auth.setAdmin(isAdmin);
 			this.authentifications.put(user, auth);
 		}
 		document = null;

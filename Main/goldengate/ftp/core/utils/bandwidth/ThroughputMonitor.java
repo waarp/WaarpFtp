@@ -50,11 +50,11 @@ public class ThroughputMonitor implements Runnable {
 	 */
 	private final AtomicLong currentReadingBytes = new AtomicLong(0);
 	/**
-	 * Last writing bandwith
+	 * Last writing bandwidth
 	 */
 	private final AtomicLong lastWritingMarker = new AtomicLong(0);
 	/**
-	 * Last reading bandwith
+	 * Last reading bandwidth
 	 */
 	private final AtomicLong lastReadingMarker = new AtomicLong(0);
 	/**
@@ -291,14 +291,14 @@ public class ThroughputMonitor implements Runnable {
 	}
 	/**
 	 * 
-	 * @return the current IN bandwith in byte/s
+	 * @return the current IN bandwidth in byte/s
 	 */
 	public long getLastReadByteBySecond() {
 		return this.lastReadingMarker.get();
 	}
 	/**
 	 * 
-	 * @return the current OUT bandwith in byte/s
+	 * @return the current OUT bandwidth in byte/s
 	 */
 	public long getLastWriteByteBySecond() {
 		return this.lastWritingMarker.get();

@@ -185,6 +185,11 @@ public abstract class FtpAuth {
 		}
 	}
 	/**
+	 * 
+	 * @return Trye if the current authentification has an admin right (shutdown, bandwidth limitation)
+	 */
+	public abstract boolean isAdmin();
+	/**
 	 * Is the given complete relative Path valid from Authentification/Business point of view.
 	 * @param newPath
 	 * @return True if it is Valid

@@ -7,6 +7,7 @@ package goldengate.ftp.core.command.internal;
 
 import goldengate.ftp.core.command.AbstractCommand;
 import goldengate.ftp.core.command.FtpReplyCode;
+import goldengate.ftp.core.command.exception.Reply500Exception;
 import goldengate.ftp.core.command.exception.Reply501Exception;
 
 /**
@@ -20,7 +21,11 @@ public class LIMITBANWIDTH extends AbstractCommand {
 	 * @see goldengate.ftp.core.command.AbstractCommand#exec()
 	 */
 	@Override
-	public void exec() throws Reply501Exception {
+	public void exec() throws Reply501Exception, Reply500Exception {
+		if (! this.getFtpSession().getFtpAuth().isAdmin()) {
+			// not admin
+			throw new Reply500Exception("Command Not Allowed");
+		}
 		if (! this.hasArg()) {
 			// reset to default
 			this.getConfiguration().resetGlobalMonitor(0,0);

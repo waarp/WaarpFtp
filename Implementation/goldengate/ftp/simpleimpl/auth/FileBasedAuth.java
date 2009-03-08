@@ -121,4 +121,12 @@ public class FileBasedAuth extends FilesystemBasedFtpAuth {
 		}
 		throw new Reply530Exception("Account is not valid");
 	}
+
+	/* (non-Javadoc)
+	 * @see goldengate.ftp.core.auth.FtpAuth#isAdmin()
+	 */
+	@Override
+	public boolean isAdmin() {
+		return this.currentAuth.isAdmin;
+	}
 }
