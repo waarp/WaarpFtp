@@ -109,6 +109,10 @@ public abstract class FtpConfiguration {
 	 * Should the file be deleted when the transfer is aborted on STOR like commands
 	 */
 	public boolean deleteOnAbort = false;
+	/**
+	 * Max global memory limit: default is 4GB
+	 */
+	public long maxGlobalMemory = 0x100000000L;
 	
 	/**
 	 * General Configuration Object

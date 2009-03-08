@@ -349,11 +349,11 @@ public class FtpInternalConfiguration {
 		this.configuration.getLock().lock();
 		try {
 			if (this.pipelineExecutor == null) {
-				// Memory limitation: 1MB by channel, 1GB global, 100 ms of timeout
+				// Memory limitation: no limit by channel, 1GB global, 100 ms of timeout
 				this.pipelineExecutor = 
-					new OrderedMemoryAwareThreadPoolExecutor(configuration.SERVER_THREAD*2,
-							1048576,
-							1073741824,
+					new OrderedMemoryAwareThreadPoolExecutor(configuration.SERVER_THREAD*4,
+							0,
+							this.configuration.maxGlobalMemory/4,
 							100,TimeUnit.MILLISECONDS,
 							Executors.defaultThreadFactory());
 			}
@@ -370,11 +370,11 @@ public class FtpInternalConfiguration {
 		this.configuration.getLock().lock();
 		try {
 			if (this.pipelineDataExecutor == null) {
-				// Memory limitation: 1MB by channel, 1GB global, 100 ms of timeout
+				// Memory limitation: no limit by channel, 1GB global, 100 ms of timeout
 				this.pipelineDataExecutor = 
-					new OrderedMemoryAwareThreadPoolExecutor(configuration.SERVER_THREAD*2,
-							1048576,
-							1073741824,
+					new OrderedMemoryAwareThreadPoolExecutor(configuration.SERVER_THREAD*4,
+							0,
+							this.configuration.maxGlobalMemory,
 							100,TimeUnit.MILLISECONDS,
 							Executors.defaultThreadFactory());
 			}

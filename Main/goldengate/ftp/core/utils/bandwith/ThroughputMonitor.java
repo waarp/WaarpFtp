@@ -315,11 +315,7 @@ public class ThroughputMonitor implements Runnable {
 				// Time is too short, so just lets continue
 				return 0;
 			}
-			// compute the delay that should be waiting
-			long bandwith = (this.currentReadingBytes.get() * 1000 / interval) ;
-			//logger.warn("Read bandwith: {} KB/s in {} ms",bandwith>>10, interval);
-			long wait = ((bandwith * interval) / this.limitRead) - interval;
-			//logger.warn("Read sleep: {} for {}",wait, this);
+			long wait = this.currentReadingBytes.get() * 1000 / this.limitRead - interval;
 			return wait;
 		}
 	}
@@ -334,11 +330,7 @@ public class ThroughputMonitor implements Runnable {
 				// Time is too short, so just lets continue
 				return 0;
 			}
-			// compute the delay that should be waiting
-			long bandwith = (this.currentWritingBytes.get() * 1000 / interval);
-			//logger.warn("Write bandwith: {} KB/s in {} ms",bandwith>>10, interval);
-			long wait = ((bandwith * interval) / this.limitWrite) - interval;
-			//logger.warn("Write sleep: {} for {}",wait, this);
+			long wait = this.currentWritingBytes.get() * 1000 / this.limitWrite - interval;
 			return wait;
 		}
 	}
@@ -389,23 +381,27 @@ public class ThroughputMonitor implements Runnable {
 		if (wait > 50) {
 			if ((this.isPerChannel) && (this.monitoredChannel != null) && (this.monitoredChannel.isConnected())) {
 				// Session
-				//logger.warn("               setReadable FALSE {}",this.runningScheduled);
-				this.monitoredChannel.setReadable(false);
-				if (true) {
-				/*if (this.executorService == null) {*/
-					//logger.warn("Read sleep since no Executor: {} for ",wait, this);
+				if (this.executorService == null) {
+					//logger.warn("Read sleep since no Executor: {} for {}",wait, this);
 					Thread.sleep(wait);
-					//logger.warn("               setReadable TRUE");
-					this.monitoredChannel.setReadable(true);
 					return;
 				}
-				// FIXME this DO NOT WORK !!! setReadable FALSE does not prevent next calls
-				//logger.warn("Read will wakeup: {} for {}",wait,this);
-				getExecutorService().schedule(new ReopenRead(this), wait, TimeUnit.MILLISECONDS);
-				this.runningScheduled++;
+				if (this.runningScheduled <= 1) {
+					//logger.warn("               setReadable FALSE {}",this.runningScheduled);
+					this.monitoredChannel.setReadable(false);
+					// FIXME this DO NOT WORK CORRECTLY if a MemoryAwareThreadPoolExecutor is inserted after with a
+					// maxChannelMemory != 0 since MATPE will reset setReadable to true at any time. So setReadable FALSE does not prevent next calls
+					//logger.warn("Read will wakeup: {} for {}",wait,this);
+					getExecutorService().schedule(new ReopenRead(this), wait, TimeUnit.MILLISECONDS);
+					this.runningScheduled++;
+				} else {
+					// should be waiting: as a FIX if a MATPE is running with a maxChannelMemory > 0
+					//logger.warn("Read sleep since should not be here: {} for {}",wait, this);
+					Thread.sleep(wait);
+				}
 			} else {
 				// Global
-				//logger.warn("Read sleep: {} for ",wait, this);
+				//logger.warn("Read sleep: {} for {}",wait, this);
 				Thread.sleep(wait);
 			}
 		}
