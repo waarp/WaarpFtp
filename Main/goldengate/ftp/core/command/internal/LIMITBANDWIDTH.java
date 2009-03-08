@@ -16,7 +16,7 @@ import goldengate.ftp.core.command.exception.Reply501Exception;
  * goldengate.ftp.core.command LIMITBANDWIDTH
  * 
  */
-public class LIMITBANWIDTH extends AbstractCommand {
+public class LIMITBANDWIDTH extends AbstractCommand {
 	/* (non-Javadoc)
 	 * @see goldengate.ftp.core.command.AbstractCommand#exec()
 	 */

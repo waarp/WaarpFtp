@@ -1053,10 +1053,10 @@ Replies to the FEAT command MUST comply with the following syntax.
 		/**
 		 * Change the Limit of the global bandwidth.<br>
 		 * No argument reset to default, 1 argument change both write and read to same value, 2 arguments stand for write then read limit.<br>
-		 * Limit is written in byte/s. Example: "LIMITBANWIDTH 104857600 104857600" stands for 100MB/s limitation globaly.<br>
+		 * Limit is written in byte/s. Example: "LIMITBANDWIDTH 104857600 104857600" stands for 100MB/s limitation globaly.<br>
 		 * -1 means no limit
 		 */
-	LIMITBANWIDTH (goldengate.ftp.core.command.internal.LIMITBANWIDTH.class,
+	LIMITBANDWIDTH (goldengate.ftp.core.command.internal.LIMITBANDWIDTH.class,
 		null);
 	
 	/**
@@ -1161,7 +1161,7 @@ Replies to the FEAT command MUST comply with the following syntax.
 	 */
 	public static boolean isExtensionCommand(FtpCommandCode command) {
 		return ((command == XMD5) || (command == XCRC) || (command == XSHA1) 
-				|| (command == INTERNALSHUTDOWN) || (command == LIMITBANWIDTH));
+				|| (command == INTERNALSHUTDOWN) || (command == LIMITBANDWIDTH));
 	}
 	/**
 	 * 
