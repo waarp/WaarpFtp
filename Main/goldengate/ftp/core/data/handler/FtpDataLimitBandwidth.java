@@ -4,8 +4,8 @@
 package goldengate.ftp.core.data.handler;
 
 import goldengate.ftp.core.exception.FtpInvalidArgumentException;
-import goldengate.ftp.core.utils.bandwith.LimitBandwithHandler;
-import goldengate.ftp.core.utils.bandwith.ThroughputMonitor;
+import goldengate.ftp.core.utils.bandwidth.LimitBandwithHandler;
+import goldengate.ftp.core.utils.bandwidth.ThroughputMonitor;
 
 import org.jboss.netty.channel.ChannelPipelineCoverage;
 import org.jboss.netty.channel.MessageEvent;
@@ -19,13 +19,13 @@ import org.jboss.netty.channel.MessageEvent;
  *
  */
 @ChannelPipelineCoverage("one")
-public class FtpDataLimitBandwith extends LimitBandwithHandler {
+public class FtpDataLimitBandwidth extends LimitBandwithHandler {
 	
 	/**
 	 * @param globalMonitor
 	 * @param sessionMonitor
 	 */
-	public FtpDataLimitBandwith(ThroughputMonitor globalMonitor, ThroughputMonitor sessionMonitor) {
+	public FtpDataLimitBandwidth(ThroughputMonitor globalMonitor, ThroughputMonitor sessionMonitor) {
 		super(globalMonitor, sessionMonitor);
 	}
 	/* (non-Javadoc)

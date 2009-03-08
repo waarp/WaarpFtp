@@ -82,7 +82,7 @@ public class FtpDataPipelineFactory implements ChannelPipelineFactory {
 		pipeline.addFirst(CODEC_MODE, 
 				new FtpDataModeCodec(TransferMode.STREAM, TransferStructure.FILE));
 		pipeline.addLast(CODEC_LIMIT, 
-				new FtpDataLimitBandwith(
+				new FtpDataLimitBandwidth(
 						this.configuration.getFtpInternalConfiguration().getGlobalMonitor(),
 						null));
 		pipeline.addLast(CODEC_TYPE, 

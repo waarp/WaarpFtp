@@ -7,7 +7,7 @@ package goldengate.ftp.core.config;
 
 import goldengate.ftp.core.exception.FtpUnknownFieldException;
 import goldengate.ftp.core.session.FtpSession;
-import goldengate.ftp.core.utils.bandwith.ThroughputMonitor;
+import goldengate.ftp.core.utils.bandwidth.ThroughputMonitor;
 
 import java.io.File;
 import java.net.InetAddress;
@@ -323,6 +323,17 @@ public abstract class FtpConfiguration {
 		this.internalConfiguration.getGlobalMonitor().changeConfiguration(null,
 				this.serverGlobalWriteLimit, this.serverGlobalReadLimit, this.delayLimit);
 		this.internalConfiguration.getGlobalMonitor().startMonitoring();
+	}
+	/**
+	 * Reset the global monitor for bandwitdh limitation
+	 * @param writeLimit
+	 * @param readLimit
+	 */
+	public void resetGlobalMonitor(long writeLimit, long readLimit) {
+		long newWriteLimit = (writeLimit > 0) ? writeLimit : this.serverGlobalWriteLimit;
+		long newReadLimit = (readLimit > 0) ? readLimit : this.serverGlobalReadLimit;
+		this.internalConfiguration.getGlobalMonitor().changeConfiguration(null,
+				newWriteLimit, newReadLimit, this.delayLimit);
 	}
 	/**
 	 * Compute number of threads for both client and server

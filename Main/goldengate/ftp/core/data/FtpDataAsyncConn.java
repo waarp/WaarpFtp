@@ -15,7 +15,7 @@ import goldengate.ftp.core.logging.FtpInternalLogger;
 import goldengate.ftp.core.logging.FtpInternalLoggerFactory;
 import goldengate.ftp.core.session.FtpSession;
 import goldengate.ftp.core.utils.FtpChannelUtils;
-import goldengate.ftp.core.utils.bandwith.ThroughputMonitor;
+import goldengate.ftp.core.utils.bandwidth.ThroughputMonitor;
 
 import java.net.InetAddress;
 import java.net.InetSocketAddress;

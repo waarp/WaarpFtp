@@ -1049,7 +1049,15 @@ Replies to the FEAT command MUST comply with the following syntax.
 			 * Shutdown the FTP service<br>
 			 */
 	INTERNALSHUTDOWN (goldengate.ftp.core.command.internal.INTERNALSHUTDOWN.class,
-			null);
+			null),
+		/**
+		 * Change the Limit of the global bandwidth.<br>
+		 * No argument reset to default, 1 argument change both write and read to same value, 2 arguments stand for write then read limit.<br>
+		 * Limit is written in byte/s. Example: "LIMITBANWIDTH 104857600 104857600" stands for 100MB/s limitation globaly.<br>
+		 * -1 means no limit
+		 */
+	LIMITBANWIDTH (goldengate.ftp.core.command.internal.INTERNALSHUTDOWN.class,
+		null);
 	
 	/**
 	 * The Class that implements this command
@@ -1152,7 +1160,8 @@ Replies to the FEAT command MUST comply with the following syntax.
 	 * @return True if the command is an extension operation (XMD5, XCRC, XSHA1, ...)
 	 */
 	public static boolean isExtensionCommand(FtpCommandCode command) {
-		return ((command == XMD5) || (command == XCRC) || (command == XSHA1));
+		return ((command == XMD5) || (command == XCRC) || (command == XSHA1) 
+				|| (command == INTERNALSHUTDOWN) || (command == LIMITBANWIDTH));
 	}
 	/**
 	 * 

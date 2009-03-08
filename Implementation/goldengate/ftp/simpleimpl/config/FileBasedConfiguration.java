@@ -6,7 +6,7 @@ package goldengate.ftp.simpleimpl.config;
 import goldengate.ftp.core.exception.FtpUnknownFieldException;
 import goldengate.ftp.core.logging.FtpInternalLogger;
 import goldengate.ftp.core.logging.FtpInternalLoggerFactory;
-import goldengate.ftp.core.utils.bandwith.ThroughputMonitor;
+import goldengate.ftp.core.utils.bandwidth.ThroughputMonitor;
 import goldengate.ftp.filesystembased.FilesystemBasedFtpDir;
 import goldengate.ftp.filesystembased.config.FilesystemBasedFtpConfiguration;
 import goldengate.ftp.filesystembased.digest.MD5;
