@@ -38,19 +38,10 @@ public class LIMITBANDWIDTH extends AbstractCommand {
 		try {
 			if (limits.length == 1) {
 				writeLimit = Long.parseLong(limits[0]);
-				if (writeLimit == 0) {
-					throw new Reply501Exception("Limit cannot be 0");
-				}
 				readLimit = writeLimit;
 			} else {
 				writeLimit = Long.parseLong(limits[0]);
-				if (writeLimit == 0) {
-					throw new Reply501Exception("Limit cannot be 0");
-				}
 				readLimit = Long.parseLong(limits[1]);
-				if (readLimit == 0) {
-					throw new Reply501Exception("Limit cannot be 0");
-				}
 			}
 		} catch (NumberFormatException e) {
 			throw new Reply501Exception(this.getCommand()+" ([write and read limits in b/s] | [write limit in b/s] [read limit in b/s]");

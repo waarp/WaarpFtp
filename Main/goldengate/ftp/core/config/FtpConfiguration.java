@@ -330,8 +330,14 @@ public abstract class FtpConfiguration {
 	 * @param readLimit
 	 */
 	public void resetGlobalMonitor(long writeLimit, long readLimit) {
-		long newWriteLimit = (writeLimit > 0) ? writeLimit : this.serverGlobalWriteLimit;
-		long newReadLimit = (readLimit > 0) ? readLimit : this.serverGlobalReadLimit;
+		long newWriteLimit = (writeLimit > 1024) ? writeLimit : this.serverGlobalWriteLimit;
+		if (writeLimit <= 0) {
+			newWriteLimit = -1;
+		}
+		long newReadLimit = (readLimit > 1024) ? readLimit : this.serverGlobalReadLimit;
+		if (readLimit <= 0) {
+			newReadLimit = -1;
+		}
 		this.internalConfiguration.getGlobalMonitor().changeConfiguration(null,
 				newWriteLimit, newReadLimit, this.delayLimit);
 	}
