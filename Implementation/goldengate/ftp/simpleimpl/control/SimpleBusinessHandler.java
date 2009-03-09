@@ -10,7 +10,6 @@ import goldengate.ftp.core.command.exception.Reply502Exception;
 import goldengate.ftp.core.control.BusinessHandler;
 import goldengate.ftp.core.data.FtpTransfer;
 import goldengate.ftp.core.file.FtpDir;
-import goldengate.ftp.core.file.FtpOptsMLSx;
 import goldengate.ftp.core.file.FtpRestart;
 import goldengate.ftp.core.logging.FtpInternalLogger;
 import goldengate.ftp.core.logging.FtpInternalLoggerFactory;
@@ -151,63 +150,7 @@ public class SimpleBusinessHandler extends BusinessHandler {
 	public String getFeatMessage() {
 		StringBuilder builder = new StringBuilder("Extensions supported:");
 		builder.append('\n');
-		builder.append(FtpCommandCode.MDTM.name());
-		builder.append('\n');
-		builder.append(FtpCommandCode.MLSD.name());
-		builder.append(this.getFtpSession().getFtpDir().getOptsMLSx().getFeat());
-		builder.append('\n');
-		builder.append(FtpCommandCode.MLST.name());
-		builder.append(this.getFtpSession().getFtpDir().getOptsMLSx().getFeat());
-		builder.append('\n');
-		builder.append(FtpCommandCode.SIZE.name());
-		builder.append('\n');
-		builder.append(FtpCommandCode.XCUP.name());
-		builder.append('\n');
-		builder.append(FtpCommandCode.XCWD.name());
-		builder.append('\n');
-		builder.append(FtpCommandCode.XMKD.name());
-		builder.append('\n');
-		builder.append(FtpCommandCode.XPWD.name());
-		builder.append('\n');
-		builder.append(FtpCommandCode.XRMD.name());
-		builder.append('\n');
-		builder.append(FtpCommandCode.PASV.name());
-		builder.append('\n');
-		builder.append(FtpCommandCode.ALLO.name());
-		builder.append('\n');
-		builder.append(FtpCommandCode.EPRT.name());
-		builder.append('\n');
-		builder.append(FtpCommandCode.EPSV.name());
-		builder.append('\n');
-		builder.append(FtpCommandCode.XCRC.name());
-		builder.append(" \"filename\"");
-		builder.append('\n');
-		builder.append(FtpCommandCode.XMD5.name());
-		builder.append(" \"filename\"");
-		builder.append('\n');
-		builder.append(FtpCommandCode.XSHA1.name());
-		builder.append(" \"filename\"");
-		builder.append('\n');
-		builder.append(FtpCommandCode.SITE.name());
-		builder.append(' ');
-		builder.append(FtpCommandCode.XCRC.name());
-		//builder.append(" \"filename\"");
-		builder.append('\n');
-		builder.append(FtpCommandCode.SITE.name());
-		builder.append(' ');
-		builder.append(FtpCommandCode.XMD5.name());
-		//builder.append(" \"filename\"");
-		builder.append('\n');
-		builder.append(FtpCommandCode.SITE.name());
-		builder.append(' ');
-		builder.append(FtpCommandCode.XSHA1.name());
-		//builder.append(" \"filename\"");
-		builder.append('\n');
-		builder.append("LAN EN*");
-		builder.append('\n');
-		builder.append(FtpCommandCode.REST.name());
-		builder.append(" STREAM\n");
-		builder.append("UTF8");
+		builder.append(this.getDefaultFeatMessage());
 		builder.append("\nEnd");
 		return builder.toString();
 	}
@@ -220,23 +163,7 @@ public class SimpleBusinessHandler extends BusinessHandler {
 		if (args.length > 0) {
 			if (args[0].equalsIgnoreCase(FtpCommandCode.MLST.name()) ||
 					args[0].equalsIgnoreCase(FtpCommandCode.MLSD.name())) {
-				FtpOptsMLSx optsMLSx = this.getFtpSession().getFtpDir().getOptsMLSx();
-				optsMLSx.setOptsModify((byte)0);
-				optsMLSx.setOptsPerm((byte)0);
-				optsMLSx.setOptsSize((byte)0);
-				optsMLSx.setOptsType((byte)0);
-				for (int i = 1; i < args.length; i++) {
-					if (args[i].equalsIgnoreCase("modify")) {
-						optsMLSx.setOptsModify((byte)1);
-					} else if (args[i].equalsIgnoreCase("perm")) {
-						optsMLSx.setOptsModify((byte)1);
-					} else if (args[i].equalsIgnoreCase("size")) {
-						optsMLSx.setOptsModify((byte)1);
-					} else if (args[i].equalsIgnoreCase("type")) {
-						optsMLSx.setOptsModify((byte)1);
-					}
-				}
-				return args[0]+" "+FtpCommandCode.OPTS.name()+optsMLSx.getFeat();
+				return this.getMLSxOptsMessage(args);
 			}
 			throw new Reply502Exception("OPTS not implemented for "+args[0]);
 		}

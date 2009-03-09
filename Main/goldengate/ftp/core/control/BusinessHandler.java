@@ -6,9 +6,11 @@
 package goldengate.ftp.core.control;
 
 import goldengate.ftp.core.auth.FtpAuth;
+import goldengate.ftp.core.command.FtpCommandCode;
 import goldengate.ftp.core.command.exception.FtpCommandAbstractException;
 import goldengate.ftp.core.data.FtpTransfer;
 import goldengate.ftp.core.file.FtpDir;
+import goldengate.ftp.core.file.FtpOptsMLSx;
 import goldengate.ftp.core.file.FtpRestart;
 import goldengate.ftp.core.session.FtpSession;
 
@@ -85,11 +87,100 @@ public abstract class BusinessHandler {
 	 */
 	public abstract String getFeatMessage();
 	/**
+	 * 
+	 * @return the string to return to the client for the FEAT command without surrounding by "Extensions supported:\n" and "\nEnd" 
+	 */
+	protected String getDefaultFeatMessage() {
+		StringBuilder builder = new StringBuilder();
+		builder.append(FtpCommandCode.MDTM.name());
+		builder.append('\n');
+		builder.append(FtpCommandCode.MLSD.name());
+		builder.append(this.getFtpSession().getFtpDir().getOptsMLSx().getFeat());
+		builder.append('\n');
+		builder.append(FtpCommandCode.MLST.name());
+		builder.append(this.getFtpSession().getFtpDir().getOptsMLSx().getFeat());
+		builder.append('\n');
+		builder.append(FtpCommandCode.SIZE.name());
+		builder.append('\n');
+		builder.append(FtpCommandCode.XCUP.name());
+		builder.append('\n');
+		builder.append(FtpCommandCode.XCWD.name());
+		builder.append('\n');
+		builder.append(FtpCommandCode.XMKD.name());
+		builder.append('\n');
+		builder.append(FtpCommandCode.XPWD.name());
+		builder.append('\n');
+		builder.append(FtpCommandCode.XRMD.name());
+		builder.append('\n');
+		builder.append(FtpCommandCode.PASV.name());
+		builder.append('\n');
+		builder.append(FtpCommandCode.ALLO.name());
+		builder.append('\n');
+		builder.append(FtpCommandCode.EPRT.name());
+		builder.append('\n');
+		builder.append(FtpCommandCode.EPSV.name());
+		builder.append('\n');
+		builder.append(FtpCommandCode.XCRC.name());
+		builder.append(" \"filename\"");
+		builder.append('\n');
+		builder.append(FtpCommandCode.XMD5.name());
+		builder.append(" \"filename\"");
+		builder.append('\n');
+		builder.append(FtpCommandCode.XSHA1.name());
+		builder.append(" \"filename\"");
+		builder.append('\n');
+		builder.append(FtpCommandCode.SITE.name());
+		builder.append(' ');
+		builder.append(FtpCommandCode.XCRC.name());
+		//builder.append(" \"filename\"");
+		builder.append('\n');
+		builder.append(FtpCommandCode.SITE.name());
+		builder.append(' ');
+		builder.append(FtpCommandCode.XMD5.name());
+		//builder.append(" \"filename\"");
+		builder.append('\n');
+		builder.append(FtpCommandCode.SITE.name());
+		builder.append(' ');
+		builder.append(FtpCommandCode.XSHA1.name());
+		//builder.append(" \"filename\"");
+		builder.append('\n');
+		builder.append("LAN EN*");
+		builder.append('\n');
+		builder.append(FtpCommandCode.REST.name());
+		builder.append(" STREAM\n");
+		builder.append("UTF8");
+		return builder.toString();
+	}
+	/**
 	 * @param args
 	 * @return the string to return to the client for the FEAT command
 	 * @exception FtpCommandAbstractException
 	 */
 	public abstract String getOptsMessage(String []args) throws FtpCommandAbstractException;
+	/**
+	 * 
+	 * @param args
+	 * @return the string to return to the client for the FEAT command for the MLSx argument
+	 */
+	protected String getMLSxOptsMessage(String []args) {
+		FtpOptsMLSx optsMLSx = this.getFtpSession().getFtpDir().getOptsMLSx();
+		optsMLSx.setOptsModify((byte)0);
+		optsMLSx.setOptsPerm((byte)0);
+		optsMLSx.setOptsSize((byte)0);
+		optsMLSx.setOptsType((byte)0);
+		for (int i = 1; i < args.length; i++) {
+			if (args[i].equalsIgnoreCase("modify")) {
+				optsMLSx.setOptsModify((byte)1);
+			} else if (args[i].equalsIgnoreCase("perm")) {
+				optsMLSx.setOptsModify((byte)1);
+			} else if (args[i].equalsIgnoreCase("size")) {
+				optsMLSx.setOptsModify((byte)1);
+			} else if (args[i].equalsIgnoreCase("type")) {
+				optsMLSx.setOptsModify((byte)1);
+			}
+		}
+		return args[0]+" "+FtpCommandCode.OPTS.name()+optsMLSx.getFeat();
+	}
 	/**
 	 * Is executed when the channel is closed, just before cleaning and just after.<br>
 	 * <I>Note: In some circumstances, it could be a good idea to call the clean operation on
