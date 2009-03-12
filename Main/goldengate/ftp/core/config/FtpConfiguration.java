@@ -5,9 +5,9 @@
  */
 package goldengate.ftp.core.config;
 
+import goldengate.ftp.core.data.handler.FtpPerformanceCounterFactory;
 import goldengate.ftp.core.exception.FtpUnknownFieldException;
 import goldengate.ftp.core.session.FtpSession;
-import goldengate.ftp.core.utils.bandwidth.ThroughputMonitor;
 
 import java.io.File;
 import java.net.InetAddress;
@@ -88,23 +88,23 @@ public abstract class FtpConfiguration {
 	/**
 	 * Limit in Write byte/s to apply globally to the FTP Server
 	 */
-	protected long serverGlobalWriteLimit = ThroughputMonitor.DEFAULT_GLOBAL_LIMIT;
+	protected long serverGlobalWriteLimit = FtpPerformanceCounterFactory.DEFAULT_GLOBAL_LIMIT;
 	/**
 	 * Limit in Read byte/s to apply globally to the FTP Server
 	 */
-	protected long serverGlobalReadLimit = ThroughputMonitor.DEFAULT_GLOBAL_LIMIT;
+	protected long serverGlobalReadLimit = FtpPerformanceCounterFactory.DEFAULT_GLOBAL_LIMIT;
 	/**
 	 * Limit in Write byte/s to apply by session to the FTP Server
 	 */
-	protected long serverSessionWriteLimit = ThroughputMonitor.DEFAULT_SESSION_LIMIT;
+	protected long serverChannelWriteLimit = FtpPerformanceCounterFactory.DEFAULT_SESSION_LIMIT;
 	/**
 	 * Limit in Read byte/s to apply by session to the FTP Server
 	 */
-	protected long serverSessionReadLimit = ThroughputMonitor.DEFAULT_SESSION_LIMIT;
+	protected long serverChannelReadLimit = FtpPerformanceCounterFactory.DEFAULT_SESSION_LIMIT;
 	/**
 	 * Delay in ms between two checks
 	 */
-	protected long delayLimit = ThroughputMonitor.DEFAULT_DELAY;
+	protected long delayLimit = FtpPerformanceCounterFactory.DEFAULT_DELAY;
 	/**
 	 * Should the file be deleted when the transfer is aborted on STOR like commands
 	 */
@@ -204,8 +204,8 @@ public abstract class FtpConfiguration {
 	 * 
 	 * @return the limit in Write byte/s to apply for each session to the Ftp Server
 	 */
-	public long getServerSessionWriteLimit() {
-		return this.serverSessionWriteLimit;
+	public long getServerChannelWriteLimit() {
+		return this.serverChannelWriteLimit;
 	}
 	/**
 	 * 
@@ -218,8 +218,8 @@ public abstract class FtpConfiguration {
 	 * 
 	 * @return the limit in Read byte/s to apply for each session to the Ftp Server
 	 */
-	public long getServerSessionReadLimit() {
-		return this.serverSessionReadLimit;
+	public long getServerChannelReadLimit() {
+		return this.serverChannelReadLimit;
 	}
 	/**
 	 * @return the delayLimit to apply between two check
@@ -320,12 +320,9 @@ public abstract class FtpConfiguration {
 	 */
 	public void serverStartup() {
 		this.internalConfiguration.serverStartup();
-		this.internalConfiguration.getGlobalMonitor().changeConfiguration(null,
-				this.serverGlobalWriteLimit, this.serverGlobalReadLimit, this.delayLimit);
-		this.internalConfiguration.getGlobalMonitor().startMonitoring();
 	}
 	/**
-	 * Reset the global monitor for bandwitdh limitation
+	 * Reset the global monitor for bandwitdh limitation and change future channel monitors with values divided by 10 (channel = global / 10)
 	 * @param writeLimit
 	 * @param readLimit
 	 */
@@ -338,7 +335,7 @@ public abstract class FtpConfiguration {
 		if (readLimit <= 0) {
 			newReadLimit = -1;
 		}
-		this.internalConfiguration.getGlobalMonitor().changeConfiguration(null,
+		this.internalConfiguration.getPerformanceCounterFactory().changeConfiguration(newWriteLimit/10, newReadLimit/10,
 				newWriteLimit, newReadLimit, this.delayLimit);
 	}
 	/**

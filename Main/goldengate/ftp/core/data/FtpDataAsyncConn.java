@@ -15,7 +15,6 @@ import goldengate.ftp.core.logging.FtpInternalLogger;
 import goldengate.ftp.core.logging.FtpInternalLoggerFactory;
 import goldengate.ftp.core.session.FtpSession;
 import goldengate.ftp.core.utils.FtpChannelUtils;
-import goldengate.ftp.core.utils.bandwidth.ThroughputMonitor;
 
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
@@ -77,10 +76,6 @@ public class FtpDataAsyncConn {
 	 * The FtpTransferControl
 	 */
 	private final FtpTransferControl transferControl;
-	/**
-	 * Session Monitor (set from constructor)
-	 */
-	private ThroughputMonitor sessionMonitor = null;
 
 	/**
 	 * Current TransferType. Default ASCII
@@ -116,8 +111,6 @@ public class FtpDataAsyncConn {
 		this.passiveMode = false;
 		this.isBind = false;
 		this.transferControl = new FtpTransferControl(session);
-		this.sessionMonitor = 
-			this.session.getConfiguration().getFtpInternalConfiguration().getNewSessionMonitor();
 	}
 	/**
 	 * Clear the Data Connection
@@ -126,8 +119,6 @@ public class FtpDataAsyncConn {
 	public void clear() {
 		this.unbindPassive();
 		this.transferControl.clear();
-		this.sessionMonitor.stopMonitoring();
-		this.sessionMonitor = null;
 		this.passiveMode = false;
 		this.remotePort = -1;
 		this.localPort = -1;
@@ -157,13 +148,6 @@ public class FtpDataAsyncConn {
 	 */
 	public InetSocketAddress getRemoteAddress() {
 		return remoteAddress;
-	}
-	/**
-	 * 
-	 * @return the session Monitor
-	 */
-	public ThroughputMonitor getSessionMonitor() {
-		return this.sessionMonitor;
 	}
 	/**
 	 * @return the remotePort

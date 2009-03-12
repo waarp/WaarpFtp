@@ -18,7 +18,6 @@ import goldengate.ftp.core.logging.FtpInternalLogger;
 import goldengate.ftp.core.logging.FtpInternalLoggerFactory;
 import goldengate.ftp.core.session.FtpSession;
 import goldengate.ftp.core.utils.FtpChannelUtils;
-import goldengate.ftp.core.utils.bandwidth.ThroughputMonitor;
 
 import java.io.IOException;
 import java.net.ConnectException;
@@ -160,11 +159,6 @@ public class DataNetworkHandler extends SimpleChannelHandler {
 		this.dataBusinessHandler.setFtpSession(this.getFtpSession());
 		FtpChannelUtils.addDataChannel(channel, this.session.getConfiguration());
 		if (isStillAlive()) {
-			// Set the Session Monitor to the one store in DataConn
-			FtpDataLimitBandwidth modeLimit = (FtpDataLimitBandwidth) this.channelPipeline.get(FtpDataPipelineFactory.CODEC_LIMIT);
-			ThroughputMonitor monitor = this.session.getDataConn().getSessionMonitor();
-			monitor.setMonitoredChannel(channel);
-			modeLimit.setSessionMonitor(monitor);
 			this.setCorrectCodec();
 			this.session.getDataConn().getFtpTransferControl().setOpenedDataChannel(channel, this);
 		} else {

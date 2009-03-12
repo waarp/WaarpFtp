@@ -295,7 +295,7 @@ public class FtpChannelUtils {
 			Thread.sleep(delay);
 		} catch (InterruptedException e) {
 		}
-		configuration.getFtpInternalConfiguration().getGlobalMonitor().stopMonitoring();
+		configuration.getFtpInternalConfiguration().shutdownPerformanceCounterFactory();
 		logger.warn("Exit Shutdown Data");
 		dataExit(configuration);
 		logger.warn("Exit Shutdown Command");

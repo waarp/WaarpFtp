@@ -7,15 +7,14 @@ package goldengate.ftp.core.config;
 
 import goldengate.ftp.core.command.exception.Reply425Exception;
 import goldengate.ftp.core.control.FtpPipelineFactory;
-import goldengate.ftp.core.data.FtpDataAsyncConn;
 import goldengate.ftp.core.data.handler.FtpDataPipelineFactory;
+import goldengate.ftp.core.data.handler.FtpPerformanceCounterFactory;
 import goldengate.ftp.core.logging.FtpInternalLogger;
 import goldengate.ftp.core.logging.FtpInternalLoggerFactory;
 import goldengate.ftp.core.session.FtpSession;
 import goldengate.ftp.core.session.FtpSessionReference;
 import goldengate.ftp.core.utils.FtpChannelUtils;
 import goldengate.ftp.core.utils.FtpSignalHandler;
-import goldengate.ftp.core.utils.bandwidth.ThroughputMonitor;
 
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
@@ -34,6 +33,7 @@ import org.jboss.netty.channel.group.DefaultChannelGroup;
 import org.jboss.netty.channel.socket.nio.NioClientSocketChannelFactory;
 import org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory;
 import org.jboss.netty.handler.execution.OrderedMemoryAwareThreadPoolExecutor;
+import org.jboss.netty.handler.trafficshaping.PerformanceCounterFactory;
 import org.jboss.netty.logging.InternalLoggerFactory;
 
 /**
@@ -153,10 +153,15 @@ public class FtpInternalConfiguration {
 	 * ClientBootStrap for Passive connections
 	 */
 	private ServerBootstrap passiveBootstrap = null;
+	
 	/**
-	 * Global Monitor (set from global configuration)
+	 * ExecutorService for PerformanceCounter
 	 */
-	private final ThroughputMonitor globalMonitor = new ThroughputMonitor(null, "GLOBAL");
+	private final ExecutorService execPerformanceCounter = Executors.newCachedThreadPool();
+	/**
+	 * Global PerformanceCounterFactory (set from global configuration)
+	 */
+	private PerformanceCounterFactory globalPerformanceCounterFactory = null;
 	/**
 	 * 
 	 * @author frederic
@@ -252,6 +257,19 @@ public class FtpInternalConfiguration {
 
 		// Init signal handler
 		FtpSignalHandler.initSignalHandler(configuration);
+		// Factory for TrafficShapingHandler
+		this.globalPerformanceCounterFactory = new FtpPerformanceCounterFactory(this.execPerformanceCounter,
+				this.configuration.getServerChannelWriteLimit(),this.configuration.getServerChannelReadLimit(),
+				this.configuration.getServerGlobalWriteLimit(),this.configuration.getServerGlobalReadLimit(),
+				this.configuration.getDelayLimit());
+	}
+	/**
+	 * Shutdown the PerformanceCounterFactory and its executorService
+	 *
+	 */
+	public void shutdownPerformanceCounterFactory() {
+		this.globalPerformanceCounterFactory.stopGlobalPerformanceCounter();
+		this.execPerformanceCounter.shutdownNow();
 	}
 	/**
 	 * Add a session from a couple of addresses
@@ -352,7 +370,7 @@ public class FtpInternalConfiguration {
 				// Memory limitation: no limit by channel, 1GB global, 100 ms of timeout
 				this.pipelineExecutor = 
 					new OrderedMemoryAwareThreadPoolExecutor(configuration.SERVER_THREAD*4,
-							0,
+							this.configuration.maxGlobalMemory/40,
 							this.configuration.maxGlobalMemory/4,
 							100,TimeUnit.MILLISECONDS,
 							Executors.defaultThreadFactory());
@@ -373,7 +391,7 @@ public class FtpInternalConfiguration {
 				// Memory limitation: no limit by channel, 1GB global, 100 ms of timeout
 				this.pipelineDataExecutor = 
 					new OrderedMemoryAwareThreadPoolExecutor(configuration.SERVER_THREAD*4,
-							0,
+							this.configuration.maxGlobalMemory/10,
 							this.configuration.maxGlobalMemory,
 							100,TimeUnit.MILLISECONDS,
 							Executors.defaultThreadFactory());
@@ -421,23 +439,10 @@ public class FtpInternalConfiguration {
 		return this.dataChannelGroup;
 	}
 	/**
-	 * @return the globalMonitor
+	 * 
+	 * @return The PerformanceCounterFactory
 	 */
-	public ThroughputMonitor getGlobalMonitor() {
-		return globalMonitor;
-	}
-	/**
-	 * Create and activate a new Monitor of session (attached in the {@link FtpDataAsyncConn}).
-	 * This function is to be called when the control connection is starting.
-	 * @return the new sessionMonitor for the associated control channel
-	 */
-	public ThroughputMonitor getNewSessionMonitor() {
-		ThroughputMonitor sessionMonitor =
-			new ThroughputMonitor(
-					null,"SESSION",
-					this.configuration.getServerSessionWriteLimit(),
-					this.configuration.getServerSessionReadLimit(),
-					this.configuration.getDelayLimit());
-		return sessionMonitor;
+	public PerformanceCounterFactory getPerformanceCounterFactory() {
+		return this.globalPerformanceCounterFactory;
 	}
 }

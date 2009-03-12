@@ -6,7 +6,6 @@ package goldengate.ftp.simpleimpl.config;
 import goldengate.ftp.core.exception.FtpUnknownFieldException;
 import goldengate.ftp.core.logging.FtpInternalLogger;
 import goldengate.ftp.core.logging.FtpInternalLoggerFactory;
-import goldengate.ftp.core.utils.bandwidth.ThroughputMonitor;
 import goldengate.ftp.filesystembased.FilesystemBasedFtpDir;
 import goldengate.ftp.filesystembased.config.FilesystemBasedFtpConfiguration;
 import goldengate.ftp.filesystembased.digest.MD5;
@@ -22,6 +21,7 @@ import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.Node;
 import org.dom4j.io.SAXReader;
+import org.jboss.netty.handler.trafficshaping.PerformanceCounterFactory;
 
 /**
  * FtpConfiguration based on a XML file
@@ -194,21 +194,21 @@ public class FileBasedConfiguration extends FilesystemBasedFtpConfiguration {
 		if (node != null) {
 			this.serverGlobalReadLimit = Long.parseLong(node.getText());
 			if (this.serverGlobalReadLimit == -1) {
-				this.serverGlobalReadLimit = ThroughputMonitor.NO_LIMIT;
+				this.serverGlobalReadLimit = PerformanceCounterFactory.NO_LIMIT;
 			}
 			this.serverGlobalWriteLimit = this.serverGlobalReadLimit;
 			logger.warn("Global Limit: {}",this.serverGlobalReadLimit);
 		}
 		node = document.selectSingleNode(XML_LIMITSESSION);
 		if (node != null) {
-			this.serverSessionReadLimit = Long.parseLong(node.getText());
-			if (this.serverSessionWriteLimit == -1) {
-				this.serverSessionWriteLimit = ThroughputMonitor.NO_LIMIT;
+			this.serverChannelReadLimit = Long.parseLong(node.getText());
+			if (this.serverChannelWriteLimit == -1) {
+				this.serverChannelWriteLimit = PerformanceCounterFactory.NO_LIMIT;
 			}
-			this.serverSessionWriteLimit = this.serverSessionReadLimit;
-			logger.warn("Session Limit: {}",this.serverSessionReadLimit);
+			this.serverChannelWriteLimit = this.serverChannelReadLimit;
+			logger.warn("Session Limit: {}",this.serverChannelReadLimit);
 		}
-		this.delayLimit = ThroughputMonitor.DEFAULT_DELAY;
+		this.delayLimit = PerformanceCounterFactory.DEFAULT_DELAY;
 		node = document.selectSingleNode(XML_TIMEOUTCON);
 		if (node != null) {
 			this.TIMEOUTCON = Integer.parseInt(node.getText());
