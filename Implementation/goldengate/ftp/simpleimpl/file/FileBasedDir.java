@@ -10,18 +10,21 @@ import goldengate.ftp.filesystembased.FilesystemBasedFtpDir;
 
 /**
  * FtpFile implementation based on true directories and files
+ * 
  * @author fbregier
- *
+ * 
  */
 public class FileBasedDir extends FilesystemBasedFtpDir {
-	/**
-	 * @param session
-	 */
-	public FileBasedDir(FtpSession session) {
-		super(session);
-	}
-	@Override
-	protected FtpFile newFtpFile(String path, boolean append) throws FtpCommandAbstractException {
-		return new FileBasedFile(this.getFtpSession(),this, path, append);
-	}
+    /**
+     * @param session
+     */
+    public FileBasedDir(FtpSession session) {
+        super(session);
+    }
+
+    @Override
+    protected FtpFile newFtpFile(String path, boolean append)
+            throws FtpCommandAbstractException {
+        return new FileBasedFile(this.getFtpSession(), this, path, append);
+    }
 }

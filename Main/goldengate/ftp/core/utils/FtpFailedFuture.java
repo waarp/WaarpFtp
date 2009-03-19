@@ -3,20 +3,21 @@
  */
 package goldengate.ftp.core.utils;
 
-
 /**
  * Future in failure
+ * 
  * @author fbregier
- *
+ * 
  */
 public class FtpFailedFuture extends FtpCompletedFuture {
-	
-	private final Throwable cause;
+
+    private final Throwable cause;
 
     /**
      * Creates a new instance.
-     *
-     * @param cause   the cause of failure
+     * 
+     * @param cause
+     *            the cause of failure
      */
     public FtpFailedFuture(Throwable cause) {
         super();
@@ -26,18 +27,14 @@ public class FtpFailedFuture extends FtpCompletedFuture {
         this.cause = cause;
     }
 
-	/* (non-Javadoc)
-	 * @see org.jboss.netty.channel.ChannelFuture#getCause()
-	 */
+    @Override
     public Throwable getCause() {
-        return cause;
+        return this.cause;
     }
 
-	/* (non-Javadoc)
-	 * @see org.jboss.netty.channel.ChannelFuture#isSuccess()
-	 */
-	public boolean isSuccess() {
-		return false;
-	}
+    @Override
+    public boolean isSuccess() {
+        return false;
+    }
 
 }

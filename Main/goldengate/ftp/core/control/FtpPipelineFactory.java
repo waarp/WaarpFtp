@@ -1,7 +1,6 @@
 /**
- * Frederic Bregier LGPL 10 janv. 09 
- * FtpPipelineFactory.java goldengate.ftp.core.control GoldenGateFtp
- * frederic
+ * Frederic Bregier LGPL 10 janv. 09 FtpPipelineFactory.java
+ * goldengate.ftp.core.control GoldenGateFtp frederic
  */
 package goldengate.ftp.core.control;
 
@@ -19,53 +18,66 @@ import org.jboss.netty.handler.execution.ExecutionHandler;
 
 /**
  * Pipeline factory for Control command connection
- * @author frederic
- * goldengate.ftp.core.control FtpPipelineFactory
+ * 
+ * @author frederic goldengate.ftp.core.control FtpPipelineFactory
  * 
  */
 public class FtpPipelineFactory implements ChannelPipelineFactory {
-	/**
-	 * CRLF, CRNUL, LF delimiters
-	 */
-	private static final ChannelBuffer[] delimiter = 
-		new ChannelBuffer[] {ChannelBuffers.wrappedBuffer(FtpInternalConfiguration.CRLF.getBytes()),
-			ChannelBuffers.wrappedBuffer(FtpInternalConfiguration.CRNUL.getBytes()),
-			ChannelBuffers.wrappedBuffer(FtpInternalConfiguration.LF.getBytes())};
-	/**
-	 * Business Handler Class if any (Target Mode only)
-	 */
-	private final Class businessHandler;
-	/**
-	 * Configuration
-	 */
-	private final FtpConfiguration configuration;
-	/**
-	 * Constructor wich Initializes some data for Server only
-	 * @param businessHandler
-	 * @param configuration 
-	 */
-	public FtpPipelineFactory(Class businessHandler, FtpConfiguration configuration) {
-		this.businessHandler = businessHandler;
-		this.configuration = configuration;
-	}
-	/**
-	 * Create the pipeline with Handler, ObjectDecoder, ObjectEncoder.
-	 * @see org.jboss.netty.channel.ChannelPipelineFactory#getPipeline()
-	 */
-	public ChannelPipeline getPipeline() throws Exception {
-		ChannelPipeline pipeline = Channels.pipeline();
-		// Add the text line codec combination first,
-		pipeline.addLast("framer", new DelimiterBasedFrameDecoder(8192, delimiter));
-		pipeline.addLast("decoder", new FtpControlStringDecoder());
-		pipeline.addLast("encoder", new FtpControlStringEncoder());
-		// Threaded execution for business logic
-		pipeline.addLast("pipelineExecutor", 
-				new ExecutionHandler(configuration.getFtpInternalConfiguration().getPipelineExecutor()));
-		// and then business logic. New one on every connection
-		BusinessHandler newbusiness = (BusinessHandler) businessHandler.newInstance();
-		NetworkHandler newNetworkHandler = 
-			new NetworkHandler(new FtpSession(configuration,newbusiness));
-		pipeline.addLast("handler", newNetworkHandler);
-		return pipeline;
-	}
+    /**
+     * CRLF, CRNUL, LF delimiters
+     */
+    private static final ChannelBuffer[] delimiter = new ChannelBuffer[] {
+            ChannelBuffers.wrappedBuffer(FtpInternalConfiguration.CRLF
+                    .getBytes()),
+            ChannelBuffers.wrappedBuffer(FtpInternalConfiguration.CRNUL
+                    .getBytes()),
+            ChannelBuffers
+                    .wrappedBuffer(FtpInternalConfiguration.LF.getBytes()) };
+
+    /**
+     * Business Handler Class if any (Target Mode only)
+     */
+    private final Class<? extends BusinessHandler> businessHandler;
+
+    /**
+     * Configuration
+     */
+    private final FtpConfiguration configuration;
+
+    /**
+     * Constructor which Initializes some data for Server only
+     * 
+     * @param businessHandler
+     * @param configuration
+     */
+    public FtpPipelineFactory(Class<? extends BusinessHandler> businessHandler,
+            FtpConfiguration configuration) {
+        this.businessHandler = businessHandler;
+        this.configuration = configuration;
+    }
+
+    /**
+     * Create the pipeline with Handler, ObjectDecoder, ObjectEncoder.
+     * 
+     * @see org.jboss.netty.channel.ChannelPipelineFactory#getPipeline()
+     */
+    public ChannelPipeline getPipeline() throws Exception {
+        ChannelPipeline pipeline = Channels.pipeline();
+        // Add the text line codec combination first,
+        pipeline.addLast("framer", new DelimiterBasedFrameDecoder(8192,
+                delimiter));
+        pipeline.addLast("decoder", new FtpControlStringDecoder());
+        pipeline.addLast("encoder", new FtpControlStringEncoder());
+        // Threaded execution for business logic
+        pipeline.addLast("pipelineExecutor", new ExecutionHandler(
+                this.configuration.getFtpInternalConfiguration()
+                        .getPipelineExecutor()));
+        // and then business logic. New one on every connection
+        BusinessHandler newbusiness = this.businessHandler
+                .newInstance();
+        NetworkHandler newNetworkHandler = new NetworkHandler(new FtpSession(
+                this.configuration, newbusiness));
+        pipeline.addLast("handler", newNetworkHandler);
+        return pipeline;
+    }
 }
