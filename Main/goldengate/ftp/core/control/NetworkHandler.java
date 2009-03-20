@@ -103,6 +103,10 @@ public class NetworkHandler extends SimpleChannelHandler {
     @Override
     public void channelClosed(ChannelHandlerContext ctx, ChannelStateEvent e)
             throws Exception {
+        if ((this.session == null) || (this.session.getDataConn() == null) || (this.session.getDataConn().getFtpTransferControl() == null)) {
+            super.channelClosed(ctx, e);
+            return;
+        }
         // Wait for any command running before closing (bad client sometimes
         // don't wait for answer)
         int limit = 100;

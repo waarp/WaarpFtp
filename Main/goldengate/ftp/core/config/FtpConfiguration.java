@@ -19,7 +19,6 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 import org.jboss.netty.channel.Channel;
-import org.jboss.netty.handler.trafficshaping.PerformanceCounterFactory;
 
 /**
  * Abstract class for configuration
@@ -122,7 +121,7 @@ public abstract class FtpConfiguration {
     /**
      * Delay in ms between two checks
      */
-    protected long delayLimit = PerformanceCounterFactory.DEFAULT_DELAY;
+    protected long delayLimit = 10000;
 
     /**
      * Should the file be deleted when the transfer is aborted on STOR like
@@ -396,6 +395,11 @@ public abstract class FtpConfiguration {
         if (readLimit <= 0) {
             newReadLimit = -1;
         }
+        boolean withGlobal = ((readLimit != FtpPerformanceCounterFactory.NO_LIMIT)
+                && (writeLimit != FtpPerformanceCounterFactory.NO_LIMIT)) ||
+                (this.getDelayLimit() != FtpPerformanceCounterFactory.NO_STAT);
+        this.internalConfiguration.getPerformanceCounterFactory().setGlobalActive(withGlobal);
+        this.internalConfiguration.getPerformanceCounterFactory().setChannelActive(withGlobal);
         this.internalConfiguration.getPerformanceCounterFactory()
                 .changeConfiguration(newWriteLimit / 10, newReadLimit / 10,
                         this.delayLimit, newWriteLimit, newReadLimit,

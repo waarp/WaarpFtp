@@ -9,6 +9,7 @@ import goldengate.ftp.core.command.FtpReplyCode;
 import goldengate.ftp.core.command.exception.FtpCommandAbstractException;
 import goldengate.ftp.core.command.exception.Reply425Exception;
 import goldengate.ftp.core.command.service.ABOR;
+import goldengate.ftp.core.config.FtpInternalConfiguration;
 import goldengate.ftp.core.control.NetworkHandler;
 import goldengate.ftp.core.data.handler.DataNetworkHandler;
 import goldengate.ftp.core.exception.FtpNoConnectionException;
@@ -239,32 +240,36 @@ public class FtpTransferControl {
             } else {
                 // Wait for the server to be connected to the client
                 logger.debug("Active mode standby");
-                ClientBootstrap clientBootstrap = this.session
-                        .getConfiguration().getFtpInternalConfiguration()
-                        .getActiveBootstrap();
-                // Set the session for the future dataChannel
-                this.session.getConfiguration().getFtpInternalConfiguration()
-                        .setNewFtpSession(
-                                dataAsyncConn.getRemoteAddress().getAddress(),
-                                dataAsyncConn.getLocalAddress(), this.session);
-                ChannelFuture future = clientBootstrap.connect(dataAsyncConn
-                        .getRemoteAddress(), dataAsyncConn.getLocalAddress());
-                future.awaitUninterruptibly().getChannel();
-                if (future.isSuccess()) {
-                    // Wait for the server to be fully connected to the client
-                    try {
-                        this.dataChannel = dataAsyncConn
-                                .waitForOpenedDataChannel();
-                    } catch (InterruptedException e) {
-                        logger.warn("Connection abort in active mode", e);
-                        // Cannot open connection
-                        throw new Reply425Exception(
-                                "Cannot open active data connection");
+                ChannelFuture future = null;
+                for (int i = 0; i < FtpInternalConfiguration.RETRYNB; i++) {
+                    ClientBootstrap clientBootstrap = this.session
+                            .getConfiguration().getFtpInternalConfiguration()
+                            .getActiveBootstrap();
+                    // Set the session for the future dataChannel
+                    this.session.getConfiguration().getFtpInternalConfiguration()
+                            .setNewFtpSession(
+                                    dataAsyncConn.getRemoteAddress().getAddress(),
+                                    dataAsyncConn.getLocalAddress(), this.session);
+                    future = clientBootstrap.connect(dataAsyncConn
+                            .getRemoteAddress(), dataAsyncConn.getLocalAddress());
+                    future.awaitUninterruptibly().getChannel();
+                    if (future.isSuccess()) {
+                        // Wait for the server to be fully connected to the client
+                        try {
+                            this.dataChannel = dataAsyncConn
+                                    .waitForOpenedDataChannel();
+                        } catch (InterruptedException e) {
+                            logger.warn("Connection abort in active mode", e);
+                            // Cannot open connection
+                            throw new Reply425Exception(
+                                    "Cannot open active data connection");
+                        }
+                        logger.debug("Active mode connected");
+                        break;
                     }
-                    logger.debug("Active mode connected");
-                } else {
-                    logger.error("Can't do Active connection:", future
-                            .getCause());
+                }
+                if (! future.isSuccess()) {
+                    logger.error("Can't do Active connection:", future.getCause());
                     // Cannot open connection
                     throw new Reply425Exception(
                             "Cannot open active data connection");
@@ -481,7 +486,7 @@ public class FtpTransferControl {
      * 
      * @param write
      *            True means the message is write back to the control command,
-     *            false it is only prepapred
+     *            false it is only prepared
      */
     private void abortTransfer(boolean write) {
         logger.debug("Will abort transfer and write: ", write);

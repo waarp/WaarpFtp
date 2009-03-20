@@ -314,14 +314,17 @@ public class FtpInternalConfiguration {
         // Init signal handler
         FtpSignalHandler.initSignalHandler(this.configuration);
         // Factory for TrafficShapingHandler
+        boolean withChannel = ((this.configuration.getServerChannelWriteLimit() != FtpPerformanceCounterFactory.NO_LIMIT)
+          && (this.configuration.getServerChannelReadLimit() != FtpPerformanceCounterFactory.NO_LIMIT));
+        boolean withGlobal = ((this.configuration.getServerGlobalWriteLimit() != FtpPerformanceCounterFactory.NO_LIMIT)
+                && (this.configuration.getServerGlobalReadLimit() != FtpPerformanceCounterFactory.NO_LIMIT)) ||
+                (this.configuration.getDelayLimit() != FtpPerformanceCounterFactory.NO_STAT);
         this.globalPerformanceCounterFactory = new FtpPerformanceCounterFactory(
-                this.execPerformanceCounter, true, this.configuration
-                        .getServerChannelWriteLimit(), this.configuration
-                        .getServerChannelReadLimit(), this.configuration
-                        .getDelayLimit(), true, this.configuration
-                        .getServerGlobalWriteLimit(), this.configuration
-                        .getServerGlobalReadLimit(), this.configuration
-                        .getDelayLimit());
+                this.execPerformanceCounter, withChannel, this.configuration.getServerChannelWriteLimit(), 
+                this.configuration.getServerChannelReadLimit(), 
+                withChannel ? this.configuration.getDelayLimit() : FtpPerformanceCounterFactory.NO_STAT, 
+                withGlobal, this.configuration.getServerGlobalWriteLimit(), this.configuration.getServerGlobalReadLimit(), 
+                this.configuration.getDelayLimit());
     }
 
     /**

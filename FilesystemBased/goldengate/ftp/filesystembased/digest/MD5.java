@@ -411,7 +411,7 @@ public class MD5 {
      */
     public void Update(MD5State stat, byte buffer[], int offset, int length) {
         int index, partlen, i, start;
-        finals = null;
+        this.finals = null;
 
         /* Length can be told to be shorter, but not inter */
         if ((length - offset) > buffer.length) length = buffer.length - offset;
