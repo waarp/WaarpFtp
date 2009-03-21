@@ -1,20 +1,21 @@
 /**
- * Frederic Bregier LGPL 12 mars 09 FtpPerformanceCounterFactory.java
+ * Frederic Bregier LGPL 12 mars 09 FtpTrafficCounterFactory.java
  * goldengate.ftp.core.data.handler GoldenGateFtp frederic
  */
 package goldengate.ftp.core.data.handler;
 
 import java.util.concurrent.ExecutorService;
 
-import org.jboss.netty.handler.trafficshaping.PerformanceCounter;
-import org.jboss.netty.handler.trafficshaping.PerformanceCounterFactory;
+import org.jboss.netty.handler.traffic.TrafficCounter;
+import org.jboss.netty.handler.traffic.TrafficCounterFactory;
+
 
 /**
  * @author frederic goldengate.ftp.core.data.handler
- *         FtpPerformanceCounterFactory
+ *         FtpTrafficCounterFactory
  * 
  */
-public class FtpPerformanceCounterFactory extends PerformanceCounterFactory {
+public class FtpTrafficCounterFactory extends TrafficCounterFactory {
     /**
      * Default global limit 512Mbit
      */
@@ -49,26 +50,23 @@ public class FtpPerformanceCounterFactory extends PerformanceCounterFactory {
      *            The delay between two computations of performances for global
      *            context or NO_STAT if no stats are to be computed
      */
-    public FtpPerformanceCounterFactory(ExecutorService executorService,
+    public FtpTrafficCounterFactory(ExecutorService executorService,
             boolean channelActive, long channelLimitWrite,
             long channelLimitRead, long channelDelay, boolean globalActive,
             long globalLimitWrite, long globalLimitRead, long globalDelay) {
         super(executorService, channelActive, channelLimitWrite,
                 channelLimitRead, channelDelay, globalActive, globalLimitWrite,
                 globalLimitRead, globalDelay);
+        System.err.println(""+channelActive+" "+channelLimitWrite+" "+
+                channelLimitRead+" "+channelDelay+" "+globalActive+" "+globalLimitWrite+" "+
+                globalLimitRead+" "+globalDelay);
     }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * org.jboss.netty.handler.trafficshaping.PerformanceCounterFactory#accounting
-     * (org.jboss.netty.handler.trafficshaping.PerformanceCounter)
+    /* (non-Javadoc)
+     * @see org.jboss.netty.handler.traffic.TrafficCounterFactory#accounting(org.jboss.netty.handler.traffic.TrafficCounter)
      */
     @Override
-    protected void accounting(PerformanceCounter arg0) {
+    protected void accounting(TrafficCounter arg0) {
         // nothing to do for now
-
     }
 
 }

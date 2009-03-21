@@ -5,6 +5,7 @@ package goldengate.ftp.simpleimpl.config;
 
 import goldengate.ftp.core.control.BusinessHandler;
 import goldengate.ftp.core.data.handler.DataBusinessHandler;
+import goldengate.ftp.core.data.handler.FtpTrafficCounterFactory;
 import goldengate.ftp.core.exception.FtpUnknownFieldException;
 import goldengate.ftp.core.logging.FtpInternalLogger;
 import goldengate.ftp.core.logging.FtpInternalLoggerFactory;
@@ -23,7 +24,6 @@ import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.Node;
 import org.dom4j.io.SAXReader;
-import org.jboss.netty.handler.trafficshaping.PerformanceCounterFactory;
 
 /**
  * FtpConfiguration based on a XML file
@@ -69,7 +69,7 @@ public class FileBasedConfiguration extends FilesystemBasedFtpConfiguration {
     private static final String XML_LIMITGLOBAL = "/config/globallimit";
 
     /**
-     * Nb of milliseconds after connexion is in timeout
+     * Nb of milliseconds after connection is in timeout
      */
     private static final String XML_TIMEOUTCON = "/config/timeoutcon";
 
@@ -223,8 +223,8 @@ public class FileBasedConfiguration extends FilesystemBasedFtpConfiguration {
         node = document.selectSingleNode(XML_LIMITGLOBAL);
         if (node != null) {
             this.serverGlobalReadLimit = Long.parseLong(node.getText());
-            if (this.serverGlobalReadLimit == -1) {
-                this.serverGlobalReadLimit = PerformanceCounterFactory.NO_LIMIT;
+            if (this.serverGlobalReadLimit <= 0) {
+                this.serverGlobalReadLimit = 0;
             }
             this.serverGlobalWriteLimit = this.serverGlobalReadLimit;
             logger.warn("Global Limit: {}", this.serverGlobalReadLimit);
@@ -232,13 +232,13 @@ public class FileBasedConfiguration extends FilesystemBasedFtpConfiguration {
         node = document.selectSingleNode(XML_LIMITSESSION);
         if (node != null) {
             this.serverChannelReadLimit = Long.parseLong(node.getText());
-            if (this.serverChannelWriteLimit == -1) {
-                this.serverChannelWriteLimit = PerformanceCounterFactory.NO_LIMIT;
+            if (this.serverChannelReadLimit <= 0) {
+                this.serverChannelReadLimit = 0;
             }
             this.serverChannelWriteLimit = this.serverChannelReadLimit;
             logger.warn("Session Limit: {}", this.serverChannelReadLimit);
         }
-        this.delayLimit = PerformanceCounterFactory.DEFAULT_DELAY;
+        this.delayLimit = FtpTrafficCounterFactory.DEFAULT_DELAY;
         node = document.selectSingleNode(XML_TIMEOUTCON);
         if (node != null) {
             this.TIMEOUTCON = Integer.parseInt(node.getText());

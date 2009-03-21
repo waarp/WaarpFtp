@@ -6,7 +6,7 @@ package goldengate.ftp.core.config;
 
 import goldengate.ftp.core.control.BusinessHandler;
 import goldengate.ftp.core.data.handler.DataBusinessHandler;
-import goldengate.ftp.core.data.handler.FtpPerformanceCounterFactory;
+import goldengate.ftp.core.data.handler.FtpTrafficCounterFactory;
 import goldengate.ftp.core.exception.FtpUnknownFieldException;
 import goldengate.ftp.core.session.FtpSession;
 
@@ -101,22 +101,22 @@ public abstract class FtpConfiguration {
     /**
      * Limit in Write byte/s to apply globally to the FTP Server
      */
-    protected long serverGlobalWriteLimit = FtpPerformanceCounterFactory.DEFAULT_GLOBAL_LIMIT;
+    protected long serverGlobalWriteLimit = FtpTrafficCounterFactory.DEFAULT_GLOBAL_LIMIT;
 
     /**
      * Limit in Read byte/s to apply globally to the FTP Server
      */
-    protected long serverGlobalReadLimit = FtpPerformanceCounterFactory.DEFAULT_GLOBAL_LIMIT;
+    protected long serverGlobalReadLimit = FtpTrafficCounterFactory.DEFAULT_GLOBAL_LIMIT;
 
     /**
      * Limit in Write byte/s to apply by session to the FTP Server
      */
-    protected long serverChannelWriteLimit = FtpPerformanceCounterFactory.DEFAULT_SESSION_LIMIT;
+    protected long serverChannelWriteLimit = FtpTrafficCounterFactory.DEFAULT_SESSION_LIMIT;
 
     /**
      * Limit in Read byte/s to apply by session to the FTP Server
      */
-    protected long serverChannelReadLimit = FtpPerformanceCounterFactory.DEFAULT_SESSION_LIMIT;
+    protected long serverChannelReadLimit = FtpTrafficCounterFactory.DEFAULT_SESSION_LIMIT;
 
     /**
      * Delay in ms between two checks
@@ -388,19 +388,19 @@ public abstract class FtpConfiguration {
         long newWriteLimit = (writeLimit > 1024)? writeLimit
                 : this.serverGlobalWriteLimit;
         if (writeLimit <= 0) {
-            newWriteLimit = -1;
+            newWriteLimit = 0;
         }
         long newReadLimit = (readLimit > 1024)? readLimit
                 : this.serverGlobalReadLimit;
         if (readLimit <= 0) {
-            newReadLimit = -1;
+            newReadLimit = 0;
         }
-        boolean withGlobal = ((readLimit != FtpPerformanceCounterFactory.NO_LIMIT)
-                && (writeLimit != FtpPerformanceCounterFactory.NO_LIMIT)) ||
-                (this.getDelayLimit() != FtpPerformanceCounterFactory.NO_STAT);
-        this.internalConfiguration.getPerformanceCounterFactory().setGlobalActive(withGlobal);
-        this.internalConfiguration.getPerformanceCounterFactory().setChannelActive(withGlobal);
-        this.internalConfiguration.getPerformanceCounterFactory()
+        boolean withGlobal = ((readLimit != 0)
+                && (writeLimit != 0)) ||
+                (this.getDelayLimit() != 0);
+        this.internalConfiguration.getTrafficCounterFactory().setGlobalActive(withGlobal);
+        this.internalConfiguration.getTrafficCounterFactory().setChannelActive(withGlobal);
+        this.internalConfiguration.getTrafficCounterFactory()
                 .changeConfiguration(newWriteLimit / 10, newReadLimit / 10,
                         this.delayLimit, newWriteLimit, newReadLimit,
                         this.delayLimit);

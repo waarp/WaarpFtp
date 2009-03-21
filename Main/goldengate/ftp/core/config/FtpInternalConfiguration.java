@@ -6,8 +6,9 @@ package goldengate.ftp.core.config;
 
 import goldengate.ftp.core.command.exception.Reply425Exception;
 import goldengate.ftp.core.control.FtpPipelineFactory;
+import goldengate.ftp.core.data.handler.FtpDataBlockSizeEstimator;
 import goldengate.ftp.core.data.handler.FtpDataPipelineFactory;
-import goldengate.ftp.core.data.handler.FtpPerformanceCounterFactory;
+import goldengate.ftp.core.data.handler.FtpTrafficCounterFactory;
 import goldengate.ftp.core.logging.FtpInternalLogger;
 import goldengate.ftp.core.logging.FtpInternalLoggerFactory;
 import goldengate.ftp.core.session.FtpSession;
@@ -31,8 +32,9 @@ import org.jboss.netty.channel.group.ChannelGroup;
 import org.jboss.netty.channel.group.DefaultChannelGroup;
 import org.jboss.netty.channel.socket.nio.NioClientSocketChannelFactory;
 import org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory;
+import org.jboss.netty.handler.execution.ObjectSizeEstimator;
 import org.jboss.netty.handler.execution.OrderedMemoryAwareThreadPoolExecutor;
-import org.jboss.netty.handler.trafficshaping.PerformanceCounterFactory;
+import org.jboss.netty.handler.traffic.TrafficCounterFactory;
 import org.jboss.netty.logging.InternalLoggerFactory;
 
 /**
@@ -183,16 +185,19 @@ public class FtpInternalConfiguration {
     private ServerBootstrap passiveBootstrap = null;
 
     /**
-     * ExecutorService for PerformanceCounter
+     * ExecutorService for TrafficCounter
      */
-    private final ExecutorService execPerformanceCounter = Executors
+    private final ExecutorService execTrafficCounter = Executors
             .newCachedThreadPool();
 
     /**
-     * Global PerformanceCounterFactory (set from global configuration)
+     * Global TrafficCounterFactory (set from global configuration)
      */
-    private PerformanceCounterFactory globalPerformanceCounterFactory = null;
-
+    private TrafficCounterFactory globalTrafficCounterFactory = null;
+    /**
+     * ObjectSizeEstimator
+     */
+    private ObjectSizeEstimator objectSizeEstimator = null;
     /**
      * 
      * @author frederic goldengate.ftp.core.config BindAddress
@@ -314,26 +319,27 @@ public class FtpInternalConfiguration {
         // Init signal handler
         FtpSignalHandler.initSignalHandler(this.configuration);
         // Factory for TrafficShapingHandler
-        boolean withChannel = ((this.configuration.getServerChannelWriteLimit() != FtpPerformanceCounterFactory.NO_LIMIT)
-          && (this.configuration.getServerChannelReadLimit() != FtpPerformanceCounterFactory.NO_LIMIT));
-        boolean withGlobal = ((this.configuration.getServerGlobalWriteLimit() != FtpPerformanceCounterFactory.NO_LIMIT)
-                && (this.configuration.getServerGlobalReadLimit() != FtpPerformanceCounterFactory.NO_LIMIT)) ||
-                (this.configuration.getDelayLimit() != FtpPerformanceCounterFactory.NO_STAT);
-        this.globalPerformanceCounterFactory = new FtpPerformanceCounterFactory(
-                this.execPerformanceCounter, withChannel, this.configuration.getServerChannelWriteLimit(), 
+        boolean withChannel = ((this.configuration.getServerChannelWriteLimit() != 0)
+          && (this.configuration.getServerChannelReadLimit() != 0));
+        boolean withGlobal = ((this.configuration.getServerGlobalWriteLimit() != 0)
+                && (this.configuration.getServerGlobalReadLimit() != 0)) ||
+                (this.configuration.getDelayLimit() != 0);
+        this.globalTrafficCounterFactory = new FtpTrafficCounterFactory(
+                this.execTrafficCounter, withChannel, this.configuration.getServerChannelWriteLimit(), 
                 this.configuration.getServerChannelReadLimit(), 
-                withChannel ? this.configuration.getDelayLimit() : FtpPerformanceCounterFactory.NO_STAT, 
+                withChannel ? this.configuration.getDelayLimit() : 0, 
                 withGlobal, this.configuration.getServerGlobalWriteLimit(), this.configuration.getServerGlobalReadLimit(), 
                 this.configuration.getDelayLimit());
+        this.objectSizeEstimator = new FtpDataBlockSizeEstimator();
     }
 
     /**
      * Shutdown the PerformanceCounterFactory and its executorService
      * 
      */
-    public void shutdownPerformanceCounterFactory() {
-        this.globalPerformanceCounterFactory.stopGlobalPerformanceCounter();
-        this.execPerformanceCounter.shutdownNow();
+    public void shutdownTrafficCounterFactory() {
+        this.globalTrafficCounterFactory.stopGlobalTrafficCounter();
+        this.execTrafficCounter.shutdownNow();
     }
 
     /**
@@ -535,9 +541,17 @@ public class FtpInternalConfiguration {
 
     /**
      * 
-     * @return The PerformanceCounterFactory
+     * @return The TrafficCounterFactory
      */
-    public PerformanceCounterFactory getPerformanceCounterFactory() {
-        return this.globalPerformanceCounterFactory;
+    public TrafficCounterFactory getTrafficCounterFactory() {
+        return this.globalTrafficCounterFactory;
     }
+
+    /**
+     * @return the objectSizeEstimator
+     */
+    public ObjectSizeEstimator getObjectSizeEstimator() {
+        return this.objectSizeEstimator;
+    }
+    
 }

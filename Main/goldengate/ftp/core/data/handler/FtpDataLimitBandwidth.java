@@ -3,12 +3,10 @@
  */
 package goldengate.ftp.core.data.handler;
 
-import goldengate.ftp.core.exception.FtpInvalidArgumentException;
-
 import org.jboss.netty.channel.ChannelPipelineCoverage;
-import org.jboss.netty.channel.MessageEvent;
-import org.jboss.netty.handler.trafficshaping.PerformanceCounterFactory;
-import org.jboss.netty.handler.trafficshaping.TrafficShapingHandler;
+import org.jboss.netty.handler.execution.ObjectSizeEstimator;
+import org.jboss.netty.handler.traffic.TrafficCounterFactory;
+import org.jboss.netty.handler.traffic.TrafficShapingHandler;
 
 /**
  * Channel Handler that allows to limit the global bandwidth or per session
@@ -23,28 +21,10 @@ public class FtpDataLimitBandwidth extends TrafficShapingHandler {
 
     /**
      * @param factory
+     * @param objectSizeEstimator
      */
-    public FtpDataLimitBandwidth(PerformanceCounterFactory factory) {
-        super(factory);
+    public FtpDataLimitBandwidth(TrafficCounterFactory factory, ObjectSizeEstimator objectSizeEstimator) {
+        super(factory, objectSizeEstimator);
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * goldengate.ftp.core.utils.LimitBandwithHandler#getMessageSize(org.jboss
-     * .netty.channel.MessageEvent)
-     */
-    @Override
-    protected long getMessageSize(MessageEvent arg1) throws Exception {
-        Object o = arg1.getMessage();
-        if (!(o instanceof FtpDataBlock)) {
-            // Type unimplemented
-            throw new FtpInvalidArgumentException("Wrong object received in " +
-                    this.getClass().getName() + " codec " +
-                    o.getClass().getName());
-        }
-        FtpDataBlock dataBlock = (FtpDataBlock) o;
-        return dataBlock.getByteCount();
-    }
 }

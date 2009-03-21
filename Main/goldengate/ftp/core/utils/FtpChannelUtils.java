@@ -325,7 +325,7 @@ public class FtpChannelUtils {
         } catch (InterruptedException e) {
         }
         configuration.getFtpInternalConfiguration()
-                .shutdownPerformanceCounterFactory();
+                .shutdownTrafficCounterFactory();
         logger.warn("Exit Shutdown Data");
         dataExit(configuration);
         logger.warn("Exit Shutdown Command");
