@@ -122,9 +122,6 @@ public class NetworkHandler extends SimpleChannelHandler {
         }
         this.businessHandler.executeChannelClosed();
         // release file and other permanent objects
-        FtpChannelUtils.removeCommandChannel(e.getChannel(), this.session
-                .getConfiguration());
-        logger.debug("Channel closed: {}", this.session);
         this.businessHandler.clean();
         this.session.clean();
         this.businessHandler = null;

@@ -136,8 +136,6 @@ public class DataNetworkHandler extends SimpleChannelHandler {
             this.session.getDataConn().getFtpTransferControl()
                     .setPreEndOfTransfer();
             this.session.getDataConn().unbindPassive();
-            FtpChannelUtils.removeDataChannel(e.getChannel(), this.session
-                    .getConfiguration());
             try {
                 this.getDataBusinessHandler().executeChannelClosed();
                 // release file and other permanent objects
