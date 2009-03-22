@@ -57,9 +57,6 @@ public class FtpTrafficCounterFactory extends TrafficCounterFactory {
         super(executorService, channelActive, channelLimitWrite,
                 channelLimitRead, channelDelay, globalActive, globalLimitWrite,
                 globalLimitRead, globalDelay);
-        System.err.println(""+channelActive+" "+channelLimitWrite+" "+
-                channelLimitRead+" "+channelDelay+" "+globalActive+" "+globalLimitWrite+" "+
-                globalLimitRead+" "+globalDelay);
     }
     /* (non-Javadoc)
      * @see org.jboss.netty.handler.traffic.TrafficCounterFactory#accounting(org.jboss.netty.handler.traffic.TrafficCounter)
