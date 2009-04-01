@@ -451,10 +451,11 @@ public abstract class FtpConfiguration {
      * Return and remove the FtpSession
      * 
      * @param channel
+     * @param active
      * @return the FtpSession if it exists associated to this channel
      */
-    public FtpSession getFtpSession(Channel channel) {
-        return this.internalConfiguration.getFtpSession(channel);
+    public FtpSession getFtpSession(Channel channel, boolean active) {
+        return this.internalConfiguration.getFtpSession(channel, active);
     }
 
     /**

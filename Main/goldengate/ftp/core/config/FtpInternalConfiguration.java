@@ -272,7 +272,7 @@ public class FtpInternalConfiguration {
         this.passiveBootstrap = new ServerBootstrap(
                 this.dataPassiveChannelFactory);
         this.passiveBootstrap.setPipelineFactory(new FtpDataPipelineFactory(
-                this.configuration.dataBusinessHandler, this.configuration));
+                this.configuration.dataBusinessHandler, this.configuration, false));
         this.passiveBootstrap.setOption("connectTimeoutMillis",
                 this.configuration.TIMEOUTCON);
         this.passiveBootstrap.setOption("reuseAddress", true);
@@ -286,7 +286,7 @@ public class FtpInternalConfiguration {
         this.activeBootstrap = new ClientBootstrap(
                 this.dataActiveChannelFactory);
         this.activeBootstrap.setPipelineFactory(new FtpDataPipelineFactory(
-                this.configuration.dataBusinessHandler, this.configuration));
+                this.configuration.dataBusinessHandler, this.configuration, true));
         this.activeBootstrap.setOption("connectTimeoutMillis",
                 this.configuration.TIMEOUTCON);
         this.activeBootstrap.setOption("reuseAddress", true);
@@ -359,11 +359,16 @@ public class FtpInternalConfiguration {
      * Return and remove the FtpSession
      * 
      * @param channel
+     * @param active
      * @return the FtpSession if it exists associated to this channel
      */
-    public FtpSession getFtpSession(Channel channel) {
+    public FtpSession getFtpSession(Channel channel, boolean active) {
         logger.debug("getSession");
-        return this.ftpSessionReference.getFtpSession(channel);
+        if (active) {
+            return this.ftpSessionReference.getActiveFtpSession(channel);
+        } else {
+            return this.ftpSessionReference.getPassiveFtpSession(channel);
+        }
     }
 
     /**

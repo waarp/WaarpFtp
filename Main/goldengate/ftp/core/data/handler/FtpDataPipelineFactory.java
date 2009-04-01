@@ -69,18 +69,24 @@ public class FtpDataPipelineFactory implements ChannelPipelineFactory {
      * Configuration
      */
     private final FtpConfiguration configuration;
-
+    /**
+     * Is this factory for Active mode
+     */
+    private final boolean isActive;
+    
     /**
      * Constructor which Initializes some data
      * 
      * @param dataBusinessHandler
      * @param configuration
+     * @param active
      */
     public FtpDataPipelineFactory(
             Class<? extends DataBusinessHandler> dataBusinessHandler,
-            FtpConfiguration configuration) {
+            FtpConfiguration configuration, boolean active) {
         this.dataBusinessHandler = dataBusinessHandler;
         this.configuration = configuration;
+        this.isActive = active;
     }
 
     /**
@@ -111,7 +117,7 @@ public class FtpDataPipelineFactory implements ChannelPipelineFactory {
         DataBusinessHandler newbusiness = this.dataBusinessHandler
                 .newInstance();
         DataNetworkHandler newNetworkHandler = new DataNetworkHandler(
-                this.configuration, newbusiness);
+                this.configuration, newbusiness, this.isActive);
         pipeline.addLast(HANDLER, newNetworkHandler);
         return pipeline;
     }

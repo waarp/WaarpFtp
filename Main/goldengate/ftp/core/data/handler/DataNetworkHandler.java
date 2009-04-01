@@ -5,6 +5,7 @@
 package goldengate.ftp.core.data.handler;
 
 import goldengate.ftp.core.config.FtpConfiguration;
+import goldengate.ftp.core.config.FtpInternalConfiguration;
 import goldengate.ftp.core.control.NetworkHandler;
 import goldengate.ftp.core.data.FtpTransferControl;
 import goldengate.ftp.core.exception.FtpFileEndOfTransferException;
@@ -58,7 +59,11 @@ public class DataNetworkHandler extends SimpleChannelHandler {
      * Configuration
      */
     private final FtpConfiguration configuration;
-
+    /**
+     * Is this Data Connection an Active or Passive one
+     */
+    private final boolean isActive;
+    
     /**
      * Internal store for the Session
      */
@@ -85,13 +90,15 @@ public class DataNetworkHandler extends SimpleChannelHandler {
      * 
      * @param configuration
      * @param handler
+     * @param active
      */
     public DataNetworkHandler(FtpConfiguration configuration,
-            DataBusinessHandler handler) {
+            DataBusinessHandler handler, boolean active) {
         super();
         this.configuration = configuration;
         this.dataBusinessHandler = handler;
         this.dataBusinessHandler.setDataNetworkHandler(this);
+        this.isActive = active;
     }
 
     /**
@@ -163,7 +170,19 @@ public class DataNetworkHandler extends SimpleChannelHandler {
     public void channelConnected(ChannelHandlerContext ctx, ChannelStateEvent e) {
         Channel channel = e.getChannel();
         // First get the ftpSession from inetaddresses
-        this.session = this.configuration.getFtpSession(channel);
+        for (int i = 0; i < FtpInternalConfiguration.RETRYNB; i++) {
+            this.session = this.configuration.getFtpSession(channel, this.isActive);
+            if (this.session == null) {
+                logger.debug("Session not found at try "+i);
+                try {
+                    Thread.sleep(FtpInternalConfiguration.RETRYINMS);
+                } catch (InterruptedException e1) {
+                    break;
+                }
+            } else {
+                break;
+            }
+        }
         if (this.session == null) {
             // Not found !!!
             logger.error("Session not found!");

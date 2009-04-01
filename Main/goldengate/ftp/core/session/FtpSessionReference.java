@@ -128,7 +128,21 @@ public class FtpSessionReference {
      * @param channel
      * @return the FtpSession if it exists associated to this channel
      */
-    public FtpSession getFtpSession(Channel channel) {
+    public FtpSession getActiveFtpSession(Channel channel) {
+        // First check passive connection
+        P2PAddress pAddress = new P2PAddress(((InetSocketAddress) channel.getLocalAddress()).getAddress(),
+                (InetSocketAddress) channel.getRemoteAddress());
+        logger.debug("Get: {} {}", pAddress.remote, pAddress.local);
+        return this.hashMap.remove(pAddress);
+    }
+    /**
+     * Return and remove the FtpSession
+     * 
+     * @param channel
+     * @return the FtpSession if it exists associated to this channel
+     */
+    public FtpSession getPassiveFtpSession(Channel channel) {
+        // First check passive connection
         P2PAddress pAddress = new P2PAddress(channel);
         logger.debug("Get: {} {}", pAddress.remote, pAddress.local);
         return this.hashMap.remove(pAddress);

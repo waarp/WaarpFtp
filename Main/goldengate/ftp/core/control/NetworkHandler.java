@@ -10,6 +10,7 @@ import goldengate.ftp.core.command.FtpReplyCode;
 import goldengate.ftp.core.command.exception.FtpCommandAbstractException;
 import goldengate.ftp.core.command.internal.ConnectionCommand;
 import goldengate.ftp.core.command.internal.IncorrectCommand;
+import goldengate.ftp.core.config.FtpInternalConfiguration;
 import goldengate.ftp.core.logging.FtpInternalLogger;
 import goldengate.ftp.core.logging.FtpInternalLoggerFactory;
 import goldengate.ftp.core.session.FtpSession;
@@ -271,6 +272,18 @@ public class NetworkHandler extends SimpleChannelHandler {
             if (!FtpCommandCode.isSpecialCommand(command.getCode())) {
                 // Now check if a transfer is on its way: illegal to have at
                 // same time two commands (except ABORT)
+                for (int i = 0; i < FtpInternalConfiguration.RETRYNB ; i++) {
+                    if (this.session.getDataConn().getFtpTransferControl()
+                            .isFtpTransferExecuting()) {
+                        try {
+                            Thread.sleep(FtpInternalConfiguration.RETRYINMS);
+                        } catch (InterruptedException e1) {
+                            break;
+                        }
+                    } else {
+                        break;
+                    }
+                }
                 if (this.session.getDataConn().getFtpTransferControl()
                         .isFtpTransferExecuting()) {
                     this.session.setReplyCode(

@@ -248,8 +248,9 @@ public class FtpTransferControl {
                     // Set the session for the future dataChannel
                     this.session.getConfiguration().getFtpInternalConfiguration()
                             .setNewFtpSession(
-                                    dataAsyncConn.getRemoteAddress().getAddress(),
-                                    dataAsyncConn.getLocalAddress(), this.session);
+                                    dataAsyncConn.getLocalAddress().getAddress(), 
+                                    dataAsyncConn.getRemoteAddress(),
+                                    this.session);
                     future = clientBootstrap.connect(dataAsyncConn
                             .getRemoteAddress(), dataAsyncConn.getLocalAddress());
                     future.awaitUninterruptibly().getChannel();
@@ -266,6 +267,12 @@ public class FtpTransferControl {
                         }
                         logger.debug("Active mode connected");
                         break;
+                    } else {
+                        try {
+                            Thread.sleep(FtpInternalConfiguration.RETRYINMS);
+                        } catch (InterruptedException e) {
+                            break;
+                        }
                     }
                 }
                 if (! future.isSuccess()) {

@@ -160,16 +160,16 @@ public class SimpleBusinessHandler extends BusinessHandler {
     @Override
     public void afterTransferDone(FtpTransfer transfer) {
         if (transfer.getCommand() == FtpCommandCode.APPE) {
-            logger.warn("GBBH: Transfer: {} " + transfer.getStatus() + " {}",
+            logger.info("GBBH: Transfer: {} " + transfer.getStatus() + " {}",
                     transfer.getCommand(), transfer.getPath());
         } else if (transfer.getCommand() == FtpCommandCode.RETR) {
-            logger.warn("GBBH: Transfer: {} " + transfer.getStatus() + " {}",
+            logger.info("GBBH: Transfer: {} " + transfer.getStatus() + " {}",
                     transfer.getCommand(), transfer.getPath());
         } else if (transfer.getCommand() == FtpCommandCode.STOR) {
-            logger.warn("GBBH: Transfer: {} " + transfer.getStatus() + " {}",
+            logger.info("GBBH: Transfer: {} " + transfer.getStatus() + " {}",
                     transfer.getCommand(), transfer.getPath());
         } else if (transfer.getCommand() == FtpCommandCode.STOU) {
-            logger.warn("GBBH: Transfer: {} " + transfer.getStatus() + " {}",
+            logger.info("GBBH: Transfer: {} " + transfer.getStatus() + " {}",
                     transfer.getCommand(), transfer.getPath());
         } else {
             logger.warn("GBBH: Transfer unknown: {} " + transfer.getStatus() +
