@@ -412,18 +412,18 @@ public class MD5 {
     public void Update(MD5State stat, byte buffer[], int offset, int length) {
         int index, partlen, i, start;
         this.finals = null;
-
+        int newlength = length;
         /* Length can be told to be shorter, but not inter */
-        if ((length - offset) > buffer.length) length = buffer.length - offset;
+        if ((newlength - offset) > buffer.length) newlength = buffer.length - offset;
 
         /* compute number of bytes mod 64 */
 
         index = (int) (stat.count & 0x3f);
-        stat.count += length;
+        stat.count += newlength;
 
         partlen = 64 - index;
 
-        if (length >= partlen) {
+        if (newlength >= partlen) {
             if (native_lib_loaded) {
 
                 // update state (using native method) to reflect input
@@ -435,9 +435,9 @@ public class MD5 {
                         stat.buffer[i + index] = buffer[i + offset];
                     TransformJni(stat.state, stat.buffer, 0, 64);
                 }
-                TransformJni(stat.state, buffer, partlen + offset, length -
+                TransformJni(stat.state, buffer, partlen + offset, newlength -
                         partlen);
-                i = partlen + ((length - partlen) / 64) * 64;
+                i = partlen + ((newlength - partlen) / 64) * 64;
             } else {
 
                 // update state (using only Java) to reflect input
@@ -450,7 +450,7 @@ public class MD5 {
                         stat.buffer[i + index] = buffer[i + offset];
                     Transform(stat, stat.buffer, 0, decode_buf);
                 }
-                for (i = partlen; (i + 63) < length; i += 64) {
+                for (i = partlen; (i + 63) < newlength; i += 64) {
                     Transform(stat, buffer, i + offset, decode_buf);
                 }
             }
@@ -459,9 +459,9 @@ public class MD5 {
             i = 0;
 
         /* buffer remaining input */
-        if (i < length) {
+        if (i < newlength) {
             start = i;
-            for (; i < length; i ++) {
+            for (; i < newlength; i ++) {
                 stat.buffer[index + i - start] = buffer[i + offset];
             }
         }
@@ -551,8 +551,9 @@ public class MD5 {
      */
     public void Update(String s, String charset_name)
             throws java.io.UnsupportedEncodingException {
-        if (charset_name == null) charset_name = "ISO8859_1";
-        byte chars[] = s.getBytes(charset_name);
+        String newcharset = charset_name;
+        if (newcharset == null) newcharset = "ISO8859_1";
+        byte chars[] = s.getBytes(newcharset);
         Update(chars, chars.length);
     }
 
