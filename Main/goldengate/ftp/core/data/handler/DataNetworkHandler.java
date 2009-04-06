@@ -186,7 +186,7 @@ public class DataNetworkHandler extends SimpleChannelHandler {
         if (this.session == null) {
             // Not found !!!
             logger.error("Session not found!");
-            Channels.close(channel).awaitUninterruptibly();
+            Channels.close(channel);
             return;
         }
         logger.debug("Start DataNetwork");

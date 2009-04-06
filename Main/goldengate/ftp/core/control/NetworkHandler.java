@@ -23,6 +23,7 @@ import java.nio.channels.ClosedChannelException;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelException;
 import org.jboss.netty.channel.ChannelFuture;
+import org.jboss.netty.channel.ChannelFutureListener;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.ChannelPipelineCoverage;
 import org.jboss.netty.channel.ChannelStateEvent;
@@ -318,8 +319,7 @@ public class NetworkHandler extends SimpleChannelHandler {
             logger.debug("Will close Control Connection since: {}",
                     this.session.getAnswer());
             this.session.getDataConn().getFtpTransferControl().clear();
-            this.writeIntermediateAnswer().awaitUninterruptibly();
-            Channels.close(this.session.getControlChannel());
+            this.writeIntermediateAnswer().addListener(ChannelFutureListener.CLOSE);
             return true;
         }
         this.writeIntermediateAnswer();

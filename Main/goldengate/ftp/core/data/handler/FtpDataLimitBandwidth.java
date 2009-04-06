@@ -4,9 +4,9 @@
 package goldengate.ftp.core.data.handler;
 
 import org.jboss.netty.channel.ChannelPipelineCoverage;
-import org.jboss.netty.handler.execution.ObjectSizeEstimator;
 import org.jboss.netty.handler.traffic.TrafficCounterFactory;
 import org.jboss.netty.handler.traffic.TrafficShapingHandler;
+import org.jboss.netty.util.ObjectSizeEstimator;
 
 /**
  * Channel Handler that allows to limit the global bandwidth or per session

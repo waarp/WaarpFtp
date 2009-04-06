@@ -8,10 +8,13 @@ import goldengate.ftp.core.command.AbstractCommand;
 import goldengate.ftp.core.command.FtpReplyCode;
 import goldengate.ftp.core.command.exception.Reply500Exception;
 import goldengate.ftp.core.command.exception.Reply501Exception;
+import goldengate.ftp.core.config.FtpConfiguration;
 import goldengate.ftp.core.logging.FtpInternalLogger;
 import goldengate.ftp.core.logging.FtpInternalLoggerFactory;
 import goldengate.ftp.core.utils.FtpChannelUtils;
 
+import org.jboss.netty.channel.ChannelFuture;
+import org.jboss.netty.channel.ChannelFutureListener;
 import org.jboss.netty.channel.Channels;
 
 /**
@@ -26,7 +29,28 @@ public class INTERNALSHUTDOWN extends AbstractCommand {
      */
     private static final FtpInternalLogger logger = FtpInternalLoggerFactory
             .getLogger(INTERNALSHUTDOWN.class);
+    /**
+     * 
+     * @author frederic
+     *
+     */
+    private class ShutdownChannelFutureListener implements ChannelFutureListener {
 
+        private final FtpConfiguration configuration;
+        protected ShutdownChannelFutureListener(FtpConfiguration configuration) {
+            this.configuration = configuration;
+        }
+        /* (non-Javadoc)
+         * @see org.jboss.netty.channel.ChannelFutureListener#operationComplete(org.jboss.netty.channel.ChannelFuture)
+         */
+        @Override
+        public void operationComplete(ChannelFuture arg0) throws Exception {
+            Channels.close(arg0.getChannel());
+            FtpChannelUtils.teminateServer(this.configuration);
+            
+        }
+        
+    }
     /*
      * (non-Javadoc)
      * 
@@ -50,9 +74,7 @@ public class INTERNALSHUTDOWN extends AbstractCommand {
                 FtpReplyCode.REPLY_221_CLOSING_CONTROL_CONNECTION,
                 "System shutdown");
         this.getFtpSession().getNetworkHandler().writeIntermediateAnswer()
-                .awaitUninterruptibly();
-        Channels.close(this.getFtpSession().getControlChannel());
-        FtpChannelUtils.teminateServer(this.getConfiguration());
+            .addListener(new ShutdownChannelFutureListener(this.getConfiguration()));
     }
 
 }

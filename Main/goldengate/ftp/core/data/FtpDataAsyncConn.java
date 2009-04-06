@@ -344,7 +344,7 @@ public class FtpDataAsyncConn {
             this.isBind = false;
             if ((this.dataChannel != null) && (this.dataChannel.isConnected())) {
                 logger.debug("PASSIVE MODE CLOSE");
-                Channels.close(this.dataChannel).awaitUninterruptibly();
+                Channels.close(this.dataChannel);//FIXME.awaitUninterruptibly();
             }
             logger.debug("Passive mode unbind");
             this.session.getConfiguration().getFtpInternalConfiguration()

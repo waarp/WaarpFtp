@@ -401,7 +401,7 @@ public abstract class FtpConfiguration {
         this.internalConfiguration.getTrafficCounterFactory().setGlobalActive(withGlobal);
         this.internalConfiguration.getTrafficCounterFactory().setChannelActive(withGlobal);
         this.internalConfiguration.getTrafficCounterFactory()
-                .changeConfiguration(newWriteLimit / 10, newReadLimit / 10,
+                .configure(newWriteLimit / 10, newReadLimit / 10,
                         this.delayLimit, newWriteLimit, newReadLimit,
                         this.delayLimit);
     }

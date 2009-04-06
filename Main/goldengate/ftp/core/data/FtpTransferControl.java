@@ -275,6 +275,11 @@ public class FtpTransferControl {
                         }
                     }
                 }
+                if (future == null) {
+                 // Cannot open connection
+                    throw new Reply425Exception(
+                            "Cannot open active data connection");
+                }
                 if (! future.isSuccess()) {
                     logger.error("Can't do Active connection:", future.getCause());
                     // Cannot open connection

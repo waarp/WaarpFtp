@@ -4,9 +4,9 @@
 	<serverport>21</serverport>
 	<serverhome>d:/GG/FTP</serverhome>
 	<serverthread>8</serverthread>
-	<sessionlimit2>102400</sessionlimit2>
+	<sessionlimit>102400</sessionlimit>
 	<globallimit2>1024000</globallimit2>
-	<sessionlimit>0</sessionlimit>
+	<sessionlimit2>0</sessionlimit2>
 	<globallimit>0</globallimit>
 	<timeoutcon>10000</timeoutcon>
 	<deleteonabort>0</deleteonabort>

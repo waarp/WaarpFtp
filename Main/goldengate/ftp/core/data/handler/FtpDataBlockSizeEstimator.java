@@ -5,7 +5,8 @@
  */
 package goldengate.ftp.core.data.handler;
 
-import org.jboss.netty.handler.execution.ObjectSizeEstimator;
+import org.jboss.netty.util.ObjectSizeEstimator;
+
 
 /**
  * @author frederic

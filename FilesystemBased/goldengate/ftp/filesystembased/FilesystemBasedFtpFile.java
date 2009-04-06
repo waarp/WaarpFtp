@@ -692,9 +692,11 @@ public abstract class FilesystemBasedFtpFile extends FtpFile {
             fileChannelOut.close();
         } catch (IOException e) {
             logger.error("Error during get:", e);
-            try {
-                fileChannelIn.close();
-            } catch (IOException e1) {
+            if (fileChannelIn != null) {
+                try {
+                    fileChannelIn.close();
+                } catch (IOException e1) {
+                }
             }
             return false;
         }

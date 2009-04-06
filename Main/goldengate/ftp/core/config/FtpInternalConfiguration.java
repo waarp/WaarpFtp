@@ -32,10 +32,10 @@ import org.jboss.netty.channel.group.ChannelGroup;
 import org.jboss.netty.channel.group.DefaultChannelGroup;
 import org.jboss.netty.channel.socket.nio.NioClientSocketChannelFactory;
 import org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory;
-import org.jboss.netty.handler.execution.ObjectSizeEstimator;
 import org.jboss.netty.handler.execution.OrderedMemoryAwareThreadPoolExecutor;
 import org.jboss.netty.handler.traffic.TrafficCounterFactory;
 import org.jboss.netty.logging.InternalLoggerFactory;
+import org.jboss.netty.util.ObjectSizeEstimator;
 
 /**
  * Internal configuration of the FTP server, related to Netty
@@ -433,11 +433,9 @@ public class FtpInternalConfiguration {
                 logger.info("Bind number to {} left is {}", address,
                         bindAddress.nbBind);
                 if (bindAddress.nbBind == 0) {
-                    bindAddress.parentChannel.close().awaitUninterruptibly();
-                    FtpChannelUtils.removeDataChannel(
-                            bindAddress.parentChannel, this.configuration);
-                    bindAddress.parentChannel = null;
                     this.hashBindPassiveDataConn.remove(address);
+                    bindAddress.parentChannel.close();
+                    bindAddress.parentChannel = null;
                 }
             } else {
                 logger.warn("No Bind to {}", address);

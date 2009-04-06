@@ -385,19 +385,6 @@ public class FtpChannelUtils {
     }
 
     /**
-     * Remove a command channel from the list
-     * 
-     * @param channel
-     * @param configuration
-     */
-    public static void removeCommandChannel(Channel channel,
-            FtpConfiguration configuration) {
-        logger.info("Remove Command Channel {}", channel);
-        configuration.getFtpInternalConfiguration().getCommandChannelGroup()
-                .remove(channel);
-    }
-
-    /**
      * Add a data channel into the list
      * 
      * @param channel
@@ -408,19 +395,6 @@ public class FtpChannelUtils {
         logger.info("Add Data Channel {}", channel);
         configuration.getFtpInternalConfiguration().getDataChannelGroup().add(
                 channel);
-    }
-
-    /**
-     * Remove a data channel from the list
-     * 
-     * @param channel
-     * @param configuration
-     */
-    public static void removeDataChannel(Channel channel,
-            FtpConfiguration configuration) {
-        logger.info("Remove Data Channel {}", channel);
-        configuration.getFtpInternalConfiguration().getDataChannelGroup()
-                .remove(channel);
     }
 
 }
