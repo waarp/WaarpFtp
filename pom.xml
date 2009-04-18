@@ -21,11 +21,6 @@
       <version>0.9.15</version>
     </dependency>
     <dependency>
-      <groupId>commons-io</groupId>
-      <artifactId>commons-io</artifactId>
-      <version>1.4</version>
-    </dependency>
-    <dependency>
       <groupId>dom4j</groupId>
       <artifactId>dom4j</artifactId>
       <version>1.6.1</version>
@@ -45,6 +40,11 @@
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
       <version>1.5.6</version>
+    </dependency>
+    <dependency>
+    	<groupId>commons-io</groupId>
+    	<artifactId>commons-io</artifactId>
+    	<version>1.4</version>
     </dependency>
   </dependencies>
 </project>
