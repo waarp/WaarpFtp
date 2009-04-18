@@ -1,10 +1,27 @@
 /**
- * 
+ * Copyright 2009, Frederic Bregier, and individual contributors
+ * by the @author tags. See the COPYRIGHT.txt in the distribution for a
+ * full listing of individual contributors.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 3.0 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 package goldengate.ftp.core.session;
 
-import goldengate.ftp.core.logging.FtpInternalLogger;
-import goldengate.ftp.core.logging.FtpInternalLoggerFactory;
+import goldengate.common.logging.GgInternalLogger;
+import goldengate.common.logging.GgInternalLoggerFactory;
 import goldengate.ftp.core.utils.FtpChannelUtils;
 
 import java.net.InetAddress;
@@ -19,22 +36,22 @@ import org.jboss.netty.channel.Channel;
  * {@link InetSocketAddress} of the server. This is particularly useful for
  * Passive mode connection since there is no way to pass the session to the
  * connected channel without this reference.
- * 
- * @author fbregier
- * 
+ *
+ * @author Frederic Bregier
+ *
  */
 public class FtpSessionReference {
     /**
      * Internal Logger
      */
-    private static final FtpInternalLogger logger = FtpInternalLoggerFactory
+    private static final GgInternalLogger logger = GgInternalLoggerFactory
             .getLogger(FtpSessionReference.class);
 
     /**
      * Index of FtpSession References
-     * 
-     * @author fbregier
-     * 
+     *
+     * @author Frederic Bregier
+     *
      */
     public class P2PAddress {
         /**
@@ -49,49 +66,49 @@ public class FtpSessionReference {
 
         /**
          * Constructor from Channel
-         * 
+         *
          * @param channel
          */
         public P2PAddress(Channel channel) {
-            this.remote = FtpChannelUtils.getRemoteInetAddress(channel);
-            this.local = (InetSocketAddress) channel.getLocalAddress();
+            remote = FtpChannelUtils.getRemoteInetAddress(channel);
+            local = (InetSocketAddress) channel.getLocalAddress();
         }
 
         /**
          * Constructor from addresses
-         * 
+         *
          * @param address
          * @param inetSocketAddress
          */
         public P2PAddress(InetAddress address,
                 InetSocketAddress inetSocketAddress) {
-            this.remote = address;
-            this.local = inetSocketAddress;
+            remote = address;
+            local = inetSocketAddress;
         }
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see java.lang.Object#equals(java.lang.Object)
          */
         @Override
         public boolean equals(Object arg0) {
             if (arg0 instanceof P2PAddress) {
                 P2PAddress p2paddress = (P2PAddress) arg0;
-                return ((p2paddress.local.equals(this.local)) && (p2paddress.remote
-                        .equals(this.remote)));
+                return p2paddress.local.equals(local) && p2paddress.remote
+                        .equals(remote);
             }
             return false;
         }
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see java.lang.Object#hashCode()
          */
         @Override
         public int hashCode() {
-            return this.local.hashCode() + this.remote.hashCode();
+            return local.hashCode() + remote.hashCode();
         }
 
     }
@@ -103,14 +120,14 @@ public class FtpSessionReference {
 
     /**
      * Constructor
-     * 
+     *
      */
     public FtpSessionReference() {
     }
 
     /**
      * Add a session from a couple of addresses
-     * 
+     *
      * @param remote
      * @param local
      * @param session
@@ -118,26 +135,28 @@ public class FtpSessionReference {
     public void setNewFtpSession(InetAddress remote, InetSocketAddress local,
             FtpSession session) {
         P2PAddress pAddress = new P2PAddress(remote, local);
-        this.hashMap.put(pAddress, session);
+        hashMap.put(pAddress, session);
         logger.debug("Add: {} {}", remote, local);
     }
 
     /**
      * Return and remove the FtpSession
-     * 
+     *
      * @param channel
      * @return the FtpSession if it exists associated to this channel
      */
     public FtpSession getActiveFtpSession(Channel channel) {
         // First check passive connection
-        P2PAddress pAddress = new P2PAddress(((InetSocketAddress) channel.getLocalAddress()).getAddress(),
-                (InetSocketAddress) channel.getRemoteAddress());
+        P2PAddress pAddress = new P2PAddress(((InetSocketAddress) channel
+                .getLocalAddress()).getAddress(), (InetSocketAddress) channel
+                .getRemoteAddress());
         logger.debug("Get: {} {}", pAddress.remote, pAddress.local);
-        return this.hashMap.remove(pAddress);
+        return hashMap.remove(pAddress);
     }
+
     /**
      * Return and remove the FtpSession
-     * 
+     *
      * @param channel
      * @return the FtpSession if it exists associated to this channel
      */
@@ -145,18 +164,18 @@ public class FtpSessionReference {
         // First check passive connection
         P2PAddress pAddress = new P2PAddress(channel);
         logger.debug("Get: {} {}", pAddress.remote, pAddress.local);
-        return this.hashMap.remove(pAddress);
+        return hashMap.remove(pAddress);
     }
 
     /**
      * Remove the FtpSession from couple of addresses
-     * 
+     *
      * @param remote
      * @param local
      */
     public void delFtpSession(InetAddress remote, InetSocketAddress local) {
         P2PAddress pAddress = new P2PAddress(remote, local);
         logger.debug("Del: {} {}", pAddress.remote, pAddress.local);
-        this.hashMap.remove(pAddress);
+        hashMap.remove(pAddress);
     }
 }

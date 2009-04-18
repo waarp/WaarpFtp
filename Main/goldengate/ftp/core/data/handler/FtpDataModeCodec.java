@@ -1,15 +1,32 @@
 /**
- * Frederic Bregier LGPL 23 janv. 09 FtpDataTypeCodec.java
- * goldengate.ftp.core.file.handler GoldenGateFtp frederic
+ * Copyright 2009, Frederic Bregier, and individual contributors
+ * by the @author tags. See the COPYRIGHT.txt in the distribution for a
+ * full listing of individual contributors.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 3.0 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 package goldengate.ftp.core.data.handler;
 
+import goldengate.common.exception.InvalidArgumentException;
+import goldengate.common.file.DataBlock;
+import goldengate.common.future.GgFuture;
+import goldengate.common.logging.GgInternalLogger;
+import goldengate.common.logging.GgInternalLoggerFactory;
 import goldengate.ftp.core.command.FtpArgumentCode.TransferMode;
 import goldengate.ftp.core.command.FtpArgumentCode.TransferStructure;
-import goldengate.ftp.core.exception.FtpInvalidArgumentException;
-import goldengate.ftp.core.logging.FtpInternalLogger;
-import goldengate.ftp.core.logging.FtpInternalLoggerFactory;
-import goldengate.ftp.core.utils.FtpFuture;
 
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
@@ -22,22 +39,22 @@ import org.jboss.netty.handler.codec.frame.FrameDecoder;
 
 /**
  * First CODEC :<br>
- * - encode : takes a {@link FtpDataBlock} and trsnforms it to a ChannelBuffer<br>
- * - decode : takes a ChannelBuffer and transforms it to a {@link FtpDataBlock}<br>
+ * - encode : takes a {@link DataBlock} and trsnforms it to a ChannelBuffer<br>
+ * - decode : takes a ChannelBuffer and transforms it to a {@link DataBlock}<br>
  * STREAM and BLOCK mode are implemented. COMPRESSED mode is not implemented.
- * 
- * @author frederic goldengate.ftp.core.file.handler FtpDataTypeCodec
- * 
+ *
+ * @author Frederic Bregier
+ *
  */
 @ChannelPipelineCoverage("one")
 public class FtpDataModeCodec extends FrameDecoder {
     /*
-     * 
+     *
      * 3.4.1. STREAM MODE
-     * 
+     *
      * The data is transmitted as a stream of bytes. There is no restriction on
      * the representation type used; record structures are allowed.
-     * 
+     *
      * In a record structured file EOR and EOF will each be indicated by a
      * two-byte control code. The first byte of the control code will be all
      * ones, the escape character. The second byte will have the low order bit
@@ -47,12 +64,12 @@ public class FtpDataModeCodec extends FrameDecoder {
      * both low order bits on (i.e., the value 3). If a byte of all ones was
      * intended to be sent as data, it should be repeated in the second byte of
      * the control code.
-     * 
+     *
      * If the structure is a file structure, the EOF is indicated by the sending
      * host closing the data connection and all bytes are data bytes.
-     * 
+     *
      * 3.4.2. BLOCK MODE
-     * 
+     *
      * The file is transmitted as a series of data blocks preceded by one or
      * more header bytes. The header bytes contain a count field, and descriptor
      * code. The count field indicates the total length of the data block in
@@ -67,52 +84,52 @@ public class FtpDataModeCodec extends FrameDecoder {
      * tape read errors"), but to indicate in the transmission that certain
      * portions are suspect). Record structures are allowed in this mode, and
      * any representation type may be used.
-     * 
+     *
      * The header consists of the three bytes. Of the 24 bits of header
      * information, the 16 low order bits shall represent byte count, and the 8
      * high order bits shall represent descriptor codes as shown below.
-     * 
-     * 
+     *
+     *
      * Block Header
-     * 
+     *
      * +----------------+----------------+----------------+ | Descriptor | Byte
      * Count | | 8 bits | 16 bits |
      * +----------------+----------------+----------------+
-     * 
-     * 
+     *
+     *
      * The descriptor codes are indicated by bit flags in the descriptor byte.
      * Four codes have been assigned, where each code number is the decimal
      * value of the corresponding bit in the byte.
-     * 
+     *
      * Code Meaning
-     * 
+     *
      * 128 End of data block is EOR 64 End of data block is EOF 32 Suspected
      * errors in data block 16 Data block is a restart marker
-     * 
+     *
      * With this encoding, more than one descriptor coded condition may exist
      * for a particular block. As many bits as necessary may be flagged.
-     * 
+     *
      * The restart marker is embedded in the data stream as an integral number
      * of 8-bit bytes representing printable characters in the language being
      * used over the control connection (e.g., default--NVT-ASCII). <SP> (Space,
      * in the appropriate language) must not be used WITHIN a restart marker.
-     * 
+     *
      * For example, to transmit a six-character marker, the following would be
      * sent:
-     * 
+     *
      * +--------+--------+--------+ |Descrptr| Byte count | |code= 16| = 6 |
      * +--------+--------+--------+
-     * 
+     *
      * +--------+--------+--------+ | Marker | Marker | Marker | | 8 bits | 8
      * bits | 8 bits | +--------+--------+--------+
-     * 
+     *
      * +--------+--------+--------+ | Marker | Marker | Marker | | 8 bits | 8
      * bits | 8 bits | +--------+--------+--------+
      */
     /**
      * Internal Logger
      */
-    private static final FtpInternalLogger logger = FtpInternalLoggerFactory
+    private static final GgInternalLogger logger = GgInternalLoggerFactory
             .getLogger(FtpDataModeCodec.class);
 
     /**
@@ -128,7 +145,7 @@ public class FtpDataModeCodec extends FrameDecoder {
     /**
      * Ftp Data Block
      */
-    private FtpDataBlock dataBlock = null;
+    private DataBlock dataBlock = null;
 
     /**
      * Last byte for STREAM+RECORD
@@ -144,7 +161,7 @@ public class FtpDataModeCodec extends FrameDecoder {
      * Blocking step between DataNetworkHandler and this Codec in order to wait
      * that the DataNetworkHandler is ready
      */
-    private final FtpFuture codecLocked = new FtpFuture();
+    private final GgFuture codecLocked = new GgFuture();
 
     /**
      * @param mode
@@ -159,16 +176,16 @@ public class FtpDataModeCodec extends FrameDecoder {
     /**
      * Inform the Codec that DataNetworkHandler is ready (called from
      * DataNetworkHandler after setCorrectCodec).
-     * 
+     *
      */
     public void setCodecReady() {
         logger.debug("ModeCodec ready");
-        this.codecLocked.setSuccess();
+        codecLocked.setSuccess();
     }
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.jboss.netty.handler.codec.frame.FrameDecoder#decode(org.jboss.netty
      * .channel.ChannelHandlerContext, org.jboss.netty.channel.Channel,
@@ -180,66 +197,66 @@ public class FtpDataModeCodec extends FrameDecoder {
         // First test if the connection is fully ready (block might be
         // transfered
         // by client before connection is ready)
-        if (!this.isReady) {
-            this.codecLocked.await();
-            this.isReady = true;
+        if (!isReady) {
+            codecLocked.await();
+            isReady = true;
             logger.debug("ModeCodec ready");
         }
         // If STREAM Mode, no task to do, just next filter
-        if (this.mode == TransferMode.STREAM) {
-            this.dataBlock = new FtpDataBlock();
+        if (mode == TransferMode.STREAM) {
+            dataBlock = new DataBlock();
             int length = buf.readableBytes();
             // Except if RECORD Structure!
-            if (this.structure == TransferStructure.RECORD) {
+            if (structure == TransferStructure.RECORD) {
                 ChannelBuffer newbuf = ChannelBuffers.dynamicBuffer(length);
-                if (this.lastbyte == 0xFF) {
+                if (lastbyte == 0xFF) {
                     int nextbyte = buf.readByte();
                     if (nextbyte == 0xFF) {
-                        newbuf.writeByte((byte) (this.lastbyte & 0xFF));
+                        newbuf.writeByte((byte) (lastbyte & 0xFF));
                     } else {
                         if (nextbyte == 1) {
-                            this.dataBlock.setEOR(true);
+                            dataBlock.setEOR(true);
                         } else if (nextbyte == 2) {
-                            this.dataBlock.setEOF(true);
+                            dataBlock.setEOF(true);
                         } else if (nextbyte == 3) {
-                            this.dataBlock.setEOR(true);
-                            this.dataBlock.setEOF(true);
+                            dataBlock.setEOR(true);
+                            dataBlock.setEOF(true);
                         }
-                        this.lastbyte = 0;
+                        lastbyte = 0;
                     }
                 }
                 try {
                     while (true) {
-                        this.lastbyte = buf.readByte();
-                        if (this.lastbyte == 0xFF) {
+                        lastbyte = buf.readByte();
+                        if (lastbyte == 0xFF) {
                             int nextbyte = buf.readByte();
                             if (nextbyte == 0xFF) {
-                                newbuf.writeByte((byte) (this.lastbyte & 0xFF));
+                                newbuf.writeByte((byte) (lastbyte & 0xFF));
                             } else {
                                 if (nextbyte == 1) {
-                                    this.dataBlock.setEOR(true);
+                                    dataBlock.setEOR(true);
                                 } else if (nextbyte == 2) {
-                                    this.dataBlock.setEOF(true);
+                                    dataBlock.setEOF(true);
                                 } else if (nextbyte == 3) {
-                                    this.dataBlock.setEOR(true);
-                                    this.dataBlock.setEOF(true);
+                                    dataBlock.setEOR(true);
+                                    dataBlock.setEOF(true);
                                 }
                             }
                         } else {
-                            newbuf.writeByte((byte) (this.lastbyte & 0xFF));
+                            newbuf.writeByte((byte) (lastbyte & 0xFF));
                         }
-                        this.lastbyte = 0;
+                        lastbyte = 0;
                     }
                 } catch (IndexOutOfBoundsException e) {
                     // End of read
                 }
-                this.dataBlock.setBlock(newbuf);
-                return this.dataBlock;
+                dataBlock.setBlock(newbuf);
+                return dataBlock;
             }
 
-            this.dataBlock.setBlock(buf.readBytes(length));
-            return this.dataBlock;
-        } else if (this.mode == TransferMode.BLOCK) {
+            dataBlock.setBlock(buf.readBytes(length));
+            return dataBlock;
+        } else if (mode == TransferMode.BLOCK) {
             // Now we are in BLOCK Mode
             // Make sure if the length field was received.
             if (buf.readableBytes() < 3) {
@@ -257,19 +274,19 @@ public class FtpDataModeCodec extends FrameDecoder {
             // there's not enough bytes in the buffer.
             buf.markReaderIndex();
 
-            if (this.dataBlock == null) {
-                this.dataBlock = new FtpDataBlock();
+            if (dataBlock == null) {
+                dataBlock = new DataBlock();
             }
             // Read the descriptor
-            this.dataBlock.setDescriptor(buf.readByte());
+            dataBlock.setDescriptor(buf.readByte());
 
             // Read the length field.
             byte upper = buf.readByte();
             byte lower = buf.readByte();
-            this.dataBlock.setByteCount(upper, lower);
+            dataBlock.setByteCount(upper, lower);
 
             // Make sure if there's enough bytes in the buffer.
-            if (buf.readableBytes() < this.dataBlock.getByteCount()) {
+            if (buf.readableBytes() < dataBlock.getByteCount()) {
                 // The whole bytes were not received yet - return null.
                 // This method will be invoked again when more packets are
                 // received and appended to the buffer.
@@ -280,25 +297,25 @@ public class FtpDataModeCodec extends FrameDecoder {
 
                 return null;
             }
-            if (this.dataBlock.getByteCount() > 0) {
+            if (dataBlock.getByteCount() > 0) {
                 // There's enough bytes in the buffer. Read it.
-                this.dataBlock.setBlock(buf.readBytes(this.dataBlock
+                dataBlock.setBlock(buf.readBytes(dataBlock
                         .getByteCount()));
             }
-            FtpDataBlock returnDataBlock = this.dataBlock;
+            DataBlock returnDataBlock = dataBlock;
             // Free the datablock for next frame
-            this.dataBlock = null;
+            dataBlock = null;
             // Successfully decoded a frame. Return the decoded frame.
             return returnDataBlock;
         }
         // Type unimplemented
-        throw new FtpInvalidArgumentException("Mode unimplemented: " +
-                this.mode.name());
+        throw new InvalidArgumentException("Mode unimplemented: " +
+                mode.name());
     }
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.jboss.netty.channel.SimpleChannelHandler#writeRequested(org.jboss
      * .netty.channel.ChannelHandlerContext,
@@ -307,19 +324,19 @@ public class FtpDataModeCodec extends FrameDecoder {
     @Override
     public void writeRequested(ChannelHandlerContext ctx, MessageEvent evt)
             throws Exception {
-        if (!(evt.getMessage() instanceof FtpDataBlock)) {
-            throw new FtpInvalidArgumentException("Incorrect write object: " +
+        if (!(evt.getMessage() instanceof DataBlock)) {
+            throw new InvalidArgumentException("Incorrect write object: " +
                     evt.getMessage().getClass().getName());
         }
         // First test if the connection is fully ready (block might be
         // transfered
         // by client before connection is ready)
-        if (!this.isReady) {
-            this.codecLocked.await();
-            this.isReady = true;
+        if (!isReady) {
+            codecLocked.await();
+            isReady = true;
             logger.debug("ModeCodec ready");
         }
-        FtpDataBlock newDataBlock = (FtpDataBlock) evt.getMessage();
+        DataBlock newDataBlock = (DataBlock) evt.getMessage();
         ChannelBuffer next = encode(newDataBlock);
         // Could be splitten in several block
         while (next != null) {
@@ -329,21 +346,21 @@ public class FtpDataModeCodec extends FrameDecoder {
     }
 
     /**
-     * Encode a FtpDataBlock in the correct format for Mode
-     * 
+     * Encode a DataBlock in the correct format for Mode
+     *
      * @param msg
      * @return the ChannelBuffer or null when the last block is already done
-     * @throws FtpInvalidArgumentException
+     * @throws InvalidArgumentException
      */
-    protected ChannelBuffer encode(FtpDataBlock msg)
-            throws FtpInvalidArgumentException {
+    protected ChannelBuffer encode(DataBlock msg)
+            throws InvalidArgumentException {
         if (msg.isCleared()) {
             return null;
         }
         ChannelBuffer buffer = msg.getBlock();
-        if (this.mode == TransferMode.STREAM) {
+        if (mode == TransferMode.STREAM) {
             // If record structure, special attention
-            if (this.structure == TransferStructure.RECORD) {
+            if (structure == TransferStructure.RECORD) {
                 ChannelBuffer newbuf = ChannelBuffers.dynamicBuffer(msg
                         .getByteCount());
                 int newbyte = 0;
@@ -374,10 +391,10 @@ public class FtpDataModeCodec extends FrameDecoder {
             }
             msg.clear();
             return buffer;
-        } else if (this.mode == TransferMode.BLOCK) {
+        } else if (mode == TransferMode.BLOCK) {
             int length = msg.getByteCount();
             ChannelBuffer newbuf = ChannelBuffers
-                    .dynamicBuffer((length > 0xFFFF)? 0xFFFF + 3 : length + 3);
+                    .dynamicBuffer(length > 0xFFFF? 0xFFFF + 3 : length + 3);
             byte[] header = new byte[3];
             // Is there any data left
             if (length == 0) {
@@ -436,15 +453,15 @@ public class FtpDataModeCodec extends FrameDecoder {
             return newbuf;
         }
         // Mode unimplemented
-        throw new FtpInvalidArgumentException("Mode unimplemented: " +
-                this.mode.name());
+        throw new InvalidArgumentException("Mode unimplemented: " +
+                mode.name());
     }
 
     /**
      * @return the mode
      */
     public TransferMode getMode() {
-        return this.mode;
+        return mode;
     }
 
     /**
@@ -459,7 +476,7 @@ public class FtpDataModeCodec extends FrameDecoder {
      * @return the structure
      */
     public TransferStructure getStructure() {
-        return this.structure;
+        return structure;
     }
 
     /**

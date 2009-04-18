@@ -1,16 +1,32 @@
 /**
- * Frederic Bregier LGPL 10 janv. 09 BusinessHandler.java
- * goldengate.ftp.core.control GoldenGateFtp frederic
+ * Copyright 2009, Frederic Bregier, and individual contributors
+ * by the @author tags. See the COPYRIGHT.txt in the distribution for a
+ * full listing of individual contributors.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 3.0 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 package goldengate.ftp.core.control;
 
-import goldengate.ftp.core.auth.FtpAuth;
+import goldengate.common.command.exception.CommandAbstractException;
+import goldengate.common.file.AuthInterface;
+import goldengate.common.file.DirInterface;
+import goldengate.common.file.Restart;
+import goldengate.common.file.filesystembased.FilesystemBasedOptsMLSxImpl;
 import goldengate.ftp.core.command.FtpCommandCode;
-import goldengate.ftp.core.command.exception.FtpCommandAbstractException;
 import goldengate.ftp.core.data.FtpTransfer;
-import goldengate.ftp.core.file.FtpDir;
-import goldengate.ftp.core.file.FtpOptsMLSx;
-import goldengate.ftp.core.file.FtpRestart;
 import goldengate.ftp.core.session.FtpSession;
 
 import org.jboss.netty.channel.Channel;
@@ -19,9 +35,9 @@ import org.jboss.netty.channel.ExceptionEvent;
 /**
  * This class is to be implemented in order to allow Business actions according
  * to FTP service
- * 
- * @author frederic goldengate.ftp.core.control BusinessHandler
- * 
+ *
+ * @author Frederic Bregier
+ *
  */
 public abstract class BusinessHandler {
     /**
@@ -43,54 +59,54 @@ public abstract class BusinessHandler {
 
     /**
      * Called when the NetworkHandler is created
-     * 
+     *
      * @param networkHandler
      *            the networkHandler to set
      */
     public void setNetworkHandler(NetworkHandler networkHandler) {
         this.networkHandler = networkHandler;
-        this.session = this.networkHandler.getFtpSession();
+        session = this.networkHandler.getFtpSession();
     }
 
     /**
      * @return the networkHandler
      */
     public NetworkHandler getNetworkHandler() {
-        return this.networkHandler;
+        return networkHandler;
     }
 
     // Some helpful functions
     /**
-     * 
+     *
      * @return the ftpSession
      */
     public FtpSession getFtpSession() {
-        return this.session;
+        return session;
     }
 
     /**
-     * Create a new FtpAuth according to business choice
-     * 
-     * @return the new FtpAuth
+     * Create a new AuthInterface according to business choice
+     *
+     * @return the new AuthInterface
      */
-    public abstract FtpAuth getBusinessNewAuth();
+    public abstract AuthInterface getBusinessNewAuth();
 
     /**
      * Create a new FtpDir according to business choice
-     * 
+     *
      * @return the new FtpDir
      */
-    public abstract FtpDir getBusinessNewFtpDir();
+    public abstract DirInterface getBusinessNewDir();
 
     /**
-     * Create a new FtpRestart according to business choice
-     * 
-     * @return the new FtpRestart
+     * Create a new Restart according to business choice
+     *
+     * @return the new Restart
      */
-    public abstract FtpRestart getBusinessNewFtpRestart();
+    public abstract Restart getBusinessNewRestart();
 
     /**
-     * 
+     *
      * @param arg
      *            the argument from HELP command
      * @return the string to return to the client for the HELP command
@@ -98,13 +114,13 @@ public abstract class BusinessHandler {
     public abstract String getHelpMessage(String arg);
 
     /**
-     * 
+     *
      * @return the string to return to the client for the FEAT command
      */
     public abstract String getFeatMessage();
 
     /**
-     * 
+     *
      * @return the string to return to the client for the FEAT command without
      *         surrounding by "Extensions supported:\n" and "\nEnd"
      */
@@ -113,14 +129,10 @@ public abstract class BusinessHandler {
         builder.append(FtpCommandCode.MDTM.name());
         builder.append('\n');
         builder.append(FtpCommandCode.MLSD.name());
-        builder
-                .append(this.getFtpSession().getFtpDir().getOptsMLSx()
-                        .getFeat());
+        builder.append(getFtpSession().getDir().getOptsMLSx().getFeat());
         builder.append('\n');
         builder.append(FtpCommandCode.MLST.name());
-        builder
-                .append(this.getFtpSession().getFtpDir().getOptsMLSx()
-                        .getFeat());
+        builder.append(getFtpSession().getDir().getOptsMLSx().getFeat());
         builder.append('\n');
         builder.append(FtpCommandCode.SIZE.name());
         builder.append('\n');
@@ -177,19 +189,19 @@ public abstract class BusinessHandler {
     /**
      * @param args
      * @return the string to return to the client for the FEAT command
-     * @exception FtpCommandAbstractException
+     * @exception CommandAbstractException
      */
     public abstract String getOptsMessage(String[] args)
-            throws FtpCommandAbstractException;
+            throws CommandAbstractException;
 
     /**
-     * 
+     *
      * @param args
      * @return the string to return to the client for the FEAT command for the
      *         MLSx argument
      */
     protected String getMLSxOptsMessage(String[] args) {
-        FtpOptsMLSx optsMLSx = this.getFtpSession().getFtpDir().getOptsMLSx();
+        FilesystemBasedOptsMLSxImpl optsMLSx = (FilesystemBasedOptsMLSxImpl) getFtpSession().getDir().getOptsMLSx();
         optsMLSx.setOptsModify((byte) 0);
         optsMLSx.setOptsPerm((byte) 0);
         optsMLSx.setOptsSize((byte) 0);
@@ -225,19 +237,19 @@ public abstract class BusinessHandler {
 
     /**
      * Clean the BusinessHandler.
-     * 
+     *
      */
     public void clean() {
-        this.cleanSession();
-        this.networkHandler = null;
-        this.session = null;
+        cleanSession();
+        networkHandler = null;
+        session = null;
     }
 
     /**
      * Is executed when the channel is connected after the handler is on, before
      * answering OK or not on connection, except if the global service is going
      * to shutdown.
-     * 
+     *
      * @param channel
      */
     public abstract void executeChannelConnected(Channel channel);
@@ -245,7 +257,7 @@ public abstract class BusinessHandler {
     /**
      * Run when an exception is get before the channel is closed. This must set
      * a correct answer.
-     * 
+     *
      * @param e
      */
     public abstract void exceptionLocalCaught(ExceptionEvent e);
@@ -254,33 +266,33 @@ public abstract class BusinessHandler {
      * This method is called for every received message before the execution of
      * the command. If an exception is raised, the reply is immediate and no
      * action taken.
-     * 
-     * @exception FtpCommandAbstractException
+     *
+     * @exception CommandAbstractException
      */
-    public abstract void beforeRunCommand() throws FtpCommandAbstractException;
+    public abstract void beforeRunCommand() throws CommandAbstractException;
 
     /**
      * This method is called for every received message after the execution of
      * the command but before the final reply to the client. If an exception is
      * raised, the reply is immediate.
-     * 
-     * @exception FtpCommandAbstractException
+     *
+     * @exception CommandAbstractException
      */
-    public abstract void afterRunCommandOk() throws FtpCommandAbstractException;
+    public abstract void afterRunCommandOk() throws CommandAbstractException;
 
     /**
      * Run when a FTP exception is catch (the channel is not necessary closed
      * after). This must set a correct answer and a correct code of reply. If
      * the code of reply is 421, then the channel will be closed after this
      * call.
-     * 
+     *
      * @param e
      */
-    public abstract void afterRunCommandKo(FtpCommandAbstractException e);
+    public abstract void afterRunCommandKo(CommandAbstractException e);
 
     /**
      * Run when a transfer is finished
-     * 
+     *
      * @param transfer
      */
     public abstract void afterTransferDone(FtpTransfer transfer);

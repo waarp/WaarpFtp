@@ -1,6 +1,22 @@
 /**
- * Frederic Bregier LGPL 10 janv. 09 DataBusinessHandler.java
- * goldengate.ftp.core.control GoldenGateFtp frederic
+ * Copyright 2009, Frederic Bregier, and individual contributors
+ * by the @author tags. See the COPYRIGHT.txt in the distribution for a
+ * full listing of individual contributors.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 3.0 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 package goldengate.ftp.core.data.handler;
 
@@ -12,9 +28,9 @@ import org.jboss.netty.channel.ExceptionEvent;
 /**
  * This class is to be implemented in order to allow Business actions according
  * to FTP service
- * 
- * @author frederic goldengate.ftp.core.control DataBusinessHandler
- * 
+ *
+ * @author Frederic Bregier
+ *
  */
 public abstract class DataBusinessHandler {
     /**
@@ -23,13 +39,13 @@ public abstract class DataBusinessHandler {
     private DataNetworkHandler dataNetworkHandler = null;
 
     /**
-     * Ftp Session
+     * Ftp SessionInterface
      */
     private FtpSession session = null;
 
     /**
      * Constructor with no argument (mandatory)
-     * 
+     *
      */
     public DataBusinessHandler() {
         // nothing to do
@@ -37,7 +53,7 @@ public abstract class DataBusinessHandler {
 
     /**
      * Call when the DataNetworkHandler is created
-     * 
+     *
      * @param dataNetworkHandler
      *            the dataNetworkHandler to set
      */
@@ -49,12 +65,12 @@ public abstract class DataBusinessHandler {
      * @return the dataNetworkHandler
      */
     public DataNetworkHandler getDataNetworkHandler() {
-        return this.dataNetworkHandler;
+        return dataNetworkHandler;
     }
 
     /**
      * Called when the connection is opened
-     * 
+     *
      * @param session
      *            the session to set
      */
@@ -64,11 +80,11 @@ public abstract class DataBusinessHandler {
 
     // Some helpful functions
     /**
-     * 
+     *
      * @return the ftpSession
      */
     public FtpSession getFtpSession() {
-        return this.session;
+        return session;
     }
 
     /**
@@ -84,25 +100,25 @@ public abstract class DataBusinessHandler {
 
     /**
      * Clean the DataBusinessHandler
-     * 
+     *
      */
     public void clean() {
-        this.cleanSession();
-        this.dataNetworkHandler = null;
+        cleanSession();
+        dataNetworkHandler = null;
     }
 
     /**
      * Is executed when the channel is connected after the handler is on, before
      * answering OK or not on connection, except if the global service is going
      * to shutdown.
-     * 
+     *
      * @param channel
      */
     public abstract void executeChannelConnected(Channel channel);
 
     /**
      * Run when an exception is get before the channel is closed.
-     * 
+     *
      * @param e
      */
     public abstract void exceptionLocalCaught(ExceptionEvent e);

@@ -1,12 +1,28 @@
 /**
- * Frederic Bregier LGPL 10 janv. 09 FtpConfiguration.java
- * goldengate.ftp.core.config GoldenGateFtp frederic
+ * Copyright 2009, Frederic Bregier, and individual contributors
+ * by the @author tags. See the COPYRIGHT.txt in the distribution for a
+ * full listing of individual contributors.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 3.0 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 package goldengate.ftp.core.config;
 
+import goldengate.common.file.FileParameterInterface;
 import goldengate.ftp.core.control.BusinessHandler;
 import goldengate.ftp.core.data.handler.DataBusinessHandler;
-import goldengate.ftp.core.data.handler.FtpTrafficCounterFactory;
 import goldengate.ftp.core.exception.FtpUnknownFieldException;
 import goldengate.ftp.core.session.FtpSession;
 
@@ -22,12 +38,22 @@ import org.jboss.netty.channel.Channel;
 
 /**
  * Abstract class for configuration
- * 
- * @author frederic goldengate.ftp.core.config FtpConfiguration
- * 
+ *
+ * @author Frederic Bregier
+ *
  */
 public abstract class FtpConfiguration {
     // FTP Configuration: Externals
+    /**
+     * Default session limit 64Mbit, so up to 8 full simultaneous clients
+     */
+    public static long DEFAULT_SESSION_LIMIT = 0x800000L;
+
+    /**
+     * Default global limit 512Mbit
+     */
+    public static long DEFAULT_GLOBAL_LIMIT = 0x4000000L;
+
     /**
      * SERVER PORT
      */
@@ -54,6 +80,11 @@ public abstract class FtpConfiguration {
      * Internal configuration
      */
     private final FtpInternalConfiguration internalConfiguration;
+
+    /**
+     * Associated FileParameterInterface
+     */
+    private FileParameterInterface fileParameter = null;
 
     /**
      * True if the service is going to shutdown
@@ -101,22 +132,22 @@ public abstract class FtpConfiguration {
     /**
      * Limit in Write byte/s to apply globally to the FTP Server
      */
-    protected long serverGlobalWriteLimit = FtpTrafficCounterFactory.DEFAULT_GLOBAL_LIMIT;
+    protected long serverGlobalWriteLimit = DEFAULT_GLOBAL_LIMIT;
 
     /**
      * Limit in Read byte/s to apply globally to the FTP Server
      */
-    protected long serverGlobalReadLimit = FtpTrafficCounterFactory.DEFAULT_GLOBAL_LIMIT;
+    protected long serverGlobalReadLimit = DEFAULT_GLOBAL_LIMIT;
 
     /**
      * Limit in Write byte/s to apply by session to the FTP Server
      */
-    protected long serverChannelWriteLimit = FtpTrafficCounterFactory.DEFAULT_SESSION_LIMIT;
+    protected long serverChannelWriteLimit = DEFAULT_SESSION_LIMIT;
 
     /**
      * Limit in Read byte/s to apply by session to the FTP Server
      */
-    protected long serverChannelReadLimit = FtpTrafficCounterFactory.DEFAULT_SESSION_LIMIT;
+    protected long serverChannelReadLimit = DEFAULT_SESSION_LIMIT;
 
     /**
      * Delay in ms between two checks
@@ -139,33 +170,38 @@ public abstract class FtpConfiguration {
      */
     private final HashMap<String, Object> properties = new HashMap<String, Object>();
 
+
     /**
      * Simple constructor
-     * 
+     *
      * @param classtype
      *            Owner
      * @param businessHandler
      *            class that will be used for BusinessHandler
      * @param dataBusinessHandler
      *            class that will be used for DataBusinessHandler
+     * @param fileParameter
+     *            the FileParameterInterface to used
      */
     public FtpConfiguration(Class<?> classtype,
             Class<? extends BusinessHandler> businessHandler,
-            Class<? extends DataBusinessHandler> dataBusinessHandler) {
-        this.fromClass = classtype;
+            Class<? extends DataBusinessHandler> dataBusinessHandler,
+            FileParameterInterface fileParameter) {
+        fromClass = classtype;
         this.dataBusinessHandler = dataBusinessHandler;
         this.businessHandler = businessHandler;
-        this.internalConfiguration = new FtpInternalConfiguration(this);
+        internalConfiguration = new FtpInternalConfiguration(this);
+        this.fileParameter = fileParameter;
     }
 
     /**
-     * 
+     *
      * @param key
      * @return The String property associated to the key
      * @throws FtpUnknownFieldException
      */
     public String getStringProperty(String key) throws FtpUnknownFieldException {
-        String s = (String) this.properties.get(key);
+        String s = (String) properties.get(key);
         if (s == null) {
             throw new FtpUnknownFieldException("Property has no value: " + key);
         }
@@ -173,13 +209,13 @@ public abstract class FtpConfiguration {
     }
 
     /**
-     * 
+     *
      * @param key
      * @return The Integer property associated to the key
      * @throws FtpUnknownFieldException
      */
     public int getIntProperty(String key) throws FtpUnknownFieldException {
-        Integer i = (Integer) this.properties.get(key);
+        Integer i = (Integer) properties.get(key);
         if (i == null) {
             throw new FtpUnknownFieldException("Property has no value: " + key);
         }
@@ -187,13 +223,13 @@ public abstract class FtpConfiguration {
     }
 
     /**
-     * 
+     *
      * @param key
-     * @return The File property associated to the key
+     * @return The FileInterface property associated to the key
      * @throws FtpUnknownFieldException
      */
     public File getFileProperty(String key) throws FtpUnknownFieldException {
-        File f = (File) this.properties.get(key);
+        File f = (File) properties.get(key);
         if (f == null) {
             throw new FtpUnknownFieldException("Property has no value: " + key);
         }
@@ -201,13 +237,13 @@ public abstract class FtpConfiguration {
     }
 
     /**
-     * 
+     *
      * @param key
      * @return The Object property associated to the key
      * @throws FtpUnknownFieldException
      */
     public Object getProperty(String key) throws FtpUnknownFieldException {
-        Object o = this.properties.get(key);
+        Object o = properties.get(key);
         if (o == null) {
             throw new FtpUnknownFieldException("Property has no value: " + key);
         }
@@ -215,68 +251,68 @@ public abstract class FtpConfiguration {
     }
 
     /**
-     * 
+     *
      * @return the TCP Port to listen in the Ftp Server
      */
     public int getServerPort() {
         try {
-            return this.getIntProperty(SERVER_PORT);
+            return getIntProperty(SERVER_PORT);
         } catch (FtpUnknownFieldException e) {
             return 21; // Default
         }
     }
 
     /**
-     * 
+     *
      * @return the limit in Write byte/s to apply globally to the Ftp Server
      */
     public long getServerGlobalWriteLimit() {
-        return this.serverGlobalWriteLimit;
+        return serverGlobalWriteLimit;
     }
 
     /**
-     * 
+     *
      * @return the limit in Write byte/s to apply for each session to the Ftp
      *         Server
      */
     public long getServerChannelWriteLimit() {
-        return this.serverChannelWriteLimit;
+        return serverChannelWriteLimit;
     }
 
     /**
-     * 
+     *
      * @return the limit in Read byte/s to apply globally to the Ftp Server
      */
     public long getServerGlobalReadLimit() {
-        return this.serverGlobalReadLimit;
+        return serverGlobalReadLimit;
     }
 
     /**
-     * 
+     *
      * @return the limit in Read byte/s to apply for each session to the Ftp
      *         Server
      */
     public long getServerChannelReadLimit() {
-        return this.serverChannelReadLimit;
+        return serverChannelReadLimit;
     }
 
     /**
      * @return the delayLimit to apply between two check
      */
     public long getDelayLimit() {
-        return this.delayLimit;
+        return delayLimit;
     }
 
     /**
      * Check the password for Shutdown
-     * 
+     *
      * @param password
      * @return True if the password is OK
      */
     public boolean checkPassword(String password) {
         String serverpassword;
         try {
-            serverpassword = this.getStringProperty(FTP_PASSWORD);
+            serverpassword = getStringProperty(FTP_PASSWORD);
         } catch (FtpUnknownFieldException e) {
             return false;
         }
@@ -285,57 +321,57 @@ public abstract class FtpConfiguration {
 
     /**
      * Return the next available port for passive connections.
-     * 
+     *
      * @return the next available Port for Passive connections
      */
     public abstract int getNextRangePort();
 
     /**
-     * 
+     *
      * @return the Base Directory of this Ftp Server
      */
     public String getBaseDirectory() {
         try {
-            return this.getStringProperty(BASE_DIRECTORY);
+            return getStringProperty(BASE_DIRECTORY);
         } catch (FtpUnknownFieldException e) {
             return null;
         }
     }
 
     /**
-     * 
+     *
      * @param key
      * @param s
      */
     public void setStringProperty(String key, String s) {
-        this.properties.put(key, s);
+        properties.put(key, s);
     }
 
     /**
-     * 
+     *
      * @param key
      * @param i
      */
     public void setIntProperty(String key, int i) {
-        this.properties.put(key, Integer.valueOf(i));
+        properties.put(key, Integer.valueOf(i));
     }
 
     /**
-     * 
+     *
      * @param key
      * @param f
      */
     public void setFileProperty(String key, File f) {
-        this.properties.put(key, f);
+        properties.put(key, f);
     }
 
     /**
-     * 
+     *
      * @param key
      * @param o
      */
     public void setProperty(String key, Object o) {
-        this.properties.put(key, o);
+        properties.put(key, o);
     }
 
     /**
@@ -343,7 +379,7 @@ public abstract class FtpConfiguration {
      *            the new port
      */
     public void setServerPort(int port) {
-        this.setIntProperty(SERVER_PORT, port);
+        setIntProperty(SERVER_PORT, port);
     }
 
     /**
@@ -351,7 +387,7 @@ public abstract class FtpConfiguration {
      *            the new base directory
      */
     public void setBaseDirectory(String dir) {
-        this.setStringProperty(BASE_DIRECTORY, dir);
+        setStringProperty(BASE_DIRECTORY, dir);
     }
 
     /**
@@ -359,112 +395,114 @@ public abstract class FtpConfiguration {
      *            the new password for shutdown
      */
     public void setPassword(String password) {
-        this.setStringProperty(FTP_PASSWORD, password);
+        setStringProperty(FTP_PASSWORD, password);
     }
 
     /**
      * @return the dataBusinessHandler
      */
     public Class<? extends DataBusinessHandler> getDataBusinessHandler() {
-        return this.dataBusinessHandler;
+        return dataBusinessHandler;
     }
 
     /**
      * Init internal configuration
-     * 
+     *
      */
     public void serverStartup() {
-        this.internalConfiguration.serverStartup();
+        internalConfiguration.serverStartup();
     }
 
     /**
      * Reset the global monitor for bandwidth limitation and change future
      * channel monitors with values divided by 10 (channel = global / 10)
-     * 
+     *
      * @param writeLimit
      * @param readLimit
      */
-    public void resetGlobalMonitor(long writeLimit, long readLimit) {
-        long newWriteLimit = (writeLimit > 1024)? writeLimit
-                : this.serverGlobalWriteLimit;
+    public void changeNetworkLimit(long writeLimit, long readLimit) {
+        long newWriteLimit = writeLimit > 1024? writeLimit
+                : serverGlobalWriteLimit;
         if (writeLimit <= 0) {
             newWriteLimit = 0;
         }
-        long newReadLimit = (readLimit > 1024)? readLimit
-                : this.serverGlobalReadLimit;
+        long newReadLimit = readLimit > 1024? readLimit
+                : serverGlobalReadLimit;
         if (readLimit <= 0) {
             newReadLimit = 0;
         }
-        boolean withGlobal = ((readLimit != 0)
-                && (writeLimit != 0)) ||
-                (this.getDelayLimit() != 0);
-        this.internalConfiguration.getTrafficCounterFactory().setGlobalActive(withGlobal);
-        this.internalConfiguration.getTrafficCounterFactory().setChannelActive(withGlobal);
-        this.internalConfiguration.getTrafficCounterFactory()
-                .configure(newWriteLimit / 10, newReadLimit / 10,
-                        this.delayLimit, newWriteLimit, newReadLimit,
-                        this.delayLimit);
+        internalConfiguration.getGlobalTrafficShapingHandler().configure(newWriteLimit, newReadLimit);
+        this.serverChannelReadLimit = newReadLimit / 10;
+        this.serverChannelWriteLimit = newWriteLimit / 10;
     }
 
     /**
      * Compute number of threads for both client and server from the real number
      * of available processors (double + 1) if the value is less than 64
      * threads.
-     * 
+     *
      */
     public void computeNbThreads() {
         int nb = Runtime.getRuntime().availableProcessors() * 2 + 1;
-        if (this.SERVER_THREAD < nb) {
-            this.SERVER_THREAD = nb;
+        if (SERVER_THREAD < nb) {
+            SERVER_THREAD = nb;
         }
     }
 
     /**
-     * 
+     *
      * @return the lock on configuration
      */
     public Lock getLock() {
-        return this.lock;
+        return lock;
     }
 
     /**
-     * 
+     *
      * @return the FtpInternalConfiguration
      */
     public FtpInternalConfiguration getFtpInternalConfiguration() {
-        return this.internalConfiguration;
+        return internalConfiguration;
     }
 
     /**
      * Add a session from a couple of addresses
-     * 
+     *
      * @param remote
      * @param local
      * @param session
      */
     public void setNewFtpSession(InetAddress remote, InetSocketAddress local,
             FtpSession session) {
-        this.internalConfiguration.setNewFtpSession(remote, local, session);
+        internalConfiguration.setNewFtpSession(remote, local, session);
     }
 
     /**
      * Return and remove the FtpSession
-     * 
+     *
      * @param channel
      * @param active
      * @return the FtpSession if it exists associated to this channel
      */
     public FtpSession getFtpSession(Channel channel, boolean active) {
-        return this.internalConfiguration.getFtpSession(channel, active);
+        return internalConfiguration.getFtpSession(channel, active);
     }
 
     /**
      * Remove the FtpSession
-     * 
+     *
      * @param remote
      * @param local
      */
     public void delFtpSession(InetAddress remote, InetSocketAddress local) {
-        this.internalConfiguration.delFtpSession(remote, local);
+        internalConfiguration.delFtpSession(remote, local);
     }
+
+    /**
+     * @return the fileParameter
+     */
+    public FileParameterInterface getFileParameter() {
+        return fileParameter;
+    }
+
 }

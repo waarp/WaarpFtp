@@ -1,10 +1,26 @@
 /**
- * Frederic Bregier LGPL 24 janv. 09 FtpArgumentCode.java
- * goldengate.ftp.core.command GoldenGateFtp frederic
+ * Copyright 2009, Frederic Bregier, and individual contributors
+ * by the @author tags. See the COPYRIGHT.txt in the distribution for a
+ * full listing of individual contributors.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 3.0 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 package goldengate.ftp.core.command;
 
-import goldengate.ftp.core.exception.FtpInvalidArgumentException;
+import goldengate.common.exception.InvalidArgumentException;
 
 import java.nio.charset.Charset;
 import java.util.Set;
@@ -12,17 +28,17 @@ import java.util.SortedMap;
 
 /**
  * Definition of all Argument of Parameter commands (MODE, STRU, TYPE)
- * 
- * @author frederic goldengate.ftp.core.command FtpArgumentCode
- * 
+ *
+ * @author Frederic Bregier
+ *
  */
 public class FtpArgumentCode {
 
     /**
      * Type of transmission
-     * 
-     * @author frederic goldengate.ftp.core.data TransferType
-     * 
+     *
+     * @author Frederic Bregier goldengate.ftp.core.data TransferType
+     *
      */
     public static enum TransferType {
         /**
@@ -54,7 +70,7 @@ public class FtpArgumentCode {
 
         private TransferType(char type) {
             this.type = type;
-            this.charsetName = null;
+            charsetName = null;
         }
 
         private TransferType(char type, String charsetName) {
@@ -65,9 +81,9 @@ public class FtpArgumentCode {
 
     /**
      * SubType of transmission
-     * 
-     * @author frederic goldengate.ftp.core.data TransferSubType
-     * 
+     *
+     * @author Frederic Bregier goldengate.ftp.core.data TransferSubType
+     *
      */
     public static enum TransferSubType {
         /**
@@ -94,13 +110,13 @@ public class FtpArgumentCode {
 
     /**
      * Structure of transmission
-     * 
-     * @author frederic goldengate.ftp.core.data TransferStructure
-     * 
+     *
+     * @author Frederic Bregier goldengate.ftp.core.data TransferStructure
+     *
      */
     public static enum TransferStructure {
         /**
-         * File TransferStructure
+         * FileInterface TransferStructure
          */
         FILE('F'),
         /**
@@ -123,9 +139,9 @@ public class FtpArgumentCode {
 
     /**
      * Mode of transmission
-     * 
-     * @author frederic goldengate.ftp.core.data TransferMode
-     * 
+     *
+     * @author Frederic Bregier goldengate.ftp.core.data TransferMode
+     *
      */
     public static enum TransferMode {
         /**
@@ -152,14 +168,14 @@ public class FtpArgumentCode {
 
     /**
      * Get the TransferType according to the char
-     * 
+     *
      * @param type
      * @return the corresponding TransferType
-     * @exception FtpInvalidArgumentException
+     * @exception InvalidArgumentException
      *                if the type is unknown
      */
     public static FtpArgumentCode.TransferType getTransferType(char type)
-            throws FtpInvalidArgumentException {
+            throws InvalidArgumentException {
         switch (type) {
             case 'A':
             case 'a':
@@ -174,21 +190,21 @@ public class FtpArgumentCode {
             case 'l':
                 return FtpArgumentCode.TransferType.LENGTH;
             default:
-                throw new FtpInvalidArgumentException(
+                throw new InvalidArgumentException(
                         "Argument for TransferType is not allowed: " + type);
         }
     }
 
     /**
      * Get the TransferSubType according to the char
-     * 
+     *
      * @param subType
      * @return the corresponding TransferSubType
-     * @exception FtpInvalidArgumentException
+     * @exception InvalidArgumentException
      *                if the TransferSubType is unknown
      */
     public static FtpArgumentCode.TransferSubType getTransferSubType(
-            char subType) throws FtpInvalidArgumentException {
+            char subType) throws InvalidArgumentException {
         switch (subType) {
             case 'C':
             case 'c':
@@ -200,7 +216,7 @@ public class FtpArgumentCode {
             case 't':
                 return FtpArgumentCode.TransferSubType.TELNET;
             default:
-                throw new FtpInvalidArgumentException(
+                throw new InvalidArgumentException(
                         "Argument for TransferSubType is not allowed: " +
                                 subType);
         }
@@ -208,14 +224,14 @@ public class FtpArgumentCode {
 
     /**
      * Get the TransferStructure according to the char
-     * 
+     *
      * @param structure
      * @return the corresponding TransferStructure
-     * @exception FtpInvalidArgumentException
+     * @exception InvalidArgumentException
      *                if the TransferStructure is unknown
      */
     public static FtpArgumentCode.TransferStructure getTransferStructure(
-            char structure) throws FtpInvalidArgumentException {
+            char structure) throws InvalidArgumentException {
         switch (structure) {
             case 'P':
             case 'p':
@@ -227,7 +243,7 @@ public class FtpArgumentCode {
             case 'r':
                 return FtpArgumentCode.TransferStructure.RECORD;
             default:
-                throw new FtpInvalidArgumentException(
+                throw new InvalidArgumentException(
                         "Argument for TransferStructure is not allowed: " +
                                 structure);
         }
@@ -235,14 +251,14 @@ public class FtpArgumentCode {
 
     /**
      * Get the TransferMode according to the char
-     * 
+     *
      * @param mode
      * @return the corresponding TransferMode
-     * @exception FtpInvalidArgumentException
+     * @exception InvalidArgumentException
      *                if the TransferMode is unknown
      */
     public static FtpArgumentCode.TransferMode getTransferMode(char mode)
-            throws FtpInvalidArgumentException {
+            throws InvalidArgumentException {
         switch (mode) {
             case 'B':
             case 'b':
@@ -254,14 +270,14 @@ public class FtpArgumentCode {
             case 's':
                 return FtpArgumentCode.TransferMode.STREAM;
             default:
-                throw new FtpInvalidArgumentException(
+                throw new InvalidArgumentException(
                         "Argument for TransferMode is not allowed: " + mode);
         }
     }
 
     /**
      * List all charsets supported by the current platform
-     * 
+     *
      * @param args
      */
     public static void main(String args[]) {

@@ -1,16 +1,31 @@
 /**
- * Frederic Bregier LGPL 24 janv. 09 FtpInternalConfiguration.java
- * goldengate.ftp.core.config GoldenGateFtp frederic
+ * Copyright 2009, Frederic Bregier, and individual contributors
+ * by the @author tags. See the COPYRIGHT.txt in the distribution for a
+ * full listing of individual contributors.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 3.0 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 package goldengate.ftp.core.config;
 
-import goldengate.ftp.core.command.exception.Reply425Exception;
+import goldengate.common.command.exception.Reply425Exception;
+import goldengate.common.file.DataBlockSizeEstimator;
+import goldengate.common.logging.GgInternalLogger;
+import goldengate.common.logging.GgInternalLoggerFactory;
 import goldengate.ftp.core.control.FtpPipelineFactory;
-import goldengate.ftp.core.data.handler.FtpDataBlockSizeEstimator;
 import goldengate.ftp.core.data.handler.FtpDataPipelineFactory;
-import goldengate.ftp.core.data.handler.FtpTrafficCounterFactory;
-import goldengate.ftp.core.logging.FtpInternalLogger;
-import goldengate.ftp.core.logging.FtpInternalLoggerFactory;
 import goldengate.ftp.core.session.FtpSession;
 import goldengate.ftp.core.session.FtpSessionReference;
 import goldengate.ftp.core.utils.FtpChannelUtils;
@@ -33,22 +48,23 @@ import org.jboss.netty.channel.group.DefaultChannelGroup;
 import org.jboss.netty.channel.socket.nio.NioClientSocketChannelFactory;
 import org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory;
 import org.jboss.netty.handler.execution.OrderedMemoryAwareThreadPoolExecutor;
-import org.jboss.netty.handler.traffic.TrafficCounterFactory;
+import org.jboss.netty.handler.traffic.ChannelTrafficShapingHandler;
+import org.jboss.netty.handler.traffic.GlobalTrafficShapingHandler;
 import org.jboss.netty.logging.InternalLoggerFactory;
 import org.jboss.netty.util.ObjectSizeEstimator;
 
 /**
  * Internal configuration of the FTP server, related to Netty
- * 
- * @author frederic goldengate.ftp.core.config FtpInternalConfiguration
- * 
+ *
+ * @author Frederic Bregier
+ *
  */
 public class FtpInternalConfiguration {
     // Static values
     /**
      * Internal Logger
      */
-    private static final FtpInternalLogger logger = FtpInternalLoggerFactory
+    private static final GgInternalLogger logger = GgInternalLoggerFactory
             .getLogger(FtpInternalConfiguration.class);
 
     // Network Internals
@@ -65,32 +81,13 @@ public class FtpInternalConfiguration {
     /**
      * Hack to say Windows or Unix (USR1 not OK on Windows)
      */
-    public static final boolean ISUNIX = (!System.getProperty("os.name")
-            .toLowerCase().startsWith("windows"));
+    public static final boolean ISUNIX = !System.getProperty("os.name")
+            .toLowerCase().startsWith("windows");
 
     /**
      * Default size for buffers (NIO)
      */
     public static final int BUFFERSIZEDEFAULT = 0x10000; // 64K
-
-    /**
-     * CR LF<br>
-     * A User Telnet MUST be able to send any of the forms: CR LF, CR NUL, and
-     * LF. A User Telnet on an ASCII host SHOULD have a user-controllable mode
-     * to send either CR LF or CR NUL when the user presses the "end-of-line"
-     * key, and CR LF SHOULD be the default.
-     */
-    public static final String CRLF = "\r\n";
-
-    /**
-     * CR NUL
-     */
-    public static final String CRNUL = "\r\0";
-
-    /**
-     * LF
-     */
-    public static final String LF = "\n";
 
     // Dynamic values
     /**
@@ -191,17 +188,19 @@ public class FtpInternalConfiguration {
             .newCachedThreadPool();
 
     /**
-     * Global TrafficCounterFactory (set from global configuration)
+     * Global TrafficCounter (set from global configuration)
      */
-    private TrafficCounterFactory globalTrafficCounterFactory = null;
+    private GlobalTrafficShapingHandler globalTrafficShapingHandler = null;
+
     /**
      * ObjectSizeEstimator
      */
     private ObjectSizeEstimator objectSizeEstimator = null;
+
     /**
-     * 
-     * @author frederic goldengate.ftp.core.config BindAddress
-     * 
+     *
+     * @author Frederic Bregier goldengate.ftp.core.config BindAddress
+     *
      */
     public class BindAddress {
         /**
@@ -216,12 +215,12 @@ public class FtpInternalConfiguration {
 
         /**
          * Constructor
-         * 
+         *
          * @param channel
          */
         public BindAddress(Channel channel) {
-            this.parentChannel = channel;
-            this.nbBind = 0;
+            parentChannel = channel;
+            nbBind = 0;
         }
     }
 
@@ -237,7 +236,7 @@ public class FtpInternalConfiguration {
 
     /**
      * Constructor
-     * 
+     *
      * @param configuration
      */
     public FtpInternalConfiguration(FtpConfiguration configuration) {
@@ -246,105 +245,91 @@ public class FtpInternalConfiguration {
 
     /**
      * Startup the server
-     * 
+     *
      */
     public void serverStartup() {
         InternalLoggerFactory.setDefaultFactory(InternalLoggerFactory
                 .getDefaultFactory());
         // Command
-        this.commandChannelGroup = new DefaultChannelGroup(
-                this.configuration.fromClass.getName());
+        commandChannelGroup = new DefaultChannelGroup(
+                configuration.fromClass.getName());
         // ChannelGroupFactory.getGroup(configuration.fromClass);
-        this.commandChannelFactory = new NioServerSocketChannelFactory(
-                this.execBoss, this.execWorker,
-                this.configuration.SERVER_THREAD);
+        commandChannelFactory = new NioServerSocketChannelFactory(
+                execBoss, execWorker,
+                configuration.SERVER_THREAD);
         // Data
-        this.dataChannelGroup = new DefaultChannelGroup(
-                this.configuration.fromClass.getName() + ".data");
+        dataChannelGroup = new DefaultChannelGroup(
+                configuration.fromClass.getName() + ".data");
         // ChannelGroupFactory.getGroup(configuration.fromClass.getName()+".data");
-        this.dataPassiveChannelFactory = new NioServerSocketChannelFactory(
-                this.execPassiveDataBoss, this.execPassiveDataWorker,
-                this.configuration.SERVER_THREAD);
-        this.dataActiveChannelFactory = new NioClientSocketChannelFactory(
-                this.execActiveDataBoss, this.execActiveDataWorker, 4);
+        dataPassiveChannelFactory = new NioServerSocketChannelFactory(
+                execPassiveDataBoss, execPassiveDataWorker,
+                configuration.SERVER_THREAD);
+        dataActiveChannelFactory = new NioClientSocketChannelFactory(
+                execActiveDataBoss, execActiveDataWorker, 4);
 
         // Passive Data Connections
-        this.passiveBootstrap = new ServerBootstrap(
-                this.dataPassiveChannelFactory);
-        this.passiveBootstrap.setPipelineFactory(new FtpDataPipelineFactory(
-                this.configuration.dataBusinessHandler, this.configuration, false));
-        this.passiveBootstrap.setOption("connectTimeoutMillis",
-                this.configuration.TIMEOUTCON);
-        this.passiveBootstrap.setOption("reuseAddress", true);
-        this.passiveBootstrap.setOption("tcpNoDelay", true);
-        this.passiveBootstrap.setOption("child.connectTimeoutMillis",
-                this.configuration.TIMEOUTCON);
-        this.passiveBootstrap.setOption("child.tcpNoDelay", true);
-        this.passiveBootstrap.setOption("child.keepAlive", true);
-        this.passiveBootstrap.setOption("child.reuseAddress", true);
+        passiveBootstrap = new ServerBootstrap(
+                dataPassiveChannelFactory);
+        passiveBootstrap.setPipelineFactory(new FtpDataPipelineFactory(
+                configuration.dataBusinessHandler, configuration,
+                false));
+        passiveBootstrap.setOption("connectTimeoutMillis",
+                configuration.TIMEOUTCON);
+        passiveBootstrap.setOption("reuseAddress", true);
+        passiveBootstrap.setOption("tcpNoDelay", true);
+        passiveBootstrap.setOption("child.connectTimeoutMillis",
+                configuration.TIMEOUTCON);
+        passiveBootstrap.setOption("child.tcpNoDelay", true);
+        passiveBootstrap.setOption("child.keepAlive", true);
+        passiveBootstrap.setOption("child.reuseAddress", true);
         // Active Data Connections
-        this.activeBootstrap = new ClientBootstrap(
-                this.dataActiveChannelFactory);
-        this.activeBootstrap.setPipelineFactory(new FtpDataPipelineFactory(
-                this.configuration.dataBusinessHandler, this.configuration, true));
-        this.activeBootstrap.setOption("connectTimeoutMillis",
-                this.configuration.TIMEOUTCON);
-        this.activeBootstrap.setOption("reuseAddress", true);
-        this.activeBootstrap.setOption("tcpNoDelay", true);
-        this.activeBootstrap.setOption("child.connectTimeoutMillis",
-                this.configuration.TIMEOUTCON);
-        this.activeBootstrap.setOption("child.tcpNoDelay", true);
-        this.activeBootstrap.setOption("child.keepAlive", true);
-        this.activeBootstrap.setOption("child.reuseAddress", true);
+        activeBootstrap = new ClientBootstrap(
+                dataActiveChannelFactory);
+        activeBootstrap.setPipelineFactory(new FtpDataPipelineFactory(
+                configuration.dataBusinessHandler, configuration,
+                true));
+        activeBootstrap.setOption("connectTimeoutMillis",
+                configuration.TIMEOUTCON);
+        activeBootstrap.setOption("reuseAddress", true);
+        activeBootstrap.setOption("tcpNoDelay", true);
+        activeBootstrap.setOption("child.connectTimeoutMillis",
+                configuration.TIMEOUTCON);
+        activeBootstrap.setOption("child.tcpNoDelay", true);
+        activeBootstrap.setOption("child.keepAlive", true);
+        activeBootstrap.setOption("child.reuseAddress", true);
         // Main Command server
-        this.serverBootstrap = new ServerBootstrap(this
-                .getCommandChannelFactory());
-        this.serverBootstrap.setPipelineFactory(new FtpPipelineFactory(
-                this.configuration.businessHandler, this.configuration));
-        this.serverBootstrap.setOption("child.tcpNoDelay", true);
-        this.serverBootstrap.setOption("child.keepAlive", true);
-        this.serverBootstrap.setOption("child.reuseAddress", true);
-        this.serverBootstrap.setOption("child.connectTimeoutMillis",
-                this.configuration.TIMEOUTCON);
-        this.serverBootstrap.setOption("tcpNoDelay", true);
-        this.serverBootstrap.setOption("reuseAddress", true);
-        this.serverBootstrap.setOption("connectTimeoutMillis",
-                this.configuration.TIMEOUTCON);
+        serverBootstrap = new ServerBootstrap(getCommandChannelFactory());
+        serverBootstrap.setPipelineFactory(new FtpPipelineFactory(
+                configuration.businessHandler, configuration));
+        serverBootstrap.setOption("child.tcpNoDelay", true);
+        serverBootstrap.setOption("child.keepAlive", true);
+        serverBootstrap.setOption("child.reuseAddress", true);
+        serverBootstrap.setOption("child.connectTimeoutMillis",
+                configuration.TIMEOUTCON);
+        serverBootstrap.setOption("tcpNoDelay", true);
+        serverBootstrap.setOption("reuseAddress", true);
+        serverBootstrap.setOption("connectTimeoutMillis",
+                configuration.TIMEOUTCON);
 
         FtpChannelUtils.addCommandChannel(
-                this.serverBootstrap.bind(new InetSocketAddress(
-                        this.configuration.getServerPort())),
-                this.configuration);
+                serverBootstrap.bind(new InetSocketAddress(
+                        configuration.getServerPort())),
+                configuration);
 
         // Init signal handler
-        FtpSignalHandler.initSignalHandler(this.configuration);
+        FtpSignalHandler.initSignalHandler(configuration);
         // Factory for TrafficShapingHandler
-        boolean withChannel = ((this.configuration.getServerChannelWriteLimit() != 0)
-          && (this.configuration.getServerChannelReadLimit() != 0));
-        boolean withGlobal = ((this.configuration.getServerGlobalWriteLimit() != 0)
-                && (this.configuration.getServerGlobalReadLimit() != 0)) ||
-                (this.configuration.getDelayLimit() != 0);
-        this.globalTrafficCounterFactory = new FtpTrafficCounterFactory(
-                this.execTrafficCounter, withChannel, this.configuration.getServerChannelWriteLimit(), 
-                this.configuration.getServerChannelReadLimit(), 
-                withChannel ? this.configuration.getDelayLimit() : 0, 
-                withGlobal, this.configuration.getServerGlobalWriteLimit(), this.configuration.getServerGlobalReadLimit(), 
-                this.configuration.getDelayLimit());
-        this.objectSizeEstimator = new FtpDataBlockSizeEstimator();
-    }
-
-    /**
-     * Shutdown the PerformanceCounterFactory and its executorService
-     * 
-     */
-    public void shutdownTrafficCounterFactory() {
-        this.globalTrafficCounterFactory.stopGlobalTrafficCounter();
-        this.execTrafficCounter.shutdownNow();
+        objectSizeEstimator = new DataBlockSizeEstimator();
+        globalTrafficShapingHandler = new GlobalTrafficShapingHandler(
+                objectSizeEstimator, execTrafficCounter,
+                configuration.getServerGlobalWriteLimit(),
+                configuration.getServerGlobalReadLimit(),
+                configuration.getDelayLimit());
     }
 
     /**
      * Add a session from a couple of addresses
-     * 
+     *
      * @param remote
      * @param local
      * @param session
@@ -352,12 +337,12 @@ public class FtpInternalConfiguration {
     public void setNewFtpSession(InetAddress remote, InetSocketAddress local,
             FtpSession session) {
         logger.debug("SetNewSession");
-        this.ftpSessionReference.setNewFtpSession(remote, local, session);
+        ftpSessionReference.setNewFtpSession(remote, local, session);
     }
 
     /**
      * Return and remove the FtpSession
-     * 
+     *
      * @param channel
      * @param active
      * @return the FtpSession if it exists associated to this channel
@@ -365,39 +350,39 @@ public class FtpInternalConfiguration {
     public FtpSession getFtpSession(Channel channel, boolean active) {
         logger.debug("getSession");
         if (active) {
-            return this.ftpSessionReference.getActiveFtpSession(channel);
+            return ftpSessionReference.getActiveFtpSession(channel);
         } else {
-            return this.ftpSessionReference.getPassiveFtpSession(channel);
+            return ftpSessionReference.getPassiveFtpSession(channel);
         }
     }
 
     /**
      * Remove the FtpSession
-     * 
+     *
      * @param remote
      * @param local
      */
     public void delFtpSession(InetAddress remote, InetSocketAddress local) {
         logger.debug("delSession");
-        this.ftpSessionReference.delFtpSession(remote, local);
+        ftpSessionReference.delFtpSession(remote, local);
     }
 
     /**
      * Try to add a Passive Channel listening to the specified local address
-     * 
+     *
      * @param address
      * @throws Reply425Exception
      *             in case the channel cannot be opened
      */
     public void bindPassive(InetSocketAddress address) throws Reply425Exception {
-        this.configuration.getLock().lock();
+        configuration.getLock().lock();
         try {
-            BindAddress bindAddress = this.hashBindPassiveDataConn.get(address);
+            BindAddress bindAddress = hashBindPassiveDataConn.get(address);
             if (bindAddress == null) {
                 logger.info("Bind really to {}", address);
                 Channel parentChannel = null;
                 try {
-                    parentChannel = this.passiveBootstrap.bind(address);
+                    parentChannel = passiveBootstrap.bind(address);
                 } catch (ChannelException e) {
                     logger.warn("Cannot open passive connection {}", e
                             .getMessage());
@@ -406,13 +391,13 @@ public class FtpInternalConfiguration {
                 }
                 bindAddress = new BindAddress(parentChannel);
                 FtpChannelUtils.addDataChannel(parentChannel,
-                        this.configuration);
+                        configuration);
             }
             bindAddress.nbBind ++;
             logger.info("Bind number to {} is {}", address, bindAddress.nbBind);
-            this.hashBindPassiveDataConn.put(address, bindAddress);
+            hashBindPassiveDataConn.put(address, bindAddress);
         } finally {
-            this.configuration.getLock().unlock();
+            configuration.getLock().unlock();
         }
     }
 
@@ -421,19 +406,19 @@ public class FtpInternalConfiguration {
      * to the specified local address if the last one. It returns only when the
      * underlying parent channel is closed if this was the last session that
      * wants to open on this local address.
-     * 
+     *
      * @param address
      */
     public void unbindPassive(InetSocketAddress address) {
-        this.configuration.getLock().lock();
+        configuration.getLock().lock();
         try {
-            BindAddress bindAddress = this.hashBindPassiveDataConn.get(address);
+            BindAddress bindAddress = hashBindPassiveDataConn.get(address);
             if (bindAddress != null) {
                 bindAddress.nbBind --;
                 logger.info("Bind number to {} left is {}", address,
                         bindAddress.nbBind);
                 if (bindAddress.nbBind == 0) {
-                    this.hashBindPassiveDataConn.remove(address);
+                    hashBindPassiveDataConn.remove(address);
                     bindAddress.parentChannel.close();
                     bindAddress.parentChannel = null;
                 }
@@ -441,120 +426,131 @@ public class FtpInternalConfiguration {
                 logger.warn("No Bind to {}", address);
             }
         } finally {
-            this.configuration.getLock().unlock();
+            configuration.getLock().unlock();
         }
     }
 
     /**
-     * 
+     *
      * @return the number of Binded Passive Connections
      */
     public int getNbBindedPassive() {
-        return this.hashBindPassiveDataConn.size();
+        return hashBindPassiveDataConn.size();
     }
 
     /**
      * Return the associated PipelineExecutor for Command Pipeline
-     * 
+     *
      * @return the Command Pipeline Executor
      */
     public OrderedMemoryAwareThreadPoolExecutor getPipelineExecutor() {
-        this.configuration.getLock().lock();
+        configuration.getLock().lock();
         try {
-            if (this.pipelineExecutor == null) {
+            if (pipelineExecutor == null) {
                 // Memory limitation: no limit by channel, 1GB global, 100 ms of
                 // timeout
-                this.pipelineExecutor = new OrderedMemoryAwareThreadPoolExecutor(
-                        this.configuration.SERVER_THREAD * 4,
-                        this.configuration.maxGlobalMemory / 40,
-                        this.configuration.maxGlobalMemory / 4, 100,
+                pipelineExecutor = new OrderedMemoryAwareThreadPoolExecutor(
+                        configuration.SERVER_THREAD * 4,
+                        configuration.maxGlobalMemory / 40,
+                        configuration.maxGlobalMemory / 4, 100,
                         TimeUnit.MILLISECONDS, Executors.defaultThreadFactory());
             }
         } finally {
-            this.configuration.getLock().unlock();
+            configuration.getLock().unlock();
         }
-        return this.pipelineExecutor;
+        return pipelineExecutor;
     }
 
     /**
      * Return the associated PipelineExecutor for Data Pipeline
-     * 
+     *
      * @return the Data Pipeline Executor
      */
     public OrderedMemoryAwareThreadPoolExecutor getDataPipelineExecutor() {
-        this.configuration.getLock().lock();
+        configuration.getLock().lock();
         try {
-            if (this.pipelineDataExecutor == null) {
+            if (pipelineDataExecutor == null) {
                 // Memory limitation: no limit by channel, 1GB global, 100 ms of
                 // timeout
-                this.pipelineDataExecutor = new OrderedMemoryAwareThreadPoolExecutor(
-                        this.configuration.SERVER_THREAD * 4,
-                        this.configuration.maxGlobalMemory / 10,
-                        this.configuration.maxGlobalMemory, 100,
+                pipelineDataExecutor = new OrderedMemoryAwareThreadPoolExecutor(
+                        configuration.SERVER_THREAD * 4,
+                        configuration.maxGlobalMemory / 10,
+                        configuration.maxGlobalMemory, 100,
                         TimeUnit.MILLISECONDS, Executors.defaultThreadFactory());
             }
         } finally {
-            this.configuration.getLock().unlock();
+            configuration.getLock().unlock();
         }
-        return this.pipelineDataExecutor;
+        return pipelineDataExecutor;
     }
 
     /**
-     * 
+     *
      * @return the ActiveBootstrap
      */
     public ClientBootstrap getActiveBootstrap() {
-        return this.activeBootstrap;
+        return activeBootstrap;
     }
 
     /**
      * @return the commandChannelFactory
      */
     public ChannelFactory getCommandChannelFactory() {
-        return this.commandChannelFactory;
+        return commandChannelFactory;
     }
 
     /**
      * @return the commandChannelGroup
      */
     public ChannelGroup getCommandChannelGroup() {
-        return this.commandChannelGroup;
+        return commandChannelGroup;
     }
 
     /**
      * @return the dataPassiveChannelFactory
      */
     public ChannelFactory getDataPassiveChannelFactory() {
-        return this.dataPassiveChannelFactory;
+        return dataPassiveChannelFactory;
     }
 
     /**
      * @return the dataActiveChannelFactory
      */
     public ChannelFactory getDataActiveChannelFactory() {
-        return this.dataActiveChannelFactory;
+        return dataActiveChannelFactory;
     }
 
     /**
      * @return the dataChannelGroup
      */
     public ChannelGroup getDataChannelGroup() {
-        return this.dataChannelGroup;
-    }
-
-    /**
-     * 
-     * @return The TrafficCounterFactory
-     */
-    public TrafficCounterFactory getTrafficCounterFactory() {
-        return this.globalTrafficCounterFactory;
+        return dataChannelGroup;
     }
 
     /**
      * @return the objectSizeEstimator
      */
     public ObjectSizeEstimator getObjectSizeEstimator() {
-        return this.objectSizeEstimator;
+        return objectSizeEstimator;
     }
-    
+
+    /**
+     *
+     * @return The TrafficCounterFactory
+     */
+    public GlobalTrafficShapingHandler getGlobalTrafficShapingHandler() {
+        return globalTrafficShapingHandler;
+    }
+
+    /**
+     *
+     * @return a new ChannelTrafficShapingHandler
+     */
+    public ChannelTrafficShapingHandler newChannelTrafficShapingHandler() {
+        return new ChannelTrafficShapingHandler(objectSizeEstimator,
+                execTrafficCounter, configuration
+                        .getServerChannelWriteLimit(), configuration
+                        .getServerChannelReadLimit(), configuration
+                        .getDelayLimit());
+    }
 }

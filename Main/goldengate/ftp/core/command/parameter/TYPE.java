@@ -1,55 +1,71 @@
 /**
- * Frederic Bregier LGPL 10 janv. 09 PORT.java
- * goldengate.ftp.core.command.access GoldenGateFtp frederic
+ * Copyright 2009, Frederic Bregier, and individual contributors
+ * by the @author tags. See the COPYRIGHT.txt in the distribution for a
+ * full listing of individual contributors.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 3.0 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 package goldengate.ftp.core.command.parameter;
 
+import goldengate.common.command.ReplyCode;
+import goldengate.common.command.exception.Reply501Exception;
+import goldengate.common.command.exception.Reply504Exception;
+import goldengate.common.exception.InvalidArgumentException;
 import goldengate.ftp.core.command.AbstractCommand;
 import goldengate.ftp.core.command.FtpArgumentCode;
-import goldengate.ftp.core.command.FtpReplyCode;
 import goldengate.ftp.core.command.FtpArgumentCode.TransferSubType;
-import goldengate.ftp.core.command.exception.Reply501Exception;
-import goldengate.ftp.core.command.exception.Reply504Exception;
-import goldengate.ftp.core.exception.FtpInvalidArgumentException;
 
 /**
  * TYPE command
- * 
- * @author frederic goldengate.ftp.core.command.parameter TYPE
- * 
+ *
+ * @author Frederic Bregier
+ *
  */
 public class TYPE extends AbstractCommand {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see goldengate.ftp.core.command.AbstractCommand#exec()
      */
     @Override
     public void exec() throws Reply501Exception, Reply504Exception {
         // First Check if any argument
-        if (!this.hasArg()) {
-            this.getFtpSession().getDataConn().setType(
+        if (!hasArg()) {
+            getSession().getDataConn().setType(
                     FtpArgumentCode.TransferType.ASCII);
-            this.getFtpSession().getDataConn().setSubType(
-                    TransferSubType.NONPRINT);
-            this.getFtpSession().setReplyCode(
-                    FtpReplyCode.REPLY_200_COMMAND_OKAY,
+            getSession().getDataConn()
+                    .setSubType(TransferSubType.NONPRINT);
+            getSession().setReplyCode(
+                    ReplyCode.REPLY_200_COMMAND_OKAY,
                     "Type set to " + FtpArgumentCode.TransferType.ASCII.name() +
                             " " + TransferSubType.NONPRINT);
             return;
         }
         FtpArgumentCode.TransferType transferType;
-        String[] types = this.getArgs();
+        String[] types = getArgs();
         try {
             transferType = FtpArgumentCode.getTransferType(types[0].charAt(0));
-        } catch (FtpInvalidArgumentException e) {
-            throw new Reply501Exception("Unrecognize Type: " + this.getArg());
+        } catch (InvalidArgumentException e) {
+            throw new Reply501Exception("Unrecognize Type: " + getArg());
         }
         if (transferType == FtpArgumentCode.TransferType.ASCII) {
-            this.getFtpSession().getDataConn().setType(transferType);
+            getSession().getDataConn().setType(transferType);
         } else if (transferType == FtpArgumentCode.TransferType.IMAGE) {
-            this.getFtpSession().getDataConn().setType(transferType);
+            getSession().getDataConn().setType(transferType);
         } else {
             throw new Reply504Exception("Type not implemented: " +
                     transferType.name());
@@ -62,7 +78,7 @@ public class TYPE extends AbstractCommand {
                     try {
                         transferSubType = FtpArgumentCode
                                 .getTransferSubType(types[i].charAt(0));
-                    } catch (FtpInvalidArgumentException e) {
+                    } catch (InvalidArgumentException e) {
                         throw new Reply501Exception(
                                 "Unrecognize Format Control: " + types[i]);
                     }
@@ -73,14 +89,14 @@ public class TYPE extends AbstractCommand {
                     }
                 }
             }
-            this.getFtpSession().getDataConn().setSubType(
-                    TransferSubType.NONPRINT);
+            getSession().getDataConn()
+                    .setSubType(TransferSubType.NONPRINT);
         } else {
-            this.getFtpSession().getDataConn().setSubType(
-                    TransferSubType.NONPRINT);
+            getSession().getDataConn()
+                    .setSubType(TransferSubType.NONPRINT);
         }
-        this.getFtpSession().setReplyCode(
-                FtpReplyCode.REPLY_200_COMMAND_OKAY,
+        getSession().setReplyCode(
+                ReplyCode.REPLY_200_COMMAND_OKAY,
                 "Type set to " + transferType.name() + " " +
                         TransferSubType.NONPRINT);
     }

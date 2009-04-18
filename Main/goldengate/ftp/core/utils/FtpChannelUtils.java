@@ -1,12 +1,28 @@
 /**
- * Frederic Bregier LGPL 25 janv. 09 FtpChannelUtils.java
- * goldengate.ftp.core.utils GoldenGateFtp frederic
+ * Copyright 2009, Frederic Bregier, and individual contributors
+ * by the @author tags. See the COPYRIGHT.txt in the distribution for a
+ * full listing of individual contributors.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 3.0 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 package goldengate.ftp.core.utils;
 
+import goldengate.common.logging.GgInternalLogger;
+import goldengate.common.logging.GgInternalLoggerFactory;
 import goldengate.ftp.core.config.FtpConfiguration;
-import goldengate.ftp.core.logging.FtpInternalLogger;
-import goldengate.ftp.core.logging.FtpInternalLoggerFactory;
 
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
@@ -18,20 +34,20 @@ import org.jboss.netty.channel.Channels;
 
 /**
  * Some useful functions related to Channel of Netty
- * 
- * @author frederic goldengate.ftp.core.utils FtpChannelUtils
- * 
+ *
+ * @author Frederic Bregier
+ *
  */
 public class FtpChannelUtils {
     /**
      * Internal Logger
      */
-    private static final FtpInternalLogger logger = FtpInternalLoggerFactory
+    private static final GgInternalLogger logger = GgInternalLoggerFactory
             .getLogger(FtpChannelUtils.class);
 
     /**
      * Get the Remote InetAddress
-     * 
+     *
      * @param channel
      * @return the remote InetAddress
      */
@@ -46,7 +62,7 @@ public class FtpChannelUtils {
 
     /**
      * Get the Local InetAddress
-     * 
+     *
      * @param channel
      * @return the local InetAddress
      */
@@ -58,7 +74,7 @@ public class FtpChannelUtils {
 
     /**
      * Get the Remote InetSocketAddress
-     * 
+     *
      * @param channel
      * @return the remote InetSocketAddress
      */
@@ -68,7 +84,7 @@ public class FtpChannelUtils {
 
     /**
      * Get the Local InetSocketAddress
-     * 
+     *
      * @param channel
      * @return the local InetSocketAddress
      */
@@ -78,7 +94,7 @@ public class FtpChannelUtils {
 
     /**
      * Get the InetSocketAddress corresponding to the FTP format of address
-     * 
+     *
      * @param arg
      * @return the InetSocketAddress or null if an error occurs
      */
@@ -95,14 +111,14 @@ public class FtpChannelUtils {
             } catch (NumberFormatException e) {
                 return null;
             }
-            if ((iElements[i] < 0) || (iElements[i] > 255)) {
+            if (iElements[i] < 0 || iElements[i] > 255) {
                 return null;
             }
         }
         for (int i = 0; i < 4; i ++) {
             address[i] = (byte) iElements[i];
         }
-        int port = ((iElements[4] << 8) | iElements[5]);
+        int port = iElements[4] << 8 | iElements[5];
         InetAddress inetAddress;
         try {
             inetAddress = InetAddress.getByAddress(address);
@@ -114,7 +130,7 @@ public class FtpChannelUtils {
 
     /**
      * Return the Address in the format compatible with FTP argument
-     * 
+     *
      * @param address
      * @return the String representation of the address
      */
@@ -128,14 +144,14 @@ public class FtpChannelUtils {
     /**
      * Get the (RFC2428) InetSocketAddress corresponding to the FTP format of
      * address (RFC2428)
-     * 
+     *
      * @param arg
      * @return the InetSocketAddress or null if an error occurs
      */
     public static InetSocketAddress get2428InetSocketAddress(String arg) {
         // Format: #a#net-addr#tcp-port# where a = 1 IPV4 or 2 IPV6, other will
         // not be supported
-        if ((arg == null) || (arg.length() == 0)) {
+        if (arg == null || arg.length() == 0) {
             // bad args
             return null;
         }
@@ -178,7 +194,7 @@ public class FtpChannelUtils {
                 return null;
             }
             for (int i = 0, j = 0; i < 8; i ++) {
-                if ((elements[i] == null) || (elements[i].length() == 0)) {
+                if (elements[i] == null || elements[i].length() == 0) {
                     value[i] = 0;
                 } else {
                     try {
@@ -208,7 +224,7 @@ public class FtpChannelUtils {
 
     /**
      * Return the (RFC2428) Address in the format compatible with FTP (RFC2428)
-     * 
+     *
      * @param address
      * @return the String representation of the address
      */
@@ -233,7 +249,7 @@ public class FtpChannelUtils {
 
     /**
      * Terminate all registered command channels
-     * 
+     *
      * @param configuration
      * @return the number of peviously registered command channels
      */
@@ -247,7 +263,7 @@ public class FtpChannelUtils {
 
     /**
      * Terminate all registered data channels
-     * 
+     *
      * @param configuration
      * @return the number of peviously registered data channels
      */
@@ -261,7 +277,7 @@ public class FtpChannelUtils {
 
     /**
      * Return the current number of command connections
-     * 
+     *
      * @param configuration
      * @return the current number of command connections
      */
@@ -272,7 +288,7 @@ public class FtpChannelUtils {
 
     /**
      * Return the current number of data connections
-     * 
+     *
      * @param configuration
      * @return the current number of data connections
      */
@@ -283,7 +299,7 @@ public class FtpChannelUtils {
 
     /**
      * Return the number of still positive command connections
-     * 
+     *
      * @param configuration
      * @return the number of positive command connections
      */
@@ -313,7 +329,7 @@ public class FtpChannelUtils {
 
     /**
      * Exit global ChannelFactory
-     * 
+     *
      * @param configuration
      */
     public static void exit(FtpConfiguration configuration) {
@@ -325,7 +341,7 @@ public class FtpChannelUtils {
         } catch (InterruptedException e) {
         }
         configuration.getFtpInternalConfiguration()
-                .shutdownTrafficCounterFactory();
+                .getGlobalTrafficShapingHandler().releaseExternalResources();
         logger.warn("Exit Shutdown Data");
         dataExit(configuration);
         logger.warn("Exit Shutdown Command");
@@ -336,7 +352,7 @@ public class FtpChannelUtils {
     /**
      * This function is the top function to be called when the server is to be
      * shutdown.
-     * 
+     *
      * @param configuration
      */
     public static void teminateServer(FtpConfiguration configuration) {
@@ -345,7 +361,7 @@ public class FtpChannelUtils {
 
     /**
      * Shutdown Data services
-     * 
+     *
      * @param configuration
      */
     private static void dataExit(FtpConfiguration configuration) {
@@ -360,7 +376,7 @@ public class FtpChannelUtils {
 
     /**
      * Shutdown Command services
-     * 
+     *
      * @param configuration
      */
     private static void commandExit(FtpConfiguration configuration) {
@@ -373,7 +389,7 @@ public class FtpChannelUtils {
 
     /**
      * Add a command channel into the list
-     * 
+     *
      * @param channel
      * @param configuration
      */
@@ -386,7 +402,7 @@ public class FtpChannelUtils {
 
     /**
      * Add a data channel into the list
-     * 
+     *
      * @param channel
      * @param configuration
      */

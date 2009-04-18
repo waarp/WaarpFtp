@@ -1,30 +1,49 @@
 /**
- * Frederic Bregier LGPL 10 janv. 09 FtpSession.java goldengate.ftp.core.session
- * GoldenGateFtp frederic
+ * Copyright 2009, Frederic Bregier, and individual contributors
+ * by the @author tags. See the COPYRIGHT.txt in the distribution for a
+ * full listing of individual contributors.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 3.0 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 package goldengate.ftp.core.session;
 
-import goldengate.ftp.core.auth.FtpAuth;
+import goldengate.common.command.CommandInterface;
+import goldengate.common.command.ReplyCode;
+import goldengate.common.command.exception.CommandAbstractException;
+import goldengate.common.file.AuthInterface;
+import goldengate.common.file.DirInterface;
+import goldengate.common.file.FileParameterInterface;
+import goldengate.common.file.Restart;
+import goldengate.common.file.SessionInterface;
 import goldengate.ftp.core.command.AbstractCommand;
-import goldengate.ftp.core.command.FtpReplyCode;
-import goldengate.ftp.core.command.exception.FtpCommandAbstractException;
 import goldengate.ftp.core.config.FtpConfiguration;
 import goldengate.ftp.core.control.BusinessHandler;
 import goldengate.ftp.core.control.NetworkHandler;
 import goldengate.ftp.core.data.FtpDataAsyncConn;
-import goldengate.ftp.core.file.FtpDir;
-import goldengate.ftp.core.file.FtpRestart;
 
 import org.jboss.netty.channel.Channel;
 
 /**
  * Main class that stores any information that must be accessible from anywhere
  * during the connection of one user.
- * 
- * @author frederic goldengate.ftp.core.session FtpSession
- * 
+ *
+ * @author Frederic Bregier
+ *
  */
-public class FtpSession {
+public class FtpSession implements SessionInterface {
     /**
      * Business Handler
      */
@@ -43,12 +62,12 @@ public class FtpSession {
     /**
      * Ftp Authentication
      */
-    private FtpAuth ftpAuth = null;
+    private AuthInterface ftpAuth = null;
 
     /**
-     * Ftp Dir configuration and access
+     * Ftp DirInterface configuration and access
      */
-    private FtpDir ftpDir = null;
+    private DirInterface ftpDir = null;
 
     /**
      * Previous Command
@@ -63,7 +82,7 @@ public class FtpSession {
     /**
      * Associated Reply Code
      */
-    private FtpReplyCode replyCode = null;
+    private ReplyCode replyCode = null;
 
     /**
      * Real text for answer
@@ -73,7 +92,7 @@ public class FtpSession {
     /**
      * Current Restart information
      */
-    private FtpRestart restart = null;
+    private Restart restart = null;
 
     /**
      * Is the control ready to accept command
@@ -82,58 +101,52 @@ public class FtpSession {
 
     /**
      * Constructor
-     * 
+     *
      * @param configuration
      * @param handler
      */
     public FtpSession(FtpConfiguration configuration, BusinessHandler handler) {
         this.configuration = configuration;
-        this.businessHandler = handler;
-        this.isReady = false;
+        businessHandler = handler;
+        isReady = false;
     }
 
     /**
      * @return the businessHandler
      */
     public BusinessHandler getBusinessHandler() {
-        return this.businessHandler;
+        return businessHandler;
     }
 
     /**
      * Get the configuration
-     * 
+     *
      * @return the configuration
      */
     public FtpConfiguration getConfiguration() {
-        return this.configuration;
+        return configuration;
     }
 
-    /**
-     * @return the ftpDir
-     */
-    public FtpDir getFtpDir() {
-        return this.ftpDir;
+    @Override
+    public DirInterface getDir() {
+        return ftpDir;
     }
 
     /**
      * @return the Data Connection
      */
     public FtpDataAsyncConn getDataConn() {
-        return this.dataConn;
+        return dataConn;
     }
 
-    /**
-     * @return the ftpAuth
-     */
-    public FtpAuth getFtpAuth() {
-        return this.ftpAuth;
+    @Override
+    public AuthInterface getAuth() {
+        return ftpAuth;
     }
 
-    /**
-     * @return the restart
-     */
-    public FtpRestart getFtpRestart() {
-        return this.restart;
+    @Override
+    public Restart getRestart() {
+        return restart;
     }
 
     /**
@@ -141,72 +154,72 @@ public class FtpSession {
      * channelConnected of the NetworkHandler)
      */
     public void setControlConnected() {
-        this.dataConn = new FtpDataAsyncConn(this);
-        // Auth must be done before FtpFile
-        this.ftpAuth = this.businessHandler.getBusinessNewAuth();
-        this.ftpDir = this.businessHandler.getBusinessNewFtpDir();
-        this.restart = this.businessHandler.getBusinessNewFtpRestart();
+        dataConn = new FtpDataAsyncConn(this);
+        // AuthInterface must be done before FtpFile
+        ftpAuth = businessHandler.getBusinessNewAuth();
+        ftpDir = businessHandler.getBusinessNewDir();
+        restart = businessHandler.getBusinessNewRestart();
     }
 
     /**
      * @return the Control channel
      */
     public Channel getControlChannel() {
-        return this.getNetworkHandler().getControlChannel();
+        return getNetworkHandler().getControlChannel();
     }
 
     /**
-     * 
+     *
      * @return The network handler associated with control
      */
     public NetworkHandler getNetworkHandler() {
-        if (this.businessHandler != null) {
-            return this.businessHandler.getNetworkHandler();
+        if (businessHandler != null) {
+            return businessHandler.getNetworkHandler();
         }
         return null;
     }
 
     /**
      * Set the new current command
-     * 
+     *
      * @param command
      */
-    public void setNextCommand(AbstractCommand command) {
-        this.previousCommand = this.currentCommand;
-        this.currentCommand = command;
+    public void setNextCommand(CommandInterface command) {
+        previousCommand = currentCommand;
+        currentCommand = (AbstractCommand) command;
     }
 
     /**
      * @return the currentCommand
      */
     public AbstractCommand getCurrentCommand() {
-        return this.currentCommand;
+        return currentCommand;
     }
 
     /**
      * @return the previousCommand
      */
     public AbstractCommand getPreviousCommand() {
-        return this.previousCommand;
+        return previousCommand;
     }
 
     /**
      * Set the previous command as the new current command (used after a
      * incorrect sequence of commands or unknown command)
-     * 
+     *
      */
     public void setPreviousAsCurrentCommand() {
-        this.currentCommand = this.previousCommand;
+        currentCommand = previousCommand;
     }
 
     /**
      * @return the answer
      */
     public String getAnswer() {
-        if (this.answer == null) {
-            this.answer = this.replyCode.getMesg();
+        if (answer == null) {
+            answer = replyCode.getMesg();
         }
-        return this.answer;
+        return answer;
     }
 
     /**
@@ -214,10 +227,10 @@ public class FtpSession {
      *            the replyCode to set
      * @param answer
      */
-    public void setReplyCode(FtpReplyCode replyCode, String answer) {
+    public void setReplyCode(ReplyCode replyCode, String answer) {
         this.replyCode = replyCode;
         if (answer != null) {
-            this.answer = FtpReplyCode.getFinalMsg(replyCode.getCode(), answer);
+            this.answer = ReplyCode.getFinalMsg(replyCode.getCode(), answer);
         } else {
             this.answer = replyCode.getMesg();
         }
@@ -226,70 +239,67 @@ public class FtpSession {
     /**
      * @param exception
      */
-    public void setReplyCode(FtpCommandAbstractException exception) {
+    public void setReplyCode(CommandAbstractException exception) {
         this.setReplyCode(exception.code, exception.message);
     }
 
     /**
      * Set Exit code after an error
-     * 
+     *
      * @param answer
      */
     public void setExitErrorCode(String answer) {
         this
                 .setReplyCode(
-                        FtpReplyCode.REPLY_421_SERVICE_NOT_AVAILABLE_CLOSING_CONTROL_CONNECTION,
+                        ReplyCode.REPLY_421_SERVICE_NOT_AVAILABLE_CLOSING_CONTROL_CONNECTION,
                         answer);
     }
 
     /**
      * Set Exit normal code
-     * 
+     *
      * @param answer
      */
     public void setExitNormalCode(String answer) {
-        this.setReplyCode(FtpReplyCode.REPLY_221_CLOSING_CONTROL_CONNECTION,
+        this.setReplyCode(ReplyCode.REPLY_221_CLOSING_CONTROL_CONNECTION,
                 answer);
     }
 
     /**
      * @return the replyCode
      */
-    public FtpReplyCode getReplyCode() {
-        return this.replyCode;
+    public ReplyCode getReplyCode() {
+        return replyCode;
     }
 
-    /**
-     * Clean the session
-     * 
-     */
+    @Override
     public void clean() {
-        if (this.dataConn != null) {
-            this.dataConn.clear();
-            this.dataConn = null;
+        if (dataConn != null) {
+            dataConn.clear();
+            dataConn = null;
         }
-        if (this.ftpDir != null) {
-            this.ftpDir.clear();
-            this.ftpDir = null;
+        if (ftpDir != null) {
+            ftpDir.clear();
+            ftpDir = null;
         }
-        if (this.ftpAuth != null) {
-            this.ftpAuth.clean();
-            this.ftpAuth = null;
+        if (ftpAuth != null) {
+            ftpAuth.clean();
+            ftpAuth = null;
         }
-        this.businessHandler = null;
-        this.configuration = null;
-        this.previousCommand = null;
-        this.currentCommand = null;
-        this.replyCode = null;
-        this.answer = null;
-        this.isReady = false;
+        businessHandler = null;
+        configuration = null;
+        previousCommand = null;
+        currentCommand = null;
+        replyCode = null;
+        answer = null;
+        isReady = false;
     }
 
     /**
      * @return True if the Control is ready to accept command
      */
     public boolean isReady() {
-        return this.isReady;
+        return isReady;
     }
 
     /**
@@ -300,30 +310,37 @@ public class FtpSession {
         this.isReady = isReady;
     }
 
-    /**
-	 * 
-	 */
     @Override
     public String toString() {
         String mesg = "FtpSession: ";
-        if (this.currentCommand != null) {
-            mesg += "CMD: " + this.currentCommand.getCommand() + " " +
-                    this.currentCommand.getArg() + " ";
+        if (currentCommand != null) {
+            mesg += "CMD: " + currentCommand.getCommand() + " " +
+                    currentCommand.getArg() + " ";
         }
-        if (this.replyCode != null) {
+        if (replyCode != null) {
             mesg += "Reply: " +
-                    (this.answer != null? this.answer : this.replyCode
+                    (answer != null? answer : replyCode
                             .getMesg()) + " ";
         }
-        if (this.dataConn != null) {
-            mesg += this.dataConn.toString();
+        if (dataConn != null) {
+            mesg += dataConn.toString();
         }
-        if (this.ftpDir != null) {
+        if (ftpDir != null) {
             try {
-                mesg += "PWD: " + this.ftpDir.getPwd();
-            } catch (FtpCommandAbstractException e) {
+                mesg += "PWD: " + ftpDir.getPwd();
+            } catch (CommandAbstractException e) {
             }
         }
         return mesg + "\n";
+    }
+
+    @Override
+    public int getBlockSize() {
+        return configuration.BLOCKSIZE;
+    }
+
+    @Override
+    public FileParameterInterface getFileParameter() {
+        return configuration.getFileParameter();
     }
 }

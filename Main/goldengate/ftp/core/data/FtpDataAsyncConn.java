@@ -1,18 +1,35 @@
 /**
- * 
+ * Copyright 2009, Frederic Bregier, and individual contributors
+ * by the @author tags. See the COPYRIGHT.txt in the distribution for a
+ * full listing of individual contributors.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 3.0 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 package goldengate.ftp.core.data;
 
+import goldengate.common.command.exception.Reply425Exception;
+import goldengate.common.logging.GgInternalLogger;
+import goldengate.common.logging.GgInternalLoggerFactory;
 import goldengate.ftp.core.command.FtpArgumentCode;
 import goldengate.ftp.core.command.FtpArgumentCode.TransferMode;
 import goldengate.ftp.core.command.FtpArgumentCode.TransferStructure;
 import goldengate.ftp.core.command.FtpArgumentCode.TransferType;
-import goldengate.ftp.core.command.exception.Reply425Exception;
 import goldengate.ftp.core.config.FtpConfiguration;
 import goldengate.ftp.core.data.handler.DataNetworkHandler;
 import goldengate.ftp.core.exception.FtpNoConnectionException;
-import goldengate.ftp.core.logging.FtpInternalLogger;
-import goldengate.ftp.core.logging.FtpInternalLoggerFactory;
 import goldengate.ftp.core.session.FtpSession;
 import goldengate.ftp.core.utils.FtpChannelUtils;
 
@@ -25,19 +42,19 @@ import org.jboss.netty.channel.Channels;
 /**
  * Main class that handles Data connection using asynchronous connection with
  * Netty
- * 
- * @author fbregier
- * 
+ *
+ * @author Frederic Bregier
+ *
  */
 public class FtpDataAsyncConn {
     /**
      * Internal Logger
      */
-    private static final FtpInternalLogger logger = FtpInternalLoggerFactory
+    private static final GgInternalLogger logger = GgInternalLoggerFactory
             .getLogger(FtpDataAsyncConn.class);
 
     /**
-     * Session
+     * SessionInterface
      */
     private final FtpSession session;
 
@@ -111,48 +128,48 @@ public class FtpDataAsyncConn {
 
     /**
      * Constructor for Active session by default
-     * 
+     *
      * @param session
      */
     public FtpDataAsyncConn(FtpSession session) {
         this.session = session;
-        this.dataChannel = null;
-        this.remoteAddress = FtpChannelUtils
+        dataChannel = null;
+        remoteAddress = FtpChannelUtils
                 .getRemoteInetSocketAddress(this.session.getControlChannel());
-        this.remotePort = this.remoteAddress.getPort();
-        this.setDefaultLocalPort();
-        this.localAddress = new InetSocketAddress(FtpChannelUtils
+        remotePort = remoteAddress.getPort();
+        setDefaultLocalPort();
+        localAddress = new InetSocketAddress(FtpChannelUtils
                 .getLocalInetAddress(this.session.getControlChannel()),
-                this.localPort);
-        this.passiveMode = false;
-        this.isBind = false;
-        this.transferControl = new FtpTransferControl(session);
+                localPort);
+        passiveMode = false;
+        isBind = false;
+        transferControl = new FtpTransferControl(session);
     }
 
     /**
      * Clear the Data Connection
-     * 
+     *
      */
     public void clear() {
-        this.unbindPassive();
-        this.transferControl.clear();
-        this.passiveMode = false;
-        this.remotePort = -1;
-        this.localPort = -1;
+        unbindPassive();
+        transferControl.clear();
+        passiveMode = false;
+        remotePort = -1;
+        localPort = -1;
     }
 
     /**
      * Set the local port to the default (20)
-     * 
+     *
      */
     private void setDefaultLocalPort() {
-        this.setLocalPort(this.session.getConfiguration().getServerPort() - 1);// Default
+        setLocalPort(session.getConfiguration().getServerPort() - 1);// Default
         // L-1
     }
 
     /**
      * Set the Local Port (Active or Passive)
-     * 
+     *
      * @param localPort
      */
     public void setLocalPort(int localPort) {
@@ -163,42 +180,42 @@ public class FtpDataAsyncConn {
      * @return the local address
      */
     public InetSocketAddress getLocalAddress() {
-        return this.localAddress;
+        return localAddress;
     }
 
     /**
      * @return the remote address
      */
     public InetSocketAddress getRemoteAddress() {
-        return this.remoteAddress;
+        return remoteAddress;
     }
 
     /**
      * @return the remotePort
      */
     public int getRemotePort() {
-        return this.remotePort;
+        return remotePort;
     }
 
     /**
      * @return the localPort
      */
     public int getLocalPort() {
-        return this.localPort;
+        return localPort;
     }
 
     /**
      * Change to active connection (don't change localPort)
-     * 
+     *
      * @param address
      *            remote address
      */
     public void setActive(InetSocketAddress address) {
-        this.unbindPassive();
-        this.remoteAddress = address;
-        this.passiveMode = false;
-        this.isBind = false;
-        this.remotePort = this.remoteAddress.getPort();
+        unbindPassive();
+        remoteAddress = address;
+        passiveMode = false;
+        isBind = false;
+        remotePort = remoteAddress.getPort();
     }
 
     /**
@@ -206,12 +223,12 @@ public class FtpDataAsyncConn {
      * port should have been set)
      */
     public void setPassive() {
-        this.unbindPassive();
-        this.localAddress = new InetSocketAddress(FtpChannelUtils
-                .getLocalInetAddress(this.session.getControlChannel()),
-                this.localPort);
-        this.passiveMode = true;
-        this.isBind = false;
+        unbindPassive();
+        localAddress = new InetSocketAddress(FtpChannelUtils
+                .getLocalInetAddress(session.getControlChannel()),
+                localPort);
+        passiveMode = true;
+        isBind = false;
         logger.debug("Passive prepared");
     }
 
@@ -219,32 +236,32 @@ public class FtpDataAsyncConn {
      * @return the passiveMode
      */
     public boolean isPassiveMode() {
-        return this.passiveMode;
+        return passiveMode;
     }
 
     /**
-     * 
+     *
      * @return True if the connection is bind (active = connected, passive = not
      *         necesseraly connected)
      */
     public boolean isBind() {
-        return this.isBind;
+        return isBind;
     }
 
     /**
      * Is the Data dataChannel connected
-     * 
+     *
      * @return True if the dataChannel is connected
      */
     public boolean isConnected() {
-        return ((this.dataChannel != null) && (this.dataChannel.isConnected()));
+        return dataChannel != null && dataChannel.isConnected();
     }
 
     /**
      * @return the transferMode
      */
     public FtpArgumentCode.TransferMode getMode() {
-        return this.transferMode;
+        return transferMode;
     }
 
     /**
@@ -253,14 +270,14 @@ public class FtpDataAsyncConn {
      */
     public void setMode(FtpArgumentCode.TransferMode transferMode) {
         this.transferMode = transferMode;
-        this.setCorrectCodec();
+        setCorrectCodec();
     }
 
     /**
      * @return the transferStructure
      */
     public FtpArgumentCode.TransferStructure getStructure() {
-        return this.transferStructure;
+        return transferStructure;
     }
 
     /**
@@ -269,14 +286,14 @@ public class FtpDataAsyncConn {
      */
     public void setStructure(FtpArgumentCode.TransferStructure transferStructure) {
         this.transferStructure = transferStructure;
-        this.setCorrectCodec();
+        setCorrectCodec();
     }
 
     /**
      * @return the transferSubType
      */
     public FtpArgumentCode.TransferSubType getSubType() {
-        return this.transferSubType;
+        return transferSubType;
     }
 
     /**
@@ -285,14 +302,14 @@ public class FtpDataAsyncConn {
      */
     public void setSubType(FtpArgumentCode.TransferSubType transferSubType) {
         this.transferSubType = transferSubType;
-        this.setCorrectCodec();
+        setCorrectCodec();
     }
 
     /**
      * @return the transferType
      */
     public FtpArgumentCode.TransferType getType() {
-        return this.transferType;
+        return transferType;
     }
 
     /**
@@ -301,35 +318,35 @@ public class FtpDataAsyncConn {
      */
     public void setType(FtpArgumentCode.TransferType transferType) {
         this.transferType = transferType;
-        this.setCorrectCodec();
+        setCorrectCodec();
     }
 
     /**
-     * 
-     * @return True if the current mode for data connection is File + (Stream or
-     *         Block) + (Ascii or Image)
+     *
+     * @return True if the current mode for data connection is FileInterface +
+     *         (Stream or Block) + (Ascii or Image)
      */
     public boolean isFileStreamBlockAsciiImage() {
-        return ((this.transferStructure == TransferStructure.FILE) &&
-                ((this.transferMode == TransferMode.STREAM) || (this.transferMode == TransferMode.BLOCK)) && ((this.transferType == TransferType.ASCII) || (this.transferType == TransferType.IMAGE)));
+        return transferStructure == TransferStructure.FILE &&
+                (transferMode == TransferMode.STREAM || transferMode == TransferMode.BLOCK) && (transferType == TransferType.ASCII || transferType == TransferType.IMAGE);
     }
 
     /**
-     * 
+     *
      * @return True if the current mode for data connection is Stream
      */
     public boolean isStreamFile() {
-        return ((this.transferMode == TransferMode.STREAM) && (this.transferStructure == TransferStructure.FILE));
+        return transferMode == TransferMode.STREAM && transferStructure == TransferStructure.FILE;
     }
 
     /**
      * This function must be called after any changes of parameters, ie after
      * MODE, STRU, TYPE
-     * 
+     *
      */
     private void setCorrectCodec() {
         try {
-            this.getDataNetworkHandler().setCorrectCodec();
+            getDataNetworkHandler().setCorrectCodec();
         } catch (FtpNoConnectionException e) {
         }
     }
@@ -337,42 +354,42 @@ public class FtpDataAsyncConn {
     /**
      * Unbind passive connection when close the Data Channel (from
      * channelClosed())
-     * 
+     *
      */
     public void unbindPassive() {
-        if (this.isBind && this.passiveMode) {
-            this.isBind = false;
-            if ((this.dataChannel != null) && (this.dataChannel.isConnected())) {
+        if (isBind && passiveMode) {
+            isBind = false;
+            if (dataChannel != null && dataChannel.isConnected()) {
                 logger.debug("PASSIVE MODE CLOSE");
-                Channels.close(this.dataChannel);//FIXME.awaitUninterruptibly();
+                Channels.close(dataChannel);// FIXME.awaitUninterruptibly();
             }
             logger.debug("Passive mode unbind");
-            this.session.getConfiguration().getFtpInternalConfiguration()
+            session.getConfiguration().getFtpInternalConfiguration()
                     .unbindPassive(getLocalAddress());
             // Previous mode was Passive so remove the current configuration if
             // any
-            InetSocketAddress local = this.getLocalAddress();
-            InetAddress remote = this.remoteAddress.getAddress();
-            this.session.getConfiguration().delFtpSession(remote, local);
+            InetSocketAddress local = getLocalAddress();
+            InetAddress remote = remoteAddress.getAddress();
+            session.getConfiguration().delFtpSession(remote, local);
         }
-        this.dataChannel = null;
-        this.dataNetworkHandler = null;
+        dataChannel = null;
+        dataNetworkHandler = null;
     }
 
     /**
      * Initialize the socket from Server side (only used in Passive)
-     * 
+     *
      * @return True if OK
      * @throws Reply425Exception
      */
     public boolean initPassiveConnection() throws Reply425Exception {
-        this.unbindPassive();
-        if (this.passiveMode) {
+        unbindPassive();
+        if (passiveMode) {
             // Connection is enable but the client will do the real connection
-            this.session.getConfiguration().getFtpInternalConfiguration()
+            session.getConfiguration().getFtpInternalConfiguration()
                     .bindPassive(getLocalAddress());
             logger.debug("Passive mode ready");
-            this.isBind = true;
+            isBind = true;
             return true;
         }
         // Connection is already prepared
@@ -381,32 +398,32 @@ public class FtpDataAsyncConn {
 
     /**
      * Return the current Data Channel
-     * 
+     *
      * @return the current Data Channel
      * @throws FtpNoConnectionException
      */
     public Channel getCurrentDataChannel() throws FtpNoConnectionException {
-        if (this.dataChannel == null) {
+        if (dataChannel == null) {
             throw new FtpNoConnectionException("No Data Connection active");
         }
-        return this.dataChannel;
+        return dataChannel;
     }
 
     /**
-     * 
+     *
      * @return the DataNetworkHandler
      * @throws FtpNoConnectionException
      */
     public DataNetworkHandler getDataNetworkHandler()
             throws FtpNoConnectionException {
-        if (this.dataNetworkHandler == null) {
+        if (dataNetworkHandler == null) {
             throw new FtpNoConnectionException("No Data Connection active");
         }
-        return this.dataNetworkHandler;
+        return dataNetworkHandler;
     }
 
     /**
-     * 
+     *
      * @param dataNetworkHandler
      *            the {@link DataNetworkHandler} to set
      */
@@ -415,7 +432,7 @@ public class FtpDataAsyncConn {
     }
 
     /**
-     * 
+     *
      * @param configuration
      * @return a new Passive Port
      */
@@ -433,20 +450,20 @@ public class FtpDataAsyncConn {
         builder.append((isPassiveMode()? "passive mode" : "active mode"));
         builder.append('\n');
         builder.append("Mode: ");
-        builder.append(this.transferMode.name());
+        builder.append(transferMode.name());
         builder.append('\n');
         builder.append("Structure: ");
-        builder.append(this.transferStructure.name());
+        builder.append(transferStructure.name());
         builder.append('\n');
         builder.append("Type: ");
-        builder.append(this.transferType.name());
+        builder.append(transferType.name());
         builder.append(' ');
-        builder.append(this.transferSubType.name());
+        builder.append(transferSubType.name());
         return builder.toString();
     }
 
     /**
-	 * 
+	 *
 	 */
     @Override
     public String toString() {
@@ -454,26 +471,26 @@ public class FtpDataAsyncConn {
     }
 
     /**
-     * 
+     *
      * @return the FtpTransferControl
      */
     public FtpTransferControl getFtpTransferControl() {
-        return this.transferControl;
+        return transferControl;
     }
 
     /**
      * Get the Data Channel from the channelConnected method
-     * 
+     *
      * @return the new Data Channel
      * @throws InterruptedException
      * @throws Reply425Exception
      */
     public Channel waitForOpenedDataChannel() throws InterruptedException,
             Reply425Exception {
-        this.dataChannel = this.transferControl.waitForOpenedDataChannel();
-        if (this.dataChannel == null) {
+        dataChannel = transferControl.waitForOpenedDataChannel();
+        if (dataChannel == null) {
             String curmode = null;
-            if (this.isPassiveMode()) {
+            if (isPassiveMode()) {
                 curmode = "passive";
             } else {
                 curmode = "active";
@@ -483,7 +500,7 @@ public class FtpDataAsyncConn {
             throw new Reply425Exception("Cannot open " + curmode +
                     " data connection");
         }
-        this.isBind = true;
-        return this.dataChannel;
+        isBind = true;
+        return dataChannel;
     }
 }

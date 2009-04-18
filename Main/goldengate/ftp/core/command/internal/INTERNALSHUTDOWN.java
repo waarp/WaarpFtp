@@ -1,16 +1,32 @@
 /**
- * Frederic Bregier LGPL 10 janv. 09 USER.java
- * goldengate.ftp.core.command.access GoldenGateFtp frederic
+ * Copyright 2009, Frederic Bregier, and individual contributors
+ * by the @author tags. See the COPYRIGHT.txt in the distribution for a
+ * full listing of individual contributors.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 3.0 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 package goldengate.ftp.core.command.internal;
 
+import goldengate.common.command.ReplyCode;
+import goldengate.common.command.exception.Reply500Exception;
+import goldengate.common.command.exception.Reply501Exception;
+import goldengate.common.logging.GgInternalLogger;
+import goldengate.common.logging.GgInternalLoggerFactory;
 import goldengate.ftp.core.command.AbstractCommand;
-import goldengate.ftp.core.command.FtpReplyCode;
-import goldengate.ftp.core.command.exception.Reply500Exception;
-import goldengate.ftp.core.command.exception.Reply501Exception;
 import goldengate.ftp.core.config.FtpConfiguration;
-import goldengate.ftp.core.logging.FtpInternalLogger;
-import goldengate.ftp.core.logging.FtpInternalLoggerFactory;
 import goldengate.ftp.core.utils.FtpChannelUtils;
 
 import org.jboss.netty.channel.ChannelFuture;
@@ -19,62 +35,72 @@ import org.jboss.netty.channel.Channels;
 
 /**
  * Internal shutdown command that will shutdown the FTP service with a password
- * 
- * @author frederic goldengate.ftp.core.command INTERNALSHUTDOWN
- * 
+ *
+ * @author Frederic Bregier
+ *
  */
 public class INTERNALSHUTDOWN extends AbstractCommand {
     /**
      * Internal Logger
      */
-    private static final FtpInternalLogger logger = FtpInternalLoggerFactory
+    private static final GgInternalLogger logger = GgInternalLoggerFactory
             .getLogger(INTERNALSHUTDOWN.class);
+
     /**
-     * 
-     * @author frederic
+     *
+     * @author Frederic Bregier
      *
      */
-    private class ShutdownChannelFutureListener implements ChannelFutureListener {
+    private class ShutdownChannelFutureListener implements
+            ChannelFutureListener {
 
         private final FtpConfiguration configuration;
+
         protected ShutdownChannelFutureListener(FtpConfiguration configuration) {
             this.configuration = configuration;
         }
-        /* (non-Javadoc)
-         * @see org.jboss.netty.channel.ChannelFutureListener#operationComplete(org.jboss.netty.channel.ChannelFuture)
+
+        /*
+         * (non-Javadoc)
+         *
+         * @see
+         * org.jboss.netty.channel.ChannelFutureListener#operationComplete(org
+         * .jboss.netty.channel.ChannelFuture)
          */
         @Override
         public void operationComplete(ChannelFuture arg0) throws Exception {
             Channels.close(arg0.getChannel());
-            FtpChannelUtils.teminateServer(this.configuration);
-            
+            FtpChannelUtils.teminateServer(configuration);
+
         }
-        
+
     }
+
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see goldengate.ftp.core.command.AbstractCommand#exec()
      */
     @Override
     public void exec() throws Reply501Exception, Reply500Exception {
-        if (!this.getFtpSession().getFtpAuth().isAdmin()) {
+        if (!getSession().getAuth().isAdmin()) {
             // not admin
             throw new Reply500Exception("Command Not Allowed");
         }
-        if (!this.hasArg()) {
+        if (!hasArg()) {
             throw new Reply501Exception("Shutdown Need password");
         }
-        String password = this.getArg();
-        if (!this.getConfiguration().checkPassword(password)) {
+        String password = getArg();
+        if (!getConfiguration().checkPassword(password)) {
             throw new Reply501Exception("Shutdown Need a correct password");
         }
         logger.warn("Shutdown...");
-        this.getFtpSession().setReplyCode(
-                FtpReplyCode.REPLY_221_CLOSING_CONTROL_CONNECTION,
+        getSession().setReplyCode(
+                ReplyCode.REPLY_221_CLOSING_CONTROL_CONNECTION,
                 "System shutdown");
-        this.getFtpSession().getNetworkHandler().writeIntermediateAnswer()
-            .addListener(new ShutdownChannelFutureListener(this.getConfiguration()));
+        getSession().getNetworkHandler().writeIntermediateAnswer()
+                .addListener(
+                        new ShutdownChannelFutureListener(getConfiguration()));
     }
 
 }

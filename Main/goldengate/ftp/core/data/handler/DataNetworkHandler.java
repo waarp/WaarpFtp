@@ -1,26 +1,44 @@
 /**
- * Frederic Bregier LGPL 10 janv. 09 DataNetworkHandler.java
- * goldengate.ftp.core.control GoldenGateFtp frederic
+ * Copyright 2009, Frederic Bregier, and individual contributors
+ * by the @author tags. See the COPYRIGHT.txt in the distribution for a
+ * full listing of individual contributors.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 3.0 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 package goldengate.ftp.core.data.handler;
 
+import goldengate.common.exception.FileEndOfTransferException;
+import goldengate.common.exception.FileTransferException;
+import goldengate.common.exception.InvalidArgumentException;
+import goldengate.common.file.DataBlock;
+import goldengate.common.logging.GgInternalLogger;
+import goldengate.common.logging.GgInternalLoggerFactory;
 import goldengate.ftp.core.config.FtpConfiguration;
 import goldengate.ftp.core.config.FtpInternalConfiguration;
 import goldengate.ftp.core.control.NetworkHandler;
 import goldengate.ftp.core.data.FtpTransferControl;
-import goldengate.ftp.core.exception.FtpFileEndOfTransferException;
-import goldengate.ftp.core.exception.FtpFileTransferException;
-import goldengate.ftp.core.exception.FtpInvalidArgumentException;
 import goldengate.ftp.core.exception.FtpNoConnectionException;
 import goldengate.ftp.core.exception.FtpNoFileException;
 import goldengate.ftp.core.exception.FtpNoTransferException;
-import goldengate.ftp.core.logging.FtpInternalLogger;
-import goldengate.ftp.core.logging.FtpInternalLoggerFactory;
 import goldengate.ftp.core.session.FtpSession;
 import goldengate.ftp.core.utils.FtpChannelUtils;
 
 import java.io.IOException;
 import java.net.ConnectException;
+import java.nio.channels.CancelledKeyException;
 import java.nio.channels.ClosedChannelException;
 
 import org.jboss.netty.buffer.ChannelBuffer;
@@ -38,16 +56,16 @@ import org.jboss.netty.channel.SimpleChannelHandler;
 
 /**
  * Network handler for Data connections
- * 
- * @author frederic goldengate.ftp.core.control DataNetworkHandler
- * 
+ *
+ * @author Frederic Bregier
+ *
  */
 @ChannelPipelineCoverage("one")
 public class DataNetworkHandler extends SimpleChannelHandler {
     /**
      * Internal Logger
      */
-    private static final FtpInternalLogger logger = FtpInternalLoggerFactory
+    private static final GgInternalLogger logger = GgInternalLoggerFactory
             .getLogger(DataNetworkHandler.class);
 
     /**
@@ -59,13 +77,14 @@ public class DataNetworkHandler extends SimpleChannelHandler {
      * Configuration
      */
     private final FtpConfiguration configuration;
+
     /**
      * Is this Data Connection an Active or Passive one
      */
     private final boolean isActive;
-    
+
     /**
-     * Internal store for the Session
+     * Internal store for the SessionInterface
      */
     private FtpSession session = null;
 
@@ -87,7 +106,7 @@ public class DataNetworkHandler extends SimpleChannelHandler {
 
     /**
      * Constructor from DataBusinessHandler
-     * 
+     *
      * @param configuration
      * @param handler
      * @param active
@@ -96,9 +115,9 @@ public class DataNetworkHandler extends SimpleChannelHandler {
             DataBusinessHandler handler, boolean active) {
         super();
         this.configuration = configuration;
-        this.dataBusinessHandler = handler;
-        this.dataBusinessHandler.setDataNetworkHandler(this);
-        this.isActive = active;
+        dataBusinessHandler = handler;
+        dataBusinessHandler.setDataNetworkHandler(this);
+        isActive = active;
     }
 
     /**
@@ -107,30 +126,30 @@ public class DataNetworkHandler extends SimpleChannelHandler {
      */
     public DataBusinessHandler getDataBusinessHandler()
             throws FtpNoConnectionException {
-        if (this.dataBusinessHandler == null) {
+        if (dataBusinessHandler == null) {
             throw new FtpNoConnectionException("No Data Connection active");
         }
-        return this.dataBusinessHandler;
+        return dataBusinessHandler;
     }
 
     /**
      * @return the session
      */
     public FtpSession getFtpSession() {
-        return this.session;
+        return session;
     }
 
     /**
-     * 
+     *
      * @return the NetworkHandler associated with the control connection
      */
     public NetworkHandler getNetworkHandler() {
-        return this.session.getBusinessHandler().getNetworkHandler();
+        return session.getBusinessHandler().getNetworkHandler();
     }
 
     /**
      * Run firstly executeChannelClosed.
-     * 
+     *
      * @throws Exception
      * @see org.jboss.netty.channel.SimpleChannelHandler#channelClosed(org.jboss.netty.channel.ChannelHandlerContext,
      *      org.jboss.netty.channel.ChannelStateEvent)
@@ -138,23 +157,23 @@ public class DataNetworkHandler extends SimpleChannelHandler {
     @Override
     public void channelClosed(ChannelHandlerContext ctx, ChannelStateEvent e)
             throws Exception {
-        if (this.session != null) {
+        if (session != null) {
             logger.debug("Channel closed, about to set it down");
-            this.session.getDataConn().getFtpTransferControl()
+            session.getDataConn().getFtpTransferControl()
                     .setPreEndOfTransfer();
-            this.session.getDataConn().unbindPassive();
+            session.getDataConn().unbindPassive();
             try {
-                this.getDataBusinessHandler().executeChannelClosed();
+                getDataBusinessHandler().executeChannelClosed();
                 // release file and other permanent objects
-                this.getDataBusinessHandler().clean();
+                getDataBusinessHandler().clean();
             } catch (FtpNoConnectionException e1) {
             }
             logger.debug("Channel closed inform closed");
-            this.session.getDataConn().getFtpTransferControl()
+            session.getDataConn().getFtpTransferControl()
                     .setClosedDataChannel();
-            this.dataBusinessHandler = null;
-            this.channelPipeline = null;
-            this.dataChannel = null;
+            dataBusinessHandler = null;
+            channelPipeline = null;
+            dataChannel = null;
             logger.debug("Channel closed: finish");
         }
         super.channelClosed(ctx, e);
@@ -162,7 +181,7 @@ public class DataNetworkHandler extends SimpleChannelHandler {
 
     /**
      * Initialiaze the Handler.
-     * 
+     *
      * @see org.jboss.netty.channel.SimpleChannelHandler#channelConnected(org.jboss.netty.channel.ChannelHandlerContext,
      *      org.jboss.netty.channel.ChannelStateEvent)
      */
@@ -170,10 +189,11 @@ public class DataNetworkHandler extends SimpleChannelHandler {
     public void channelConnected(ChannelHandlerContext ctx, ChannelStateEvent e) {
         Channel channel = e.getChannel();
         // First get the ftpSession from inetaddresses
-        for (int i = 0; i < FtpInternalConfiguration.RETRYNB; i++) {
-            this.session = this.configuration.getFtpSession(channel, this.isActive);
-            if (this.session == null) {
-                logger.debug("Session not found at try "+i);
+        for (int i = 0; i < FtpInternalConfiguration.RETRYNB; i ++) {
+            session = configuration.getFtpSession(channel,
+                    isActive);
+            if (session == null) {
+                logger.debug("SessionInterface not found at try " + i);
                 try {
                     Thread.sleep(FtpInternalConfiguration.RETRYINMS);
                 } catch (InterruptedException e1) {
@@ -183,29 +203,29 @@ public class DataNetworkHandler extends SimpleChannelHandler {
                 break;
             }
         }
-        if (this.session == null) {
+        if (session == null) {
             // Not found !!!
-            logger.error("Session not found!");
+            logger.error("SessionInterface not found!");
             Channels.close(channel);
             return;
         }
         logger.debug("Start DataNetwork");
-        this.channelPipeline = ctx.getPipeline();
-        this.dataChannel = channel;
-        this.dataBusinessHandler.setFtpSession(this.getFtpSession());
+        channelPipeline = ctx.getPipeline();
+        dataChannel = channel;
+        dataBusinessHandler.setFtpSession(getFtpSession());
         FtpChannelUtils
-                .addDataChannel(channel, this.session.getConfiguration());
+                .addDataChannel(channel, session.getConfiguration());
         if (isStillAlive()) {
-            this.setCorrectCodec();
-            this.session.getDataConn().getFtpTransferControl()
+            setCorrectCodec();
+            session.getDataConn().getFtpTransferControl()
                     .setOpenedDataChannel(channel, this);
         } else {
             // Cannot continue
-            this.session.getDataConn().getFtpTransferControl()
+            session.getDataConn().getFtpTransferControl()
                     .setOpenedDataChannel(null, this);
             return;
         }
-        this.isReady = true;
+        isReady = true;
         logger.debug("End of Start DataNetwork");
     }
 
@@ -214,26 +234,26 @@ public class DataNetworkHandler extends SimpleChannelHandler {
      * MODE, STRU or TYPE
      */
     public void setCorrectCodec() {
-        FtpDataModeCodec modeCodec = (FtpDataModeCodec) this.channelPipeline
+        FtpDataModeCodec modeCodec = (FtpDataModeCodec) channelPipeline
                 .get(FtpDataPipelineFactory.CODEC_MODE);
-        FtpDataTypeCodec typeCodec = (FtpDataTypeCodec) this.channelPipeline
+        FtpDataTypeCodec typeCodec = (FtpDataTypeCodec) channelPipeline
                 .get(FtpDataPipelineFactory.CODEC_TYPE);
-        FtpDataStructureCodec structureCodec = (FtpDataStructureCodec) this.channelPipeline
+        FtpDataStructureCodec structureCodec = (FtpDataStructureCodec) channelPipeline
                 .get(FtpDataPipelineFactory.CODEC_STRUCTURE);
-        modeCodec.setMode(this.session.getDataConn().getMode());
-        modeCodec.setStructure(this.session.getDataConn().getStructure());
-        typeCodec.setFullType(this.session.getDataConn().getType(),
-                this.session.getDataConn().getSubType());
-        structureCodec.setStructure(this.session.getDataConn().getStructure());
-        logger.debug("Set Correct Codec: {}", this.session.getDataConn());
+        modeCodec.setMode(session.getDataConn().getMode());
+        modeCodec.setStructure(session.getDataConn().getStructure());
+        typeCodec.setFullType(session.getDataConn().getType(),
+                session.getDataConn().getSubType());
+        structureCodec.setStructure(session.getDataConn().getStructure());
+        logger.debug("Set Correct Codec: {}", session.getDataConn());
     }
 
     /**
      * Unlock the Mode Codec from openConnection of {@link FtpTransferControl}
-     * 
+     *
      */
     public void unlockModeCodec() {
-        FtpDataModeCodec modeCodec = (FtpDataModeCodec) this.channelPipeline
+        FtpDataModeCodec modeCodec = (FtpDataModeCodec) channelPipeline
                 .get("MODE");
         modeCodec.setCodecReady();
     }
@@ -241,13 +261,13 @@ public class DataNetworkHandler extends SimpleChannelHandler {
     /**
      * Default exception task: close the current connection after calling
      * exceptionLocalCaught.
-     * 
+     *
      * @see org.jboss.netty.channel.SimpleChannelHandler#exceptionCaught(org.jboss.netty.channel.ChannelHandlerContext,
      *      org.jboss.netty.channel.ExceptionEvent)
      */
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, ExceptionEvent e) {
-        if (this.session == null) {
+        if (session == null) {
             e.getCause().printStackTrace();
             return;
         }
@@ -261,41 +281,45 @@ public class DataNetworkHandler extends SimpleChannelHandler {
                     .getMessage());
         } else if (e1 instanceof ClosedChannelException) {
             logger.warn("Connection closed before end");
-        } else if (e1 instanceof FtpInvalidArgumentException) {
-            FtpInvalidArgumentException e2 = (FtpInvalidArgumentException) e1;
+        } else if (e1 instanceof InvalidArgumentException) {
+            InvalidArgumentException e2 = (InvalidArgumentException) e1;
             logger.warn("Bad configuration in Codec in " + e2.getMessage(), e2);
         } else if (e1 instanceof NullPointerException) {
             NullPointerException e2 = (NullPointerException) e1;
             logger.warn("Null pointer Exception", e2);
             try {
-                if (this.dataBusinessHandler != null) {
-                    this.dataBusinessHandler.exceptionLocalCaught(e);
-                    if (this.session.getDataConn() != null) {
-                        this.session.getDataConn().getFtpTransferControl()
+                if (dataBusinessHandler != null) {
+                    dataBusinessHandler.exceptionLocalCaught(e);
+                    if (session.getDataConn() != null) {
+                        session.getDataConn().getFtpTransferControl()
                                 .setTransferAbortedFromInternal(true);
                     }
                 }
             } catch (NullPointerException e3) {
             }
             return;
+        } else if (e1 instanceof CancelledKeyException) {
+            CancelledKeyException e2 = (CancelledKeyException) e1;
+            logger.warn("Connection aborted since {}", e2.getMessage());
+            // XXX TODO FIXME is it really what we should do ?
+            // No action
+            return;
         } else if (e1 instanceof IOException) {
             IOException e2 = (IOException) e1;
             logger.warn("Connection aborted since {}", e2.getMessage());
         } else {
-            logger
-                    .warn("Unexpected exception from downstream:",
-                            e1);
+            logger.warn("Unexpected exception from downstream:", e1);
         }
-        if (this.dataBusinessHandler != null) {
-            this.dataBusinessHandler.exceptionLocalCaught(e);
+        if (dataBusinessHandler != null) {
+            dataBusinessHandler.exceptionLocalCaught(e);
         }
-        this.session.getDataConn().getFtpTransferControl()
+        session.getDataConn().getFtpTransferControl()
                 .setTransferAbortedFromInternal(true);
     }
 
     /**
      * To enable continues of Retrieve operation (prevent OOM)
-     * 
+     *
      * @see org.jboss.netty.channel.SimpleChannelHandler#channelInterestChanged(org.jboss.netty.channel.ChannelHandlerContext,
      *      org.jboss.netty.channel.ChannelStateEvent)
      */
@@ -303,81 +327,81 @@ public class DataNetworkHandler extends SimpleChannelHandler {
     public void channelInterestChanged(ChannelHandlerContext arg0,
             ChannelStateEvent arg1) {
         int op = arg1.getChannel().getInterestOps();
-        if ((op == Channel.OP_NONE) || (op == Channel.OP_READ)) {
-            if (this.isReady) {
-                this.session.getDataConn().getFtpTransferControl()
+        if (op == Channel.OP_NONE || op == Channel.OP_READ) {
+            if (isReady) {
+                session.getDataConn().getFtpTransferControl()
                         .runTrueRetrieve();
             }
         }
     }
 
     /**
-     * Act as needed according to the receive FtpDataBlock message
-     * 
+     * Act as needed according to the receive DataBlock message
+     *
      * @see org.jboss.netty.channel.SimpleChannelHandler#messageReceived(org.jboss.netty.channel.ChannelHandlerContext,
      *      org.jboss.netty.channel.MessageEvent)
      */
     @Override
     public void messageReceived(ChannelHandlerContext ctx, MessageEvent e) {
         if (isStillAlive()) {
-            FtpDataBlock dataBlock = (FtpDataBlock) e.getMessage();
+            DataBlock dataBlock = (DataBlock) e.getMessage();
             try {
-                this.session.getDataConn().getFtpTransferControl()
-                        .getExecutingFtpTransfer().getFtpFile()
-                        .receiveDataBlock(dataBlock);
+                session.getDataConn().getFtpTransferControl()
+                        .getExecutingFtpTransfer().getFtpFile().writeDataBlock(
+                                dataBlock);
             } catch (FtpNoFileException e1) {
                 logger.debug("NoFile", e1);
-                this.session.getDataConn().getFtpTransferControl()
+                session.getDataConn().getFtpTransferControl()
                         .setTransferAbortedFromInternal(true);
                 return;
             } catch (FtpNoTransferException e1) {
                 logger.debug("NoTransfer", e1);
-                this.session.getDataConn().getFtpTransferControl()
+                session.getDataConn().getFtpTransferControl()
                         .setTransferAbortedFromInternal(true);
                 return;
-            } catch (FtpFileEndOfTransferException e1) {
+            } catch (FileEndOfTransferException e1) {
                 if (dataBlock.isEOF()) {
-                    this.session.getDataConn().getFtpTransferControl()
+                    session.getDataConn().getFtpTransferControl()
                             .setPreEndOfTransfer();
                 }
-            } catch (FtpFileTransferException e1) {
+            } catch (FileTransferException e1) {
                 logger.debug("TransferException", e1);
-                this.session.getDataConn().getFtpTransferControl()
+                session.getDataConn().getFtpTransferControl()
                         .setTransferAbortedFromInternal(true);
             }
         } else {
             // Shutdown
-            this.session.getDataConn().getFtpTransferControl()
+            session.getDataConn().getFtpTransferControl()
                     .setTransferAbortedFromInternal(true);
         }
     }
 
     /**
      * Write a simple message (like LIST) and wait for it
-     * 
+     *
      * @param message
      * @return True if the message is correctly written
      */
     public boolean writeMessage(String message) {
-        FtpDataBlock dataBlock = new FtpDataBlock();
+        DataBlock dataBlock = new DataBlock();
         dataBlock.setEOF(true);
         ChannelBuffer buffer = ChannelBuffers.wrappedBuffer(message.getBytes());
         dataBlock.setBlock(buffer);
         logger.debug("Message to be sent: {}", message);
-        return Channels.write(this.dataChannel, dataBlock)
+        return Channels.write(dataChannel, dataBlock)
                 .awaitUninterruptibly().isSuccess();
     }
 
     /**
      * If the service is going to shutdown, it sends back a 421 message to the
      * connection
-     * 
+     *
      * @return True if the service is alive, else False if the system is going
      *         down
      */
     private boolean isStillAlive() {
-        if (this.session.getConfiguration().isShutdown) {
-            this.session.setExitErrorCode("Service is going down: disconnect");
+        if (session.getConfiguration().isShutdown) {
+            session.setExitErrorCode("Service is going down: disconnect");
             return false;
         }
         return true;
