@@ -1,7 +1,7 @@
 /**
- * Filesystem based implementation example of FtpFile and FtpDir.
- * 
- * @apiviz.exclude
+ * Filesystem based implementation example of File, Dir, Auth and SimpleAuth.
+ *
+ *
  */
 package goldengate.ftp.simpleimpl.file;
 

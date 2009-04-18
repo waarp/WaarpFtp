@@ -1,25 +1,42 @@
 /**
- * 
+ * Copyright 2009, Frederic Bregier, and individual contributors
+ * by the @author tags. See the COPYRIGHT.txt in the distribution for a
+ * full listing of individual contributors.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 3.0 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 package goldengate.ftp.simpleimpl.logging;
 
-import goldengate.ftp.core.logging.FtpInternalLogger;
+import goldengate.common.logging.GgInternalLogger;
 import ch.qos.logback.classic.Logger;
 
 /**
  * Example of logger using SLF4J from LOGBACK
- * 
- * @author fbregier
- * 
+ *
+ * @author Frederic Bregier
+ *
  */
-public class Slf4JLogger extends FtpInternalLogger {
+public class Slf4JLogger extends GgInternalLogger {
     /**
      * Internal logger
      */
     private final Logger logger;
 
     /**
-     * 
+     *
      * @param logger
      */
     public Slf4JLogger(org.slf4j.Logger logger) {
@@ -29,187 +46,183 @@ public class Slf4JLogger extends FtpInternalLogger {
 
     /*
      * (non-Javadoc)
-     * 
-     * @see
-     * goldengate.ftp.core.logging.FtpInternalLogger#debug(java.lang.String,
+     *
+     * @see goldengate.common.logging.GgInternalLogger#debug(java.lang.String,
      * java.lang.String, java.lang.String)
      */
     @Override
     public void debug(String format, String arg1, String arg2) {
-        this.logger.debug(format, arg1, arg2);
+        logger.debug(format, arg1, arg2);
     }
 
     /*
      * (non-Javadoc)
-     * 
-     * @see
-     * goldengate.ftp.core.logging.FtpInternalLogger#debug(java.lang.String,
+     *
+     * @see goldengate.common.logging.GgInternalLogger#debug(java.lang.String,
      * java.lang.String)
      */
     @Override
     public void debug(String format, String arg1) {
-        this.logger.debug(format, arg1);
+        logger.debug(format, arg1);
     }
 
     /*
      * (non-Javadoc)
-     * 
-     * @see
-     * goldengate.ftp.core.logging.FtpInternalLogger#error(java.lang.String,
+     *
+     * @see goldengate.common.logging.GgInternalLogger#error(java.lang.String,
      * java.lang.String, java.lang.String)
      */
     @Override
     public void error(String format, String arg1, String arg2) {
-        this.logger.error(format, arg1, arg2);
+        logger.error(format, arg1, arg2);
     }
 
     /*
      * (non-Javadoc)
-     * 
-     * @see
-     * goldengate.ftp.core.logging.FtpInternalLogger#error(java.lang.String,
+     *
+     * @see goldengate.common.logging.GgInternalLogger#error(java.lang.String,
      * java.lang.String)
      */
     @Override
     public void error(String format, String arg1) {
-        this.logger.error(format, arg1);
+        logger.error(format, arg1);
     }
 
     /*
      * (non-Javadoc)
-     * 
-     * @see goldengate.ftp.core.logging.FtpInternalLogger#info(java.lang.String,
+     *
+     * @see goldengate.common.logging.GgInternalLogger#info(java.lang.String,
      * java.lang.String, java.lang.String)
      */
     @Override
     public void info(String format, String arg1, String arg2) {
-        this.logger.info(format, arg1, arg2);
+        logger.info(format, arg1, arg2);
     }
 
     /*
      * (non-Javadoc)
-     * 
-     * @see goldengate.ftp.core.logging.FtpInternalLogger#info(java.lang.String,
+     *
+     * @see goldengate.common.logging.GgInternalLogger#info(java.lang.String,
      * java.lang.String)
      */
     @Override
     public void info(String format, String arg1) {
-        this.logger.info(format, arg1);
+        logger.info(format, arg1);
     }
 
     /*
      * (non-Javadoc)
-     * 
-     * @see goldengate.ftp.core.logging.FtpInternalLogger#warn(java.lang.String,
+     *
+     * @see goldengate.common.logging.GgInternalLogger#warn(java.lang.String,
      * java.lang.String, java.lang.String)
      */
     @Override
     public void warn(String format, String arg1, String arg2) {
-        this.logger.warn(format, arg1, arg2);
+        logger.warn(format, arg1, arg2);
     }
 
     /*
      * (non-Javadoc)
-     * 
-     * @see goldengate.ftp.core.logging.FtpInternalLogger#warn(java.lang.String,
+     *
+     * @see goldengate.common.logging.GgInternalLogger#warn(java.lang.String,
      * java.lang.String)
      */
     @Override
     public void warn(String format, String arg1) {
-        this.logger.warn(format, arg1);
+        logger.warn(format, arg1);
     }
 
     // original form
     public void debug(String msg) {
-        this.logger.debug(msg);
+        logger.debug(msg);
     }
 
     public void debug(String msg, Throwable cause) {
-        this.logger.debug(msg, cause);
+        logger.debug(msg, cause);
     }
 
     public void error(String msg) {
-        this.logger.error(msg);
+        logger.error(msg);
     }
 
     public void error(String msg, Throwable cause) {
-        this.logger.error(msg, cause);
+        logger.error(msg, cause);
     }
 
     public void info(String msg) {
-        this.logger.info(msg);
+        logger.info(msg);
     }
 
     public void info(String msg, Throwable cause) {
-        this.logger.info(msg, cause);
+        logger.info(msg, cause);
     }
 
     public boolean isDebugEnabled() {
-        return this.logger.isDebugEnabled();
+        return logger.isDebugEnabled();
     }
 
     public boolean isErrorEnabled() {
-        return this.logger.isErrorEnabled();
+        return logger.isErrorEnabled();
     }
 
     public boolean isInfoEnabled() {
-        return this.logger.isInfoEnabled();
+        return logger.isInfoEnabled();
     }
 
     public boolean isWarnEnabled() {
-        return this.logger.isWarnEnabled();
+        return logger.isWarnEnabled();
     }
 
     public void warn(String msg) {
-        this.logger.warn(msg);
+        logger.warn(msg);
     }
 
     public void warn(String msg, Throwable cause) {
-        this.logger.warn(msg, cause);
+        logger.warn(msg, cause);
     }
 
     @Override
     public String toString() {
-        return String.valueOf(this.logger.getName());
+        return String.valueOf(logger.getName());
     }
 
     @Override
     public void debug(String format, Object arg1, Object arg2) {
-        this.logger.debug(format, arg1, arg2);
+        logger.debug(format, arg1, arg2);
     }
 
     @Override
     public void debug(String format, Object arg1) {
-        this.logger.debug(format, arg1);
+        logger.debug(format, arg1);
     }
 
     @Override
     public void error(String format, Object arg1, Object arg2) {
-        this.logger.error(format, arg1, arg2);
+        logger.error(format, arg1, arg2);
     }
 
     @Override
     public void error(String format, Object arg1) {
-        this.logger.error(format, arg1);
+        logger.error(format, arg1);
     }
 
     @Override
     public void info(String format, Object arg1, Object arg2) {
-        this.logger.info(format, arg1, arg2);
+        logger.info(format, arg1, arg2);
     }
 
     @Override
     public void info(String format, Object arg1) {
-        this.logger.info(format, arg1);
+        logger.info(format, arg1);
     }
 
     @Override
     public void warn(String format, Object arg1, Object arg2) {
-        this.logger.warn(format, arg1, arg2);
+        logger.warn(format, arg1, arg2);
     }
 
     @Override
     public void warn(String format, Object arg1) {
-        this.logger.warn(format, arg1);
+        logger.warn(format, arg1);
     }
 }

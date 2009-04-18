@@ -1,23 +1,40 @@
 /**
- * 
+ * Copyright 2009, Frederic Bregier, and individual contributors
+ * by the @author tags. See the COPYRIGHT.txt in the distribution for a
+ * full listing of individual contributors.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 3.0 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package goldengate.ftp.simpleimpl.auth;
+package goldengate.ftp.simpleimpl.file;
 
-import goldengate.ftp.core.logging.FtpInternalLogger;
-import goldengate.ftp.core.logging.FtpInternalLoggerFactory;
+import goldengate.common.logging.GgInternalLogger;
+import goldengate.common.logging.GgInternalLoggerFactory;
 
 /**
  * Simple Authentication based on a previously load XML file. Not to be used in
  * production!
- * 
- * @author fbregier
- * 
+ *
+ * @author Frederic Bregier
+ *
  */
 public class SimpleAuth {
     /**
      * Internal Logger
      */
-    private static final FtpInternalLogger logger = FtpInternalLoggerFactory
+    private static final GgInternalLogger logger = GgInternalLoggerFactory
             .getLogger(SimpleAuth.class);
 
     /**
@@ -54,28 +71,28 @@ public class SimpleAuth {
 
     /**
      * Is the given password a valid one
-     * 
+     *
      * @param newpassword
      * @return True if the password is valid (or any password is valid)
      */
     public boolean isPasswordValid(String newpassword) {
-        if (this.password == null) {
+        if (password == null) {
             return true;
         }
         if (newpassword == null) {
             return false;
         }
-        return this.password.equals(newpassword);
+        return password.equals(newpassword);
     }
 
     /**
      * Is the given account a valid one
-     * 
+     *
      * @param account
      * @return True if the account is valid (or any account is valid)
      */
     public boolean isAccountValid(String account) {
-        if (this.accounts == null) {
+        if (accounts == null) {
             logger.info("No account needed");
             return true;
         }
@@ -83,7 +100,7 @@ public class SimpleAuth {
             logger.info("No account given");
             return false;
         }
-        for (String acct: this.accounts) {
+        for (String acct: accounts) {
             if (acct.equals(account)) {
                 logger.info("Account found");
                 return true;
@@ -94,7 +111,7 @@ public class SimpleAuth {
     }
 
     /**
-     * 
+     *
      * @param isAdmin
      *            True if the user should be an administrator
      */

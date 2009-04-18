@@ -1,20 +1,34 @@
 /**
- * 
+ * Copyright 2009, Frederic Bregier, and individual contributors
+ * by the @author tags. See the COPYRIGHT.txt in the distribution for a
+ * full listing of individual contributors.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 3.0 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 package goldengate.ftp.simpleimpl.control;
 
-import goldengate.ftp.core.auth.FtpAuth;
+import goldengate.common.command.exception.CommandAbstractException;
+import goldengate.common.command.exception.Reply502Exception;
+import goldengate.common.logging.GgInternalLogger;
+import goldengate.common.logging.GgInternalLoggerFactory;
 import goldengate.ftp.core.command.FtpCommandCode;
-import goldengate.ftp.core.command.exception.FtpCommandAbstractException;
-import goldengate.ftp.core.command.exception.Reply502Exception;
 import goldengate.ftp.core.control.BusinessHandler;
 import goldengate.ftp.core.data.FtpTransfer;
-import goldengate.ftp.core.file.FtpDir;
-import goldengate.ftp.core.file.FtpRestart;
-import goldengate.ftp.core.logging.FtpInternalLogger;
-import goldengate.ftp.core.logging.FtpInternalLoggerFactory;
 import goldengate.ftp.filesystembased.FilesystemBasedFtpRestart;
-import goldengate.ftp.simpleimpl.auth.FileBasedAuth;
+import goldengate.ftp.simpleimpl.file.FileBasedAuth;
 import goldengate.ftp.simpleimpl.file.FileBasedDir;
 
 import org.jboss.netty.channel.Channel;
@@ -23,138 +37,73 @@ import org.jboss.netty.channel.ExceptionEvent;
 /**
  * BusinessHandler implementation that allows pre and post actions on any
  * operations and specifically on transfer operations
- * 
- * @author fbregier
- * 
+ *
+ * @author Frederic Bregier
+ *
  */
 public class SimpleBusinessHandler extends BusinessHandler {
     /**
      * Internal Logger
      */
-    private static final FtpInternalLogger logger = FtpInternalLoggerFactory
+    private static final GgInternalLogger logger = GgInternalLoggerFactory
             .getLogger(SimpleBusinessHandler.class);
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * goldengate.ftp.core.control.BusinessHandler#afterRunCommandKo(goldengate
-     * .ftp.core.command.exception.FtpCommandAbstractException)
-     */
     @Override
-    public void afterRunCommandKo(FtpCommandAbstractException e) {
+    public void afterRunCommandKo(CommandAbstractException e) {
         // TODO Auto-generated method stub
-        logger.warn("GBBH: AFTKO: {} {}", this.getFtpSession(), e.getMessage());
+        logger.warn("GBBH: AFTKO: {} {}", getFtpSession(), e.getMessage());
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see goldengate.ftp.core.control.BusinessHandler#afterRunCommandOk()
-     */
     @Override
-    public void afterRunCommandOk() throws FtpCommandAbstractException {
+    public void afterRunCommandOk() throws CommandAbstractException {
         // TODO Auto-generated method stub
-        logger.info("GBBH: AFTOK: {}", this.getFtpSession());
+        logger.info("GBBH: AFTOK: {}", getFtpSession());
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see goldengate.ftp.core.control.BusinessHandler#beforeRunCommand()
-     */
     @Override
-    public void beforeRunCommand() throws FtpCommandAbstractException {
+    public void beforeRunCommand() throws CommandAbstractException {
         // TODO Auto-generated method stub
-        logger.info("GBBH: BEFCD: {}", this.getFtpSession());
+        logger.info("GBBH: BEFCD: {}", getFtpSession());
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * goldengate.ftp.core.control.BusinessHandler#cleanSession(goldengate.ftp
-     * .core.session.FtpSession)
-     */
     @Override
     protected void cleanSession() {
         // TODO Auto-generated method stub
-        logger.info("GBBH: CLNSE: {}", this.getFtpSession());
+        logger.info("GBBH: CLNSE: {}", getFtpSession());
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * goldengate.ftp.core.control.BusinessHandler#exceptionLocalCaught(org.
-     * jboss.netty.channel.ExceptionEvent)
-     */
     @Override
     public void exceptionLocalCaught(ExceptionEvent e) {
         // TODO Auto-generated method stub
-        logger.warn("GBBH: EXCEP: {} {}", this.getFtpSession(), e.getCause()
+        logger.warn("GBBH: EXCEP: {} {}", getFtpSession(), e.getCause()
                 .getMessage());
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see goldengate.ftp.core.control.BusinessHandler#executeChannelClosed()
-     */
     @Override
     public void executeChannelClosed() {
         // TODO Auto-generated method stub
-        logger.warn("GBBH: CLOSED: for user {} with session {} ", this
-                .getFtpSession().getFtpAuth().getUser(), this.getFtpSession());
+        logger.warn("GBBH: CLOSED: for user {} with session {} ", getFtpSession().getAuth().getUser(), getFtpSession());
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * goldengate.ftp.core.control.BusinessHandler#executeChannelConnected(org
-     * .jboss.netty.channel.Channel)
-     */
     @Override
     public void executeChannelConnected(Channel channel) {
         // TODO Auto-generated method stub
-        logger.info("GBBH: CONNEC: {}", this.getFtpSession());
+        logger.info("GBBH: CONNEC: {}", getFtpSession());
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * goldengate.ftp.core.control.BusinessHandler#getBusinessNewAuth(goldengate
-     * .ftp.core.config.FtpConfiguration)
-     */
     @Override
-    public FtpAuth getBusinessNewAuth() {
-        return new FileBasedAuth(this.getFtpSession());
+    public FileBasedAuth getBusinessNewAuth() {
+        return new FileBasedAuth(getFtpSession());
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * goldengate.ftp.core.control.BusinessHandler#getBusinessNewFtpDir(goldengate
-     * .ftp.core.auth.FtpAuth)
-     */
     @Override
-    public FtpDir getBusinessNewFtpDir() {
-        return new FileBasedDir(this.getFtpSession());
+    public FileBasedDir getBusinessNewDir() {
+        return new FileBasedDir(getFtpSession());
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * goldengate.ftp.core.control.BusinessHandler#getBusinessNewFtpRestart(
-     * goldengate.ftp.core.session.FtpSession)
-     */
     @Override
-    public FtpRestart getBusinessNewFtpRestart() {
-        return new FilesystemBasedFtpRestart(this.getFtpSession());
+    public FilesystemBasedFtpRestart getBusinessNewRestart() {
+        return new FilesystemBasedFtpRestart(getFtpSession());
     }
 
     @Override
@@ -185,34 +134,21 @@ public class SimpleBusinessHandler extends BusinessHandler {
                 + "XCRC, XMD5 and XSHA1 take a simple filename as argument and return \"250 digest-value is the digest of filename\".";
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see goldengate.ftp.core.control.BusinessHandler#getFeatMessage()
-     */
     @Override
     public String getFeatMessage() {
         StringBuilder builder = new StringBuilder("Extensions supported:");
         builder.append('\n');
-        builder.append(this.getDefaultFeatMessage());
+        builder.append(getDefaultFeatMessage());
         builder.append("\nEnd");
         return builder.toString();
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * goldengate.ftp.core.control.BusinessHandler#getOptsMessage(java.lang.
-     * String[])
-     */
     @Override
-    public String getOptsMessage(String[] args)
-            throws FtpCommandAbstractException {
+    public String getOptsMessage(String[] args) throws CommandAbstractException {
         if (args.length > 0) {
             if (args[0].equalsIgnoreCase(FtpCommandCode.MLST.name()) ||
                     args[0].equalsIgnoreCase(FtpCommandCode.MLSD.name())) {
-                return this.getMLSxOptsMessage(args);
+                return getMLSxOptsMessage(args);
             }
             throw new Reply502Exception("OPTS not implemented for " + args[0]);
         }

@@ -1,18 +1,38 @@
 /**
- * 
+ * Copyright 2009, Frederic Bregier, and individual contributors
+ * by the @author tags. See the COPYRIGHT.txt in the distribution for a
+ * full listing of individual contributors.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 3.0 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 package goldengate.ftp.simpleimpl.config;
 
+import goldengate.common.digest.FilesystemBasedDigest;
+import goldengate.common.digest.MD5;
+import goldengate.common.file.FileParameterInterface;
+import goldengate.common.file.filesystembased.FilesystemBasedDirImpl;
+import goldengate.common.file.filesystembased.FilesystemBasedFileParameterImpl;
+import goldengate.common.file.filesystembased.specific.FilesystemBasedDirJdkAbstract;
+import goldengate.common.logging.GgInternalLogger;
+import goldengate.common.logging.GgInternalLoggerFactory;
+import goldengate.ftp.core.config.FtpConfiguration;
 import goldengate.ftp.core.control.BusinessHandler;
 import goldengate.ftp.core.data.handler.DataBusinessHandler;
-import goldengate.ftp.core.data.handler.FtpTrafficCounterFactory;
 import goldengate.ftp.core.exception.FtpUnknownFieldException;
-import goldengate.ftp.core.logging.FtpInternalLogger;
-import goldengate.ftp.core.logging.FtpInternalLoggerFactory;
-import goldengate.ftp.filesystembased.FilesystemBasedFtpDir;
-import goldengate.ftp.filesystembased.config.FilesystemBasedFtpConfiguration;
-import goldengate.ftp.filesystembased.digest.MD5;
-import goldengate.ftp.simpleimpl.auth.SimpleAuth;
+import goldengate.ftp.simpleimpl.file.SimpleAuth;
 
 import java.io.File;
 import java.io.IOException;
@@ -24,18 +44,19 @@ import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.Node;
 import org.dom4j.io.SAXReader;
+import org.jboss.netty.handler.traffic.AbstractTrafficShapingHandler;
 
 /**
  * FtpConfiguration based on a XML file
- * 
- * @author fbregier
- * 
+ *
+ * @author Frederic Bregier
+ *
  */
-public class FileBasedConfiguration extends FilesystemBasedFtpConfiguration {
+public class FileBasedConfiguration extends FtpConfiguration {
     /**
      * Internal Logger
      */
-    private static final FtpInternalLogger logger = FtpInternalLoggerFactory
+    private static final GgInternalLogger logger = GgInternalLoggerFactory
             .getLogger(FileBasedConfiguration.class);
 
     /**
@@ -156,17 +177,20 @@ public class FileBasedConfiguration extends FilesystemBasedFtpConfiguration {
      *            class that will be used for BusinessHandler
      * @param dataBusinessHandler
      *            class that will be used for DataBusinessHandler
+     * @param fileParameter
+     *            the FileParameter to use
      */
     public FileBasedConfiguration(Class<?> classtype,
             Class<? extends BusinessHandler> businessHandler,
-            Class<? extends DataBusinessHandler> dataBusinessHandler) {
-        super(classtype, businessHandler, dataBusinessHandler);
-        this.computeNbThreads();
+            Class<? extends DataBusinessHandler> dataBusinessHandler,
+            FileParameterInterface fileParameter) {
+        super(classtype, businessHandler, dataBusinessHandler, fileParameter);
+        computeNbThreads();
     }
 
     /**
      * Initiate the configuration from the xml file
-     * 
+     *
      * @param filename
      * @return True if OK
      */
@@ -191,13 +215,13 @@ public class FileBasedConfiguration extends FilesystemBasedFtpConfiguration {
             return false;
         }
         String passwd = node.getText();
-        this.setPassword(passwd);
+        setPassword(passwd);
         node = document.selectSingleNode(XML_SERVER_PORT);
         int port = 21;
         if (node != null) {
             port = Integer.parseInt(node.getText());
         }
-        this.setServerPort(port);
+        setServerPort(port);
         node = document.selectSingleNode(XML_SERVER_HOME);
         if (node == null) {
             logger.error("Unable to find Home in Config file: " + filename);
@@ -206,7 +230,7 @@ public class FileBasedConfiguration extends FilesystemBasedFtpConfiguration {
         String path = node.getText();
         File file = new File(path);
         try {
-            this.setBaseDirectory(FilesystemBasedFtpDir.normalizePath(file
+            setBaseDirectory(FilesystemBasedDirImpl.normalizePath(file
                     .getCanonicalPath()));
         } catch (IOException e1) {
             logger.error("Unable to set Home in Config file: " + filename);
@@ -218,60 +242,68 @@ public class FileBasedConfiguration extends FilesystemBasedFtpConfiguration {
         }
         node = document.selectSingleNode(XML_SERVER_THREAD);
         if (node != null) {
-            this.SERVER_THREAD = Integer.parseInt(node.getText());
+            SERVER_THREAD = Integer.parseInt(node.getText());
         }
         node = document.selectSingleNode(XML_LIMITGLOBAL);
         if (node != null) {
-            this.serverGlobalReadLimit = Long.parseLong(node.getText());
-            if (this.serverGlobalReadLimit <= 0) {
-                this.serverGlobalReadLimit = 0;
+            serverGlobalReadLimit = Long.parseLong(node.getText());
+            if (serverGlobalReadLimit <= 0) {
+                serverGlobalReadLimit = 0;
             }
-            this.serverGlobalWriteLimit = this.serverGlobalReadLimit;
-            logger.warn("Global Limit: {}", this.serverGlobalReadLimit);
+            serverGlobalWriteLimit = serverGlobalReadLimit;
+            logger.warn("Global Limit: {}", serverGlobalReadLimit);
         }
         node = document.selectSingleNode(XML_LIMITSESSION);
         if (node != null) {
-            this.serverChannelReadLimit = Long.parseLong(node.getText());
-            if (this.serverChannelReadLimit <= 0) {
-                this.serverChannelReadLimit = 0;
+            serverChannelReadLimit = Long.parseLong(node.getText());
+            if (serverChannelReadLimit <= 0) {
+                serverChannelReadLimit = 0;
             }
-            this.serverChannelWriteLimit = this.serverChannelReadLimit;
-            logger.warn("Session Limit: {}", this.serverChannelReadLimit);
+            serverChannelWriteLimit = serverChannelReadLimit;
+            logger.warn("SessionInterface Limit: {}",
+                    serverChannelReadLimit);
         }
-        this.delayLimit = FtpTrafficCounterFactory.DEFAULT_DELAY;
+        delayLimit = AbstractTrafficShapingHandler.DEFAULT_CHECK_INTERVAL;
         node = document.selectSingleNode(XML_TIMEOUTCON);
         if (node != null) {
-            this.TIMEOUTCON = Integer.parseInt(node.getText());
+            TIMEOUTCON = Integer.parseInt(node.getText());
         }
         node = document.selectSingleNode(XML_DELETEONABORT);
         if (node != null) {
-            this.deleteOnAbort = (Integer.parseInt(node.getText()) == 1)? true
+            deleteOnAbort = Integer.parseInt(node.getText()) == 1? true
                     : false;
         }
         node = document.selectSingleNode(XML_USENIO);
         if (node != null) {
-            useNio = (Integer.parseInt(node.getText()) == 1)? true : false;
+            FilesystemBasedFileParameterImpl.useNio = Integer.parseInt(node
+                    .getText()) == 1? true : false;
         }
         node = document.selectSingleNode(XML_USEFASTMD5);
         if (node != null) {
-            useFastMd5 = (Integer.parseInt(node.getText()) == 1)? true : false;
-            if (useFastMd5) {
+            FilesystemBasedDigest.useFastMd5 = Integer
+                    .parseInt(node.getText()) == 1? true : false;
+            if (FilesystemBasedDigest.useFastMd5) {
                 node = document.selectSingleNode(XML_FASTMD5);
                 if (node != null) {
-                    fastMd5Path = node.getText();
-                    if ((fastMd5Path == null) || (fastMd5Path.length() == 0)) {
-                        fastMd5Path = null;
+                    FilesystemBasedDigest.fastMd5Path = node.getText();
+                    if (FilesystemBasedDigest.fastMd5Path == null ||
+                            FilesystemBasedDigest.fastMd5Path.length() == 0) {
+                        logger.info("FastMD5 init lib to null");
+                        FilesystemBasedDigest.fastMd5Path = null;
                     } else {
-                        MD5.initNativeLibrary(fastMd5Path);
+                        logger.info("FastMD5 init lib to " +
+                                FilesystemBasedDigest.fastMd5Path);
+                        MD5
+                                .initNativeLibrary(FilesystemBasedDigest.fastMd5Path);
                     }
                 }
             } else {
-                fastMd5Path = null;
+                FilesystemBasedDigest.fastMd5Path = null;
             }
         }
         node = document.selectSingleNode(XML_BLOCKSIZE);
         if (node != null) {
-            this.BLOCKSIZE = Integer.parseInt(node.getText());
+            BLOCKSIZE = Integer.parseInt(node.getText());
         }
         node = document.selectSingleNode(XML_RANGE_PORT_MIN);
         int min = 100;
@@ -284,9 +316,9 @@ public class FileBasedConfiguration extends FilesystemBasedFtpConfiguration {
             max = Integer.parseInt(node.getText());
         }
         CircularIntValue rangePort = new CircularIntValue(min, max);
-        this.setRangePort(rangePort);
+        setRangePort(rangePort);
         // We use Apache Commons IO
-        ueApacheCommonsIo = true;
+        FilesystemBasedDirJdkAbstract.ueApacheCommonsIo = true;
         node = document.selectSingleNode(XML_AUTHENTIFICATION_FILE);
         if (node == null) {
             logger.error("Unable to find Authentication file in Config file: " +
@@ -324,7 +356,7 @@ public class FileBasedConfiguration extends FilesystemBasedFtpConfiguration {
             node = nodebase.selectSingleNode(XML_AUTHENTIFICATION_ADMIN);
             boolean isAdmin = false;
             if (node != null) {
-                isAdmin = (node.getText().equals("1"))? true : false;
+                isAdmin = node.getText().equals("1")? true : false;
             }
             List<Node> listaccount = nodebase
                     .selectNodes(XML_AUTHENTIFICATION_ACCOUNT);
@@ -342,7 +374,7 @@ public class FileBasedConfiguration extends FilesystemBasedFtpConfiguration {
             }
             SimpleAuth auth = new SimpleAuth(user, userpasswd, account);
             auth.setAdmin(isAdmin);
-            this.authentications.put(user, auth);
+            authentications.put(user, auth);
         }
         document = null;
         return true;
@@ -353,7 +385,7 @@ public class FileBasedConfiguration extends FilesystemBasedFtpConfiguration {
      * @return the SimpleAuth if any for this user
      */
     public SimpleAuth getSimpleAuth(String user) {
-        return this.authentications.get(user);
+        return authentications.get(user);
     }
 
     /**
@@ -362,18 +394,18 @@ public class FileBasedConfiguration extends FilesystemBasedFtpConfiguration {
     @Override
     public int getNextRangePort() {
         try {
-            return ((CircularIntValue) this.getProperty(RANGE_PORT)).getNext();
+            return ((CircularIntValue) getProperty(RANGE_PORT)).getNext();
         } catch (FtpUnknownFieldException e) {
-            return (-1);
+            return -1;
         }
     }
 
     /**
-     * 
+     *
      * @param rangePort
      *            the range of available ports for Passive connections
      */
     private void setRangePort(CircularIntValue rangePort) {
-        this.setProperty(RANGE_PORT, rangePort);
+        setProperty(RANGE_PORT, rangePort);
     }
 }
