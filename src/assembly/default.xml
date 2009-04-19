@@ -18,10 +18,6 @@
         <include>**/*.xml</include>
         <include>**/license/**</include>
         <include>**/src/**</include>
-        <include>**/Implementation/**</include>
-        <include>**/FilesystemBased/**</include>
-        <include>**/Common/**</include>
-        <include>**/Main/**</include>
       </includes>
       <excludes>
         <exclude>**/target/**</exclude>
@@ -40,7 +36,7 @@
         <exclude>${project.build.finalName}*-javadoc.jar</exclude>
       </excludes>
     </fileSet>
-
+    
     <!-- Documentation (API) -->
     <fileSet>
       <directory>target/api</directory>

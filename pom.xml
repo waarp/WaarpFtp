@@ -22,14 +22,64 @@
   <url>http://openr66.free.fr/GoldenGateFTP.html</url>
   <inceptionYear>2009</inceptionYear>
   <scm>
-  	<connection>scm:svn:https://goldengate.svn.sourceforge.net/svnroot/goldengate/GoldenGateFtp/trunk</connection>
+  	<connection>scm:svn:http://goldengate.svn.sourceforge.net/svnroot/goldengate/GoldenGateFtp/trunk</connection>
   	<developerConnection>scm:svn:https://goldengate.svn.sourceforge.net/svnroot/goldengate/GoldenGateFtp/trunk</developerConnection>
+  	<url>http://goldengate.svn.sourceforge.net/svnroot/goldengate/GoldenGateFtp/trunk</url>
   </scm>
   <organization>
   	<name>Frederic Bregier</name>
   	<url>http://frederic.bregier.free.fr</url>
   </organization>
+  <developers>
+  	<developer>
+  		<name>Frederic Bregier</name>
+  		<id>openlsd</id>
+  		<roles>
+  			<role>Project Manager</role>
+  			<role>Architect</role>
+		</roles>
+  		<email>fredbregier@free.fr</email>
+  	</developer>
+  	<developer>
+  		<name>Frederic Bregier</name>
+  		<id>fredbregier</id>
+  		<roles>
+  			<role>Developer</role>
+		</roles>
+  		<email>fredbregier@free.fr</email>
+  	</developer>
+  </developers>
+  <issueManagement>
+  	<system>Sourceforge</system>
+  	<url>http://sourceforge.net/tracker/?group_id=254228/</url>
+  </issueManagement>
+  <mailingLists>
+  	<mailingList>
+  		<name>GoldenGate Devel mailing list</name>
+  		<subscribe>https://lists.sourceforge.net/lists/listinfo/goldengate-devel</subscribe>
+  		<unsubscribe>https://lists.sourceforge.net/lists/listinfo/goldengate-devel</unsubscribe>
+  		<post>goldengate-devel@lists.sourceforge.net</post>
+  		<archive>http://sourceforge.net/mailarchive/forum.php?forum_name=goldengate-devel</archive>
+  	</mailingList>
+  </mailingLists>
+  <licenses>
+  	<license>
+  		<name>LGPL 3.0</name>
+  		<url>LICENSE.txt</url>
+  	</license>
+  </licenses>
   <repositories>
+  	<repository>
+  		<id>jboss.releases</id>
+  		<name>JBoss releases</name>
+  		<url>http://repository.jboss.org/maven2</url>
+  		<releases>
+  			<enabled>true</enabled>
+  		</releases>
+  		<snapshots>
+  			<enabled>false</enabled>
+  		</snapshots>
+  	</repository>
   </repositories>
   <dependencies>
     <dependency>
@@ -84,9 +134,10 @@
     <dependency>
     	<groupId>Netty</groupId>
     	<artifactId>Netty</artifactId>
-    	<version>Netty-branche-traffic</version>
+    	<version>Netty-branche-traffic see www.jboss.org/netty</version>
     	<scope>system</scope>
     	<systemPath>D:/NEWJARS/Netty-Jboss.jar</systemPath>
+    	<optional>false</optional>
     </dependency>
   </dependencies>
   <properties>
@@ -101,7 +152,6 @@
           <encoding>UTF-8</encoding>
           <source>1.6</source>
           <target>1.6</target>
-          <debug>true</debug>
           <optimize>true</optimize>
           <showDeprecations>true</showDeprecations>
         </configuration>
@@ -227,81 +277,6 @@
         </dependencies>
       </plugin>
       <plugin>
-        <artifactId>maven-javadoc-plugin</artifactId>
-        <version>2.5</version>
-        <executions>
-          <execution>
-            <id>generate-javadoc</id>
-            <phase>package</phase>
-            <goals>
-              <goal>javadoc</goal>
-            </goals>
-          </execution>
-        </executions>
-        <configuration>
-          <doclet>org.jboss.apiviz.APIviz</doclet>
-          <docletArtifact>
-            <groupId>org.jboss.apiviz</groupId>
-            <artifactId>apiviz</artifactId>
-            <version>1.3.0.GA</version>
-          </docletArtifact>
-          <attach>false</attach>
-          <useStandardDocletOptions>true</useStandardDocletOptions>
-          <outputDirectory>${project.build.directory}/api</outputDirectory>
-          <reportOutputDirectory>${project.build.directory}/api</reportOutputDirectory>
-          <destDir>api</destDir>
-          <charset>UTF-8</charset>
-          <docencoding>UTF-8</docencoding>
-          <breakiterator>true</breakiterator>
-          <version>true</version>
-          <author>true</author>
-          <keywords>true</keywords>
-          <overview>${basedir}/src/javadoc/overview.html</overview>
-          <doctitle>${project.name} ${project.version} API Reference</doctitle>
-          <windowtitle>${project.name} ${project.version} API Reference</windowtitle>
-          <additionalparam>
-            -link http://java.sun.com/javase/6/docs/api/
-            -link http://code.google.com/apis/protocolbuffers/docs/reference/java/
-            -link http://java.sun.com/products/servlet/2.5/docs/servlet-2_5-mr2/
-            -link http://www.osgi.org/javadoc/r4v41/
-            -link http://google-guice.googlecode.com/svn/trunk/javadoc/
-            -link http://static.springframework.org/spring/docs/2.5.x/api/
-            -link http://www.slf4j.org/apidocs/
-            -link http://commons.apache.org/logging/commons-logging-1.1.1/apidocs/
-            -link http://logging.apache.org/log4j/1.2/apidocs/
-            -link http://www.jboss.org/file-access/default/members/netty/freezone/api/3.1/index.html
-			-bottom "<script src='http://www.google-analytics.com/urchin.js' type='text/javascript'></script><script type='text/javascript'>_uacct='UA-1693657-4'; urchinTracker(); </script>" 
-			-group "GoldenGate Common Logging, Future, Command, Authentication, Session and File package" "goldengate.common*"
-			-group "GoldenGate FTP Main Core package" "goldengate.ftp.core*" 
-			-group "GoldenGate FTP Filesystem Implementation package" "goldengate.ftp.filesystembased*" 
-			-group "GoldenGate Simple FTP Server package" "goldengate.ftp.simpleimpl*"
-            -sourceclasspath ${project.build.outputDirectory}
-          </additionalparam>
-          <encoding>UTF-8</encoding>
-          <locale>en_US</locale>
-        </configuration>
-      </plugin>
-      <plugin>
-        <artifactId>maven-jxr-plugin</artifactId>
-        <version>2.1</version>
-        <executions>
-          <execution>
-            <id>generate-xref</id>
-            <phase>package</phase>
-            <goals>
-              <goal>jxr</goal>
-            </goals>
-          </execution>
-        </executions>
-        <configuration>
-          <inputEncoding>UTF-8</inputEncoding>
-          <outputEncoding>UTF-8</outputEncoding>
-          <linkJavadoc>true</linkJavadoc>
-          <destDir>${project.build.directory}/xref</destDir>
-          <javadocDir>${project.build.directory}/api</javadocDir>
-        </configuration>
-      </plugin>
-      <plugin>
         <artifactId>maven-assembly-plugin</artifactId>
         <version>2.2-beta-3</version>
         <executions>
@@ -351,4 +326,108 @@
       </build>
     </profile>
   </profiles>
+  <reporting>
+  	<plugins>
+	  <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <version>2.5</version>
+        <configuration>
+          <doclet>org.jboss.apiviz.APIviz</doclet>
+          <docletArtifact>
+            <groupId>org.jboss.apiviz</groupId>
+            <artifactId>apiviz</artifactId>
+            <version>1.3.0.GA</version>
+          </docletArtifact>
+          <useStandardDocletOptions>true</useStandardDocletOptions>
+          <outputDirectory>${project.build.directory}/api</outputDirectory>
+          <reportOutputDirectory>${project.build.directory}/api</reportOutputDirectory>
+          <destDir>api</destDir>
+          <charset>UTF-8</charset>
+          <docencoding>UTF-8</docencoding>
+          <breakiterator>true</breakiterator>
+          <version>true</version>
+          <author>true</author>
+          <keywords>true</keywords>
+          <overview>${basedir}/src/javadoc/overview.html</overview>
+          <doctitle>${project.name} ${project.version} API Reference</doctitle>
+          <windowtitle>${project.name} ${project.version} API Reference</windowtitle>
+          <additionalparam>
+            -link http://java.sun.com/javase/6/docs/api/
+            -link http://code.google.com/apis/protocolbuffers/docs/reference/java/
+            -link http://java.sun.com/products/servlet/2.5/docs/servlet-2_5-mr2/
+            -link http://www.osgi.org/javadoc/r4v41/
+            -link http://google-guice.googlecode.com/svn/trunk/javadoc/
+            -link http://static.springframework.org/spring/docs/2.5.x/api/
+            -link http://www.slf4j.org/apidocs/
+            -link http://commons.apache.org/logging/commons-logging-1.1.1/apidocs/
+            -link http://logging.apache.org/log4j/1.2/apidocs/
+
+			-group "GoldenGate Common Logging Future Command Authentication Session and File package" "goldengate.common*"
+			-group "GoldenGate FTP Main Core package" "goldengate.ftp.core*"
+			-group "GoldenGate FTP Filesystem Implementation package" "goldengate.ftp.filesystembased*"
+			-group "GoldenGate Simple FTP Server package" "goldengate.ftp.simpleimpl*"
+
+            -sourceclasspath ${project.build.outputDirectory}
+          </additionalparam>
+          <encoding>UTF-8</encoding>
+          <locale>en_US</locale>
+          <excludePackageNames>${project.groupId}.example*:${project.groupId}.util.internal*</excludePackageNames>
+        </configuration>
+      </plugin>
+      <plugin>
+      	<groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jxr-plugin</artifactId>
+        <version>2.1</version>
+        <configuration>
+          <inputEncoding>UTF-8</inputEncoding>
+          <outputEncoding>UTF-8</outputEncoding>
+          <linkJavadoc>true</linkJavadoc>
+          <destDir>${project.build.directory}/xref</destDir>
+          <javadocDir>${project.build.directory}/site/api</javadocDir>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-project-info-reports-plugin</artifactId>
+        <configuration>
+        </configuration>
+      </plugin>
+      <plugin>
+      	<groupId>org.apache.maven.plugins</groupId>
+      	<artifactId>maven-pmd-plugin</artifactId>
+      	<configuration>
+      		<targetJdk>1.6</targetJdk>
+      		<rulesets>
+      			<ruleset>/rulesets/basic.xml</ruleset>
+      			<ruleset>/rulesets/design.xml</ruleset>
+      		</rulesets>
+      		<format>xml</format>
+      		<linkXref>true</linkXref>
+      		<sourceEncoding>utf-8</sourceEncoding>
+      		<minimumTokens>100</minimumTokens>
+      	</configuration>
+      </plugin>
+      <plugin>
+      	<groupId>org.apache.maven.plugins</groupId>
+      	<artifactId>maven-changes-plugin</artifactId>
+      </plugin>
+      <plugin>
+      	<groupId>org.apache.maven.plugins</groupId>
+      	<artifactId>maven-changelog-plugin</artifactId>
+      </plugin>
+      <plugin>
+      	<groupId>org.codehaus.mojo</groupId>
+      	<artifactId>taglist-maven-plugin</artifactId>
+      	<configuration>
+      		<encoding>utf-8</encoding>
+      		<tags>
+      			<tag>TODO</tag>
+      			<tag>FIXME</tag>
+      			<tag>@deprecated</tag>
+      		</tags>
+      	</configuration>
+      </plugin>
+	</plugins>
+  </reporting>
 </project>
