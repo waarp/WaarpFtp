@@ -150,12 +150,13 @@
   </dependencies>
   <properties>
   	<attach-distribution>false</attach-distribution>
+    <filtermodule>**</filtermodule>
   </properties>
   <modules>
   	<module>common</module>
   	<module>core</module>
   	<module>filesystem</module>
-  	<module>simpleserver</module>
+  	<module>simpleimpl</module>
   </modules>
   <build>
     <plugins>
@@ -242,7 +243,6 @@
                         <include name="**" />
                       </zipfileset>
                       <zipfileset filemode="644" src="${project.build.directory}/${project.build.finalName}.orig.jar" dirmode="755">
-                        <exclude name="*/*/*/example/**" />
                       </zipfileset>
                     </zip>
                     <delete file="${project.build.directory}/${project.build.finalName}.orig.jar" />
@@ -252,13 +252,14 @@
                         <include name="LICENSE.*" />
                         <include name="NOTICE.*" />
                         <include name="COPYRIGHT.*" />
+                        <include name="**/Makefile" />
                       </zipfileset>
                       <zipfileset dir="${basedir}/license" prefix="META-INF/license/">
                         <exclude name="**/.*/**" />
                         <include name="**" />
                       </zipfileset>
                       <zipfileset filemode="644" src="${project.build.directory}/${project.build.finalName}-sources.orig.jar" dirmode="755">
-                        <exclude name="*/*/*/example/**" />
+                        <include name="**/${filtermodule}/**" />
                       </zipfileset>
                     </zip>
                     <delete file="${project.build.directory}/${project.build.finalName}-sources.orig.jar" />

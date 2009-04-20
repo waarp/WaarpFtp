@@ -32,7 +32,7 @@ TARGPPC=darwin_ppc/MD5.jnilib
 TARGWINDOWS=win32_x86/MD5.dll
 TARGAIX=aix53_ppc64/MD5.so
 
-BASEDIR=../../../
+BASEDIR=../../
 TARGET=${BASEDIR}lib/arch/
 DIRECTORY=goldengate/common/digest
 CLASSNAME=goldengate.common.digest
@@ -43,7 +43,7 @@ TSYST=${TARGET}${TARGWINDOWS}
 GCCBIN=gcc
 CPPFLAGS=-I. -g -O3
 
-#WINDOWS using MinGW
+#WINDOWS using Cygwin
 TINCLUDE=-I$(JAVADIR)include/win32
 CPPSHAREDFLAG=-O3 -shared -mwin32 -march=prescott -Wl,--add-stdcall-alias -mno-cygwin -mrtd -Wall 
 

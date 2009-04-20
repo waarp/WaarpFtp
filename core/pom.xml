@@ -7,12 +7,14 @@
 	  <relativePath>../pom.xml</relativePath>
   </parent>
   <name>GoldenGateFtp-Core</name>
-  <artifactId>ftp-core</artifactId>
-
+  <artifactId>core</artifactId>
+  <properties>
+    <filtermodule>core</filtermodule>
+  </properties>
   <dependencies>
     <dependency>
       <groupId>GoldenGateFtp</groupId>
-      <artifactId>ftp-common</artifactId>
+      <artifactId>common</artifactId>
       <version>0.9.2</version>
       <optional>false</optional>
     </dependency>
@@ -32,7 +34,7 @@
 	          <optimize>true</optimize>
 	          <showDeprecations>true</showDeprecations>
 	          <includes>
-	          	<include>**/core/**</include>
+	          	<include>**/${filtermodule}/**</include>
 	          </includes>
 	        </configuration>
   		</plugin>

@@ -7,8 +7,10 @@
 	  <relativePath>../pom.xml</relativePath>
   </parent>
   <name>GoldenGateFtp-Common</name>
-  <artifactId>ftp-common</artifactId>
-
+  <artifactId>common</artifactId>
+  <properties>
+    <filtermodule>common</filtermodule>
+  </properties>
   <build>
   	<sourceDirectory>../src/main/java</sourceDirectory>
   	
@@ -23,7 +25,7 @@
 	          <optimize>true</optimize>
 	          <showDeprecations>true</showDeprecations>
 	          <includes>
-	          	<include>**/common/**</include>
+	          	<include>**/${filtermodule}/**</include>
 	          </includes>
 	        </configuration>
   		</plugin>
