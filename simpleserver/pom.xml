@@ -1,0 +1,65 @@
+<project>
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+	  <groupId>GoldenGateFtp</groupId>
+	  <artifactId>GoldenGateFtp</artifactId>
+	  <version>0.9.2</version>
+	  <relativePath>../pom.xml</relativePath>
+  </parent>
+  <name>GoldenGateFtp-SimpleServer</name>
+  <artifactId>ftp-simpleserver</artifactId>
+  
+  <dependencies>
+    <dependency>
+      <groupId>GoldenGateFtp</groupId>
+      <artifactId>ftp-common</artifactId>
+      <version>0.9.2</version>
+      <!-- <scope>compile</scope> -->
+      <optional>false</optional>
+    </dependency>
+    <dependency>
+      <groupId>GoldenGateFtp</groupId>
+      <artifactId>ftp-core</artifactId>
+      <version>0.9.2</version>
+      <optional>false</optional>
+    </dependency>
+    <dependency>
+      <groupId>GoldenGateFtp</groupId>
+      <artifactId>ftp-filesystem</artifactId>
+      <version>0.9.2</version>
+      <optional>false</optional>
+    </dependency>
+  </dependencies>
+  
+  <build>
+  	<sourceDirectory>../src/main/java</sourceDirectory>
+  	
+  	<plugins>
+  		<plugin>
+  			<artifactId>maven-compiler-plugin</artifactId>
+  			<version>2.0.2</version>
+	        <configuration>
+	          <encoding>UTF-8</encoding>
+	          <source>1.6</source>
+	          <target>1.6</target>
+	          <optimize>true</optimize>
+	          <showDeprecations>true</showDeprecations>
+	          <includes>
+	          	<include>**/simpleimpl/**</include>
+	          </includes>
+	        </configuration>
+  		</plugin>
+  	</plugins>
+  </build>
+  <reporting>
+  	<plugins>
+      <plugin>
+      	<groupId>org.apache.maven.plugins</groupId>
+      	<artifactId>maven-site-plugin</artifactId>
+      	<configuration>
+      		<generateReports>false</generateReports>
+      	</configuration>
+      </plugin>
+  	</plugins>
+  </reporting>
+</project>

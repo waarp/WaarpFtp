@@ -3,6 +3,7 @@
   <id>dist</id>
   <formats>
     <format>tar.bz2</format>
+    <format>tar.gz</format>
     <format>zip</format>
   </formats>
   <includeSiteDirectory>false</includeSiteDirectory>
