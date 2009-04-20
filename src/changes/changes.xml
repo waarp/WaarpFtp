@@ -5,7 +5,7 @@
 		<author email="fredbregier@free.fr">Frederic Bregier</author>
 	</properties>
 	<body>
-		<release version="current" date="2009-04-19" description="Current work version">
+		<release version="0.9.2" date="2009-04-20" description="Refactorized version">
 			<action dev="Frederic Bregier" type="add">Fix Maven and POM and refactorization</action>
 			<action dev="Frederic Bregier" type="fix">Fix some bugs</action>
 		</release>
