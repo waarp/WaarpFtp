@@ -20,7 +20,7 @@
 	  action on commands (not ony transfer), changing the underlying representation of files and 
 	  directories (for instance with database entries), using any particular authentication mechanism.
   </description>
-  <url>http://openr66.free.fr/GoldenGateFTP.html</url>
+  <url>http://openr66.free.fr/GoldenGateFTP</url>
   <inceptionYear>2009</inceptionYear>
   <scm>
   	<connection>scm:svn:http://goldengate.svn.sourceforge.net/svnroot/goldengate/GoldenGateFtp/trunk</connection>
@@ -142,7 +142,7 @@
     <dependency>
     	<groupId>Netty</groupId>
     	<artifactId>Netty</artifactId>
-    	<version>Netty-branche-traffic see www.jboss.org/netty</version>
+    	<version>Netty-branche-traffic see http://www.jboss.org/netty</version>
     	<scope>system</scope>
     	<systemPath>D:/NEWJARS/Netty-Jboss.jar</systemPath>
     	<optional>false</optional>
@@ -403,55 +403,6 @@
           </reports>
          </reportSet>
         </reportSets>
-        
-<!--    <configuration>
-          <aggregate>true</aggregate>
-          <doclet>org.jboss.apiviz.APIviz</doclet>
-          <docletArtifact>
-            <groupId>org.jboss.apiviz</groupId>
-            <artifactId>apiviz</artifactId>
-            <version>1.3.0.GA</version>
-          </docletArtifact>
-          <useStandardDocletOptions>true</useStandardDocletOptions>
-          <outputDirectory>${project.build.directory}/api</outputDirectory>
-          <reportOutputDirectory>${project.build.directory}/api</reportOutputDirectory>
-          <destDir>api</destDir>
-          <charset>UTF-8</charset>
-          <docencoding>UTF-8</docencoding>
-          <breakiterator>true</breakiterator>
-          <version>true</version>
-          <author>true</author>
-          <keywords>true</keywords>
-          <overview>${basedir}/src/javadoc/overview.html</overview>
-          <doctitle>${project.name} ${project.version} API Reference</doctitle>
-          <windowtitle>${project.name} ${project.version} API Reference</windowtitle>
-          <additionalparam>
-            -link http://java.sun.com/javase/6/docs/api/
-            -link http://code.google.com/apis/protocolbuffers/docs/reference/java/
-            -link http://java.sun.com/products/servlet/2.5/docs/servlet-2_5-mr2/
-            -link http://www.osgi.org/javadoc/r4v41/
-            -link http://google-guice.googlecode.com/svn/trunk/javadoc/
-            -link http://static.springframework.org/spring/docs/2.5.x/api/
-            -link http://www.slf4j.org/apidocs/
-            -link http://commons.apache.org/logging/commons-logging-1.1.1/apidocs/
-            -link http://logging.apache.org/log4j/1.2/apidocs/
-
-			-group "GoldenGate Common Logging Future Command Authentication Session and File package" "goldengate.common*"
-			-group "GoldenGate FTP Main Core package" "goldengate.ftp.core*"
-			-group "GoldenGate FTP Filesystem Implementation package" "goldengate.ftp.filesystembased*"
-			-group "GoldenGate Simple FTP Server package" "goldengate.ftp.simpleimpl*"
-
-            -sourceclasspath ${basedir}/common/target/classes
-            -sourceclasspath ${basedir}/core/target/classes
-            -sourceclasspath ${basedir}/filesystem/target/classes
-            -sourceclasspath ${basedir}/simpleserver/target/classes
-          </additionalparam>
-          <encoding>UTF-8</encoding>
-          <locale>en_US</locale>
-          <excludePackageNames>${project.groupId}.example*:${project.groupId}.util.internal*</excludePackageNames>
-        </configuration>
-         -->
-         
       </plugin>
       <plugin>
       	<groupId>org.apache.maven.plugins</groupId>
@@ -469,6 +420,22 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-project-info-reports-plugin</artifactId>
+        <reportSets>
+         <reportSet>
+          <reports>
+           <report>index</report>
+           <report>summary</report>
+           <report>dependencies</report>
+           <report>mailing-list</report>
+           <report>issue-tracking</report>
+           <report>dependency-convergence</report>
+           <report>dependency-management</report>
+           <report>project-team</report>
+           <report>scm</report>
+           <report>license</report>
+          </reports>
+         </reportSet>
+        </reportSets>
         <configuration>
         </configuration>
       </plugin>
