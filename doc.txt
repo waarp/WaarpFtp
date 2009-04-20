@@ -1,0 +1,29 @@
+-d D:\NEWSOURCE\GoldenGateFtpTrunk\target\api -sourceclasspath D:\NEWSOURCE\GoldenGateFtpTrunk\target\classes 
+-doctitle "GoldenGate Open Source FTP Server V0.9.2"
+-bottom "<script src=http://www.google-analytics.com/urchin.js type=text/javascript></script><script type=text/javascript>_uacct='UA-1693657-4'; urchinTracker(); </script>" 
+-group "GoldenGate Common Logging, Future, Command, Authentication, Session and File package" "goldengate.common*"
+-group "GoldenGate FTP Main Core package" "goldengate.ftp.core*" 
+-group "GoldenGate FTP Filesystem Implementation package" "goldengate.ftp.filesystembased*" 
+-group "GoldenGate Simple FTP Server package" "goldengate.ftp.simpleimpl*"
+
+-d D:\NEWSOURCE\GoldenGateFtp\docKernel -sourceclasspath D:\NEWSOURCE\GoldenGateFtp\bin 
+-doctitle "GoldenGate Open Source FTP Server Kernel V0.9.1"
+-bottom "<script src=http://www.google-analytics.com/urchin.js type=text/javascript></script><script type=text/javascript>_uacct='UA-1693657-4'; urchinTracker(); </script>" 
+-group "GoldenGate FTP Main Core Authentification package" "goldengate.ftp.core.auth*" 
+-group "GoldenGate FTP Main Core Command package" "goldengate.ftp.core.command*" 
+-group "GoldenGate FTP Main Core Config package" "goldengate.ftp.core.config*" 
+-group "GoldenGate FTP Main Core Control package" "goldengate.ftp.core.control*" 
+-group "GoldenGate FTP Main Core Data package" "goldengate.ftp.core.data*" 
+-group "GoldenGate FTP Main Core File package" "goldengate.ftp.core.file*" 
+-group "GoldenGate FTP Main Core Session package" "goldengate.ftp.core.session*" 
+-group "GoldenGate FTP Main Core Other package" "goldengate.ftp.core.exception*:goldengate.ftp.core.logging*:goldengate.ftp.core.utils*" 
+
+-d D:\NEWSOURCE\GoldenGateFtp\docFilesystemBased -sourceclasspath D:\NEWSOURCE\GoldenGateFtp\bin 
+-doctitle "GoldenGate Open Source FTP Server Filesystem V0.9.1"
+-bottom "<script src=http://www.google-analytics.com/urchin.js type=text/javascript></script><script type=text/javascript>_uacct='UA-1693657-4'; urchinTracker(); </script>" 
+-group "GoldenGate FTP Filesystem Implementation package" "goldengate.ftp.filesystembased*" 
+
+-d D:\NEWSOURCE\GoldenGateFtp\docSimpleImpl -sourceclasspath D:\NEWSOURCE\GoldenGateFtp\bin 
+-doctitle "GoldenGate Open Source FTP Server Simple Implementation V0.9.1"
+-bottom "<script src=http://www.google-analytics.com/urchin.js type=text/javascript></script><script type=text/javascript>_uacct='UA-1693657-4'; urchinTracker(); </script>" 
+-group "GoldenGate Simple FTP Server package" "goldengate.ftp.simpleimpl*"

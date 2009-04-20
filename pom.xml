@@ -1,0 +1,496 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>GoldenGateFtp</groupId>
+  <artifactId>GoldenGateFtp</artifactId>
+  <name>GoldenGateFtp</name>
+  <version>0.9.2</version>
+  <packaging>pom</packaging>
+  <description>
+	  The GoldenGate FTP project is a proposal of a new fresh FTP server implementation, 
+	  fully in Java according to the following RFC: RFC 959, RFC 775, RFC 2389, RFC 2428, RFC 3659. 
+	  It includes also extra commands like XCRC, XMD5, XSHA1, INTERNALSHUTDOWN. It is based mainly 
+	  on the NETTY framework (NIO great framework support) and is tend to be really efficient, both 
+	  in term of memory, threads and network bandwidth. Bandwidth limitation can be configured both 
+	  in store and retrieve, per session (although only one value is set by default, but it can be 
+	  changed dynamically if needed) or globally to the server and of course with no limitation at 
+	  all if wanted. Limitation should be enough to change the bandwidth behaviour for instance 
+	  depending on the time in the day, so as to allow to limit bandwidth usage when users are at 
+	  work and in contrary to allow more speed when only batchs are running. The specificity of this 
+	  project is you can adapt this software to your particular needs by: changing the pre or post 
+	  action on commands (not ony transfer), changing the underlying representation of files and 
+	  directories (for instance with database entries), using any particular authentication mechanism.
+  </description>
+  <url>http://openr66.free.fr/GoldenGateFTP</url>
+  <inceptionYear>2009</inceptionYear>
+  <scm>
+  	<connection>scm:svn:http://goldengate.svn.sourceforge.net/svnroot/goldengate/GoldenGateFtp/trunk</connection>
+  	<developerConnection>scm:svn:https://goldengate.svn.sourceforge.net/svnroot/goldengate/GoldenGateFtp/trunk</developerConnection>
+  	<url>http://goldengate.svn.sourceforge.net/svnroot/goldengate/GoldenGateFtp/trunk</url>
+  </scm>
+  <organization>
+  	<name>Frederic Bregier</name>
+  	<url>http://frederic.bregier.free.fr</url>
+  </organization>
+  <developers>
+  	<developer>
+  		<name>Frederic Bregier</name>
+  		<id>openlsd</id>
+  		<roles>
+  			<role>Project Manager</role>
+  			<role>Architect</role>
+		</roles>
+  		<email>fredbregier@free.fr</email>
+  	</developer>
+  	<developer>
+  		<name>Frederic Bregier</name>
+  		<id>fredbregier</id>
+  		<roles>
+  			<role>Developer</role>
+		</roles>
+  		<email>fredbregier@free.fr</email>
+  	</developer>
+  </developers>
+  <issueManagement>
+  	<system>Sourceforge</system>
+  	<url>http://sourceforge.net/tracker/?group_id=254228/</url>
+  </issueManagement>
+  <mailingLists>
+  	<mailingList>
+  		<name>GoldenGate Devel mailing list (Prefered)</name>
+  		<subscribe>https://lists.sourceforge.net/lists/listinfo/goldengate-devel</subscribe>
+  		<post>goldengate-devel@lists.sourceforge.net</post>
+  		<archive>http://sourceforge.net/mailarchive/forum.php?forum_name=goldengate-devel</archive>
+  	</mailingList>
+  	<mailingList>
+  		<name>GoldenGate Help Forum</name>
+  		<archive>http://sourceforge.net/forum/forum.php?forum_id=921630</archive>
+  	</mailingList>
+  	<mailingList>
+  		<name>GoldenGate Open Discussion Forum</name>
+  		<archive>http://sourceforge.net/forum/forum.php?forum_id=921629</archive>
+  	</mailingList>
+  </mailingLists>
+  <licenses>
+  	<license>
+  		<name>LGPL 3.0</name>
+  		<url>LICENSE.txt</url>
+  	</license>
+  </licenses>
+  <repositories>
+  	<repository>
+  		<id>jboss.releases</id>
+  		<name>JBoss releases</name>
+  		<url>http://repository.jboss.org/maven2</url>
+  		<releases>
+  			<enabled>true</enabled>
+  		</releases>
+  		<snapshots>
+  			<enabled>false</enabled>
+  		</snapshots>
+  	</repository>
+  </repositories>
+  <dependencies>
+    <dependency>
+      <groupId>ch.qos.logback</groupId>
+      <artifactId>logback-access</artifactId>
+      <version>0.9.15</version>
+      <scope>compile</scope>
+      <optional>true</optional>
+    </dependency>
+    <dependency>
+      <groupId>ch.qos.logback</groupId>
+      <artifactId>logback-classic</artifactId>
+      <version>0.9.15</version>
+      <scope>compile</scope>
+      <optional>true</optional>
+    </dependency>
+    <dependency>
+      <groupId>ch.qos.logback</groupId>
+      <artifactId>logback-core</artifactId>
+      <version>0.9.15</version>
+      <scope>compile</scope>
+      <optional>true</optional>
+    </dependency>
+    <dependency>
+      <groupId>dom4j</groupId>
+      <artifactId>dom4j</artifactId>
+      <version>1.6.1</version>
+      <scope>compile</scope>
+      <optional>true</optional>
+    </dependency>
+    <dependency>
+      <groupId>jaxen</groupId>
+      <artifactId>jaxen</artifactId>
+      <version>1.1.1</version>
+      <scope>compile</scope>
+      <optional>true</optional>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+      <version>1.5.6</version>
+      <scope>compile</scope>
+      <optional>true</optional>
+    </dependency>
+    <dependency>
+    	<groupId>commons-io</groupId>
+    	<artifactId>commons-io</artifactId>
+    	<version>1.4</version>
+      <scope>compile</scope>
+      <optional>true</optional>
+    </dependency>
+    <dependency>
+    	<groupId>Netty</groupId>
+    	<artifactId>Netty</artifactId>
+    	<version>Netty-branche-traffic see http://www.jboss.org/netty</version>
+    	<scope>system</scope>
+    	<systemPath>D:/NEWJARS/Netty-Jboss.jar</systemPath>
+    	<optional>false</optional>
+    </dependency>
+  </dependencies>
+  <properties>
+  	<attach-distribution>false</attach-distribution>
+    <filtermodule>**</filtermodule>
+  </properties>
+  <modules>
+  	<module>common</module>
+  	<module>core</module>
+  	<module>filesystem</module>
+  	<module>simpleimpl</module>
+  </modules>
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>2.0.2</version>
+        <configuration>
+          <encoding>UTF-8</encoding>
+          <source>1.6</source>
+          <target>1.6</target>
+          <optimize>true</optimize>
+          <showDeprecations>true</showDeprecations>
+        </configuration>
+      </plugin>
+      <plugin>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>2.4.3</version>
+        <configuration>
+          <forkMode>never</forkMode>
+          <excludes>
+            <exclude>**/Abstract*</exclude>
+            <exclude>**/TestUtil*</exclude>
+          </excludes>
+        </configuration>
+      </plugin>
+      <plugin>
+        <artifactId>maven-source-plugin</artifactId>
+        <version>2.0.4</version>
+        <executions>
+          <execution>
+            <id>attach-source</id>
+            <phase>package</phase>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+            <configuration>
+              <attach>true</attach>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <version>1.3</version>
+        <executions>
+          <execution>
+            <id>write-version</id>
+            <phase>compile</phase>
+            <goals>
+              <goal>run</goal>
+	    	</goals>
+            <configuration>
+              <tasks>
+                <mkdir dir="${project.build.directory}"/>
+                <mkdir dir="${project.build.directory}/classes"/>
+                <echo message="${project.version}" file="${project.build.directory}/version.txt" />
+                <echo message="${project.artifactId}" />
+                <taskdef resource="net/sf/antcontrib/antlib.xml" />
+                <if>
+                <equals arg1="${project.artifactId}" arg2="GoldenGateFtp"/>
+                <then>
+                	<mkdir dir="${project.build.directory}/site"/>
+                	<mkdir dir="${project.build.directory}/site/common"/>
+                	<mkdir dir="${project.build.directory}/site/core"/>
+                	<mkdir dir="${project.build.directory}/site/filesystem"/>
+                	<mkdir dir="${project.build.directory}/site/simpleimpl"/>
+                	<copy file="${basedir}/src/site/resources/html/common/index.html" toDir="${project.build.directory}/site/common/"/>
+                	<copy file="${basedir}/src/site/resources/html/core/index.html" toDir="${project.build.directory}/site/core/"/>
+                	<copy file="${basedir}/src/site/resources/html/filesystem/index.html" toDir="${project.build.directory}/site/filesystem/"/>
+                	<copy file="${basedir}/src/site/resources/html/simpleimpl/index.html" toDir="${project.build.directory}/site/simpleimpl/"/>
+                </then>
+                </if>
+              </tasks>
+            </configuration>
+          </execution>
+          <execution>
+            <id>add-license</id>
+            <phase>package</phase>
+            <goals>
+              <goal>run</goal>
+            </goals>
+            <configuration>
+              <tasks>
+                <taskdef resource="net/sf/antcontrib/antlib.xml" />
+                <if>
+                  <or>
+                    <equals arg2="jar" arg1="${project.packaging}" />
+                    <equals arg2="bundle" arg1="${project.packaging}" />
+                  </or>
+                  <then>
+                    <move file="${project.build.directory}/${project.build.finalName}.jar" tofile="${project.build.directory}/${project.build.finalName}.orig.jar" />
+                    <zip destfile="${project.build.directory}/${project.build.finalName}.jar">
+                      <zipfileset dir="${basedir}" prefix="META-INF/">
+                        <include name="LICENSE.*" />
+                        <include name="NOTICE.*" />
+                        <include name="COPYRIGHT.*" />
+                      </zipfileset>
+                      <zipfileset dir="${basedir}/license" prefix="META-INF/license/">
+                        <exclude name="**/.*/**" />
+                        <include name="**" />
+                      </zipfileset>
+                      <zipfileset filemode="644" src="${project.build.directory}/${project.build.finalName}.orig.jar" dirmode="755">
+                      </zipfileset>
+                    </zip>
+                    <delete file="${project.build.directory}/${project.build.finalName}.orig.jar" />
+                    <move file="${project.build.directory}/${project.build.finalName}-sources.jar" tofile="${project.build.directory}/${project.build.finalName}-sources.orig.jar" />
+                    <zip destfile="${project.build.directory}/${project.build.finalName}-sources.jar">
+                      <zipfileset dir="${basedir}" prefix="META-INF/">
+                        <include name="LICENSE.*" />
+                        <include name="NOTICE.*" />
+                        <include name="COPYRIGHT.*" />
+                        <include name="**/Makefile" />
+                      </zipfileset>
+                      <zipfileset dir="${basedir}/license" prefix="META-INF/license/">
+                        <exclude name="**/.*/**" />
+                        <include name="**" />
+                      </zipfileset>
+                      <zipfileset filemode="644" src="${project.build.directory}/${project.build.finalName}-sources.orig.jar" dirmode="755">
+                        <include name="**/${filtermodule}/**" />
+                      </zipfileset>
+                    </zip>
+                    <delete file="${project.build.directory}/${project.build.finalName}-sources.orig.jar" />
+                  </then>
+                </if>
+              </tasks>
+            </configuration>
+          </execution>
+        </executions>
+        <dependencies>
+          <dependency>
+            <groupId>org.apache.ant</groupId>
+            <artifactId>ant</artifactId>
+            <version>1.7.1</version>
+          </dependency>
+          <dependency>
+            <groupId>org.apache.ant</groupId>
+            <artifactId>ant-launcher</artifactId>
+            <version>1.7.1</version>
+          </dependency>
+          <dependency>
+            <groupId>ant-contrib</groupId>
+            <artifactId>ant-contrib</artifactId>
+            <version>1.0b2</version>
+            <exclusions>
+              <exclusion>
+                <groupId>ant</groupId>
+                <artifactId>ant</artifactId>
+              </exclusion>
+            </exclusions>
+          </dependency>
+        </dependencies>
+      </plugin>
+      <plugin>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <version>2.2-beta-3</version>
+        <executions>
+          <execution>
+            <id>generate-distribution</id>
+            <phase>package</phase>
+            <goals>
+              <goal>single</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <descriptors>
+            <descriptor>${basedir}/src/assembly/default.xml</descriptor>
+          </descriptors>
+          <attach>${attach-distribution}</attach>
+          <appendAssemblyId>true</appendAssemblyId>
+          <tarLongFileMode>gnu</tarLongFileMode>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-eclipse-plugin</artifactId>
+        <version>2.6</version>
+        <configuration>
+          <downloadSources>true</downloadSources>
+          <addVersionToProjectName>true</addVersionToProjectName>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+  <profiles>
+    <profile>
+      <id>release</id>
+      <build>
+        <plugins>
+          <plugin>
+            <inherited>true</inherited>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-deploy-plugin</artifactId>
+            <version>2.4</version>
+            <configuration>
+              <updateReleaseInfo>true</updateReleaseInfo>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
+  <reporting>
+  	<plugins>
+	  <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <version>2.5</version>
+        
+        <reportSets>
+         <reportSet>
+          <id>aggregate</id>
+          <configuration>
+	          <aggregate>true</aggregate>
+	          <doclet>org.jboss.apiviz.APIviz</doclet>
+	          <docletArtifact>
+	            <groupId>org.jboss.apiviz</groupId>
+	            <artifactId>apiviz</artifactId>
+	            <version>1.3.0.GA</version>
+	          </docletArtifact>
+	          <useStandardDocletOptions>true</useStandardDocletOptions>
+	          <outputDirectory>${project.build.directory}/api</outputDirectory>
+	          <reportOutputDirectory>${project.build.directory}/api</reportOutputDirectory>
+	          <destDir>api</destDir>
+	          <charset>UTF-8</charset>
+	          <docencoding>UTF-8</docencoding>
+	          <breakiterator>true</breakiterator>
+	          <version>true</version>
+	          <author>true</author>
+	          <keywords>true</keywords>
+	          <overview>${basedir}/src/javadoc/overview.html</overview>
+	          <doctitle>${project.name} ${project.version} API Reference</doctitle>
+	          <windowtitle>${project.name} ${project.version} API Reference</windowtitle>
+	          <additionalparam>
+	            -link http://java.sun.com/javase/6/docs/api/
+	            -link http://code.google.com/apis/protocolbuffers/docs/reference/java/
+	            -link http://java.sun.com/products/servlet/2.5/docs/servlet-2_5-mr2/
+	            -link http://www.osgi.org/javadoc/r4v41/
+	            -link http://google-guice.googlecode.com/svn/trunk/javadoc/
+	            -link http://static.springframework.org/spring/docs/2.5.x/api/
+	            -link http://www.slf4j.org/apidocs/
+	            -link http://commons.apache.org/logging/commons-logging-1.1.1/apidocs/
+	            -link http://logging.apache.org/log4j/1.2/apidocs/
+	
+				-group "GoldenGate Common Logging Future Command Authentication Session and File package" "goldengate.common*"
+				-group "GoldenGate FTP Main Core package" "goldengate.ftp.core*"
+				-group "GoldenGate FTP Filesystem Implementation package" "goldengate.ftp.filesystembased*"
+				-group "GoldenGate Simple FTP Server package" "goldengate.ftp.simpleimpl*"
+	
+	            -sourceclasspath ${basedir}/common/target/classes
+	            -sourceclasspath ${basedir}/core/target/classes
+	            -sourceclasspath ${basedir}/filesystem/target/classes
+	            -sourceclasspath ${basedir}/simpleimpl/target/classes
+	          </additionalparam>
+	          <encoding>UTF-8</encoding>
+	          <locale>en_US</locale>
+	          <excludePackageNames>${project.groupId}.example*:${project.groupId}.util.internal*</excludePackageNames>
+          </configuration>
+          <reports>
+           <report>aggregate</report>
+          </reports>
+         </reportSet>
+        </reportSets>
+      </plugin>
+      <plugin>
+      	<groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jxr-plugin</artifactId>
+        <version>2.1</version>
+        <configuration>
+          <aggregate>true</aggregate>
+          <inputEncoding>UTF-8</inputEncoding>
+          <outputEncoding>UTF-8</outputEncoding>
+          <linkJavadoc>true</linkJavadoc>
+          <destDir>${project.build.directory}/xref</destDir>
+          <javadocDir>${project.build.directory}/site/api</javadocDir>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-project-info-reports-plugin</artifactId>
+        <reportSets>
+         <reportSet>
+          <reports>
+           <report>index</report>
+           <report>summary</report>
+           <report>dependencies</report>
+           <report>mailing-list</report>
+           <report>issue-tracking</report>
+           <report>dependency-convergence</report>
+           <report>dependency-management</report>
+           <report>project-team</report>
+           <report>scm</report>
+           <report>license</report>
+          </reports>
+         </reportSet>
+        </reportSets>
+        <configuration>
+        </configuration>
+      </plugin>
+      <plugin>
+      	<groupId>org.apache.maven.plugins</groupId>
+      	<artifactId>maven-pmd-plugin</artifactId>
+      	<configuration>
+      		<targetJdk>1.6</targetJdk>
+      		<rulesets>
+      			<ruleset>/rulesets/basic.xml</ruleset>
+      			<ruleset>/rulesets/design.xml</ruleset>
+      		</rulesets>
+      		<format>xml</format>
+      		<linkXref>true</linkXref>
+      		<sourceEncoding>utf-8</sourceEncoding>
+      		<minimumTokens>100</minimumTokens>
+      	</configuration>
+      </plugin>
+      <plugin>
+      	<groupId>org.apache.maven.plugins</groupId>
+      	<artifactId>maven-changes-plugin</artifactId>
+      </plugin>
+      <plugin>
+      	<groupId>org.apache.maven.plugins</groupId>
+      	<artifactId>maven-changelog-plugin</artifactId>
+      </plugin>
+      <plugin>
+      	<groupId>org.codehaus.mojo</groupId>
+      	<artifactId>taglist-maven-plugin</artifactId>
+      	<configuration>
+      		<encoding>utf-8</encoding>
+      		<tags>
+      			<tag>TODO</tag>
+      			<tag>FIXME</tag>
+      			<tag>@deprecated</tag>
+      		</tags>
+      	</configuration>
+      </plugin>
+	</plugins>
+  </reporting>
+</project>

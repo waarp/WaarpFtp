@@ -1,0 +1,28 @@
+GoldenGate FTP Server
+
+  The GoldenGate FTP project is a proposal of a new fresh FTP server implementation, 
+  fully in Java according to the following RFC: RFC 959, RFC 775, RFC 2389, RFC 2428, RFC 3659. 
+  It includes also extra commands like XCRC, XMD5, XSHA1, INTERNALSHUTDOWN. 
+	  
+Dependency	  
+
+  It is based mainly on the NETTY framework (NIO great framework support at {{http://www.jboss.org/netty}}
+  and is tend to be really efficient, both in term of memory, threads and network bandwidth. 
+	  
+Specificities
+	  
+  Bandwidth limitation can be configured both 
+  in store and retrieve, per session (although only one value is set by default, but it can be 
+  changed dynamically if needed) or globally to the server and of course with no limitation at 
+  all if wanted. Limitation should be enough to change the bandwidth behaviour for instance 
+  depending on the time in the day, so as to allow to limit bandwidth usage when users are at 
+  work and in contrary to allow more speed when only batchs are running. 
+	  
+  The specificity of this 
+  project is you can adapt this software to your particular needs by: changing the pre or post 
+  action on commands (not ony transfer), changing the underlying representation of files and 
+  directories (for instance with database entries), using any particular authentication mechanism.
+  
+[images/goldengatesmall.jpg] GoldenGate Main Project Logo
+
+  See global GoldenGate project at {{http://openr66/free.fr/}}

@@ -1,0 +1,23 @@
+<authent>
+	<entry>
+		<user>fredo</user>
+		<passwd>fred1</passwd>
+		<account>a</account>
+		<account>b</account>
+		<account>c</account>
+		<account>d</account>
+		<admin>1</admin>
+	</entry>
+	<entry>
+		<user>fred</user>
+		<passwd>fred2</passwd>
+		<account>a</account>
+		<account>b</account>
+		<account>c</account>
+		<account>d</account>
+	</entry>
+	<entry>
+		<user>test</user>
+		<passwd>test</passwd>
+	</entry>
+</authent>
