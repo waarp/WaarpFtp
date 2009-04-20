@@ -12,7 +12,7 @@
     </links>
   	<menu name="GoldenGate Ftp">
   		<item name="Overview of GoldenGate FTP Server" href="index.html"/>
-  		<item name="Main page of GoldenGate FTP Server" href="../GoldenGateFtp.html"/>
+  		<item name="Main page of GoldenGate FTP Server" href="../GoldenGateFTP.html"/>
   		<item name="GoldenGate Main Project" href="../"/>
   	</menu>
     <menu ref="reports"/>
