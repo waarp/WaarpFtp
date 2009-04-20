@@ -393,7 +393,7 @@
 	            -sourceclasspath ${basedir}/common/target/classes
 	            -sourceclasspath ${basedir}/core/target/classes
 	            -sourceclasspath ${basedir}/filesystem/target/classes
-	            -sourceclasspath ${basedir}/simpleserver/target/classes
+	            -sourceclasspath ${basedir}/simpleimpl/target/classes
 	          </additionalparam>
 	          <encoding>UTF-8</encoding>
 	          <locale>en_US</locale>

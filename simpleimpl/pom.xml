@@ -6,7 +6,7 @@
 	  <version>0.9.2</version>
 	  <relativePath>../pom.xml</relativePath>
   </parent>
-  <name>GoldenGateFtp-Filesystem</name>
+  <name>GoldenGateFtp-SimpleServer</name>
   <artifactId>simpleimpl</artifactId>
   <properties>
     <filtermodule>ftp/filesystembased</filtermodule>
