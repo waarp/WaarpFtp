@@ -213,6 +213,22 @@
                 <mkdir dir="${project.build.directory}"/>
                 <mkdir dir="${project.build.directory}/classes"/>
                 <echo message="${project.version}" file="${project.build.directory}/version.txt" />
+                <echo message="${project.artifactId}" />
+                <taskdef resource="net/sf/antcontrib/antlib.xml" />
+                <if>
+                <equals arg1="${project.artifactId}" arg2="GoldenGateFtp"/>
+                <then>
+                	<mkdir dir="${project.build.directory}/site"/>
+                	<mkdir dir="${project.build.directory}/site/common"/>
+                	<mkdir dir="${project.build.directory}/site/core"/>
+                	<mkdir dir="${project.build.directory}/site/filesystem"/>
+                	<mkdir dir="${project.build.directory}/site/simpleimpl"/>
+                	<copy file="${basedir}/src/site/resources/html/common/index.html" toDir="${project.build.directory}/site/common/"/>
+                	<copy file="${basedir}/src/site/resources/html/core/index.html" toDir="${project.build.directory}/site/core/"/>
+                	<copy file="${basedir}/src/site/resources/html/filesystem/index.html" toDir="${project.build.directory}/site/filesystem/"/>
+                	<copy file="${basedir}/src/site/resources/html/simpleimpl/index.html" toDir="${project.build.directory}/site/simpleimpl/"/>
+                </then>
+                </if>
               </tasks>
             </configuration>
           </execution>
