@@ -41,7 +41,7 @@ import org.jboss.netty.channel.SimpleChannelHandler;
  * @author Frederic Bregier
  *
  */
-@ChannelPipelineCoverage("one")
+@ChannelPipelineCoverage("all")
 public class FtpDataStructureCodec extends SimpleChannelHandler {
     /*
      * 3.1.2. DATA STRUCTURES

@@ -47,6 +47,8 @@ public class FtpPipelineFactory implements ChannelPipelineFactory {
             ChannelBuffers.wrappedBuffer(ReplyCode.CRNUL.getBytes()),
             ChannelBuffers.wrappedBuffer(ReplyCode.LF.getBytes()) };
 
+    private static final FtpControlStringDecoder ftpControlStringDecoder = new FtpControlStringDecoder();
+    private static final FtpControlStringEncoder ftpControlStringEncoder = new FtpControlStringEncoder();
     /**
      * Business Handler Class if any (Target Mode only)
      */
@@ -79,8 +81,8 @@ public class FtpPipelineFactory implements ChannelPipelineFactory {
         // Add the text line codec combination first,
         pipeline.addLast("framer", new DelimiterBasedFrameDecoder(8192,
                 delimiter));
-        pipeline.addLast("decoder", new FtpControlStringDecoder());
-        pipeline.addLast("encoder", new FtpControlStringEncoder());
+        pipeline.addLast("decoder", ftpControlStringDecoder);
+        pipeline.addLast("encoder", ftpControlStringEncoder);
         // Threaded execution for business logic
         pipeline.addLast("pipelineExecutor", new ExecutionHandler(
                 configuration.getFtpInternalConfiguration()

@@ -75,7 +75,12 @@ public class FtpDataPipelineFactory implements ChannelPipelineFactory {
      * Handler Codec
      */
     public static final String HANDLER = "handler";
-
+    
+    private static final FtpDataTypeCodec ftpDataTypeCodec = 
+        new FtpDataTypeCodec(TransferType.ASCII,
+            TransferSubType.NONPRINT);
+    private static final FtpDataStructureCodec ftpDataStructureCodec = 
+        new FtpDataStructureCodec(TransferStructure.FILE);
     /**
      * Business Handler Class
      */
@@ -124,10 +129,8 @@ public class FtpDataPipelineFactory implements ChannelPipelineFactory {
         pipeline.addLast(CODEC_LIMIT + "CHANNEL", configuration
                 .getFtpInternalConfiguration()
                 .newChannelTrafficShapingHandler());
-        pipeline.addLast(CODEC_TYPE, new FtpDataTypeCodec(TransferType.ASCII,
-                TransferSubType.NONPRINT));
-        pipeline.addLast(CODEC_STRUCTURE, new FtpDataStructureCodec(
-                TransferStructure.FILE));
+        pipeline.addLast(CODEC_TYPE, ftpDataTypeCodec);
+        pipeline.addLast(CODEC_STRUCTURE, ftpDataStructureCodec);
         // Threaded execution for business logic
         pipeline.addLast(PIPELINE_EXECUTOR, new ExecutionHandler(
                 configuration.getFtpInternalConfiguration()
