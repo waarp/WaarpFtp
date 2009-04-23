@@ -359,16 +359,16 @@ public class FtpDataAsyncConn {
     public void unbindPassive() {
         if (isBind && passiveMode) {
             isBind = false;
+            InetSocketAddress local = getLocalAddress();
             if (dataChannel != null && dataChannel.isConnected()) {
                 logger.debug("PASSIVE MODE CLOSE");
-                Channels.close(dataChannel);// FIXME.awaitUninterruptibly();
+                Channels.close(dataChannel);
             }
             logger.debug("Passive mode unbind");
             session.getConfiguration().getFtpInternalConfiguration()
-                    .unbindPassive(getLocalAddress());
+                    .unbindPassive(local);
             // Previous mode was Passive so remove the current configuration if
             // any
-            InetSocketAddress local = getLocalAddress();
             InetAddress remote = remoteAddress.getAddress();
             session.getConfiguration().delFtpSession(remote, local);
         }

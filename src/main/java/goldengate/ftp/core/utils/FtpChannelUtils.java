@@ -30,7 +30,11 @@ import java.net.UnknownHostException;
 import java.util.Iterator;
 
 import org.jboss.netty.channel.Channel;
+import org.jboss.netty.channel.ChannelFactory;
 import org.jboss.netty.channel.Channels;
+import org.jboss.netty.channel.group.ChannelGroupFuture;
+import org.jboss.netty.channel.group.ChannelGroupFutureListener;
+import org.jboss.netty.handler.execution.OrderedMemoryAwareThreadPoolExecutor;
 
 /**
  * Some useful functions related to Channel of Netty
@@ -248,30 +252,65 @@ public class FtpChannelUtils {
     }
 
     /**
+     * Finalize resources attached to Control or Data handlers
+     * @author Frederic Bregier
+     *
+     */
+    private static class FtpChannelGroupFutureListener implements ChannelGroupFutureListener {
+        OrderedMemoryAwareThreadPoolExecutor pool;
+        ChannelFactory channelFactory;
+        ChannelFactory channelFactory2;
+        public FtpChannelGroupFutureListener(OrderedMemoryAwareThreadPoolExecutor pool,
+                ChannelFactory channelFactory, ChannelFactory channelFactory2) {
+            this.pool = pool;
+            this.channelFactory = channelFactory;
+            this.channelFactory2 = channelFactory2;
+        }
+        @Override
+        public void operationComplete(ChannelGroupFuture future)
+                throws Exception {
+            pool.shutdownNow();
+            channelFactory.releaseExternalResources();
+            if (channelFactory2 != null) {
+                channelFactory2.releaseExternalResources();
+            }
+        }
+    }
+    /**
      * Terminate all registered command channels
      *
      * @param configuration
-     * @return the number of peviously registered command channels
+     * @return the number of previously registered command channels
      */
     private static int terminateCommandChannels(FtpConfiguration configuration) {
         int result = configuration.getFtpInternalConfiguration()
                 .getCommandChannelGroup().size();
         configuration.getFtpInternalConfiguration().getCommandChannelGroup()
-                .close().awaitUninterruptibly(1000);
+                .close().addListener(new FtpChannelGroupFutureListener(
+                        configuration.getFtpInternalConfiguration().
+                        getPipelineExecutor(),
+                        configuration.getFtpInternalConfiguration().
+                        getCommandChannelFactory(), 
+                        null));
         return result;
     }
-
     /**
      * Terminate all registered data channels
      *
      * @param configuration
-     * @return the number of peviously registered data channels
+     * @return the number of previously registered data channels
      */
     private static int terminateDataChannels(FtpConfiguration configuration) {
         int result = configuration.getFtpInternalConfiguration()
                 .getDataChannelGroup().size();
         configuration.getFtpInternalConfiguration().getDataChannelGroup()
-                .close().awaitUninterruptibly(1000);
+                .close().addListener(new FtpChannelGroupFutureListener(
+                        configuration.getFtpInternalConfiguration().
+                        getDataPipelineExecutor(),
+                        configuration.getFtpInternalConfiguration()
+                        .getDataPassiveChannelFactory(),
+                        configuration.getFtpInternalConfiguration()
+                        .getDataActiveChannelFactory()));
         return result;
     }
 
@@ -343,9 +382,9 @@ public class FtpChannelUtils {
         configuration.getFtpInternalConfiguration()
                 .getGlobalTrafficShapingHandler().releaseExternalResources();
         logger.warn("Exit Shutdown Data");
-        dataExit(configuration);
+        terminateDataChannels(configuration);
         logger.warn("Exit Shutdown Command");
-        commandExit(configuration);
+        terminateCommandChannels(configuration);
         logger.warn("Exit end of Shutdown");
     }
 
@@ -357,34 +396,6 @@ public class FtpChannelUtils {
      */
     public static void teminateServer(FtpConfiguration configuration) {
         FtpSignalHandler.terminate(true, configuration);
-    }
-
-    /**
-     * Shutdown Data services
-     *
-     * @param configuration
-     */
-    private static void dataExit(FtpConfiguration configuration) {
-        terminateDataChannels(configuration);
-        configuration.getFtpInternalConfiguration().getDataPipelineExecutor()
-                .shutdownNow();
-        configuration.getFtpInternalConfiguration()
-                .getDataPassiveChannelFactory().releaseExternalResources();
-        configuration.getFtpInternalConfiguration()
-                .getDataActiveChannelFactory().releaseExternalResources();
-    }
-
-    /**
-     * Shutdown Command services
-     *
-     * @param configuration
-     */
-    private static void commandExit(FtpConfiguration configuration) {
-        terminateCommandChannels(configuration);
-        configuration.getFtpInternalConfiguration().getPipelineExecutor()
-                .shutdownNow();
-        configuration.getFtpInternalConfiguration().getCommandChannelFactory()
-                .releaseExternalResources();
     }
 
     /**
