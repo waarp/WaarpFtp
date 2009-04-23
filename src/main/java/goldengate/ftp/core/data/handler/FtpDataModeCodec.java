@@ -31,6 +31,8 @@ import goldengate.ftp.core.command.FtpArgumentCode.TransferStructure;
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
 import org.jboss.netty.channel.Channel;
+import org.jboss.netty.channel.ChannelDownstreamHandler;
+import org.jboss.netty.channel.ChannelEvent;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.ChannelPipelineCoverage;
 import org.jboss.netty.channel.Channels;
@@ -39,7 +41,7 @@ import org.jboss.netty.handler.codec.frame.FrameDecoder;
 
 /**
  * First CODEC :<br>
- * - encode : takes a {@link DataBlock} and trsnforms it to a ChannelBuffer<br>
+ * - encode : takes a {@link DataBlock} and transforms it to a ChannelBuffer<br>
  * - decode : takes a ChannelBuffer and transforms it to a {@link DataBlock}<br>
  * STREAM and BLOCK mode are implemented. COMPRESSED mode is not implemented.
  *
@@ -47,7 +49,7 @@ import org.jboss.netty.handler.codec.frame.FrameDecoder;
  *
  */
 @ChannelPipelineCoverage("one")
-public class FtpDataModeCodec extends FrameDecoder {
+public class FtpDataModeCodec extends FrameDecoder implements ChannelDownstreamHandler {
     /*
      *
      * 3.4.1. STREAM MODE
@@ -313,38 +315,6 @@ public class FtpDataModeCodec extends FrameDecoder {
                 mode.name());
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * org.jboss.netty.channel.SimpleChannelHandler#writeRequested(org.jboss
-     * .netty.channel.ChannelHandlerContext,
-     * org.jboss.netty.channel.MessageEvent)
-     */
-    @Override
-    public void writeRequested(ChannelHandlerContext ctx, MessageEvent evt)
-            throws Exception {
-        if (!(evt.getMessage() instanceof DataBlock)) {
-            throw new InvalidArgumentException("Incorrect write object: " +
-                    evt.getMessage().getClass().getName());
-        }
-        // First test if the connection is fully ready (block might be
-        // transfered
-        // by client before connection is ready)
-        if (!isReady) {
-            codecLocked.await();
-            isReady = true;
-            logger.debug("ModeCodec ready");
-        }
-        DataBlock newDataBlock = (DataBlock) evt.getMessage();
-        ChannelBuffer next = encode(newDataBlock);
-        // Could be splitten in several block
-        while (next != null) {
-            Channels.write(ctx, evt.getFuture(), next);
-            next = encode(newDataBlock);
-        }
-    }
-
     /**
      * Encode a DataBlock in the correct format for Mode
      *
@@ -487,4 +457,41 @@ public class FtpDataModeCodec extends FrameDecoder {
         this.structure = structure;
     }
 
+    @Override
+    public void handleDownstream(ChannelHandlerContext ctx, ChannelEvent e)
+            throws Exception {
+        if (e instanceof MessageEvent) {
+            writeRequested(ctx, (MessageEvent) e);
+        } else {
+            ctx.sendDownstream(e);
+        }
+    }
+    /**
+     * Coder part, taking a DataBlock and converting it to ChannelBuffer
+     * @param ctx
+     * @param evt
+     * @throws Exception
+     */
+    private void writeRequested(ChannelHandlerContext ctx, MessageEvent evt)
+            throws Exception {
+        if (!(evt.getMessage() instanceof DataBlock)) {
+            throw new InvalidArgumentException("Incorrect write object: " +
+                    evt.getMessage().getClass().getName());
+        }
+        // First test if the connection is fully ready (block might be
+        // transfered
+        // by client before connection is ready)
+        if (!isReady) {
+            codecLocked.await();
+            isReady = true;
+            logger.debug("ModeCodec ready");
+        }
+        DataBlock newDataBlock = (DataBlock) evt.getMessage();
+        ChannelBuffer next = encode(newDataBlock);
+        // Could be splitten in several block
+        while (next != null) {
+            Channels.write(ctx, evt.getFuture(), next);
+            next = encode(newDataBlock);
+        }
+    }
 }
