@@ -935,12 +935,6 @@ public abstract class FilesystemBasedDirImpl implements DirInterface {
     }
 
     @Override
-    public goldengate.common.file.FileInterface newFile(String path,
-            boolean append) throws CommandAbstractException {
-        return newFile(path, append);
-    }
-
-    @Override
     public OptsMLSxInterface getOptsMLSx() {
         return optsMLSx;
     }
