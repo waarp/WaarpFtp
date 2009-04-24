@@ -90,23 +90,6 @@ public abstract class AbstractCommand implements CommandInterface {
     }
 
     /*
-     * Set the AbstractCommand from the args
-     *
-     * @param session
-     *
-     * @param command
-     *
-     * @param arg
-     *
-     * @param code
-     */
-    /*
-     * public void setArgs(FtpSession session, String command, String arg,
-     * FtpCommandCode code) { this.session = session; this.command = command;
-     * this.arg = arg; this.code = code; }
-     */
-
-    /*
      * (non-Javadoc)
      *
      * @see
@@ -122,18 +105,6 @@ public abstract class AbstractCommand implements CommandInterface {
             this.extraNextCommand = null;
         }
     }
-
-    /*
-     * This function is intend to allow to force USER->PASS->ACCT->CDW for
-     * instance
-     *
-     * @param extraNextCommand the extraNextCommand to set
-     */
-    /*
-     * public void setExtraNextCommand(FtpCommandCode extraNextCommand) { if
-     * (extraNextCommand != FtpCommandCode.NOOP) { this.extraNextCommand =
-     * extraNextCommand; } else { this.extraNextCommand = null; } }
-     */
 
     /*
      * (non-Javadoc)
@@ -190,78 +161,27 @@ public abstract class AbstractCommand implements CommandInterface {
         return false;
     }
 
-    /*
-     * This function is called when a new command is received to check if this
-     * new command is positive according to the previous command and status.
-     *
-     * @param newCommand
-     *
-     * @return True if this new command is OK, else False
-     */
-    /*
-     * public boolean isNextCommandValid(AbstractCommand newCommand) { Class<?
-     * extends AbstractCommand> newClass = newCommand.getClass(); // Special
-     * commands: QUIT ABORT STAT NOP if
-     * (FtpCommandCode.isSpecialCommand(newCommand.getCode())) {
-     * logger.debug("VALID since {}", newCommand.command); return true; } if
-     * (this.extraNextCommand != null) { if (this.extraNextCommand.command ==
-     * newClass) { logger.debug("VALID {} after {} since extra next command",
-     * newCommand.command, this.command); return true; } if
-     * ((this.code.nextValids != null) && (this.code.nextValids.length > 0)) {
-     * for (int i = 0; i < this.code.nextValids.length; i ++) { if
-     * (this.code.nextValids[i] == newClass) {
-     * logger.debug("VALID {} after {} since next command", newCommand.command,
-     * this.command); return true; } } } logger.debug("NOT VALID {} after {}",
-     * newCommand.command, this.command); return false; } if
-     * ((this.code.nextValids == null) || (this.code.nextValids.length == 0)) {
-     * // Any command is allowed
-     * logger.debug("VALID {} after {} since all valid", newCommand.command,
-     * this.command); return true; } for (int i = 0; i <
-     * this.code.nextValids.length; i ++) { if (this.code.nextValids[i] ==
-     * newClass) { logger.debug("VALID {} since next command {}",
-     * newCommand.command, this.command); return true; } }
-     * logger.debug("DEFAULT NOT VALID {} after {}", newCommand.command,
-     * this.command); return false; }
-     */
-
-    /**
-     * @return the object
-     */
+    @Override
     public Object getObject() {
         return object;
     }
 
-    /**
-     * @param object
-     *            the object to set
-     */
+    @Override
     public void setObject(Object object) {
         this.object = object;
     }
 
-    /**
-     * @return the arg
-     */
+    @Override
     public String getArg() {
         return arg;
     }
 
-    /**
-     *
-     * @return the list of arguments
-     */
+    @Override
     public String[] getArgs() {
         return arg.split(" ");
     }
 
-    /**
-     * Get an integer value from argument
-     *
-     * @param argx
-     * @return the integer
-     * @throws InvalidArgumentException
-     *             if the argument is not an integer
-     */
+    @Override
     public int getValue(String argx) throws InvalidArgumentException {
         int i = 0;
         try {
@@ -272,18 +192,12 @@ public abstract class AbstractCommand implements CommandInterface {
         return i;
     }
 
-    /**
-     * @return the command
-     */
+    @Override
     public String getCommand() {
         return command;
     }
 
-    /**
-     * Does this command has an argument
-     *
-     * @return True if it has an argument
-     */
+    @Override
     public boolean hasArg() {
         return arg != null && arg.length() != 0;
     }
@@ -305,12 +219,7 @@ public abstract class AbstractCommand implements CommandInterface {
         return session.getConfiguration();
     }
 
-    /**
-     * Set the previous command as the new current command (used after a
-     * incorrect sequence of commands or unknown command). Also clear the
-     * Restart object.
-     *
-     */
+    @Override
     public void invalidCurrentCommand() {
         session.getRestart().setSet(false);
         session.setPreviousAsCurrentCommand();
