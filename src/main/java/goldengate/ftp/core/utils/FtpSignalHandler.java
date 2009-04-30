@@ -25,6 +25,8 @@ import goldengate.ftp.core.config.FtpInternalConfiguration;
 
 import java.util.Timer;
 
+import org.jboss.netty.util.internal.SystemPropertyUtil;
+
 import sun.misc.Signal;
 import sun.misc.SignalHandler;
 
@@ -122,9 +124,13 @@ public final class FtpSignalHandler implements SignalHandler {
         diagHandler.oldHandler = Signal.handle(diagSignal, diagHandler);
         // Not on WINDOWS
         if (FtpInternalConfiguration.ISUNIX) {
-            diagSignal = new Signal("USR1");
-            diagHandler = new FtpSignalHandler(configuration);
-            diagHandler.oldHandler = Signal.handle(diagSignal, diagHandler);
+        	String vendor = SystemPropertyUtil.get("java.vm.vendor");
+        	vendor = vendor.toLowerCase();
+        	if (vendor.indexOf("ibm") >= 0) {
+	            diagSignal = new Signal("USR1");
+	            diagHandler = new FtpSignalHandler(configuration);
+	            diagHandler.oldHandler = Signal.handle(diagSignal, diagHandler);
+        	}
         }
         initialized = true;
     }
