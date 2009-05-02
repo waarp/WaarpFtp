@@ -621,7 +621,7 @@ public class FtpTransferControl {
      *
      * @param write
      *            True means the message is write back to the control command,
-     *            false it is only prepapred
+     *            false it is only prepared
      */
     public void setTransferAbortedFromInternal(boolean write) {
         logger.debug("Set transfer aborted internal {}", write);
@@ -637,7 +637,7 @@ public class FtpTransferControl {
     /**
      * Called by messageReceived, channelClosed (from {@link DataNetworkHandler}
      * ) and trueRetrieve (from {@link FileInterface}) when the transfer is over
-     * FIXME or by channelClosed
+     * or by channelClosed
      */
     public void setPreEndOfTransfer() {
         endOfCommand.setSuccess();

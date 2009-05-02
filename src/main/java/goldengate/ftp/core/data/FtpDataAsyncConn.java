@@ -242,7 +242,7 @@ public class FtpDataAsyncConn {
     /**
      *
      * @return True if the connection is bind (active = connected, passive = not
-     *         necesseraly connected)
+     *         necessarily connected)
      */
     public boolean isBind() {
         return isBind;

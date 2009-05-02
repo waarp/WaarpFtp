@@ -180,7 +180,7 @@ public class DataNetworkHandler extends SimpleChannelHandler {
     }
 
     /**
-     * Initialiaze the Handler.
+     * Initialize the Handler.
      *
      * @see org.jboss.netty.channel.SimpleChannelHandler#channelConnected(org.jboss.netty.channel.ChannelHandlerContext,
      *      org.jboss.netty.channel.ChannelStateEvent)
@@ -193,7 +193,7 @@ public class DataNetworkHandler extends SimpleChannelHandler {
             session = configuration.getFtpSession(channel,
                     isActive);
             if (session == null) {
-                logger.debug("SessionInterface not found at try " + i);
+                logger.debug("Session not found at try " + i);
                 try {
                     Thread.sleep(FtpInternalConfiguration.RETRYINMS);
                 } catch (InterruptedException e1) {
@@ -205,8 +205,9 @@ public class DataNetworkHandler extends SimpleChannelHandler {
         }
         if (session == null) {
             // Not found !!!
-            logger.error("SessionInterface not found!");
+            logger.error("Session not found!");
             Channels.close(channel);
+            //FIXME Problem: control connection could not be informed!!!
             return;
         }
         logger.debug("Start DataNetwork");
