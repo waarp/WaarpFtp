@@ -40,6 +40,7 @@ import java.io.IOException;
 import java.net.ConnectException;
 import java.nio.channels.CancelledKeyException;
 import java.nio.channels.ClosedChannelException;
+import java.nio.channels.NotYetConnectedException;
 
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
@@ -308,6 +309,10 @@ public class DataNetworkHandler extends SimpleChannelHandler {
         } else if (e1 instanceof IOException) {
             IOException e2 = (IOException) e1;
             logger.warn("Connection aborted since {}", e2.getMessage());
+        } else if (e1 instanceof NotYetConnectedException) {
+            NotYetConnectedException e2 = (NotYetConnectedException) e1;
+            logger.info("Ignore this exception {}", e2.getMessage());
+            return;
         } else {
             logger.warn("Unexpected exception from downstream:", e1);
         }
