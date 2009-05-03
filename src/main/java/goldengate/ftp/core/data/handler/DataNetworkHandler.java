@@ -313,6 +313,15 @@ public class DataNetworkHandler extends SimpleChannelHandler {
             NotYetConnectedException e2 = (NotYetConnectedException) e1;
             logger.info("Ignore this exception {}", e2.getMessage());
             return;
+        /*
+         * No trapped by Netty
+        } else if (e1 instanceof BindException) {
+            BindException e2 = (BindException) e1;
+            logger.warn("Address already in use {}", e2.getMessage());
+        } else if (e1 instanceof ConnectException) {
+            ConnectException e2 = (ConnectException) e1;
+            logger.warn("Timeout occurs {}", e2.getMessage());
+        */
         } else {
             logger.warn("Unexpected exception from downstream:", e1);
         }

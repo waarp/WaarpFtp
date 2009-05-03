@@ -331,14 +331,14 @@ public class FtpInternalConfiguration {
     /**
      * Add a session from a couple of addresses
      *
-     * @param remote
-     * @param local
+     * @param ipOnly
+     * @param fullIp
      * @param session
      */
-    public void setNewFtpSession(InetAddress remote, InetSocketAddress local,
+    public void setNewFtpSession(InetAddress ipOnly, InetSocketAddress fullIp,
             FtpSession session) {
         logger.debug("SetNewSession");
-        ftpSessionReference.setNewFtpSession(remote, local, session);
+        ftpSessionReference.setNewFtpSession(ipOnly, fullIp, session);
     }
 
     /**
@@ -360,12 +360,21 @@ public class FtpInternalConfiguration {
     /**
      * Remove the FtpSession
      *
-     * @param remote
-     * @param local
+     * @param ipOnly
+     * @param fullIp
      */
-    public void delFtpSession(InetAddress remote, InetSocketAddress local) {
+    public void delFtpSession(InetAddress ipOnly, InetSocketAddress fullIp) {
         logger.debug("delSession");
-        ftpSessionReference.delFtpSession(remote, local);
+        ftpSessionReference.delFtpSession(ipOnly, fullIp);
+    }
+    /**
+     * Test if the couple of addresses is already in the context
+     * @param ipOnly
+     * @param fullIp
+     * @return True if the couple is present
+     */
+    public boolean hasFtpSession(InetAddress ipOnly, InetSocketAddress fullIp) {
+        return ftpSessionReference.contains(ipOnly, fullIp);
     }
 
     /**
@@ -388,7 +397,7 @@ public class FtpInternalConfiguration {
                     logger.warn("Cannot open passive connection {}", e
                             .getMessage());
                     throw new Reply425Exception(
-                            "Cannot open a Passive Connection");
+                            "Cannot open a Passive Connection ");
                 }
                 bindAddress = new BindAddress(parentChannel);
                 FtpChannelUtils.addDataChannel(parentChannel,

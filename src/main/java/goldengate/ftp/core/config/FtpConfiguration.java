@@ -468,13 +468,13 @@ public abstract class FtpConfiguration {
     /**
      * Add a session from a couple of addresses
      *
-     * @param remote
-     * @param local
+     * @param ipOnly
+     * @param fullIp
      * @param session
      */
-    public void setNewFtpSession(InetAddress remote, InetSocketAddress local,
+    public void setNewFtpSession(InetAddress ipOnly, InetSocketAddress fullIp,
             FtpSession session) {
-        internalConfiguration.setNewFtpSession(remote, local, session);
+        internalConfiguration.setNewFtpSession(ipOnly, fullIp, session);
     }
 
     /**
@@ -491,13 +491,22 @@ public abstract class FtpConfiguration {
     /**
      * Remove the FtpSession
      *
-     * @param remote
-     * @param local
+     * @param ipOnly
+     * @param fullIp
      */
-    public void delFtpSession(InetAddress remote, InetSocketAddress local) {
-        internalConfiguration.delFtpSession(remote, local);
+    public void delFtpSession(InetAddress ipOnly, InetSocketAddress fullIp) {
+        internalConfiguration.delFtpSession(ipOnly, fullIp);
     }
 
+    /**
+     * Test if the couple of addresses is already in the context
+     * @param ipOnly
+     * @param fullIp
+     * @return True if the couple is present
+     */
+    public boolean hasFtpSession(InetAddress ipOnly, InetSocketAddress fullIp) {
+        return internalConfiguration.hasFtpSession(ipOnly, fullIp);
+    }
     /**
      * @return the fileParameter
      */
