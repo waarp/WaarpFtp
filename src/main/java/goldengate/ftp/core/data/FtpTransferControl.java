@@ -256,7 +256,7 @@ public class FtpTransferControl {
             } else {
                 // Wait for the server to be connected to the client
                 logger.debug("Active mode standby");
-                ChannelFuture future = null;
+                //ChannelFuture future = null;
                 ClientBootstrap clientBootstrap = session
                     .getConfiguration().getFtpInternalConfiguration()
                     .getActiveBootstrap();
@@ -267,10 +267,21 @@ public class FtpTransferControl {
                             dataAsyncConn.getRemoteAddress(),
                             session);
                 // Set the session for the future dataChannel
-                future = clientBootstrap.connect(dataAsyncConn
+                // future = 
+                clientBootstrap.connect(dataAsyncConn
                         .getRemoteAddress(), dataAsyncConn
                         .getLocalAddress());
-                future.awaitUninterruptibly().getChannel();
+                try {
+                    dataChannel = dataAsyncConn
+                            .waitForOpenedDataChannel();
+                } catch (InterruptedException e) {
+                    logger.warn("Connection abort in active mode", e);
+                    // Cannot open connection
+                    throw new Reply425Exception(
+                            "Cannot open active data connection");
+                }
+                logger.debug("Active mode connected");
+                /*future.awaitUninterruptibly().getChannel();
                 if (future.isSuccess()) {
                     // Wait for the server to be fully connected to the
                     // client
@@ -290,7 +301,7 @@ public class FtpTransferControl {
                     // Cannot open connection
                     throw new Reply425Exception(
                             "Cannot open active data connection");
-                }
+                }*/
             }
             if (dataChannel == null) {
                 // Cannot have a new Data connection since shutdown

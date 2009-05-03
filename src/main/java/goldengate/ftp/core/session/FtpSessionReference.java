@@ -146,7 +146,7 @@ public class FtpSessionReference {
      * @return the FtpSession if it exists associated to this channel
      */
     public FtpSession getActiveFtpSession(Channel channel) {
-        // First check passive connection
+        // First check Active connection
         P2PAddress pAddress = new P2PAddress(((InetSocketAddress) channel
                 .getLocalAddress()).getAddress(), (InetSocketAddress) channel
                 .getRemoteAddress());
