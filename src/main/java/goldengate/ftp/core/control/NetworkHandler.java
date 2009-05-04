@@ -141,8 +141,8 @@ public class NetworkHandler extends SimpleChannelHandler {
         }
         businessHandler.executeChannelClosed();
         // release file and other permanent objects
-        businessHandler.clean();
-        session.clean();
+        businessHandler.clear();
+        session.clear();
         businessHandler = null;
         // this.controlChannel = null; // to prevent when bad client goes wrong
         session = null;

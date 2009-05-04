@@ -128,5 +128,5 @@ public interface AuthInterface {
      * Clean object
      *
      */
-    public void clean();
+    public void clear();
 }

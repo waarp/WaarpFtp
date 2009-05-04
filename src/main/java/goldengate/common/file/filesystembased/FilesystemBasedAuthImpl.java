@@ -275,7 +275,7 @@ public abstract class FilesystemBasedAuthImpl implements AuthInterface {
      * Clean object
      *
      */
-    public void clean() {
+    public void clear() {
         businessClean();
         user = null;
         account = null;

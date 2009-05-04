@@ -273,23 +273,17 @@ public class FtpSession implements SessionInterface {
     }
 
     @Override
-    public void clean() {
+    public void clear() {
         if (dataConn != null) {
             dataConn.clear();
-            dataConn = null;
         }
         if (ftpDir != null) {
             ftpDir.clear();
-            ftpDir = null;
         }
         if (ftpAuth != null) {
-            ftpAuth.clean();
-            ftpAuth = null;
+            ftpAuth.clear();
         }
-        businessHandler = null;
-        configuration = null;
         previousCommand = null;
-        currentCommand = null;
         replyCode = null;
         answer = null;
         isReady = false;

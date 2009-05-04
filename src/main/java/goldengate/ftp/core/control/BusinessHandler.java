@@ -224,7 +224,7 @@ public abstract class BusinessHandler {
      * Is executed when the channel is closed, just before cleaning and just
      * after.<br>
      * <I>Note: In some circumstances, it could be a good idea to call the clean
-     * operation on FtpAuth in order to relax contraints on user authenfication.
+     * operation on FtpAuth in order to relax constraints on user authentication.
      * It will be called however at least when the session will be clean just
      * after this call.</I>
      */
@@ -239,10 +239,8 @@ public abstract class BusinessHandler {
      * Clean the BusinessHandler.
      *
      */
-    public void clean() {
+    public void clear() {
         cleanSession();
-        networkHandler = null;
-        session = null;
     }
 
     /**

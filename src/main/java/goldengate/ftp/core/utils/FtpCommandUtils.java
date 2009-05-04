@@ -40,7 +40,7 @@ public class FtpCommandUtils {
     public static void reinitFtpAuth(FtpSession session) {
         AbstractCommand connectioncommand = new ConnectionCommand(session);
         session.setNextCommand(connectioncommand);
-        session.getAuth().clean();
+        session.getAuth().clear();
         session.getDataConn().clear();
     }
 

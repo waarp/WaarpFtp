@@ -102,9 +102,8 @@ public abstract class DataBusinessHandler {
      * Clean the DataBusinessHandler
      *
      */
-    public void clean() {
+    public void clear() {
         cleanSession();
-        dataNetworkHandler = null;
     }
 
     /**

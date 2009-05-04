@@ -41,7 +41,7 @@ public interface SessionInterface {
      * Clean the session
      *
      */
-    public void clean();
+    public void clear();
 
     /**
      *

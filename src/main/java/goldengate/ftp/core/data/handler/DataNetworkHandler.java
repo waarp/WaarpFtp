@@ -166,7 +166,7 @@ public class DataNetworkHandler extends SimpleChannelHandler {
             try {
                 getDataBusinessHandler().executeChannelClosed();
                 // release file and other permanent objects
-                getDataBusinessHandler().clean();
+                getDataBusinessHandler().clear();
             } catch (FtpNoConnectionException e1) {
             }
             logger.debug("Channel closed inform closed");

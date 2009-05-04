@@ -704,19 +704,15 @@ public class FtpTransferControl {
         if (dataNetworkHandlerReady != null) {
             dataNetworkHandlerReady.cancel();
         }
-        dataNetworkHandlerReady = null;
         if (closedDataChannel != null) {
             closedDataChannel.cancel();
         }
-        closedDataChannel = null;
         if (endOfCommand != null) {
             endOfCommand.cancel();
         }
-        endOfCommand = null;
         if (waitForOpenedDataChannel != null) {
             waitForOpenedDataChannel.cancel();
         }
-        waitForOpenedDataChannel = null;
         // XXX FIXME waitForOpenedDataChannel.clear();
         if (executorService != null) {
             executorService.shutdownNow();
