@@ -457,60 +457,55 @@ public class FtpTransferControl {
             logger.warn("Check: already DNH not ready");
             throw new FtpNoTransferException("No connection");
         }
-        lock.lock();
-        try {
-            isCheckAlreadyCalled = true;
-            FtpTransfer executedTransfer = getExecutingFtpTransfer();
-            logger.debug("Check: command {}", executedTransfer.getCommand());
-            // DNH is ready and Transfer is running
-            if (FtpCommandCode.isListLikeCommand(executedTransfer.getCommand())) {
-                if (executedTransfer.getStatus()) {
-                    // Special status for List Like command
-                    logger.debug("Check: List OK");
-                    closeTransfer(true);
-                    return false;
-                }
-                logger.debug("Check: List Ko");
-                abortTransfer(true);
-                return false;
-            } else if (FtpCommandCode.isRetrLikeCommand(executedTransfer
-                    .getCommand())) {
-                FileInterface file = null;
-                try {
-                    file = executedTransfer.getFtpFile();
-                } catch (FtpNoFileException e) {
-                    logger.debug("Check: Retr no FileInterface for Retr");
-                    abortTransfer(true);
-                    return false;
-                }
-                try {
-                    if (file.isInReading()) {
-                        logger
-                                .debug("Check: Retr FileInterface still in reading KO");
-                        abortTransfer(true);
-                    } else {
-                        logger
-                                .debug("Check: Retr FileInterface no more in reading OK");
-                        closeTransfer(true);
-                    }
-                } catch (CommandAbstractException e) {
-                    logger.warn("Retr Test is in Reading problem", e);
-                    closeTransfer(true);
-                }
-                return false;
-            } else if (FtpCommandCode.isStoreLikeCommand(executedTransfer
-                    .getCommand())) {
-                logger.debug("Check: Store OK");
+        isCheckAlreadyCalled = true;
+        FtpTransfer executedTransfer = getExecutingFtpTransfer();
+        logger.debug("Check: command {}", executedTransfer.getCommand());
+        // DNH is ready and Transfer is running
+        if (FtpCommandCode.isListLikeCommand(executedTransfer.getCommand())) {
+            if (executedTransfer.getStatus()) {
+                // Special status for List Like command
+                logger.debug("Check: List OK");
                 closeTransfer(true);
                 return false;
-            } else {
-                logger.warn("Check: Unknown command");
+            }
+            logger.debug("Check: List Ko");
+            abortTransfer(true);
+            return false;
+        } else if (FtpCommandCode.isRetrLikeCommand(executedTransfer
+                .getCommand())) {
+            FileInterface file = null;
+            try {
+                file = executedTransfer.getFtpFile();
+            } catch (FtpNoFileException e) {
+                logger.debug("Check: Retr no FileInterface for Retr");
                 abortTransfer(true);
+                return false;
+            }
+            try {
+                if (file.isInReading()) {
+                    logger
+                            .debug("Check: Retr FileInterface still in reading KO");
+                    abortTransfer(true);
+                } else {
+                    logger
+                            .debug("Check: Retr FileInterface no more in reading OK");
+                    closeTransfer(true);
+                }
+            } catch (CommandAbstractException e) {
+                logger.warn("Retr Test is in Reading problem", e);
+                closeTransfer(true);
             }
             return false;
-        } finally {
-            lock.unlock();
+        } else if (FtpCommandCode.isStoreLikeCommand(executedTransfer
+                .getCommand())) {
+            logger.debug("Check: Store OK");
+            closeTransfer(true);
+            return false;
+        } else {
+            logger.warn("Check: Unknown command");
+            abortTransfer(true);
         }
+        return false;
     }
 
     /**
@@ -672,22 +667,17 @@ public class FtpTransferControl {
      */
     private void endDataConnection() {
         logger.debug("End Data connection");
-        lock.lock();
-        try {
-            if (isDataNetworkHandlerReady) {
-                isDataNetworkHandlerReady = false;
-                Channels.close(dataChannel);
-                try {
-                    closedDataChannel.await();
-                } catch (InterruptedException e) {
-                }
-                // set ready for a new connection
-                closedDataChannel = new GgFuture(true);
-                logger.debug("waitForClosedDataChannel over");
-                dataChannel = null;
+        if (isDataNetworkHandlerReady) {
+            isDataNetworkHandlerReady = false;
+            Channels.close(dataChannel);
+            try {
+                closedDataChannel.await();
+            } catch (InterruptedException e) {
             }
-        } finally {
-            lock.unlock();
+            // set ready for a new connection
+            closedDataChannel = new GgFuture(true);
+            logger.debug("waitForClosedDataChannel over");
+            dataChannel = null;
         }
     }
 

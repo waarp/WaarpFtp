@@ -118,7 +118,7 @@ public enum ReplyCode {
     /**
      * 229 Entering Extended Passive Mode (|n|addr|port|).
      */
-    REPLY_229_ENTERING_PASSIVE_MODE(227),
+    REPLY_229_ENTERING_PASSIVE_MODE(229),
 
     /**
      * 230 User logged in, proceed.
