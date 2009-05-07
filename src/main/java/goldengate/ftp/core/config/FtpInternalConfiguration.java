@@ -204,10 +204,9 @@ public class FtpInternalConfiguration {
      */
     public class BindAddress {
         /**
-         * Main Channel
+         * Group of channels
          */
-        public Channel parentChannel = null;
-
+        public ChannelGroup group = null;
         /**
          * Number of binded Data connections
          */
@@ -219,7 +218,8 @@ public class FtpInternalConfiguration {
          * @param channel
          */
         public BindAddress(Channel channel) {
-            parentChannel = channel;
+            group = new DefaultChannelGroup();
+            group.add(channel);
             nbBind = 0;
         }
     }
@@ -429,8 +429,7 @@ public class FtpInternalConfiguration {
                         bindAddress.nbBind);
                 if (bindAddress.nbBind == 0) {
                     hashBindPassiveDataConn.remove(address);
-                    bindAddress.parentChannel.close();
-                    bindAddress.parentChannel = null;
+                    bindAddress.group.close().awaitUninterruptibly();
                 }
             } else {
                 logger.warn("No Bind to {}", address);

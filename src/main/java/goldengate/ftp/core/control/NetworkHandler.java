@@ -286,7 +286,8 @@ public class NetworkHandler extends SimpleChannelHandler {
             if (!FtpCommandCode.isSpecialCommand(command.getCode())) {
                 // Now check if a transfer is on its way: illegal to have at
                 // same time two commands (except ABORT)
-                for (int i = 0; i < FtpInternalConfiguration.RETRYNB; i ++) {
+                boolean notFinished = true;
+                for (int i = 0; i < FtpInternalConfiguration.RETRYNB*2; i ++) {
                     if (session.getDataConn().getFtpTransferControl()
                             .isFtpTransferExecuting()) {
                         try {
@@ -295,11 +296,11 @@ public class NetworkHandler extends SimpleChannelHandler {
                             break;
                         }
                     } else {
+                        notFinished = false;
                         break;
                     }
                 }
-                if (session.getDataConn().getFtpTransferControl()
-                        .isFtpTransferExecuting()) {
+                if (notFinished) {
                     session.setReplyCode(
                             ReplyCode.REPLY_503_BAD_SEQUENCE_OF_COMMANDS,
                             "Previous transfer command is not finished yet");

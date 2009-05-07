@@ -69,9 +69,9 @@ public class FtpTransferControl {
     private final FtpSession session;
 
     /**
-     * Lock for Transfer Control
+     * Lock for Transfer Control when Opening Data Connection
      */
-    private final ReentrantLock lock = new ReentrantLock();
+    private final ReentrantLock lockOpenConnection = new ReentrantLock();
 
     /**
      * Step in order to wait that the DataNetworkHandler is ready
@@ -215,7 +215,7 @@ public class FtpTransferControl {
      * @throws Reply425Exception
      */
     public boolean openDataConnection() throws Reply425Exception {
-        lock.lock();
+        lockOpenConnection.lock();
         try {
             FtpDataAsyncConn dataAsyncConn = session.getDataConn();
             if (!dataAsyncConn.isStreamFile()) {
@@ -311,7 +311,7 @@ public class FtpTransferControl {
                         "Cannot open data connection, shuting down");
             }
         } finally {
-            lock.unlock();
+            lockOpenConnection.unlock();
         }
         return true;
     }
@@ -347,16 +347,11 @@ public class FtpTransferControl {
      * @param file
      */
     public void setNewFtpTransfer(FtpCommandCode command, FileInterface file) {
-        lock.lock();
-        try {
-            isExecutingCommandFinished = false;
-            logger.debug("setNewCommand: {}", command);
-            setDataNetworkHandlerReady();
-            executingCommand = new FtpTransfer(command, file);
-            runExecutor();
-        } finally {
-            lock.unlock();
-        }
+        isExecutingCommandFinished = false;
+        logger.debug("setNewCommand: {}", command);
+        setDataNetworkHandlerReady();
+        executingCommand = new FtpTransfer(command, file);
+        runExecutor();
     }
 
     /**
@@ -371,16 +366,11 @@ public class FtpTransferControl {
      */
     public void setNewFtpTransfer(FtpCommandCode command, List<String> list,
             String path) {
-        lock.lock();
-        try {
-            isExecutingCommandFinished = false;
-            logger.debug("setNewCommand: {}", command);
-            setDataNetworkHandlerReady();
-            executingCommand = new FtpTransfer(command, list, path);
-            runExecutor();
-        } finally {
-            lock.unlock();
-        }
+        isExecutingCommandFinished = false;
+        logger.debug("setNewCommand: {}", command);
+        setDataNetworkHandlerReady();
+        executingCommand = new FtpTransfer(command, list, path);
+        runExecutor();
     }
 
     /**
@@ -598,15 +588,10 @@ public class FtpTransferControl {
      *
      */
     public void setEndOfTransfer() {
-        lock.lock();
         try {
-            try {
-                checkFtpTransferStatus();
-            } catch (FtpNoTransferException e) {
-                return;
-            }
-        } finally {
-            lock.unlock();
+            checkFtpTransferStatus();
+        } catch (FtpNoTransferException e) {
+            return;
         }
     }
 
@@ -619,13 +604,8 @@ public class FtpTransferControl {
      */
     public void setTransferAbortedFromInternal(boolean write) {
         logger.debug("Set transfer aborted internal {}", write);
-        lock.lock();
-        try {
-            abortTransfer(write);
-            endOfCommand.cancel();
-        } finally {
-            lock.unlock();
-        }
+        abortTransfer(write);
+        endOfCommand.cancel();
     }
 
     /**
