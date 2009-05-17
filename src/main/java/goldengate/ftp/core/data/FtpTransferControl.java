@@ -48,6 +48,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import org.jboss.netty.bootstrap.ClientBootstrap;
 import org.jboss.netty.channel.Channel;
+import org.jboss.netty.channel.ChannelFuture;
 import org.jboss.netty.channel.Channels;
 
 /**
@@ -282,9 +283,19 @@ public class FtpTransferControl {
                             inetSocketAddress,
                             session);
                 // Set the session for the future dataChannel
-                clientBootstrap.connect(dataAsyncConn
+                ChannelFuture future = clientBootstrap.connect(dataAsyncConn
                         .getRemoteAddress(), dataAsyncConn
                         .getLocalAddress());
+                future.awaitUninterruptibly();
+                if (!future.isSuccess()) {
+                    logger.warn("Connection abort in active mode from future", future.getCause());
+                    // Cannot open connection
+                    session.getConfiguration().delFtpSession(
+                                inetAddress, 
+                                inetSocketAddress);
+                    throw new Reply425Exception(
+                            "Cannot open active data connection");
+                }
                 try {
                     dataChannel = dataAsyncConn
                             .waitForOpenedDataChannel();

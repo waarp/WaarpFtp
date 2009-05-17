@@ -248,7 +248,7 @@ public class NetworkHandler extends SimpleChannelHandler {
             return;
         } else if (e1 instanceof IOException) {
             IOException e2 = (IOException) e1;
-            logger.warn("Connection aborted with since {} with Channel {}", e2
+            logger.warn("Connection aborted since {} with Channel {}", e2
                     .getMessage(), e.getChannel());
         } else {
             logger.warn("Unexpected exception from downstream" +

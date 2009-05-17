@@ -66,7 +66,7 @@ public class STAT extends AbstractCommand {
             // Current status of connection
             message += getSession().getDataConn().getStatus();
             message += "\nControl: " +
-                    FtpChannelUtils.nbDataChannels(getConfiguration()) +
+                    FtpChannelUtils.nbCommandChannels(getConfiguration()) +
                     " Data: " +
                     FtpChannelUtils.nbDataChannels(getConfiguration()) +
                     " Binded: " +
