@@ -115,7 +115,7 @@ public class FtpInternalConfiguration {
     /**
      * ThreadPoolExecutor for command
      */
-    private OrderedMemoryAwareThreadPoolExecutor pipelineExecutor = null;
+    private volatile OrderedMemoryAwareThreadPoolExecutor pipelineExecutor = null;
 
     /**
      * Bootstrap for Command server
@@ -170,7 +170,7 @@ public class FtpInternalConfiguration {
     /**
      * ThreadPoolExecutor for data
      */
-    private OrderedMemoryAwareThreadPoolExecutor pipelineDataExecutor = null;
+    private volatile OrderedMemoryAwareThreadPoolExecutor pipelineDataExecutor = null;
 
     /**
      * ServerBootStrap for Active connections

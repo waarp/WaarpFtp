@@ -157,7 +157,7 @@ public class FtpDataModeCodec extends FrameDecoder implements ChannelDownstreamH
     /**
      * Is the underlying DataNetworkHandler ready to receive block
      */
-    private boolean isReady = false;
+    private volatile boolean isReady = false;
 
     /**
      * Blocking step between DataNetworkHandler and this Codec in order to wait

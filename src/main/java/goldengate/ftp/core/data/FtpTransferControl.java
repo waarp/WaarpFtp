@@ -44,7 +44,6 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.locks.ReentrantLock;
 
 import org.jboss.netty.bootstrap.ClientBootstrap;
 import org.jboss.netty.channel.Channel;
@@ -70,11 +69,6 @@ public class FtpTransferControl {
     private final FtpSession session;
 
     /**
-     * Lock for Transfer Control when Opening Data Connection
-     */
-    private final ReentrantLock lockOpenConnection = new ReentrantLock();
-
-    /**
      * Step in order to wait that the DataNetworkHandler is ready
      */
     private volatile boolean isDataNetworkHandlerReady = false;
@@ -85,16 +79,11 @@ public class FtpTransferControl {
     private volatile Channel dataChannel = null;
 
     /**
-     * Blocking step in order to wait that the DataNetworkHandler is ready
-     */
-    private volatile GgFuture dataNetworkHandlerReady = null;
-
-    /**
      * Waiter for the dataChannel to be opened
      */
-    private volatile GgChannelFuture waitForOpenedDataChannel = new GgChannelFuture();
+    private volatile GgChannelFuture waitForOpenedDataChannel = new GgChannelFuture(true);
     /**
-     * Concurrent list to wait for the dataChannel to be closed
+     * Waiter for the dataChannel to be closed
      */
     private volatile GgFuture closedDataChannel = null;
 
@@ -130,8 +119,6 @@ public class FtpTransferControl {
      */
     public FtpTransferControl(FtpSession session) {
         this.session = session;
-        dataNetworkHandlerReady = new GgFuture(true);
-        closedDataChannel = new GgFuture(true);
         endOfCommand = null;
     }
 
@@ -145,7 +132,6 @@ public class FtpTransferControl {
         if (isDataNetworkHandlerReady) {
             return;
         }
-        dataNetworkHandlerReady.setSuccess();
         isDataNetworkHandlerReady = true;
     }
 
@@ -158,10 +144,8 @@ public class FtpTransferControl {
      */
     public void waitForDataNetworkHandlerReady() throws InterruptedException {
         if (!isDataNetworkHandlerReady) {
-            GgFuture future = dataNetworkHandlerReady.await();
-            dataNetworkHandlerReady = new GgFuture(true);
-            logger.debug("Wait for DataNetwork Ready over {}", future
-                    .isSuccess());
+            logger.debug("Wait for DataNetwork Ready over {}");
+            throw new InterruptedException("Bad initialization");
         }
     }
     /**
@@ -173,8 +157,8 @@ public class FtpTransferControl {
      */
     public void setOpenedDataChannel(Channel channel,
             DataNetworkHandler dataNetworkHandler) {
-        session.getDataConn().setDataNetworkHandler(dataNetworkHandler);
         if (channel != null) {
+            session.getDataConn().setDataNetworkHandler(dataNetworkHandler);
             waitForOpenedDataChannel.setChannel(channel);
             waitForOpenedDataChannel.setSuccess();
         } else {
@@ -192,11 +176,15 @@ public class FtpTransferControl {
     public Channel waitForOpenedDataChannel() throws InterruptedException {
         Channel channel = null;
         if (waitForOpenedDataChannel.await(session.getConfiguration().TIMEOUTCON+1000, TimeUnit.MILLISECONDS)) {
-            channel = waitForOpenedDataChannel.getChannel();
+            if (waitForOpenedDataChannel.isSuccess()) {
+                channel = waitForOpenedDataChannel.getChannel();
+            } else {
+                logger.warn("data connection is in error");
+            }
         } else {
             logger.warn("Timeout occurs during data connection");
         }
-        waitForOpenedDataChannel = new GgChannelFuture();
+        waitForOpenedDataChannel = new GgChannelFuture(true);
         return channel;
     }
 
@@ -216,113 +204,111 @@ public class FtpTransferControl {
      * @throws Reply425Exception
      */
     public boolean openDataConnection() throws Reply425Exception {
-        lockOpenConnection.lock();
-        try {
-            FtpDataAsyncConn dataAsyncConn = session.getDataConn();
-            if (!dataAsyncConn.isStreamFile()) {
-                // FIXME isConnected or isDNHReady ?
-                if (dataAsyncConn.isConnected()) {
-                    // Already connected
-                    logger.debug("Connection already open");
-                    session.setReplyCode(
-                            ReplyCode.REPLY_125_DATA_CONNECTION_ALREADY_OPEN,
-                            dataAsyncConn.getType().name() +
-                                    " mode data connection already open");
-                    return true;
-                }
-            } else {
-                // Stream, Data Connection should not be opened
-                if (dataAsyncConn.isConnected()) {
-                    logger
-                            .error("Connection already open but should not since in Stream mode");
-                    setTransferAbortedFromInternal(false);
-                    return false;
-                }
+        // Prepare this Data channel to be closed ;-)
+        // In fact, prepare the future close op which should occur since it is now opened
+        closedDataChannel = new GgFuture(true);
+        FtpDataAsyncConn dataAsyncConn = session.getDataConn();
+        if (!dataAsyncConn.isStreamFile()) {
+            // FIXME isConnected or isDNHReady ?
+            if (dataAsyncConn.isConnected()) {
+                // Already connected
+                logger.debug("Connection already open");
+                session.setReplyCode(
+                        ReplyCode.REPLY_125_DATA_CONNECTION_ALREADY_OPEN,
+                        dataAsyncConn.getType().name() +
+                                " mode data connection already open");
+                return true;
             }
-            // Need to open connection
-            session.setReplyCode(ReplyCode.REPLY_150_FILE_STATUS_OKAY,
-                    "Opening " + dataAsyncConn.getType().name() +
-                            " mode data connection");
-            if (dataAsyncConn.isPassiveMode()) {
-                if (! dataAsyncConn.isBind()) {
-                    // No passive connection prepared
-                    throw new Reply425Exception(
-                        "No passive data connection prepared");
-                }
-                // Wait for the connection to be done by the client
-                logger.debug("Passive mode standby");
-                try {
-                    dataChannel = dataAsyncConn.waitForOpenedDataChannel();
-                } catch (InterruptedException e) {
-                    logger.warn("Connection abort in passive mode", e);
-                    // Cannot open connection
-                    throw new Reply425Exception(
-                            "Cannot open passive data connection");
-                }
-                logger.debug("Passive mode connected");
-            } else {
-                // Wait for the server to be connected to the client
-                InetAddress inetAddress = 
-                    dataAsyncConn.getLocalAddress().getAddress();
-                InetSocketAddress inetSocketAddress = 
-                    dataAsyncConn.getRemoteAddress();
-                if (session.getConfiguration()
-                    .getFtpInternalConfiguration().hasFtpSession(
-                            inetAddress,
-                            inetSocketAddress)) {
-                    throw new Reply425Exception(
-                        "Cannot open active data connection since remote address is already in use: "+inetSocketAddress);
-                }
-                logger.debug("Active mode standby");
-                ClientBootstrap clientBootstrap = session
-                    .getConfiguration().getFtpInternalConfiguration()
-                    .getActiveBootstrap();
-                session.getConfiguration()
-                    .setNewFtpSession(
-                            inetAddress,
-                            inetSocketAddress,
-                            session);
-                // Set the session for the future dataChannel
-                ChannelFuture future = clientBootstrap.connect(dataAsyncConn
-                        .getRemoteAddress(), dataAsyncConn
-                        .getLocalAddress());
-                future.awaitUninterruptibly();
-                if (!future.isSuccess()) {
-                    logger.warn("Connection abort in active mode from future", future.getCause());
-                    // Cannot open connection
-                    session.getConfiguration().delFtpSession(
-                                inetAddress, 
-                                inetSocketAddress);
-                    throw new Reply425Exception(
-                            "Cannot open active data connection");
-                }
-                try {
-                    dataChannel = dataAsyncConn
-                            .waitForOpenedDataChannel();
-                } catch (InterruptedException e) {
-                    logger.warn("Connection abort in active mode", e);
-                    // Cannot open connection
-                    session.getConfiguration().delFtpSession(
-                                inetAddress, 
-                                inetSocketAddress);
-                    throw new Reply425Exception(
-                            "Cannot open active data connection");
-                }
-                logger.debug("Active mode connected");
+        } else {
+            // Stream, Data Connection should not be opened
+            if (dataAsyncConn.isConnected()) {
+                logger
+                        .error("Connection already open but should not since in Stream mode");
+                setTransferAbortedFromInternal(false);
+                return false;
             }
-            if (dataChannel == null) {
-                // Cannot have a new Data connection since shutdown
-                if (! dataAsyncConn.isPassiveMode()) {
-                    session.getConfiguration().getFtpInternalConfiguration().
-                        delFtpSession(
-                                dataAsyncConn.getLocalAddress().getAddress(), 
-                                dataAsyncConn.getRemoteAddress());
-                }
+        }
+        // Need to open connection
+        session.setReplyCode(ReplyCode.REPLY_150_FILE_STATUS_OKAY,
+                "Opening " + dataAsyncConn.getType().name() +
+                        " mode data connection");
+        if (dataAsyncConn.isPassiveMode()) {
+            if (! dataAsyncConn.isBind()) {
+                // No passive connection prepared
                 throw new Reply425Exception(
-                        "Cannot open data connection, shuting down");
+                    "No passive data connection prepared");
             }
-        } finally {
-            lockOpenConnection.unlock();
+            // Wait for the connection to be done by the client
+            logger.debug("Passive mode standby");
+            try {
+                dataChannel = dataAsyncConn.waitForOpenedDataChannel();
+            } catch (InterruptedException e) {
+                logger.warn("Connection abort in passive mode", e);
+                // Cannot open connection
+                throw new Reply425Exception(
+                        "Cannot open passive data connection");
+            }
+            logger.debug("Passive mode connected");
+        } else {
+            // Wait for the server to be connected to the client
+            InetAddress inetAddress = 
+                dataAsyncConn.getLocalAddress().getAddress();
+            InetSocketAddress inetSocketAddress = 
+                dataAsyncConn.getRemoteAddress();
+            if (session.getConfiguration()
+                .getFtpInternalConfiguration().hasFtpSession(
+                        inetAddress,
+                        inetSocketAddress)) {
+                throw new Reply425Exception(
+                    "Cannot open active data connection since remote address is already in use: "+inetSocketAddress);
+            }
+            logger.debug("Active mode standby");
+            ClientBootstrap clientBootstrap = session
+                .getConfiguration().getFtpInternalConfiguration()
+                .getActiveBootstrap();
+            session.getConfiguration()
+                .setNewFtpSession(
+                        inetAddress,
+                        inetSocketAddress,
+                        session);
+            // Set the session for the future dataChannel
+            ChannelFuture future = clientBootstrap.connect(dataAsyncConn
+                    .getRemoteAddress(), dataAsyncConn
+                    .getLocalAddress());
+            future.awaitUninterruptibly();
+            if (!future.isSuccess()) {
+                logger.warn("Connection abort in active mode from future", future.getCause());
+                // Cannot open connection
+                session.getConfiguration().delFtpSession(
+                            inetAddress, 
+                            inetSocketAddress);
+                throw new Reply425Exception(
+                        "Cannot open active data connection");
+            }
+            try {
+                dataChannel = dataAsyncConn
+                        .waitForOpenedDataChannel();
+            } catch (InterruptedException e) {
+                logger.warn("Connection abort in active mode", e);
+                // Cannot open connection
+                session.getConfiguration().delFtpSession(
+                            inetAddress, 
+                            inetSocketAddress);
+                throw new Reply425Exception(
+                        "Cannot open active data connection");
+            }
+            logger.debug("Active mode connected");
+        }
+        if (dataChannel == null) {
+            // Cannot have a new Data connection since shutdown
+            if (! dataAsyncConn.isPassiveMode()) {
+                session.getConfiguration().getFtpInternalConfiguration().
+                    delFtpSession(
+                            dataAsyncConn.getLocalAddress().getAddress(), 
+                            dataAsyncConn.getRemoteAddress());
+            }
+            throw new Reply425Exception(
+                    "Cannot open data connection, shuting down");
         }
         return true;
     }
@@ -638,6 +624,9 @@ public class FtpTransferControl {
      */
     public void waitForEndOfTransfer() throws InterruptedException {
         endOfCommand.await();
+        if (endOfCommand.isCancelled()) {
+            throw new InterruptedException("Transfer aborted");
+        }
         logger.debug("waitEndOfCommand over");
     }
 
@@ -662,11 +651,9 @@ public class FtpTransferControl {
             isDataNetworkHandlerReady = false;
             Channels.close(dataChannel);
             try {
-                closedDataChannel.await();
+                closedDataChannel.await(session.getConfiguration().TIMEOUTCON, TimeUnit.MILLISECONDS);
             } catch (InterruptedException e) {
             }
-            // set ready for a new connection
-            closedDataChannel = new GgFuture(true);
             logger.debug("waitForClosedDataChannel over");
             dataChannel = null;
         }
@@ -682,9 +669,6 @@ public class FtpTransferControl {
         logger.debug("Clear Ftp Transfer Control");
         endDataConnection();
         finalizeExecution();
-        if (dataNetworkHandlerReady != null) {
-            dataNetworkHandlerReady.cancel();
-        }
         if (closedDataChannel != null) {
             closedDataChannel.cancel();
         }

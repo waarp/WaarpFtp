@@ -37,6 +37,7 @@ import goldengate.ftp.core.session.FtpSession;
 import goldengate.ftp.core.utils.FtpChannelUtils;
 
 import java.io.IOException;
+import java.net.BindException;
 import java.net.ConnectException;
 import java.nio.channels.CancelledKeyException;
 import java.nio.channels.ClosedChannelException;
@@ -194,7 +195,7 @@ public class DataNetworkHandler extends SimpleChannelHandler {
             session = configuration.getFtpSession(channel,
                     isActive);
             if (session == null) {
-                logger.debug("Session not found at try " + i);
+                logger.warn("Session not found at try " + i);
                 try {
                     Thread.sleep(FtpInternalConfiguration.RETRYINMS);
                 } catch (InterruptedException e1) {
@@ -208,7 +209,7 @@ public class DataNetworkHandler extends SimpleChannelHandler {
             // Not found !!!
             logger.error("Session not found!");
             Channels.close(channel);
-            //FIXME Problem: control connection could not be informed!!!
+            //Problem: control connection could not be directly informed!!! Only timeout will occur
             return;
         }
         logger.debug("Start DataNetwork");
@@ -313,15 +314,12 @@ public class DataNetworkHandler extends SimpleChannelHandler {
             NotYetConnectedException e2 = (NotYetConnectedException) e1;
             logger.info("Ignore this exception {}", e2.getMessage());
             return;
-        /*
-         * No trapped by Netty
         } else if (e1 instanceof BindException) {
             BindException e2 = (BindException) e1;
             logger.warn("Address already in use {}", e2.getMessage());
         } else if (e1 instanceof ConnectException) {
             ConnectException e2 = (ConnectException) e1;
             logger.warn("Timeout occurs {}", e2.getMessage());
-        */
         } else {
             logger.warn("Unexpected exception from downstream:", e1);
         }

@@ -203,7 +203,7 @@ public class NetworkHandler extends SimpleChannelHandler {
         Channel channel = e.getChannel();
         if (session == null) {
             // should not be
-            logger.warn("NO SESSION");
+            logger.warn("NO SESSION",e1);
             return;
         }
         if (e1 instanceof ConnectException) {
