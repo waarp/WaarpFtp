@@ -77,31 +77,31 @@ public class FtpTransferControl {
     /**
      * Step in order to wait that the DataNetworkHandler is ready
      */
-    private boolean isDataNetworkHandlerReady = false;
+    private volatile boolean isDataNetworkHandlerReady = false;
 
     /**
      * The associated DataChannel
      */
-    private Channel dataChannel = null;
+    private volatile Channel dataChannel = null;
 
     /**
      * Blocking step in order to wait that the DataNetworkHandler is ready
      */
-    private GgFuture dataNetworkHandlerReady = null;
+    private volatile GgFuture dataNetworkHandlerReady = null;
 
     /**
      * Waiter for the dataChannel to be opened
      */
-    private GgChannelFuture waitForOpenedDataChannel = new GgChannelFuture();
+    private volatile GgChannelFuture waitForOpenedDataChannel = new GgChannelFuture();
     /**
      * Concurrent list to wait for the dataChannel to be closed
      */
-    private GgFuture closedDataChannel = null;
+    private volatile GgFuture closedDataChannel = null;
 
     /**
      * Is the current Command Finished (or previously current command)
      */
-    private boolean isExecutingCommandFinished = true;
+    private volatile boolean isExecutingCommandFinished = true;
 
     /**
      * Current command executed
@@ -117,12 +117,12 @@ public class FtpTransferControl {
      * Blocking step for the Executor in order to wait for the end of the
      * command.
      */
-    private GgFuture endOfCommand = null;
+    private volatile GgFuture endOfCommand = null;
 
     /**
      * A boolean to know if Check was called once
      */
-    private boolean isCheckAlreadyCalled = false;
+    private volatile boolean isCheckAlreadyCalled = false;
 
     /**
      *

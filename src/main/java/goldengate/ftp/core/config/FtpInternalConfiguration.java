@@ -37,6 +37,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.jboss.netty.bootstrap.ClientBootstrap;
 import org.jboss.netty.bootstrap.ServerBootstrap;
@@ -190,7 +191,7 @@ public class FtpInternalConfiguration {
     /**
      * Global TrafficCounter (set from global configuration)
      */
-    private GlobalTrafficShapingHandler globalTrafficShapingHandler = null;
+    private volatile GlobalTrafficShapingHandler globalTrafficShapingHandler = null;
 
     /**
      * ObjectSizeEstimator
@@ -206,11 +207,11 @@ public class FtpInternalConfiguration {
         /**
          * Group of channels
          */
-        public ChannelGroup group = null;
+        public final ChannelGroup group;
         /**
          * Number of binded Data connections
          */
-        public int nbBind = 0;
+        public final AtomicInteger nbBind;
 
         /**
          * Constructor
@@ -220,7 +221,7 @@ public class FtpInternalConfiguration {
         public BindAddress(Channel channel) {
             group = new DefaultChannelGroup();
             group.add(channel);
-            nbBind = 0;
+            nbBind = new AtomicInteger(0);
         }
     }
 
@@ -403,7 +404,7 @@ public class FtpInternalConfiguration {
                 FtpChannelUtils.addDataChannel(parentChannel,
                         configuration);
             }
-            bindAddress.nbBind ++;
+            bindAddress.nbBind.incrementAndGet();
             logger.info("Bind number to {} is {}", address, bindAddress.nbBind);
             hashBindPassiveDataConn.put(address, bindAddress);
         } finally {
@@ -424,10 +425,10 @@ public class FtpInternalConfiguration {
         try {
             BindAddress bindAddress = hashBindPassiveDataConn.get(address);
             if (bindAddress != null) {
-                bindAddress.nbBind --;
+                int nbBind = bindAddress.nbBind.decrementAndGet();
                 logger.info("Bind number to {} left is {}", address,
-                        bindAddress.nbBind);
-                if (bindAddress.nbBind == 0) {
+                        nbBind);
+                if (nbBind == 0) {
                     hashBindPassiveDataConn.remove(address);
                     bindAddress.group.close().awaitUninterruptibly();
                 }

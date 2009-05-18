@@ -84,12 +84,12 @@ public abstract class FtpConfiguration {
     /**
      * Associated FileParameterInterface
      */
-    private FileParameterInterface fileParameter = null;
+    private final FileParameterInterface fileParameter;
 
     /**
      * True if the service is going to shutdown
      */
-    public boolean isShutdown = false;
+    public volatile boolean isShutdown = false;
 
     /**
      * Default number of threads in pool for Server. The default value is for

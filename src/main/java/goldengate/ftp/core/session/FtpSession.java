@@ -47,17 +47,17 @@ public class FtpSession implements SessionInterface {
     /**
      * Business Handler
      */
-    private BusinessHandler businessHandler = null;
+    private final BusinessHandler businessHandler;
 
     /**
      * Associated global configuration
      */
-    private FtpConfiguration configuration = null;
+    private final FtpConfiguration configuration;
 
     /**
      * Associated Binary connection
      */
-    private FtpDataAsyncConn dataConn = null;
+    private volatile FtpDataAsyncConn dataConn = null;
 
     /**
      * Ftp Authentication
@@ -97,7 +97,7 @@ public class FtpSession implements SessionInterface {
     /**
      * Is the control ready to accept command
      */
-    private boolean isReady = false;
+    private volatile boolean isReady = false;
 
     /**
      * Constructor
