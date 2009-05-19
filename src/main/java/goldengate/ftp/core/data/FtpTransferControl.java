@@ -36,7 +36,6 @@ import goldengate.ftp.core.exception.FtpNoConnectionException;
 import goldengate.ftp.core.exception.FtpNoFileException;
 import goldengate.ftp.core.exception.FtpNoTransferException;
 import goldengate.ftp.core.session.FtpSession;
-import goldengate.ftp.core.utils.FtpCommandUtils;
 
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
@@ -241,7 +240,8 @@ public class FtpTransferControl {
             // Wait for the connection to be done by the client
             logger.debug("Passive mode standby");
             try {
-                dataChannel = dataAsyncConn.waitForOpenedDataChannel();
+            	dataChannel = waitForOpenedDataChannel();
+            	dataAsyncConn.setNewOpenedDataChannel(dataChannel);
             } catch (InterruptedException e) {
                 logger.warn("Connection abort in passive mode", e);
                 // Cannot open connection
@@ -286,8 +286,8 @@ public class FtpTransferControl {
                         "Cannot open active data connection");
             }
             try {
-                dataChannel = dataAsyncConn
-                        .waitForOpenedDataChannel();
+            	dataChannel = waitForOpenedDataChannel();
+            	dataAsyncConn.setNewOpenedDataChannel(dataChannel);
             } catch (InterruptedException e) {
                 logger.warn("Connection abort in active mode", e);
                 // Cannot open connection
@@ -678,7 +678,6 @@ public class FtpTransferControl {
         if (waitForOpenedDataChannel != null) {
             waitForOpenedDataChannel.cancel();
         }
-        // XXX FIXME waitForOpenedDataChannel.clear();
         if (executorService != null) {
             executorService.shutdownNow();
             executorService = null;

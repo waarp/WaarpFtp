@@ -26,7 +26,6 @@ import goldengate.common.command.exception.Reply501Exception;
 import goldengate.common.command.exception.Reply553Exception;
 import goldengate.common.file.FileInterface;
 import goldengate.ftp.core.command.AbstractCommand;
-import goldengate.ftp.core.utils.FtpCommandUtils;
 
 /**
  * STOR command
@@ -52,7 +51,7 @@ public class STOR extends AbstractCommand {
                 .setFile(filename, false);
         if (file != null) {
             if (file.store()) {
-                FtpCommandUtils.openDataConnection(getSession());
+                getSession().openDataConnection();
                 getSession().getDataConn().getFtpTransferControl()
                         .setNewFtpTransfer(getCode(), file);
                 return;

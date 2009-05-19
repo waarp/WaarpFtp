@@ -25,7 +25,6 @@ import goldengate.common.command.exception.Reply421Exception;
 import goldengate.common.command.exception.Reply501Exception;
 import goldengate.common.command.exception.Reply530Exception;
 import goldengate.ftp.core.command.AbstractCommand;
-import goldengate.ftp.core.utils.FtpCommandUtils;
 
 /**
  * USER command
@@ -44,7 +43,7 @@ public class USER extends AbstractCommand {
     public void exec() throws Reply501Exception, Reply421Exception,
             Reply530Exception {
         if (!hasArg()) {
-            FtpCommandUtils.reinitFtpAuth(getSession());
+        	getSession().reinitFtpAuth();
             throw new Reply501Exception("Need a username as argument");
         }
         String username = getArg();
@@ -52,7 +51,7 @@ public class USER extends AbstractCommand {
         try {
             nextCommandReply = getSession().getAuth().setUser(username);
         } catch (Reply530Exception e) {
-            FtpCommandUtils.reinitFtpAuth(getSession());
+        	getSession().reinitFtpAuth();
             throw e;
         }
         setExtraNextCommand(nextCommandReply.command);

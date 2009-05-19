@@ -26,7 +26,6 @@ import goldengate.common.command.exception.Reply501Exception;
 import goldengate.common.command.exception.Reply502Exception;
 import goldengate.common.command.exception.Reply530Exception;
 import goldengate.ftp.core.command.AbstractCommand;
-import goldengate.ftp.core.utils.FtpCommandUtils;
 
 /**
  * ACCT command
@@ -53,7 +52,7 @@ public class ACCT extends AbstractCommand {
         try {
             nextCommandReply = getSession().getAuth().setAccount(account);
         } catch (Reply530Exception e) {
-            FtpCommandUtils.reinitFtpAuth(getSession());
+        	getSession().reinitFtpAuth();
             throw e;
         }
         setExtraNextCommand(nextCommandReply.command);

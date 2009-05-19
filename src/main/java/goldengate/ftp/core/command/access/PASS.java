@@ -25,7 +25,6 @@ import goldengate.common.command.exception.Reply421Exception;
 import goldengate.common.command.exception.Reply501Exception;
 import goldengate.common.command.exception.Reply530Exception;
 import goldengate.ftp.core.command.AbstractCommand;
-import goldengate.ftp.core.utils.FtpCommandUtils;
 
 /**
  * PASS command
@@ -49,7 +48,7 @@ public class PASS extends AbstractCommand {
         }
         String password = getArg();
         if (getSession().getAuth() == null) {
-            FtpCommandUtils.reinitFtpAuth(getSession());
+        	getSession().reinitFtpAuth();
             throw new Reply530Exception("No user specified");
         }
         NextCommandReply nextCommandReply = null;
@@ -57,7 +56,7 @@ public class PASS extends AbstractCommand {
             nextCommandReply = getSession().getAuth()
                     .setPassword(password);
         } catch (Reply530Exception e) {
-            FtpCommandUtils.reinitFtpAuth(getSession());
+        	getSession().reinitFtpAuth();
             throw e;
         }
         setExtraNextCommand(nextCommandReply.command);

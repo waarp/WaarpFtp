@@ -22,7 +22,6 @@ package goldengate.ftp.core.command.service;
 
 import goldengate.common.command.exception.CommandAbstractException;
 import goldengate.ftp.core.command.AbstractCommand;
-import goldengate.ftp.core.utils.FtpCommandUtils;
 
 import java.util.List;
 
@@ -61,7 +60,7 @@ public class NLST extends AbstractCommand {
                 files = getSession().getDir().list(path);
             }
         }
-        FtpCommandUtils.openDataConnection(getSession());
+        getSession().openDataConnection();
         getSession().getDataConn().getFtpTransferControl()
                 .setNewFtpTransfer(getCode(), files, path);
     }

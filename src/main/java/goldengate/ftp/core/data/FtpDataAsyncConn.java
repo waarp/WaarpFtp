@@ -479,15 +479,15 @@ public class FtpDataAsyncConn {
     }
 
     /**
-     * Get the Data Channel from the channelConnected method
+     * Set the new connected Data Channel
      *
-     * @return the new Data Channel
+     * @param dataChannel the new Data Channel
      * @throws InterruptedException
      * @throws Reply425Exception
      */
-    public Channel waitForOpenedDataChannel() throws InterruptedException,
+    public void setNewOpenedDataChannel(Channel dataChannel) throws InterruptedException,
             Reply425Exception {
-        dataChannel = transferControl.waitForOpenedDataChannel();
+        this.dataChannel = dataChannel;
         if (dataChannel == null) {
             String curmode = null;
             if (isPassiveMode()) {
@@ -501,6 +501,5 @@ public class FtpDataAsyncConn {
                     " data connection");
         }
         isBind = true;
-        return dataChannel;
     }
 }

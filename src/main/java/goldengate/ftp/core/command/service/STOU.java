@@ -26,7 +26,6 @@ import goldengate.common.command.exception.Reply501Exception;
 import goldengate.common.command.exception.Reply553Exception;
 import goldengate.common.file.FileInterface;
 import goldengate.ftp.core.command.AbstractCommand;
-import goldengate.ftp.core.utils.FtpCommandUtils;
 
 /**
  * STOU command
@@ -50,7 +49,7 @@ public class STOU extends AbstractCommand {
         FileInterface file = getSession().getDir().setUniqueFile();
         if (file != null) {
             if (file.store()) {
-                FtpCommandUtils.openDataConnection(getSession());
+                getSession().openDataConnection();
                 getSession().getDataConn().getFtpTransferControl()
                         .setNewFtpTransfer(getCode(), file);
                 return;

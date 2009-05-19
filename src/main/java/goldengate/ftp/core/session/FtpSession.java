@@ -23,12 +23,14 @@ package goldengate.ftp.core.session;
 import goldengate.common.command.CommandInterface;
 import goldengate.common.command.ReplyCode;
 import goldengate.common.command.exception.CommandAbstractException;
+import goldengate.common.command.exception.Reply425Exception;
 import goldengate.common.file.AuthInterface;
 import goldengate.common.file.DirInterface;
 import goldengate.common.file.FileParameterInterface;
 import goldengate.common.file.Restart;
 import goldengate.common.file.SessionInterface;
 import goldengate.ftp.core.command.AbstractCommand;
+import goldengate.ftp.core.command.internal.ConnectionCommand;
 import goldengate.ftp.core.config.FtpConfiguration;
 import goldengate.ftp.core.control.BusinessHandler;
 import goldengate.ftp.core.control.NetworkHandler;
@@ -336,5 +338,26 @@ public class FtpSession implements SessionInterface {
     @Override
     public FileParameterInterface getFileParameter() {
         return configuration.getFileParameter();
+    }
+    /**
+     * Reinitialize the authentication to the connection step
+     *
+     */
+    public void reinitFtpAuth() {
+        AbstractCommand connectioncommand = new ConnectionCommand(this);
+        this.setNextCommand(connectioncommand);
+        this.getAuth().clear();
+        this.getDataConn().clear();
+    }
+    /**
+     * Try to open a connection. Do the intermediate reply if any (150) and the
+     * final one (125)
+     *
+     * @throws Reply425Exception
+     *             if the connection cannot be opened
+     */
+    public void openDataConnection()
+            throws Reply425Exception {
+        this.getDataConn().getFtpTransferControl().openDataConnection();
     }
 }

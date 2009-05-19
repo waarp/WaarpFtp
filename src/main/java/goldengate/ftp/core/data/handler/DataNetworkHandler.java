@@ -271,7 +271,7 @@ public class DataNetworkHandler extends SimpleChannelHandler {
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, ExceptionEvent e) {
         if (session == null) {
-            e.getCause().printStackTrace();
+        	logger.warn("Error without any session active {}", e.getCause());
             return;
         }
         Throwable e1 = e.getCause();

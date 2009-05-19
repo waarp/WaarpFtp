@@ -50,7 +50,7 @@ public abstract class FilesystemBasedFtpFile extends FilesystemBasedFileImpl {
             .getLogger(FilesystemBasedFtpFile.class);
 
     /**
-     * Retrieve lock
+     * Retrieve lock to ensure only one call at a time for one file
      */
     private final ReentrantLock retrieveLock = new ReentrantLock();
 

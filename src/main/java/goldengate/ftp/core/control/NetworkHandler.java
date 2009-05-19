@@ -145,7 +145,7 @@ public class NetworkHandler extends SimpleChannelHandler {
         session.clear();
         businessHandler = null;
         // this.controlChannel = null; // to prevent when bad client goes wrong
-        session = null;
+        // session = null;
         super.channelClosed(ctx, e);
     }
 
@@ -285,9 +285,9 @@ public class NetworkHandler extends SimpleChannelHandler {
             // First check if the command is an ABORT, QUIT or STAT
             if (!FtpCommandCode.isSpecialCommand(command.getCode())) {
                 // Now check if a transfer is on its way: illegal to have at
-                // same time two commands (except ABORT)
+                // same time two commands (except ABORT). Wait is at most 100 RETRYINMS=1s
                 boolean notFinished = true;
-                for (int i = 0; i < FtpInternalConfiguration.RETRYNB*2; i ++) {
+                for (int i = 0; i < FtpInternalConfiguration.RETRYNB*100; i ++) {
                     if (session.getDataConn().getFtpTransferControl()
                             .isFtpTransferExecuting()) {
                         try {
