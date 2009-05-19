@@ -160,7 +160,7 @@ public class DataNetworkHandler extends SimpleChannelHandler {
     public void channelClosed(ChannelHandlerContext ctx, ChannelStateEvent e)
             throws Exception {
         if (session != null) {
-            logger.debug("Channel closed, about to set it down");
+            //logger.debug("Channel closed, about to set it down");
             session.getDataConn().getFtpTransferControl()
                     .setPreEndOfTransfer();
             session.getDataConn().unbindPassive();
@@ -170,13 +170,13 @@ public class DataNetworkHandler extends SimpleChannelHandler {
                 getDataBusinessHandler().clear();
             } catch (FtpNoConnectionException e1) {
             }
-            logger.debug("Channel closed inform closed");
+            //logger.debug("Channel closed inform closed");
             session.getDataConn().getFtpTransferControl()
                     .setClosedDataChannel();
             dataBusinessHandler = null;
             channelPipeline = null;
             dataChannel = null;
-            logger.debug("Channel closed: finish");
+            //logger.debug("Channel closed: finish");
         }
         super.channelClosed(ctx, e);
     }
@@ -212,7 +212,7 @@ public class DataNetworkHandler extends SimpleChannelHandler {
             //Problem: control connection could not be directly informed!!! Only timeout will occur
             return;
         }
-        logger.debug("Start DataNetwork");
+        //logger.debug("Start DataNetwork");
         channelPipeline = ctx.getPipeline();
         dataChannel = channel;
         dataBusinessHandler.setFtpSession(getFtpSession());
@@ -229,7 +229,7 @@ public class DataNetworkHandler extends SimpleChannelHandler {
             return;
         }
         isReady = true;
-        logger.debug("End of Start DataNetwork");
+        //logger.debug("End of Start DataNetwork");
     }
 
     /**
@@ -248,7 +248,7 @@ public class DataNetworkHandler extends SimpleChannelHandler {
         typeCodec.setFullType(session.getDataConn().getType(),
                 session.getDataConn().getSubType());
         structureCodec.setStructure(session.getDataConn().getStructure());
-        logger.debug("Set Correct Codec: {}", session.getDataConn());
+        //logger.debug("Set Correct Codec: {}", session.getDataConn());
     }
 
     /**
@@ -363,12 +363,12 @@ public class DataNetworkHandler extends SimpleChannelHandler {
                         .getExecutingFtpTransfer().getFtpFile().writeDataBlock(
                                 dataBlock);
             } catch (FtpNoFileException e1) {
-                logger.debug("NoFile", e1);
+                //logger.debug("NoFile", e1);
                 session.getDataConn().getFtpTransferControl()
                         .setTransferAbortedFromInternal(true);
                 return;
             } catch (FtpNoTransferException e1) {
-                logger.debug("NoTransfer", e1);
+                //logger.debug("NoTransfer", e1);
                 session.getDataConn().getFtpTransferControl()
                         .setTransferAbortedFromInternal(true);
                 return;
@@ -378,7 +378,7 @@ public class DataNetworkHandler extends SimpleChannelHandler {
                             .setPreEndOfTransfer();
                 }
             } catch (FileTransferException e1) {
-                logger.debug("TransferException", e1);
+                //logger.debug("TransferException", e1);
                 session.getDataConn().getFtpTransferControl()
                         .setTransferAbortedFromInternal(true);
             }
@@ -400,7 +400,7 @@ public class DataNetworkHandler extends SimpleChannelHandler {
         dataBlock.setEOF(true);
         ChannelBuffer buffer = ChannelBuffers.wrappedBuffer(message.getBytes());
         dataBlock.setBlock(buffer);
-        logger.debug("Message to be sent: {}", message);
+        //logger.debug("Message to be sent: {}", message);
         return Channels.write(dataChannel, dataBlock)
                 .awaitUninterruptibly().isSuccess();
     }

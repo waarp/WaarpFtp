@@ -176,7 +176,7 @@ public abstract class FilesystemBasedFileImpl implements
     public boolean isDirectory() throws CommandAbstractException {
         checkIdentify();
         File dir1 = getFileFromPath(currentFile);
-        logger.debug("ISDIR: {} {}", dir1, dir1.isDirectory());
+        //logger.debug("ISDIR: {} {}", dir1, dir1.isDirectory());
         return dir1.isDirectory();
     }
 
@@ -306,13 +306,13 @@ public abstract class FilesystemBasedFileImpl implements
         }
         File file = getFileFromPath(currentFile);
         if (file.canRead()) {
-            logger.debug("Rename file {} to {}", file, path);
+            //logger.debug("Rename file {} to {}", file, path);
             File newFile = getFileFromPath(path);
             if (newFile.getParentFile().canWrite()) {
                 if (!file.renameTo(newFile)) {
-                    logger.debug(
-                            "file cannot be just renamed, to be moved: {}",
-                            file);
+                    //logger.debug(
+                            //"file cannot be just renamed, to be moved: {}",
+                            //file);
                     FileOutputStream fileOutputStream;
                     try {
                         fileOutputStream = new FileOutputStream(newFile);
@@ -472,7 +472,7 @@ public abstract class FilesystemBasedFileImpl implements
      */
     private void writeBlock(ChannelBuffer buffer) throws FileTransferException {
         if (!isReady) {
-            logger.debug("FileInterface not ready");
+            //logger.debug("FileInterface not ready");
             throw new FileTransferException("No file is ready");
         }
         // An empty buffer is allowed
@@ -483,7 +483,7 @@ public abstract class FilesystemBasedFileImpl implements
             bfileChannelOut = getFileChannel(true);
         }
         if (bfileChannelOut == null) {
-            logger.debug("FileInterface cannot open FileInterface Channel");
+            //logger.debug("FileInterface cannot open FileInterface Channel");
             throw new FileTransferException("Internal error, file is not ready");
         }
         long bufferSize = buffer.readableBytes();
@@ -501,7 +501,7 @@ public abstract class FilesystemBasedFileImpl implements
             byteBuffer = null;
             // NO this.realFile.delete(); NO DELETE SINCE BY BLOCK IT CAN BE
             // REDO
-            logger.debug("FileInterface cannot write");
+            //logger.debug("FileInterface cannot write");
             throw new FileTransferException("Internal error, file is not ready");
         }
         boolean result = size == bufferSize;
@@ -514,7 +514,7 @@ public abstract class FilesystemBasedFileImpl implements
             bfileChannelOut = null;
             // NO this.realFile.delete(); NO DELETE SINCE BY BLOCK IT CAN BE
             // REDO
-            logger.debug("FileInterface cannot fully write");
+            //logger.debug("FileInterface cannot fully write");
             throw new FileTransferException("Internal error, file is not ready");
         }
         position += size;
@@ -592,7 +592,7 @@ public abstract class FilesystemBasedFileImpl implements
             }
             bfileChannelIn = null;
             isReady = false;
-            logger.debug("Get size:" + sizeout + " and ask for:" + sizeblock);
+            //logger.debug("Get size:" + sizeout + " and ask for:" + sizeblock);
         }
         if (sizeout <= 0) {
             bbyteBuffer.clear();

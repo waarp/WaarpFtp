@@ -143,7 +143,7 @@ public class NetworkHandler extends SimpleChannelHandler {
         // release file and other permanent objects
         businessHandler.clear();
         session.clear();
-        businessHandler = null;
+        // businessHandler = null;
         // this.controlChannel = null; // to prevent when bad client goes wrong
         // session = null;
         super.channelClosed(ctx, e);
@@ -330,8 +330,8 @@ public class NetworkHandler extends SimpleChannelHandler {
     private boolean writeFinalAnswer() {
         if (session.getReplyCode() == ReplyCode.REPLY_421_SERVICE_NOT_AVAILABLE_CLOSING_CONTROL_CONNECTION ||
                 session.getReplyCode() == ReplyCode.REPLY_221_CLOSING_CONTROL_CONNECTION) {
-            logger.debug("Will close Control Connection since: {}",
-                    session.getAnswer());
+            //logger.debug("Will close Control Connection since: {}",
+                    //session.getAnswer());
             session.getDataConn().getFtpTransferControl().clear();
             writeIntermediateAnswer().addListener(
                     ChannelFutureListener.CLOSE);

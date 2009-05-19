@@ -119,45 +119,45 @@ public abstract class AbstractCommand implements CommandInterface {
         Class<? extends AbstractCommand> newClass = newCommand.getClass();
         // Special commands: QUIT ABORT STAT NOP
         if (FtpCommandCode.isSpecialCommand(newCommand.getCode())) {
-            logger.debug("VALID since {}", newCommand.command);
+            //logger.debug("VALID since {}", newCommand.command);
             return true;
         }
         if (extraNextCommand != null) {
             if (extraNextCommand.command == newClass) {
-                logger.debug("VALID {} after {} since extra next command",
-                        newCommand.command, command);
+                //logger.debug("VALID {} after {} since extra next command",
+                        //newCommand.command, command);
                 return true;
             }
             if (code.nextValids != null &&
                     code.nextValids.length > 0) {
                 for (Class<?> nextValid: code.nextValids) {
                     if (nextValid == newClass) {
-                        logger.debug("VALID {} after {} since next command",
-                                newCommand.command, command);
+                        //logger.debug("VALID {} after {} since next command",
+                                //newCommand.command, command);
                         return true;
                     }
                 }
             }
-            logger.debug("NOT VALID {} after {}", newCommand.command,
-                    command);
+            //logger.debug("NOT VALID {} after {}", newCommand.command,
+                    //command);
             return false;
         }
         if (code.nextValids == null ||
                 code.nextValids.length == 0) {
             // Any command is allowed
-            logger.debug("VALID {} after {} since all valid",
-                    newCommand.command, command);
+            //logger.debug("VALID {} after {} since all valid",
+                    //newCommand.command, command);
             return true;
         }
         for (Class<?> nextValid: code.nextValids) {
             if (nextValid == newClass) {
-                logger.debug("VALID {} since next command {}",
-                        newCommand.command, command);
+                //logger.debug("VALID {} since next command {}",
+                        //newCommand.command, command);
                 return true;
             }
         }
-        logger.debug("DEFAULT NOT VALID {} after {}", newCommand.command,
-                command);
+        //logger.debug("DEFAULT NOT VALID {} after {}", newCommand.command,
+                //command);
         return false;
     }
 

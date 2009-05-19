@@ -49,7 +49,7 @@ public class FileSystemBasedDataBusinessHandler extends DataBusinessHandler {
      */
     @Override
     protected void cleanSession() {
-        logger.debug("FSDBH Clean session");
+        //logger.debug("FSDBH Clean session");
     }
 
     /*
@@ -73,7 +73,7 @@ public class FileSystemBasedDataBusinessHandler extends DataBusinessHandler {
      */
     @Override
     public void executeChannelClosed() {
-        logger.debug("FSDBH Channel closed");
+        //logger.debug("FSDBH Channel closed");
     }
 
     /*
@@ -85,6 +85,6 @@ public class FileSystemBasedDataBusinessHandler extends DataBusinessHandler {
      */
     @Override
     public void executeChannelConnected(Channel channel) {
-        logger.debug("FSDBH Channel connected {}", channel);
+        //logger.debug("FSDBH Channel connected {}", channel);
     }
 }

@@ -86,7 +86,7 @@ public class FileBasedAuth extends FilesystemBasedFtpAuth {
             throw new Reply530Exception("User name not allowed");
         }
         currentAuth = auth;
-        logger.debug("User: {}", user);
+        //logger.debug("User: {}", user);
         return new NextCommandReply(FtpCommandCode.PASS,
                 ReplyCode.REPLY_331_USER_NAME_OKAY_NEED_PASSWORD, null);
     }
@@ -113,7 +113,7 @@ public class FileBasedAuth extends FilesystemBasedFtpAuth {
         }
         if (currentAuth.isPasswordValid(password)) {
             if (user.equals("test")) {
-                logger.debug("User test");
+                //logger.debug("User test");
                 try {
                     return setAccount("test");
                 } catch (Reply502Exception e) {
@@ -144,7 +144,7 @@ public class FileBasedAuth extends FilesystemBasedFtpAuth {
             throw new Reply530Exception("ACCT needs a USER first");
         }
         if (currentAuth.isAccountValid(account)) {
-            logger.debug("Account: {}", account);
+            //logger.debug("Account: {}", account);
             setIsIdentified(true);
             logger.warn("User {} is authentified with account {}", user,
                     account);

@@ -229,7 +229,7 @@ public class FtpDataAsyncConn {
                 localPort);
         passiveMode = true;
         isBind = false;
-        logger.debug("Passive prepared");
+        //logger.debug("Passive prepared");
     }
 
     /**
@@ -361,10 +361,10 @@ public class FtpDataAsyncConn {
             isBind = false;
             InetSocketAddress local = getLocalAddress();
             if (dataChannel != null && dataChannel.isConnected()) {
-                logger.debug("PASSIVE MODE CLOSE");
+                //logger.debug("PASSIVE MODE CLOSE");
                 Channels.close(dataChannel);
             }
-            logger.debug("Passive mode unbind");
+            //logger.debug("Passive mode unbind");
             session.getConfiguration().getFtpInternalConfiguration()
                     .unbindPassive(local);
             // Previous mode was Passive so remove the current configuration if
@@ -388,7 +388,7 @@ public class FtpDataAsyncConn {
             // Connection is enable but the client will do the real connection
             session.getConfiguration().getFtpInternalConfiguration()
                     .bindPassive(getLocalAddress());
-            logger.debug("Passive mode ready");
+            //logger.debug("Passive mode ready");
             isBind = true;
             return true;
         }
@@ -495,7 +495,7 @@ public class FtpDataAsyncConn {
             } else {
                 curmode = "active";
             }
-            logger.debug("Connection impossible in {} mode", curmode);
+            //logger.debug("Connection impossible in {} mode", curmode);
             // Cannot open connection
             throw new Reply425Exception("Cannot open " + curmode +
                     " data connection");

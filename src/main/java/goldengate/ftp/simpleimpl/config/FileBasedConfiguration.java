@@ -368,7 +368,7 @@ public class FileBasedConfiguration extends FtpConfiguration {
                 while (iteratoraccount.hasNext()) {
                     node = iteratoraccount.next();
                     account[i] = node.getText();
-                    logger.debug("User: {} Acct: {}", user, account[i]);
+                    //logger.debug("User: {} Acct: {}", user, account[i]);
                     i ++;
                 }
             }

@@ -119,7 +119,7 @@ public class FtpDataPipelineFactory implements ChannelPipelineFactory {
     public ChannelPipeline getPipeline() throws Exception {
         ChannelPipeline pipeline = Channels.pipeline();
         // Add default codec but they will change by the channelConnected
-        logger.debug("Set Default Codec");
+        //logger.debug("Set Default Codec");
         pipeline.addFirst(CODEC_MODE, new FtpDataModeCodec(TransferMode.STREAM,
                 TransferStructure.FILE));
         pipeline

@@ -181,7 +181,7 @@ public class FtpDataModeCodec extends FrameDecoder implements ChannelDownstreamH
      *
      */
     public void setCodecReady() {
-        logger.debug("ModeCodec ready");
+        //logger.debug("ModeCodec ready");
         codecLocked.setSuccess();
     }
 
@@ -202,7 +202,7 @@ public class FtpDataModeCodec extends FrameDecoder implements ChannelDownstreamH
         if (!isReady) {
             codecLocked.await();
             isReady = true;
-            logger.debug("ModeCodec ready");
+            //logger.debug("ModeCodec ready");
         }
         // If STREAM Mode, no task to do, just next filter
         if (mode == TransferMode.STREAM) {
@@ -484,7 +484,7 @@ public class FtpDataModeCodec extends FrameDecoder implements ChannelDownstreamH
         if (!isReady) {
             codecLocked.await();
             isReady = true;
-            logger.debug("ModeCodec ready");
+            //logger.debug("ModeCodec ready");
         }
         DataBlock newDataBlock = (DataBlock) evt.getMessage();
         ChannelBuffer next = encode(newDataBlock);
