@@ -123,7 +123,6 @@ public abstract class FilesystemBasedFileImpl implements
         }
     }
 
-    @Override
     public void clear() throws CommandAbstractException {
         closeFile();
         isReady = false;
@@ -131,19 +130,16 @@ public abstract class FilesystemBasedFileImpl implements
         isAppend = false;
     }
 
-    @Override
     public void checkIdentify() throws Reply530Exception {
         if (!getSession().getAuth().isIdentified()) {
             throw new Reply530Exception("User not authentified");
         }
     }
 
-    @Override
     public SessionInterface getSession() {
         return session;
     }
 
-    @Override
     public DirInterface getDir() {
         return dir;
     }
@@ -172,7 +168,6 @@ public abstract class FilesystemBasedFileImpl implements
                 .normalizePath(file.getAbsolutePath()));
     }
 
-    @Override
     public boolean isDirectory() throws CommandAbstractException {
         checkIdentify();
         File dir1 = getFileFromPath(currentFile);
@@ -180,19 +175,16 @@ public abstract class FilesystemBasedFileImpl implements
         return dir1.isDirectory();
     }
 
-    @Override
     public boolean isFile() throws CommandAbstractException {
         checkIdentify();
         return getFileFromPath(currentFile).isFile();
     }
 
-    @Override
     public String getFile() throws CommandAbstractException {
         checkIdentify();
         return currentFile;
     }
 
-    @Override
     public boolean closeFile() throws CommandAbstractException {
         if (bfileChannelIn != null) {
             try {
@@ -214,7 +206,6 @@ public abstract class FilesystemBasedFileImpl implements
         return true;
     }
 
-    @Override
     public boolean abortFile() throws CommandAbstractException {
         if (isInWriting() &&
                 ((FilesystemBasedFileParameterImpl) getSession()
@@ -225,7 +216,6 @@ public abstract class FilesystemBasedFileImpl implements
         return true;
     }
 
-    @Override
     public long length() throws CommandAbstractException {
         checkIdentify();
         if (!isReady) {
@@ -238,7 +228,6 @@ public abstract class FilesystemBasedFileImpl implements
         return length;
     }
 
-    @Override
     public boolean isInReading() throws CommandAbstractException {
         if (!isReady) {
             return false;
@@ -246,7 +235,6 @@ public abstract class FilesystemBasedFileImpl implements
         return bfileChannelIn != null;
     }
 
-    @Override
     public boolean isInWriting() throws CommandAbstractException {
         if (!isReady) {
             return false;
@@ -254,7 +242,6 @@ public abstract class FilesystemBasedFileImpl implements
         return bfileChannelOut != null;
     }
 
-    @Override
     public boolean canRead() throws CommandAbstractException {
         checkIdentify();
         if (!isReady) {
@@ -263,7 +250,6 @@ public abstract class FilesystemBasedFileImpl implements
         return getFileFromPath(currentFile).canRead();
     }
 
-    @Override
     public boolean canWrite() throws CommandAbstractException {
         checkIdentify();
         if (!isReady) {
@@ -276,7 +262,6 @@ public abstract class FilesystemBasedFileImpl implements
         return file.getParentFile().canWrite();
     }
 
-    @Override
     public boolean exists() throws CommandAbstractException {
         checkIdentify();
         if (!isReady) {
@@ -285,7 +270,6 @@ public abstract class FilesystemBasedFileImpl implements
         return getFileFromPath(currentFile).exists();
     }
 
-    @Override
     public boolean delete() throws CommandAbstractException {
         checkIdentify();
         if (!isReady) {
@@ -298,7 +282,6 @@ public abstract class FilesystemBasedFileImpl implements
         return getFileFromPath(currentFile).delete();
     }
 
-    @Override
     public boolean renameTo(String path) throws CommandAbstractException {
         checkIdentify();
         if (!isReady) {
@@ -338,12 +321,10 @@ public abstract class FilesystemBasedFileImpl implements
         return false;
     }
 
-    @Override
     public DataBlock getMarker() throws CommandAbstractException {
         throw new Reply502Exception("No marker implemented");
     }
 
-    @Override
     public boolean restartMarker(Restart restart)
             throws CommandAbstractException {
         try {
@@ -360,7 +341,6 @@ public abstract class FilesystemBasedFileImpl implements
         return false;
     }
 
-    @Override
     public boolean retrieve() throws CommandAbstractException {
         checkIdentify();
         if (isReady) {
@@ -370,7 +350,6 @@ public abstract class FilesystemBasedFileImpl implements
         return false;
     }
 
-    @Override
     public boolean store() throws CommandAbstractException {
         checkIdentify();
         if (isReady) {
@@ -380,7 +359,6 @@ public abstract class FilesystemBasedFileImpl implements
         return false;
     }
 
-    @Override
     public DataBlock readDataBlock() throws FileTransferException,
             FileEndOfTransferException {
         if (isReady) {
@@ -398,7 +376,6 @@ public abstract class FilesystemBasedFileImpl implements
         throw new FileTransferException("No file is ready");
     }
 
-    @Override
     public void writeDataBlock(DataBlock dataBlock)
             throws FileTransferException, FileEndOfTransferException {
         if (isReady) {

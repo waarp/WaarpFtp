@@ -43,7 +43,6 @@ public class STAT extends AbstractCommand {
      *
      * @see goldengate.ftp.core.command.AbstractCommand#exec()
      */
-    @Override
     public void exec() throws CommandAbstractException {
         String path = null;
         String message = null;

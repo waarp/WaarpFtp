@@ -51,7 +51,6 @@ public class PASV extends AbstractCommand {
      *
      * @see goldengate.ftp.core.command.AbstractCommand#exec()
      */
-    @Override
     public void exec() throws Reply425Exception, Reply501Exception {
         // First Check if any argument
         if (hasArg()) {

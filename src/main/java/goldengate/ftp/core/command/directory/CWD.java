@@ -46,7 +46,6 @@ public class CWD extends AbstractCommand {
      *
      * @see goldengate.ftp.core.command.AbstractCommand#exec()
      */
-    @Override
     public void exec() throws CommandAbstractException {
         DirInterface current = getSession().getDir();
         if (current == null) {

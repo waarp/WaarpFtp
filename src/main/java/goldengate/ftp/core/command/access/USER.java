@@ -39,7 +39,6 @@ public class USER extends AbstractCommand {
      *
      * @see goldengate.ftp.core.command.AbstractCommand#exec()
      */
-    @Override
     public void exec() throws Reply501Exception, Reply421Exception,
             Reply530Exception {
         if (!hasArg()) {

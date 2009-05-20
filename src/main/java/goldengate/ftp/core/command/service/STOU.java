@@ -40,7 +40,6 @@ public class STOU extends AbstractCommand {
      *
      * @see goldengate.ftp.core.command.AbstractCommand#exec()
      */
-    @Override
     public void exec() throws CommandAbstractException {
         if (hasArg()) {
             invalidCurrentCommand();

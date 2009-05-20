@@ -39,7 +39,6 @@ public class XSHA1 extends AbstractCommand {
      *
      * @see goldengate.ftp.core.command.AbstractCommand#exec()
      */
-    @Override
     public void exec() throws CommandAbstractException {
         if (!hasArg()) {
             invalidCurrentCommand();

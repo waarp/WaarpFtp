@@ -43,7 +43,6 @@ public abstract class UnimplementedCommand extends AbstractCommand {
      *
      * @see goldengate.ftp.core.command.AbstractCommand#exec()
      */
-    @Override
     public void exec() {
         getSession().setReplyCode(
                 ReplyCode.REPLY_502_COMMAND_NOT_IMPLEMENTED,

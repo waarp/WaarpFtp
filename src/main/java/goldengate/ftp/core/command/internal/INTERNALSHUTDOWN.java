@@ -67,7 +67,6 @@ public class INTERNALSHUTDOWN extends AbstractCommand {
          * org.jboss.netty.channel.ChannelFutureListener#operationComplete(org
          * .jboss.netty.channel.ChannelFuture)
          */
-        @Override
         public void operationComplete(ChannelFuture arg0) throws Exception {
             Channels.close(arg0.getChannel());
             FtpChannelUtils.teminateServer(configuration);
@@ -81,7 +80,6 @@ public class INTERNALSHUTDOWN extends AbstractCommand {
      *
      * @see goldengate.ftp.core.command.AbstractCommand#exec()
      */
-    @Override
     public void exec() throws Reply501Exception, Reply500Exception {
         if (!getSession().getAuth().isAdmin()) {
             // not admin

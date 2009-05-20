@@ -36,7 +36,6 @@ public class HELP extends AbstractCommand {
      *
      * @see goldengate.ftp.core.command.AbstractCommand#exec()
      */
-    @Override
     public void exec() {
         getSession()
                 .setReplyCode(

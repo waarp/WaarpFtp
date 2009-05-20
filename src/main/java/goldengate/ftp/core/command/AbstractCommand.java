@@ -80,7 +80,6 @@ public abstract class AbstractCommand implements CommandInterface {
      * session.Session, java.lang.String, java.lang.String, java.lang.Enum)
      */
     @SuppressWarnings("unchecked")
-    @Override
     public void setArgs(SessionInterface session, String command, String arg,
             Enum code) {
         this.session = (FtpSession) session;
@@ -97,7 +96,6 @@ public abstract class AbstractCommand implements CommandInterface {
      * .Enum)
      */
     @SuppressWarnings("unchecked")
-    @Override
     public void setExtraNextCommand(Enum extraNextCommand) {
         if (extraNextCommand != FtpCommandCode.NOOP) {
             this.extraNextCommand = (FtpCommandCode) extraNextCommand;
@@ -113,7 +111,6 @@ public abstract class AbstractCommand implements CommandInterface {
      * goldengate.common.command.CommandInterface#isNextCommandValid(goldengate
      * .common.command.CommandInterface)
      */
-    @Override
     public boolean isNextCommandValid(CommandInterface newCommandArg) {
         AbstractCommand newCommand = (AbstractCommand) newCommandArg;
         Class<? extends AbstractCommand> newClass = newCommand.getClass();
@@ -161,27 +158,22 @@ public abstract class AbstractCommand implements CommandInterface {
         return false;
     }
 
-    @Override
     public Object getObject() {
         return object;
     }
 
-    @Override
     public void setObject(Object object) {
         this.object = object;
     }
 
-    @Override
     public String getArg() {
         return arg;
     }
 
-    @Override
     public String[] getArgs() {
         return arg.split(" ");
     }
 
-    @Override
     public int getValue(String argx) throws InvalidArgumentException {
         int i = 0;
         try {
@@ -192,12 +184,10 @@ public abstract class AbstractCommand implements CommandInterface {
         return i;
     }
 
-    @Override
     public String getCommand() {
         return command;
     }
 
-    @Override
     public boolean hasArg() {
         return arg != null && arg.length() != 0;
     }
@@ -219,7 +209,6 @@ public abstract class AbstractCommand implements CommandInterface {
         return session.getConfiguration();
     }
 
-    @Override
     public void invalidCurrentCommand() {
         session.getRestart().setSet(false);
         session.setPreviousAsCurrentCommand();

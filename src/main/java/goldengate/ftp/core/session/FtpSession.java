@@ -129,7 +129,6 @@ public class FtpSession implements SessionInterface {
         return configuration;
     }
 
-    @Override
     public DirInterface getDir() {
         return ftpDir;
     }
@@ -141,12 +140,10 @@ public class FtpSession implements SessionInterface {
         return dataConn;
     }
 
-    @Override
     public AuthInterface getAuth() {
         return ftpAuth;
     }
 
-    @Override
     public Restart getRestart() {
         return restart;
     }
@@ -274,7 +271,6 @@ public class FtpSession implements SessionInterface {
         return replyCode;
     }
 
-    @Override
     public void clear() {
         if (dataConn != null) {
             dataConn.clear();
@@ -330,12 +326,10 @@ public class FtpSession implements SessionInterface {
         return mesg + "\n";
     }
 
-    @Override
     public int getBlockSize() {
         return configuration.BLOCKSIZE;
     }
 
-    @Override
     public FileParameterInterface getFileParameter() {
         return configuration.getFileParameter();
     }

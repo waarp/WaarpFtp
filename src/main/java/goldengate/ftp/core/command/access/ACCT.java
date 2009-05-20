@@ -40,7 +40,6 @@ public class ACCT extends AbstractCommand {
      *
      * @see goldengate.ftp.core.command.AbstractCommand#exec()
      */
-    @Override
     public void exec() throws Reply501Exception, Reply421Exception,
             Reply530Exception, Reply502Exception {
         if (!hasArg()) {

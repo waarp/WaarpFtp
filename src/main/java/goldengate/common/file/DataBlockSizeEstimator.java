@@ -37,7 +37,6 @@ public class DataBlockSizeEstimator implements ObjectSizeEstimator {
      * org.jboss.netty.handler.execution.ObjectSizeEstimator#estimateSize(java
      * .lang.Object)
      */
-    @Override
     public int estimateSize(Object o) {
         if (!(o instanceof DataBlock)) {
             // Type unimplemented

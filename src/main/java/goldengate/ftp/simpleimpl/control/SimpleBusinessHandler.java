@@ -57,19 +57,19 @@ public class SimpleBusinessHandler extends BusinessHandler {
     @Override
     public void afterRunCommandOk() throws CommandAbstractException {
         // TODO Auto-generated method stub
-        logger.info("GBBH: AFTOK: {}", getFtpSession());
+        //logger.info("GBBH: AFTOK: {}", getFtpSession());
     }
 
     @Override
     public void beforeRunCommand() throws CommandAbstractException {
         // TODO Auto-generated method stub
-        logger.info("GBBH: BEFCD: {}", getFtpSession());
+        //logger.info("GBBH: BEFCD: {}", getFtpSession());
     }
 
     @Override
     protected void cleanSession() {
         // TODO Auto-generated method stub
-        logger.info("GBBH: CLNSE: {}", getFtpSession());
+        //logger.info("GBBH: CLNSE: {}", getFtpSession());
     }
 
     @Override
@@ -88,7 +88,7 @@ public class SimpleBusinessHandler extends BusinessHandler {
     @Override
     public void executeChannelConnected(Channel channel) {
         // TODO Auto-generated method stub
-        logger.info("GBBH: CONNEC: {}", getFtpSession());
+        //logger.info("GBBH: CONNEC: {}", getFtpSession());
     }
 
     @Override

@@ -38,7 +38,6 @@ public class NLST extends AbstractCommand {
      *
      * @see goldengate.ftp.core.command.AbstractCommand#exec()
      */
-    @Override
     public void exec() throws CommandAbstractException {
         String path = null;
         List<String> files = null;

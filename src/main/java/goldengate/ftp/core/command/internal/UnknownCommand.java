@@ -43,7 +43,6 @@ public class UnknownCommand extends AbstractCommand {
      *
      * @see goldengate.ftp.core.command.AbstractCommand#exec()
      */
-    @Override
     public void exec() {
         getSession().setReplyCode(
                 ReplyCode.REPLY_500_SYNTAX_ERROR_COMMAND_UNRECOGNIZED,

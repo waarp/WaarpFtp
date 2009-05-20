@@ -457,7 +457,6 @@ public class FtpDataModeCodec extends FrameDecoder implements ChannelDownstreamH
         this.structure = structure;
     }
 
-    @Override
     public void handleDownstream(ChannelHandlerContext ctx, ChannelEvent e)
             throws Exception {
         if (e instanceof MessageEvent) {

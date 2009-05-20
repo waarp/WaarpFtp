@@ -37,7 +37,6 @@ public class PWD extends AbstractCommand {
      *
      * @see goldengate.ftp.core.command.AbstractCommand#exec()
      */
-    @Override
     public void exec() throws CommandAbstractException {
         getSession().setReplyCode(
                 ReplyCode.REPLY_257_PATHNAME_CREATED,

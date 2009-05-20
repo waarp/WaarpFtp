@@ -37,7 +37,6 @@ public class OPTS extends AbstractCommand {
      *
      * @see goldengate.ftp.core.command.AbstractCommand#exec()
      */
-    @Override
     public void exec() throws CommandAbstractException {
         String message = getSession().getBusinessHandler().getOptsMessage(
                 getArgs());

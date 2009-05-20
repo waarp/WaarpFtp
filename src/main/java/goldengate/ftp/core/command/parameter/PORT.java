@@ -41,7 +41,6 @@ public class PORT extends AbstractCommand {
      *
      * @see goldengate.ftp.core.command.AbstractCommand#exec()
      */
-    @Override
     public void exec() throws Reply501Exception {
         // First Check if any argument
         if (!hasArg()) {

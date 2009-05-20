@@ -36,7 +36,6 @@ public class SYST extends AbstractCommand {
      *
      * @see goldengate.ftp.core.command.AbstractCommand#exec()
      */
-    @Override
     public void exec() {
         getSession().setReplyCode(ReplyCode.REPLY_215_NAME_SYSTEM_TYPE,
                 "UNIX Type: L8");

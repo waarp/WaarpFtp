@@ -260,7 +260,6 @@ public abstract class FilesystemBasedAuthImpl implements AuthInterface {
         }
     }
 
-    @Override
     public String getBusinessPath() {
         return rootFromAuth;
     }

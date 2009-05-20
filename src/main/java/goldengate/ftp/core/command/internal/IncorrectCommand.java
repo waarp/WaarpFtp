@@ -45,7 +45,6 @@ public class IncorrectCommand extends AbstractCommand {
      *
      * @see goldengate.ftp.core.command.AbstractCommand#exec()
      */
-    @Override
     public void exec() {
         getSession().setReplyCode(
                 ReplyCode.REPLY_503_BAD_SEQUENCE_OF_COMMANDS,

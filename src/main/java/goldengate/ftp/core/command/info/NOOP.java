@@ -48,7 +48,6 @@ public class NOOP extends AbstractCommand {
      *
      * @see goldengate.ftp.core.command.AbstractCommand#exec()
      */
-    @Override
     public void exec() {
         getSession().setReplyCode(ReplyCode.REPLY_200_COMMAND_OKAY, null);
     }

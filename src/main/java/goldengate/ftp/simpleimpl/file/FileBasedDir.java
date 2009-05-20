@@ -39,7 +39,6 @@ public class FileBasedDir extends FilesystemBasedFtpDir {
         super(session);
     }
 
-    @Override
     public FileInterface newFile(String path, boolean append)
             throws CommandAbstractException {
         return new FileBasedFile(

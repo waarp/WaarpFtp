@@ -154,7 +154,6 @@ public class FileBasedAuth extends FilesystemBasedFtpAuth {
         throw new Reply530Exception("Account is not valid");
     }
 
-    @Override
     public boolean isBusinessPathValid(String newPath) {
         if (newPath == null) {
             return false;
@@ -179,7 +178,6 @@ public class FileBasedAuth extends FilesystemBasedFtpAuth {
         return path;
     }
 
-    @Override
     public boolean isAdmin() {
         return currentAuth.isAdmin;
     }

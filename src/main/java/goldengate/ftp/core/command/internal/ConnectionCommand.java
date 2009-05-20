@@ -49,7 +49,6 @@ public class ConnectionCommand extends AbstractCommand {
      *
      * @see goldengate.ftp.core.command.AbstractCommand#exec()
      */
-    @Override
     public void exec() throws CommandAbstractException {
         // Nothing to do except 220
         getSession().setReplyCode(ReplyCode.REPLY_220_SERVICE_READY, null);

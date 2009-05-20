@@ -40,7 +40,6 @@ public class STRU extends AbstractCommand {
      *
      * @see goldengate.ftp.core.command.AbstractCommand#exec()
      */
-    @Override
     public void exec() throws Reply501Exception, Reply504Exception {
         // First Check if any argument
         if (!hasArg()) {

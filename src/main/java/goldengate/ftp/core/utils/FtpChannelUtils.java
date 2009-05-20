@@ -266,7 +266,6 @@ public class FtpChannelUtils {
             this.channelFactory = channelFactory;
             this.channelFactory2 = channelFactory2;
         }
-        @Override
         public void operationComplete(ChannelGroupFuture future)
                 throws Exception {
             pool.shutdownNow();
@@ -406,7 +405,7 @@ public class FtpChannelUtils {
      */
     public static void addCommandChannel(Channel channel,
             FtpConfiguration configuration) {
-        logger.info("Add Command Channel {}", channel);
+        //logger.info("Add Command Channel {}", channel);
         configuration.getFtpInternalConfiguration().getCommandChannelGroup()
                 .add(channel);
     }
@@ -419,7 +418,7 @@ public class FtpChannelUtils {
      */
     public static void addDataChannel(Channel channel,
             FtpConfiguration configuration) {
-        logger.info("Add Data Channel {}", channel);
+        //logger.info("Add Data Channel {}", channel);
         configuration.getFtpInternalConfiguration().getDataChannelGroup().add(
                 channel);
     }

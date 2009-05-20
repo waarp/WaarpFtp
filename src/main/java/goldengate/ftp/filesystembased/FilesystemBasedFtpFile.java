@@ -80,7 +80,6 @@ public abstract class FilesystemBasedFtpFile extends FilesystemBasedFileImpl {
         return length;
     }
 
-    @Override
     public void trueRetrieve() {
         retrieveLock.lock();
         try {

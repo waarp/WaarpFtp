@@ -39,7 +39,6 @@ public class RMD extends AbstractCommand {
      *
      * @see goldengate.ftp.core.command.AbstractCommand#exec()
      */
-    @Override
     public void exec() throws Reply550Exception, CommandAbstractException {
         // First Check if any argument
         if (!hasArg()) {

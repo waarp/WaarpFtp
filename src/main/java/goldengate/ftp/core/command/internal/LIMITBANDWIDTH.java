@@ -37,7 +37,6 @@ public class LIMITBANDWIDTH extends AbstractCommand {
      *
      * @see goldengate.ftp.core.command.AbstractCommand#exec()
      */
-    @Override
     public void exec() throws Reply501Exception, Reply500Exception {
         if (!getSession().getAuth().isAdmin()) {
             // not admin

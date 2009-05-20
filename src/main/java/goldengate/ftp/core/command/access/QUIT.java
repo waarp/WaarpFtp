@@ -36,7 +36,6 @@ public class QUIT extends AbstractCommand {
      *
      * @see goldengate.ftp.core.command.AbstractCommand#exec()
      */
-    @Override
     public void exec() {
         getSession().setReplyCode(
                 ReplyCode.REPLY_221_CLOSING_CONTROL_CONNECTION, null);
