@@ -293,9 +293,7 @@ public abstract class FilesystemBasedFileImpl implements
             File newFile = getFileFromPath(path);
             if (newFile.getParentFile().canWrite()) {
                 if (!file.renameTo(newFile)) {
-                    //logger.debug(
-                            //"file cannot be just renamed, to be moved: {}",
-                            //file);
+                    //logger.debug("file cannot be just renamed, to be moved: {}", file);
                     FileOutputStream fileOutputStream;
                     try {
                         fileOutputStream = new FileOutputStream(newFile);

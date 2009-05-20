@@ -227,8 +227,7 @@ public abstract class FilesystemBasedDirImpl implements DirInterface {
         List<String> subdirs = new ArrayList<String>();
         while (wildcardFile != null) {
             File parent = wildcardFile.getParentFile();
-            //logger.debug("Wildcard: current= {} parent= {}", wildcardFile,
-                    //(parent != null? parent : "no parent"));
+            //logger.debug("Wildcard: current= {} parent= {}", wildcardFile, (parent != null? parent : "no parent"));
             if (parent == null) {
                 subdirs.add(0, wildcardFile.getPath());
                 break;

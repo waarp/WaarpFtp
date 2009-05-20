@@ -96,8 +96,7 @@ public class FtpTransferExecutor implements Runnable {
         if (FtpCommandCode
                 .isStoreLikeCommand(executeTransfer.getCommand())) {
             // The command is implicitly done by receiving message
-            //logger.debug("Command launch: {} {}", executeTransfer
-                    //.getCommand(), session);
+            //logger.debug("Command launch: {} {}", executeTransfer.getCommand(), session);
             waitForCommand();
             // Store set end
             try {
@@ -106,13 +105,11 @@ public class FtpTransferExecutor implements Runnable {
             } catch (NullPointerException e) {
                 // ignore, due probably to an already clean session
             }
-            //logger.debug("Command finished: {} {}", executeTransfer
-                    //.getCommand(), session);
+            //logger.debug("Command finished: {} {}", executeTransfer.getCommand(), session);
         } else if (FtpCommandCode.isListLikeCommand(executeTransfer
                 .getCommand())) {
             // No wait for Command since the answer is already there
-            //logger.debug("Command launch: {} {}", executeTransfer
-                    //.getCommand(), session);
+            //logger.debug("Command launch: {} {}", executeTransfer.getCommand(), session);
             List<String> list = executeTransfer.getInfo();
             StringBuilder builder = new StringBuilder();
             for (String newfileInfo: list) {
@@ -135,13 +132,11 @@ public class FtpTransferExecutor implements Runnable {
             // must explicitly set the end and no wait
             session.getDataConn().getFtpTransferControl()
                     .setEndOfTransfer();
-            //logger.debug("Command finished: {} {}", executeTransfer
-                    //.getCommand(), session);
+            //logger.debug("Command finished: {} {}", executeTransfer.getCommand(), session);
         } else if (FtpCommandCode.isRetrLikeCommand(executeTransfer
                 .getCommand())) {
             // The command must be launched
-            //logger.debug("Command launch: {} {}", executeTransfer
-                    //.getCommand(), session);
+            //logger.debug("Command launch: {} {}", executeTransfer.getCommand(), session);
             try {
                 executeTransfer.getFtpFile().trueRetrieve();
             } catch (FtpNoFileException e) {
@@ -157,8 +152,7 @@ public class FtpTransferExecutor implements Runnable {
             } catch (NullPointerException e) {
                 // ignore, due probably to an already clean session
             }
-            //logger.debug("Command finished: {} {}", executeTransfer
-                    //.getCommand(), session);
+            //logger.debug("Command finished: {} {}", executeTransfer.getCommand(), session);
         } else {
             // This is an error as unknown transfer command
             //logger.debug("Unknown transfer command: {}", executeTransfer);
