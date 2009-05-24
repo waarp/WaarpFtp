@@ -205,9 +205,9 @@ public class FtpInternalConfiguration {
      */
     public class BindAddress {
         /**
-         * Group of channels
+         * Parent passive channel
          */
-        public final ChannelGroup group;
+        public final Channel parent;
         /**
          * Number of binded Data connections
          */
@@ -219,8 +219,7 @@ public class FtpInternalConfiguration {
          * @param channel
          */
         public BindAddress(Channel channel) {
-            group = new DefaultChannelGroup();
-            group.add(channel);
+            parent = channel;
             nbBind = new AtomicInteger(0);
         }
     }
@@ -430,7 +429,7 @@ public class FtpInternalConfiguration {
                 logger.info("Bind number to {} left is {}", address,
                         nbBind);
                 if (nbBind == 0) {
-                	execActiveDataWorker.execute(new UnbindOperation(bindAddress.group));
+                    execActiveDataWorker.execute(new UnbindOperation(bindAddress.parent));
                     hashBindPassiveDataConn.remove(address);
                     //bindAddress.group.close().awaitUninterruptibly();
                 }
@@ -447,9 +446,9 @@ public class FtpInternalConfiguration {
 	 *
 	 */
     private class UnbindOperation implements Runnable {
-    	private ChannelGroup group;
-    	public UnbindOperation (ChannelGroup group) {
-    		this.group = group;
+    	private Channel channel;
+    	public UnbindOperation (Channel channel) {
+    		this.channel = channel;
     	}
 	    /**
 	     * Method to clean later on the binded connection (try to prevents blocking status
@@ -459,7 +458,7 @@ public class FtpInternalConfiguration {
 		public void run() {
 			//FIXME Bug on JDK on AIX: unbind does not unbind (await does never returned)
 			//logger.warn("Group closing: "+group.getName());
-			group.close().awaitUninterruptibly();
+			channel.close().awaitUninterruptibly();
 			//logger.warn("Group closed: "+group.getName());
 		}
     }

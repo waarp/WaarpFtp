@@ -196,8 +196,7 @@ public class FtpTransferControl {
 
     /**
      * Wait for the client to be connected (Passive) or Wait for the server to
-     * be connected to the client (Active) (called from {@link FtpCommandUtils}
-     * with same method)
+     * be connected to the client (Active)
      *
      * @return True if the connection is OK
      * @throws Reply425Exception
