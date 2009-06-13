@@ -44,6 +44,7 @@ import org.jboss.netty.bootstrap.ServerBootstrap;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelException;
 import org.jboss.netty.channel.ChannelFactory;
+import org.jboss.netty.channel.Channels;
 import org.jboss.netty.channel.group.ChannelGroup;
 import org.jboss.netty.channel.group.DefaultChannelGroup;
 import org.jboss.netty.channel.socket.nio.NioClientSocketChannelFactory;
@@ -429,9 +430,8 @@ public class FtpInternalConfiguration {
                 logger.info("Bind number to {} left is {}", address,
                         nbBind);
                 if (nbBind == 0) {
-                    execActiveDataWorker.execute(new UnbindOperation(bindAddress.parent));
+                    Channels.close(bindAddress.parent);
                     hashBindPassiveDataConn.remove(address);
-                    //bindAddress.group.close().awaitUninterruptibly();
                 }
             } else {
                 logger.warn("No Bind to {}", address);
@@ -439,28 +439,6 @@ public class FtpInternalConfiguration {
         } finally {
             configuration.getLock().unlock();
         }
-    }
-	/**
-	 * Simple thread to implement the close operation on one channelGroup for parent passive connections
-	 * @author frederic bregier
-	 *
-	 */
-    private class UnbindOperation implements Runnable {
-    	private Channel channel;
-    	public UnbindOperation (Channel channel) {
-    		this.channel = channel;
-    	}
-	    /**
-	     * Method to clean later on the binded connection (try to prevents blocking status
-	     * when trying to unbind from a channel that is currently in closing operation
-	     * on the same bind). 
-	     */
-		public void run() {
-			//FIXME Bug on JDK on AIX: unbind does not unbind (await does never returned)
-			//logger.warn("Group closing: "+group.getName());
-			channel.close().awaitUninterruptibly();
-			//logger.warn("Group closed: "+group.getName());
-		}
     }
     /**
      *

@@ -4,10 +4,10 @@
 	<serverport>21</serverport>
 	<serverhome>d:/GG/FTP</serverhome>
 	<serverthread>8</serverthread>
-	<sessionlimit>102400</sessionlimit>
-	<globallimit>1024000</globallimit>
-	<sessionlimit2>0</sessionlimit2>
-	<globallimit2>0</globallimit2>
+	<sessionlimit2>102400</sessionlimit2>
+	<globallimit2>1024000</globallimit2>
+	<sessionlimit>0</sessionlimit>
+	<globallimit>0</globallimit>
 	<timeoutcon>10000</timeoutcon>
 	<deleteonabort>0</deleteonabort>
 	<usenio>0</usenio>
@@ -16,7 +16,7 @@
 	<fastmd5b>D:/NEWSOURCE/GoldenGateFtp-0.9.2/lib/arch/win32_x86/MD5.dll</fastmd5b>
 	<blocksize>65536</blocksize>
 	<rangeport>
-		<min>1049</min>
+		<min>2001</min>
 		<max>32000</max>
 	</rangeport>
 	<authentfile>src/main/config/authent.xml</authentfile>

@@ -5,6 +5,10 @@
 		<author email="fredbregier@free.fr">Frederic Bregier</author>
 	</properties>
 	<body>
+		<release version="0.9.3" date="2009-05-21" description="Benchmarked version">
+			<action dev="Frederic Bregier" type="add">Improve optimization</action>
+			<action dev="Frederic Bregier" type="fix">Fix some bugs issued from benchmarks</action>
+		</release>
 		<release version="0.9.2" date="2009-04-20" description="Refactorized version">
 			<action dev="Frederic Bregier" type="add">Fix Maven and POM and refactorization</action>
 			<action dev="Frederic Bregier" type="fix">Fix some bugs</action>
