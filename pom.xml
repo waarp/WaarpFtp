@@ -3,7 +3,7 @@
   <groupId>GoldenGateFtp</groupId>
   <artifactId>GoldenGateFtp</artifactId>
   <name>GoldenGateFtp</name>
-  <version>0.9.2</version>
+  <version>0.9.3</version>
   <packaging>pom</packaging>
   <description>
 	  The GoldenGate FTP project is a proposal of a new fresh FTP server implementation, 
