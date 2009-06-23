@@ -20,6 +20,7 @@
  */
 package goldengate.common.logging;
 
+import org.jboss.netty.logging.InternalLogLevel;
 import org.jboss.netty.logging.InternalLogger;
 
 /**
@@ -35,6 +36,61 @@ import org.jboss.netty.logging.InternalLogger;
  *
  */
 public abstract class GgInternalLogger implements InternalLogger {
+	/**
+	 * @param level
+	 * @return True if the level is enabled
+	 */
+	public boolean isEnabled(InternalLogLevel level) {
+        switch (level) {
+        case DEBUG:
+            return isDebugEnabled();
+        case INFO:
+            return isInfoEnabled();
+        case WARN:
+            return isWarnEnabled();
+        case ERROR:
+            return isErrorEnabled();
+        default:
+            throw new Error();
+        }
+    }
+	public void log(InternalLogLevel level, String msg, Throwable cause) {
+        switch (level) {
+        case DEBUG:
+            debug(msg, cause);
+            break;
+        case INFO:
+            info(msg, cause);
+            break;
+        case WARN:
+            warn(msg, cause);
+            break;
+        case ERROR:
+            error(msg, cause);
+            break;
+        default:
+            throw new Error();
+        }
+    }
+
+    public void log(InternalLogLevel level, String msg) {
+        switch (level) {
+        case DEBUG:
+            debug(msg);
+            break;
+        case INFO:
+            info(msg);
+            break;
+        case WARN:
+            warn(msg);
+            break;
+        case ERROR:
+            error(msg);
+            break;
+        default:
+            throw new Error();
+        }
+    }
     /**
      *
      * @param format
