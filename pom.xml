@@ -153,6 +153,7 @@
     <filtermodule>**</filtermodule>
   </properties>
   <modules>
+  	<module>digest</module>
   	<module>common</module>
   	<module>core</module>
   	<module>filesystem</module>
@@ -219,10 +220,12 @@
                 <equals arg1="${project.artifactId}" arg2="GoldenGateFtp"/>
                 <then>
                 	<mkdir dir="${project.build.directory}/site"/>
+                	<mkdir dir="${project.build.directory}/site/digest"/>
                 	<mkdir dir="${project.build.directory}/site/common"/>
                 	<mkdir dir="${project.build.directory}/site/core"/>
                 	<mkdir dir="${project.build.directory}/site/filesystem"/>
                 	<mkdir dir="${project.build.directory}/site/simpleimpl"/>
+                	<copy file="${basedir}/src/site/resources/html/digest/index.html" toDir="${project.build.directory}/site/digest/"/>
                 	<copy file="${basedir}/src/site/resources/html/common/index.html" toDir="${project.build.directory}/site/common/"/>
                 	<copy file="${basedir}/src/site/resources/html/core/index.html" toDir="${project.build.directory}/site/core/"/>
                 	<copy file="${basedir}/src/site/resources/html/filesystem/index.html" toDir="${project.build.directory}/site/filesystem/"/>
@@ -275,6 +278,7 @@
                         <include name="**" />
                       </zipfileset>
                       <zipfileset filemode="644" src="${project.build.directory}/${project.build.finalName}-sources.orig.jar" dirmode="755">
+                      	<exclude name="**/${filterexclude}/**" />
                         <include name="**/${filtermodule}/**" />
                       </zipfileset>
                     </zip>
@@ -401,11 +405,13 @@
 	            -link http://commons.apache.org/logging/commons-logging-1.1.1/apidocs/
 	            -link http://logging.apache.org/log4j/1.2/apidocs/
 	
-				-group "GoldenGate Common Logging Future Command Authentication Session and File package" "goldengate.common*"
+				-group "GoldenGate Common Digest package" "goldengate.common.digest*"
+				-group "GoldenGate Common Logging Future Command Authentication Session and File package" "goldengate.common.command*:goldengate.common.exception*:goldengate.common.file*:goldengate.common.future*:goldengate.common.logging*"
 				-group "GoldenGate FTP Main Core package" "goldengate.ftp.core*"
 				-group "GoldenGate FTP Filesystem Implementation package" "goldengate.ftp.filesystembased*"
 				-group "GoldenGate Simple FTP Server package" "goldengate.ftp.simpleimpl*"
 	
+	            -sourceclasspath ${basedir}/digest/target/classes
 	            -sourceclasspath ${basedir}/common/target/classes
 	            -sourceclasspath ${basedir}/core/target/classes
 	            -sourceclasspath ${basedir}/filesystem/target/classes
@@ -485,6 +491,7 @@
       	<configuration>
       		<encoding>utf-8</encoding>
       		<tags>
+      			<tag>XXX</tag>
       			<tag>TODO</tag>
       			<tag>FIXME</tag>
       			<tag>@deprecated</tag>

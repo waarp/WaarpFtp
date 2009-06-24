@@ -10,12 +10,19 @@
   <artifactId>core</artifactId>
   <properties>
     <filtermodule>core</filtermodule>
+    <filterexclude>zzz</filterexclude>
   </properties>
   <dependencies>
     <dependency>
       <groupId>GoldenGateFtp</groupId>
+      <artifactId>digest</artifactId>
+      <version>0.9.3</version>
+      <optional>false</optional>
+    </dependency>
+    <dependency>
+      <groupId>GoldenGateFtp</groupId>
       <artifactId>common</artifactId>
-      <version>0.9.2</version>
+      <version>0.9.3</version>
       <optional>false</optional>
     </dependency>
   </dependencies>

@@ -10,7 +10,16 @@
   <artifactId>common</artifactId>
   <properties>
     <filtermodule>common</filtermodule>
+    <filterexclude>common/digest</filterexclude>
   </properties>
+  <dependencies>
+    <dependency>
+      <groupId>GoldenGateFtp</groupId>
+      <artifactId>digest</artifactId>
+      <version>0.9.3</version>
+      <optional>false</optional>
+    </dependency>
+  </dependencies>
   <build>
   	<sourceDirectory>../src/main/java</sourceDirectory>
   	
@@ -27,6 +36,9 @@
 	          <includes>
 	          	<include>**/${filtermodule}/**</include>
 	          </includes>
+	          <excludes>
+	          	<exclude>**/${filterexclude}/**</exclude>
+	          </excludes>
 	        </configuration>
   		</plugin>
   	</plugins>

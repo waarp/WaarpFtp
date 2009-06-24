@@ -6,39 +6,12 @@
 	  <version>0.9.3</version>
 	  <relativePath>../pom.xml</relativePath>
   </parent>
-  <name>GoldenGateFtp-SimpleServer</name>
-  <artifactId>simpleimpl</artifactId>
+  <name>GoldenGateFtp-Digest</name>
+  <artifactId>digest</artifactId>
   <properties>
-    <filtermodule>ftp/simpleimpl</filtermodule>
+    <filtermodule>common/digest</filtermodule>
     <filterexclude>zzz</filterexclude>
   </properties>
-  <dependencies>
-    <dependency>
-      <groupId>GoldenGateFtp</groupId>
-      <artifactId>digest</artifactId>
-      <version>0.9.3</version>
-      <optional>false</optional>
-    </dependency>
-    <dependency>
-      <groupId>GoldenGateFtp</groupId>
-      <artifactId>common</artifactId>
-      <version>0.9.3</version>
-      <optional>false</optional>
-    </dependency>
-    <dependency>
-      <groupId>GoldenGateFtp</groupId>
-      <artifactId>core</artifactId>
-      <version>0.9.3</version>
-      <optional>false</optional>
-    </dependency>
-    <dependency>
-      <groupId>GoldenGateFtp</groupId>
-      <artifactId>filesystem</artifactId>
-      <version>0.9.3</version>
-      <optional>false</optional>
-    </dependency>
-  </dependencies>
-  
   <build>
   	<sourceDirectory>../src/main/java</sourceDirectory>
   	
