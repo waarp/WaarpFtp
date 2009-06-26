@@ -25,10 +25,10 @@ import goldengate.common.file.filesystembased.FilesystemBasedFileParameterImpl;
 import goldengate.common.file.filesystembased.specific.FilesystemBasedDirJdk5;
 import goldengate.common.logging.GgInternalLogger;
 import goldengate.common.logging.GgInternalLoggerFactory;
+import goldengate.common.logging.Slf4JLoggerFactory;
 import goldengate.ftp.simpleimpl.config.FileBasedConfiguration;
 import goldengate.ftp.simpleimpl.control.SimpleBusinessHandler;
 import goldengate.ftp.simpleimpl.data.FileSystemBasedDataBusinessHandler;
-import goldengate.ftp.simpleimpl.logging.Slf4JLoggerFactory;
 
 import org.jboss.netty.logging.InternalLoggerFactory;
 
