@@ -14,7 +14,6 @@
         <javaElement handleIdentifier="=GoldenGateFtpTrunk/src\/main\/java&lt;goldengate.ftp.simpleimpl.config"/>
         <javaElement handleIdentifier="=GoldenGateFtpTrunk/src\/main\/java&lt;goldengate.ftp.simpleimpl"/>
         <javaElement handleIdentifier="=GoldenGateFtpTrunk/src\/main\/java&lt;goldengate.ftp.simpleimpl.file"/>
-        <javaElement handleIdentifier="=GoldenGateFtpTrunk/src\/main\/java&lt;goldengate.ftp.simpleimpl.logging"/>
         <javaElement handleIdentifier="=GoldenGateFtpTrunk/src\/main\/java&lt;goldengate.ftp.simpleimpl.data"/>
         <javaElement handleIdentifier="=GoldenGateFtpTrunk/src\/main\/java&lt;goldengate.ftp.simpleimpl.control"/>
     </selectedElements>
