@@ -25,7 +25,7 @@ import goldengate.common.file.filesystembased.FilesystemBasedFileParameterImpl;
 import goldengate.common.file.filesystembased.specific.FilesystemBasedDirJdk5;
 import goldengate.common.logging.GgInternalLogger;
 import goldengate.common.logging.GgInternalLoggerFactory;
-import goldengate.common.logging.Slf4JLoggerFactory;
+import goldengate.common.logging.GgSlf4JLoggerFactory;
 import goldengate.ftp.simpleimpl.config.FileBasedConfiguration;
 import goldengate.ftp.simpleimpl.control.SimpleBusinessHandler;
 import goldengate.ftp.simpleimpl.data.FileSystemBasedDataBusinessHandler;
@@ -58,7 +58,7 @@ public class SimpleGatewayFtpServer {
                     SimpleGatewayFtpServer.class.getName() + " <config-file>");
             return;
         }
-        InternalLoggerFactory.setDefaultFactory(new Slf4JLoggerFactory(
+        InternalLoggerFactory.setDefaultFactory(new GgSlf4JLoggerFactory(
                 Level.WARN));
         logger = GgInternalLoggerFactory
                 .getLogger(SimpleGatewayFtpServer.class);

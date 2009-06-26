@@ -34,13 +34,13 @@ import ch.qos.logback.classic.LoggerContext;
  * @author Frederic Bregier
  *
  */
-public class Slf4JLoggerFactory extends
+public class GgSlf4JLoggerFactory extends
         org.jboss.netty.logging.Slf4JLoggerFactory {
     /**
      *
      * @param level
      */
-    public Slf4JLoggerFactory(Level level) {
+    public GgSlf4JLoggerFactory(Level level) {
         super();
         Logger logger = (Logger) LoggerFactory
                 .getLogger(LoggerContext.ROOT_NAME);
@@ -50,6 +50,6 @@ public class Slf4JLoggerFactory extends
     @Override
     public InternalLogger newInstance(String name) {
         final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(name);
-        return new Slf4JLogger(logger);
+        return new GgSlf4JLogger(logger);
     }
 }

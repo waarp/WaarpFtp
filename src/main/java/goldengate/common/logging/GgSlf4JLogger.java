@@ -28,7 +28,7 @@ import ch.qos.logback.classic.Logger;
  * @author Frederic Bregier
  *
  */
-public class Slf4JLogger extends GgInternalLogger {
+public class GgSlf4JLogger extends GgInternalLogger {
     /**
      * Internal logger
      */
@@ -38,7 +38,7 @@ public class Slf4JLogger extends GgInternalLogger {
      *
      * @param logger
      */
-    public Slf4JLogger(org.slf4j.Logger logger) {
+    public GgSlf4JLogger(org.slf4j.Logger logger) {
         super();
         this.logger = (Logger) logger;
     }
