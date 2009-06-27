@@ -1,22 +1,22 @@
 /**
- * Copyright 2009, Frederic Bregier, and individual contributors
- * by the @author tags. See the COPYRIGHT.txt in the distribution for a
- * full listing of individual contributors.
+ * Copyright 2009, Frederic Bregier, and individual contributors by the @author
+ * tags. See the COPYRIGHT.txt in the distribution for a full listing of
+ * individual contributors.
  *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 3.0 of
- * the License, or (at your option) any later version.
+ * This is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 3.0 of the License, or (at your option)
+ * any later version.
  *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
+ * This software is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
  *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this software; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
+ * site: http://www.fsf.org.
  */
 package goldengate.ftp.core.utils;
 
@@ -253,19 +253,26 @@ public class FtpChannelUtils {
 
     /**
      * Finalize resources attached to Control or Data handlers
+     *
      * @author Frederic Bregier
      *
      */
-    private static class FtpChannelGroupFutureListener implements ChannelGroupFutureListener {
+    private static class FtpChannelGroupFutureListener implements
+            ChannelGroupFutureListener {
         OrderedMemoryAwareThreadPoolExecutor pool;
+
         ChannelFactory channelFactory;
+
         ChannelFactory channelFactory2;
-        public FtpChannelGroupFutureListener(OrderedMemoryAwareThreadPoolExecutor pool,
+
+        public FtpChannelGroupFutureListener(
+                OrderedMemoryAwareThreadPoolExecutor pool,
                 ChannelFactory channelFactory, ChannelFactory channelFactory2) {
             this.pool = pool;
             this.channelFactory = channelFactory;
             this.channelFactory2 = channelFactory2;
         }
+
         public void operationComplete(ChannelGroupFuture future)
                 throws Exception {
             pool.shutdownNow();
@@ -275,6 +282,7 @@ public class FtpChannelUtils {
             }
         }
     }
+
     /**
      * Terminate all registered command channels
      *
@@ -285,14 +293,15 @@ public class FtpChannelUtils {
         int result = configuration.getFtpInternalConfiguration()
                 .getCommandChannelGroup().size();
         configuration.getFtpInternalConfiguration().getCommandChannelGroup()
-                .close().addListener(new FtpChannelGroupFutureListener(
-                        configuration.getFtpInternalConfiguration().
-                        getPipelineExecutor(),
-                        configuration.getFtpInternalConfiguration().
-                        getCommandChannelFactory(), 
-                        null));
+                .close().addListener(
+                        new FtpChannelGroupFutureListener(configuration
+                                .getFtpInternalConfiguration()
+                                .getPipelineExecutor(), configuration
+                                .getFtpInternalConfiguration()
+                                .getCommandChannelFactory(), null));
         return result;
     }
+
     /**
      * Terminate all registered data channels
      *
@@ -303,13 +312,14 @@ public class FtpChannelUtils {
         int result = configuration.getFtpInternalConfiguration()
                 .getDataChannelGroup().size();
         configuration.getFtpInternalConfiguration().getDataChannelGroup()
-                .close().addListener(new FtpChannelGroupFutureListener(
-                        configuration.getFtpInternalConfiguration().
-                        getDataPipelineExecutor(),
-                        configuration.getFtpInternalConfiguration()
-                        .getDataPassiveChannelFactory(),
-                        configuration.getFtpInternalConfiguration()
-                        .getDataActiveChannelFactory()));
+                .close().addListener(
+                        new FtpChannelGroupFutureListener(configuration
+                                .getFtpInternalConfiguration()
+                                .getDataPipelineExecutor(), configuration
+                                .getFtpInternalConfiguration()
+                                .getDataPassiveChannelFactory(), configuration
+                                .getFtpInternalConfiguration()
+                                .getDataActiveChannelFactory()));
         return result;
     }
 
@@ -405,7 +415,7 @@ public class FtpChannelUtils {
      */
     public static void addCommandChannel(Channel channel,
             FtpConfiguration configuration) {
-        //logger.info("Add Command Channel {}", channel);
+        // logger.info("Add Command Channel {}", channel);
         configuration.getFtpInternalConfiguration().getCommandChannelGroup()
                 .add(channel);
     }
@@ -418,7 +428,7 @@ public class FtpChannelUtils {
      */
     public static void addDataChannel(Channel channel,
             FtpConfiguration configuration) {
-        //logger.info("Add Data Channel {}", channel);
+        // logger.info("Add Data Channel {}", channel);
         configuration.getFtpInternalConfiguration().getDataChannelGroup().add(
                 channel);
     }

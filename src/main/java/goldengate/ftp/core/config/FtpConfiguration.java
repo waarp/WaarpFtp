@@ -1,22 +1,22 @@
 /**
- * Copyright 2009, Frederic Bregier, and individual contributors
- * by the @author tags. See the COPYRIGHT.txt in the distribution for a
- * full listing of individual contributors.
+ * Copyright 2009, Frederic Bregier, and individual contributors by the @author
+ * tags. See the COPYRIGHT.txt in the distribution for a full listing of
+ * individual contributors.
  *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 3.0 of
- * the License, or (at your option) any later version.
+ * This is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 3.0 of the License, or (at your option)
+ * any later version.
  *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
+ * This software is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
  *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this software; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
+ * site: http://www.fsf.org.
  */
 package goldengate.ftp.core.config;
 
@@ -169,7 +169,6 @@ public abstract class FtpConfiguration {
      * General Configuration Object
      */
     private final HashMap<String, Object> properties = new HashMap<String, Object>();
-
 
     /**
      * Simple constructor
@@ -426,14 +425,14 @@ public abstract class FtpConfiguration {
         if (writeLimit <= 0) {
             newWriteLimit = 0;
         }
-        long newReadLimit = readLimit > 1024? readLimit
-                : serverGlobalReadLimit;
+        long newReadLimit = readLimit > 1024? readLimit : serverGlobalReadLimit;
         if (readLimit <= 0) {
             newReadLimit = 0;
         }
-        internalConfiguration.getGlobalTrafficShapingHandler().configure(newWriteLimit, newReadLimit);
-        this.serverChannelReadLimit = newReadLimit / 10;
-        this.serverChannelWriteLimit = newWriteLimit / 10;
+        internalConfiguration.getGlobalTrafficShapingHandler().configure(
+                newWriteLimit, newReadLimit);
+        serverChannelReadLimit = newReadLimit / 10;
+        serverChannelWriteLimit = newWriteLimit / 10;
     }
 
     /**
@@ -500,6 +499,7 @@ public abstract class FtpConfiguration {
 
     /**
      * Test if the couple of addresses is already in the context
+     *
      * @param ipOnly
      * @param fullIp
      * @return True if the couple is present
@@ -507,6 +507,7 @@ public abstract class FtpConfiguration {
     public boolean hasFtpSession(InetAddress ipOnly, InetSocketAddress fullIp) {
         return internalConfiguration.hasFtpSession(ipOnly, fullIp);
     }
+
     /**
      * @return the fileParameter
      */

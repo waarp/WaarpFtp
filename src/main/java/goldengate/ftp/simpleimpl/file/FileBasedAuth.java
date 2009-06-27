@@ -1,22 +1,22 @@
 /**
- * Copyright 2009, Frederic Bregier, and individual contributors
- * by the @author tags. See the COPYRIGHT.txt in the distribution for a
- * full listing of individual contributors.
+ * Copyright 2009, Frederic Bregier, and individual contributors by the @author
+ * tags. See the COPYRIGHT.txt in the distribution for a full listing of
+ * individual contributors.
  *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 3.0 of
- * the License, or (at your option) any later version.
+ * This is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 3.0 of the License, or (at your option)
+ * any later version.
  *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
+ * This software is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
  *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this software; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
+ * site: http://www.fsf.org.
  */
 package goldengate.ftp.simpleimpl.file;
 
@@ -79,14 +79,15 @@ public class FileBasedAuth extends FilesystemBasedFtpAuth {
     @Override
     protected NextCommandReply setBusinessUser(String user)
             throws Reply421Exception, Reply530Exception {
-        SimpleAuth auth = ((FileBasedConfiguration) ((FtpSession) getSession()).getConfiguration()).getSimpleAuth(user);
+        SimpleAuth auth = ((FileBasedConfiguration) ((FtpSession) getSession())
+                .getConfiguration()).getSimpleAuth(user);
         if (auth == null) {
             setIsIdentified(false);
             currentAuth = null;
             throw new Reply530Exception("User name not allowed");
         }
         currentAuth = auth;
-        //logger.debug("User: {}", user);
+        // logger.debug("User: {}", user);
         return new NextCommandReply(FtpCommandCode.PASS,
                 ReplyCode.REPLY_331_USER_NAME_OKAY_NEED_PASSWORD, null);
     }
@@ -113,7 +114,7 @@ public class FileBasedAuth extends FilesystemBasedFtpAuth {
         }
         if (currentAuth.isPasswordValid(password)) {
             if (user.equals("test")) {
-                //logger.debug("User test");
+                // logger.debug("User test");
                 try {
                     return setAccount("test");
                 } catch (Reply502Exception e) {
@@ -144,7 +145,7 @@ public class FileBasedAuth extends FilesystemBasedFtpAuth {
             throw new Reply530Exception("ACCT needs a USER first");
         }
         if (currentAuth.isAccountValid(account)) {
-            //logger.debug("Account: {}", account);
+            // logger.debug("Account: {}", account);
             setIsIdentified(true);
             logger.warn("User {} is authentified with account {}", user,
                     account);

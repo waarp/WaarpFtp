@@ -1,22 +1,22 @@
 /**
- * Copyright 2009, Frederic Bregier, and individual contributors
- * by the @author tags. See the COPYRIGHT.txt in the distribution for a
- * full listing of individual contributors.
+ * Copyright 2009, Frederic Bregier, and individual contributors by the @author
+ * tags. See the COPYRIGHT.txt in the distribution for a full listing of
+ * individual contributors.
  *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 3.0 of
- * the License, or (at your option) any later version.
+ * This is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 3.0 of the License, or (at your option)
+ * any later version.
  *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
+ * This software is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
  *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this software; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
+ * site: http://www.fsf.org.
  */
 package goldengate.ftp.core.session;
 
@@ -33,10 +33,10 @@ import org.jboss.netty.channel.Channel;
 /**
  * Class that allows to retrieve a session when a connection occurs on the Data
  * network based on the {@link InetAddress} of the remote client and the
- * {@link InetSocketAddress} of the server for Passive and reverse for Active connections. 
- * This is particularly useful for
- * Passive mode connection since there is no way to pass the session to the
- * connected channel without this reference.
+ * {@link InetSocketAddress} of the server for Passive and reverse for Active
+ * connections. This is particularly useful for Passive mode connection since
+ * there is no way to pass the session to the connected channel without this
+ * reference.
  *
  * @author Frederic Bregier
  *
@@ -86,13 +86,15 @@ public class FtpSessionReference {
             ipOnly = address;
             fullIp = inetSocketAddress;
         }
+
         /**
-         * 
+         *
          * @return True if the P2Paddress is valid
          */
         public boolean isValid() {
-        	return (ipOnly != null && fullIp != null);
+            return ipOnly != null && fullIp != null;
         }
+
         /*
          * (non-Javadoc)
          *
@@ -105,9 +107,9 @@ public class FtpSessionReference {
             }
             if (arg0 instanceof P2PAddress) {
                 P2PAddress p2paddress = (P2PAddress) arg0;
-                if (p2paddress.isValid() && this.isValid()) {
-	                return p2paddress.fullIp.equals(fullIp) && p2paddress.ipOnly
-	                        .equals(ipOnly);
+                if (p2paddress.isValid() && isValid()) {
+                    return p2paddress.fullIp.equals(fullIp) &&
+                            p2paddress.ipOnly.equals(ipOnly);
                 }
             }
             return false;
@@ -147,12 +149,13 @@ public class FtpSessionReference {
     public void setNewFtpSession(InetAddress ipOnly, InetSocketAddress fullIp,
             FtpSession session) {
         P2PAddress pAddress = new P2PAddress(ipOnly, fullIp);
-        if (! pAddress.isValid()) {
-        	logger.error("Couple invalid in setNewFtpSession: "+ipOnly+" : "+fullIp);
-        	return;
+        if (!pAddress.isValid()) {
+            logger.error("Couple invalid in setNewFtpSession: " + ipOnly +
+                    " : " + fullIp);
+            return;
         }
         hashMap.put(pAddress, session);
-        //logger.debug("Add: {} {}", ipOnly, fullIp);
+        // logger.debug("Add: {} {}", ipOnly, fullIp);
     }
 
     /**
@@ -166,11 +169,12 @@ public class FtpSessionReference {
         P2PAddress pAddress = new P2PAddress(((InetSocketAddress) channel
                 .getLocalAddress()).getAddress(), (InetSocketAddress) channel
                 .getRemoteAddress());
-        if (! pAddress.isValid()) {
-        	logger.error("Couple invalid in getActiveFtpSession: "+channel+channel.getLocalAddress()+channel.getRemoteAddress());
-        	return null;
+        if (!pAddress.isValid()) {
+            logger.error("Couple invalid in getActiveFtpSession: " + channel +
+                    channel.getLocalAddress() + channel.getRemoteAddress());
+            return null;
         }
-        //logger.debug("Get: {} {}", pAddress.ipOnly, pAddress.fullIp);
+        // logger.debug("Get: {} {}", pAddress.ipOnly, pAddress.fullIp);
         return hashMap.remove(pAddress);
     }
 
@@ -183,11 +187,11 @@ public class FtpSessionReference {
     public FtpSession getPassiveFtpSession(Channel channel) {
         // First check passive connection
         P2PAddress pAddress = new P2PAddress(channel);
-        if (! pAddress.isValid()) {
-        	logger.error("Couple invalid in getPassiveFtpSession: "+channel);
-        	return null;
+        if (!pAddress.isValid()) {
+            logger.error("Couple invalid in getPassiveFtpSession: " + channel);
+            return null;
         }
-        //logger.debug("Get: {} {}", pAddress.ipOnly, pAddress.fullIp);
+        // logger.debug("Get: {} {}", pAddress.ipOnly, pAddress.fullIp);
         return hashMap.remove(pAddress);
     }
 
@@ -199,26 +203,31 @@ public class FtpSessionReference {
      */
     public void delFtpSession(InetAddress ipOnly, InetSocketAddress fullIp) {
         P2PAddress pAddress = new P2PAddress(ipOnly, fullIp);
-        if (! pAddress.isValid()) {
-        	logger.error("Couple invalid in delFtpSession: "+ipOnly+" : "+fullIp);
-        	return;
+        if (!pAddress.isValid()) {
+            logger.error("Couple invalid in delFtpSession: " + ipOnly + " : " +
+                    fullIp);
+            return;
         }
-        //logger.debug("Del: {} {}", pAddress.ipOnly, pAddress.fullIp);
+        // logger.debug("Del: {} {}", pAddress.ipOnly, pAddress.fullIp);
         hashMap.remove(pAddress);
     }
+
     /**
-     * Test if the couple of addresses is already in the hashmap (only for Active)
+     * Test if the couple of addresses is already in the hashmap (only for
+     * Active)
+     *
      * @param ipOnly
      * @param fullIp
      * @return True if already presents
      */
     public boolean contains(InetAddress ipOnly, InetSocketAddress fullIp) {
         P2PAddress pAddress = new P2PAddress(ipOnly, fullIp);
-        if (! pAddress.isValid()) {
-        	logger.error("Couple invalid in contains: "+ipOnly+" : "+fullIp);
-        	return false;
+        if (!pAddress.isValid()) {
+            logger.error("Couple invalid in contains: " + ipOnly + " : " +
+                    fullIp);
+            return false;
         }
-        //logger.debug("Contains: {} {}", pAddress.ipOnly, pAddress.fullIp);
+        // logger.debug("Contains: {} {}", pAddress.ipOnly, pAddress.fullIp);
         return hashMap.containsKey(pAddress);
     }
 }

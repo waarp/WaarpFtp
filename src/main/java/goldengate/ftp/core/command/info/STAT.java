@@ -1,22 +1,22 @@
 /**
- * Copyright 2009, Frederic Bregier, and individual contributors
- * by the @author tags. See the COPYRIGHT.txt in the distribution for a
- * full listing of individual contributors.
+ * Copyright 2009, Frederic Bregier, and individual contributors by the @author
+ * tags. See the COPYRIGHT.txt in the distribution for a full listing of
+ * individual contributors.
  *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 3.0 of
- * the License, or (at your option) any later version.
+ * This is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 3.0 of the License, or (at your option)
+ * any later version.
  *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
+ * This software is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
  *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this software; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
+ * site: http://www.fsf.org.
  */
 package goldengate.ftp.core.command.info;
 
@@ -72,13 +72,12 @@ public class STAT extends AbstractCommand {
                     getConfiguration().getFtpInternalConfiguration()
                             .getNbBindedPassive();
             message += "\nEnd of Status";
-            getSession().setReplyCode(
-                    ReplyCode.REPLY_211_SYSTEM_STATUS_REPLY, message);
+            getSession().setReplyCode(ReplyCode.REPLY_211_SYSTEM_STATUS_REPLY,
+                    message);
         } else {
             // List of files from path
             path = getArg();
-            List<String> filesInfo = getSession().getDir().listFull(path,
-                    true);
+            List<String> filesInfo = getSession().getDir().listFull(path, true);
             StringBuilder builder = new StringBuilder();
             builder.append("List of files from ");
             builder.append(path);
@@ -89,8 +88,8 @@ public class STAT extends AbstractCommand {
             }
             builder.append("End of Status");
             message += builder.toString();
-            getSession().setReplyCode(
-                    ReplyCode.REPLY_212_DIRECTORY_STATUS, message);
+            getSession().setReplyCode(ReplyCode.REPLY_212_DIRECTORY_STATUS,
+                    message);
         }
     }
 

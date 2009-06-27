@@ -1,22 +1,22 @@
 /**
- * Copyright 2009, Frederic Bregier, and individual contributors
- * by the @author tags. See the COPYRIGHT.txt in the distribution for a
- * full listing of individual contributors.
+ * Copyright 2009, Frederic Bregier, and individual contributors by the @author
+ * tags. See the COPYRIGHT.txt in the distribution for a full listing of
+ * individual contributors.
  *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 3.0 of
- * the License, or (at your option) any later version.
+ * This is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 3.0 of the License, or (at your option)
+ * any later version.
  *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
+ * This software is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
  *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this software; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
+ * site: http://www.fsf.org.
  */
 package goldengate.ftp.core.session;
 
@@ -310,9 +310,8 @@ public class FtpSession implements SessionInterface {
                     currentCommand.getArg() + " ";
         }
         if (replyCode != null) {
-            mesg += "Reply: " +
-                    (answer != null? answer : replyCode
-                            .getMesg()) + " ";
+            mesg += "Reply: " + (answer != null? answer : replyCode.getMesg()) +
+                    " ";
         }
         if (dataConn != null) {
             mesg += dataConn.toString();
@@ -333,16 +332,18 @@ public class FtpSession implements SessionInterface {
     public FileParameterInterface getFileParameter() {
         return configuration.getFileParameter();
     }
+
     /**
      * Reinitialize the authentication to the connection step
      *
      */
     public void reinitFtpAuth() {
         AbstractCommand connectioncommand = new ConnectionCommand(this);
-        this.setNextCommand(connectioncommand);
-        this.getAuth().clear();
-        this.getDataConn().clear();
+        setNextCommand(connectioncommand);
+        getAuth().clear();
+        getDataConn().clear();
     }
+
     /**
      * Try to open a connection. Do the intermediate reply if any (150) and the
      * final one (125)
@@ -350,8 +351,7 @@ public class FtpSession implements SessionInterface {
      * @throws Reply425Exception
      *             if the connection cannot be opened
      */
-    public void openDataConnection()
-            throws Reply425Exception {
-        this.getDataConn().getFtpTransferControl().openDataConnection();
+    public void openDataConnection() throws Reply425Exception {
+        getDataConn().getFtpTransferControl().openDataConnection();
     }
 }

@@ -1,22 +1,22 @@
 /**
- * Copyright 2009, Frederic Bregier, and individual contributors
- * by the @author tags. See the COPYRIGHT.txt in the distribution for a
- * full listing of individual contributors.
+ * Copyright 2009, Frederic Bregier, and individual contributors by the @author
+ * tags. See the COPYRIGHT.txt in the distribution for a full listing of
+ * individual contributors.
  *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 3.0 of
- * the License, or (at your option) any later version.
+ * This is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 3.0 of the License, or (at your option)
+ * any later version.
  *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
+ * This software is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
  *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this software; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
+ * site: http://www.fsf.org.
  */
 package goldengate.ftp.core.data.handler;
 
@@ -49,7 +49,8 @@ import org.jboss.netty.handler.codec.frame.FrameDecoder;
  *
  */
 @ChannelPipelineCoverage("one")
-public class FtpDataModeCodec extends FrameDecoder implements ChannelDownstreamHandler {
+public class FtpDataModeCodec extends FrameDecoder implements
+        ChannelDownstreamHandler {
     /*
      *
      * 3.4.1. STREAM MODE
@@ -181,7 +182,7 @@ public class FtpDataModeCodec extends FrameDecoder implements ChannelDownstreamH
      *
      */
     public void setCodecReady() {
-        //logger.debug("ModeCodec ready");
+        // logger.debug("ModeCodec ready");
         codecLocked.setSuccess();
     }
 
@@ -202,7 +203,7 @@ public class FtpDataModeCodec extends FrameDecoder implements ChannelDownstreamH
         if (!isReady) {
             codecLocked.await();
             isReady = true;
-            //logger.debug("ModeCodec ready");
+            // logger.debug("ModeCodec ready");
         }
         // If STREAM Mode, no task to do, just next filter
         if (mode == TransferMode.STREAM) {
@@ -301,8 +302,7 @@ public class FtpDataModeCodec extends FrameDecoder implements ChannelDownstreamH
             }
             if (dataBlock.getByteCount() > 0) {
                 // There's enough bytes in the buffer. Read it.
-                dataBlock.setBlock(buf.readBytes(dataBlock
-                        .getByteCount()));
+                dataBlock.setBlock(buf.readBytes(dataBlock.getByteCount()));
             }
             DataBlock returnDataBlock = dataBlock;
             // Free the datablock for next frame
@@ -311,8 +311,7 @@ public class FtpDataModeCodec extends FrameDecoder implements ChannelDownstreamH
             return returnDataBlock;
         }
         // Type unimplemented
-        throw new InvalidArgumentException("Mode unimplemented: " +
-                mode.name());
+        throw new InvalidArgumentException("Mode unimplemented: " + mode.name());
     }
 
     /**
@@ -423,8 +422,7 @@ public class FtpDataModeCodec extends FrameDecoder implements ChannelDownstreamH
             return newbuf;
         }
         // Mode unimplemented
-        throw new InvalidArgumentException("Mode unimplemented: " +
-                mode.name());
+        throw new InvalidArgumentException("Mode unimplemented: " + mode.name());
     }
 
     /**
@@ -465,8 +463,10 @@ public class FtpDataModeCodec extends FrameDecoder implements ChannelDownstreamH
             ctx.sendDownstream(e);
         }
     }
+
     /**
      * Coder part, taking a DataBlock and converting it to ChannelBuffer
+     *
      * @param ctx
      * @param evt
      * @throws Exception
@@ -483,7 +483,7 @@ public class FtpDataModeCodec extends FrameDecoder implements ChannelDownstreamH
         if (!isReady) {
             codecLocked.await();
             isReady = true;
-            //logger.debug("ModeCodec ready");
+            // logger.debug("ModeCodec ready");
         }
         DataBlock newDataBlock = (DataBlock) evt.getMessage();
         ChannelBuffer next = encode(newDataBlock);

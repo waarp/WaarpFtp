@@ -1,22 +1,22 @@
 /**
- * Copyright 2009, Frederic Bregier, and individual contributors
- * by the @author tags. See the COPYRIGHT.txt in the distribution for a
- * full listing of individual contributors.
+ * Copyright 2009, Frederic Bregier, and individual contributors by the @author
+ * tags. See the COPYRIGHT.txt in the distribution for a full listing of
+ * individual contributors.
  *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 3.0 of
- * the License, or (at your option) any later version.
+ * This is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 3.0 of the License, or (at your option)
+ * any later version.
  *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
+ * This software is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
  *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this software; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
+ * site: http://www.fsf.org.
  */
 package goldengate.ftp.core.data.handler;
 
@@ -160,9 +160,8 @@ public class DataNetworkHandler extends SimpleChannelHandler {
     public void channelClosed(ChannelHandlerContext ctx, ChannelStateEvent e)
             throws Exception {
         if (session != null) {
-            //logger.debug("Channel closed, about to set it down");
-            session.getDataConn().getFtpTransferControl()
-                    .setPreEndOfTransfer();
+            // logger.debug("Channel closed, about to set it down");
+            session.getDataConn().getFtpTransferControl().setPreEndOfTransfer();
             session.getDataConn().unbindPassive();
             try {
                 getDataBusinessHandler().executeChannelClosed();
@@ -170,13 +169,13 @@ public class DataNetworkHandler extends SimpleChannelHandler {
                 getDataBusinessHandler().clear();
             } catch (FtpNoConnectionException e1) {
             }
-            //logger.debug("Channel closed inform closed");
+            // logger.debug("Channel closed inform closed");
             session.getDataConn().getFtpTransferControl()
                     .setClosedDataChannel();
             dataBusinessHandler = null;
             channelPipeline = null;
             dataChannel = null;
-            //logger.debug("Channel closed: finish");
+            // logger.debug("Channel closed: finish");
         }
         super.channelClosed(ctx, e);
     }
@@ -192,8 +191,7 @@ public class DataNetworkHandler extends SimpleChannelHandler {
         Channel channel = e.getChannel();
         // First get the ftpSession from inetaddresses
         for (int i = 0; i < FtpInternalConfiguration.RETRYNB; i ++) {
-            session = configuration.getFtpSession(channel,
-                    isActive);
+            session = configuration.getFtpSession(channel, isActive);
             if (session == null) {
                 logger.warn("Session not found at try " + i);
                 try {
@@ -209,27 +207,27 @@ public class DataNetworkHandler extends SimpleChannelHandler {
             // Not found !!!
             logger.error("Session not found!");
             Channels.close(channel);
-            //Problem: control connection could not be directly informed!!! Only timeout will occur
+            // Problem: control connection could not be directly informed!!!
+            // Only timeout will occur
             return;
         }
-        //logger.debug("Start DataNetwork");
+        // logger.debug("Start DataNetwork");
         channelPipeline = ctx.getPipeline();
         dataChannel = channel;
         dataBusinessHandler.setFtpSession(getFtpSession());
-        FtpChannelUtils
-                .addDataChannel(channel, session.getConfiguration());
+        FtpChannelUtils.addDataChannel(channel, session.getConfiguration());
         if (isStillAlive()) {
             setCorrectCodec();
-            session.getDataConn().getFtpTransferControl()
-                    .setOpenedDataChannel(channel, this);
+            session.getDataConn().getFtpTransferControl().setOpenedDataChannel(
+                    channel, this);
         } else {
             // Cannot continue
-            session.getDataConn().getFtpTransferControl()
-                    .setOpenedDataChannel(null, this);
+            session.getDataConn().getFtpTransferControl().setOpenedDataChannel(
+                    null, this);
             return;
         }
         isReady = true;
-        //logger.debug("End of Start DataNetwork");
+        // logger.debug("End of Start DataNetwork");
     }
 
     /**
@@ -245,10 +243,10 @@ public class DataNetworkHandler extends SimpleChannelHandler {
                 .get(FtpDataPipelineFactory.CODEC_STRUCTURE);
         modeCodec.setMode(session.getDataConn().getMode());
         modeCodec.setStructure(session.getDataConn().getStructure());
-        typeCodec.setFullType(session.getDataConn().getType(),
-                session.getDataConn().getSubType());
+        typeCodec.setFullType(session.getDataConn().getType(), session
+                .getDataConn().getSubType());
         structureCodec.setStructure(session.getDataConn().getStructure());
-        //logger.debug("Set Correct Codec: {}", session.getDataConn());
+        // logger.debug("Set Correct Codec: {}", session.getDataConn());
     }
 
     /**
@@ -271,7 +269,7 @@ public class DataNetworkHandler extends SimpleChannelHandler {
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, ExceptionEvent e) {
         if (session == null) {
-        	logger.warn("Error without any session active {}", e.getCause());
+            logger.warn("Error without any session active {}", e.getCause());
             return;
         }
         Throwable e1 = e.getCause();
@@ -342,8 +340,7 @@ public class DataNetworkHandler extends SimpleChannelHandler {
         int op = arg1.getChannel().getInterestOps();
         if (op == Channel.OP_NONE || op == Channel.OP_READ) {
             if (isReady) {
-                session.getDataConn().getFtpTransferControl()
-                        .runTrueRetrieve();
+                session.getDataConn().getFtpTransferControl().runTrueRetrieve();
             }
         }
     }
@@ -363,12 +360,12 @@ public class DataNetworkHandler extends SimpleChannelHandler {
                         .getExecutingFtpTransfer().getFtpFile().writeDataBlock(
                                 dataBlock);
             } catch (FtpNoFileException e1) {
-                //logger.debug("NoFile", e1);
+                // logger.debug("NoFile", e1);
                 session.getDataConn().getFtpTransferControl()
                         .setTransferAbortedFromInternal(true);
                 return;
             } catch (FtpNoTransferException e1) {
-                //logger.debug("NoTransfer", e1);
+                // logger.debug("NoTransfer", e1);
                 session.getDataConn().getFtpTransferControl()
                         .setTransferAbortedFromInternal(true);
                 return;
@@ -378,7 +375,7 @@ public class DataNetworkHandler extends SimpleChannelHandler {
                             .setPreEndOfTransfer();
                 }
             } catch (FileTransferException e1) {
-                //logger.debug("TransferException", e1);
+                // logger.debug("TransferException", e1);
                 session.getDataConn().getFtpTransferControl()
                         .setTransferAbortedFromInternal(true);
             }
@@ -400,9 +397,9 @@ public class DataNetworkHandler extends SimpleChannelHandler {
         dataBlock.setEOF(true);
         ChannelBuffer buffer = ChannelBuffers.wrappedBuffer(message.getBytes());
         dataBlock.setBlock(buffer);
-        //logger.debug("Message to be sent: {}", message);
-        return Channels.write(dataChannel, dataBlock)
-                .awaitUninterruptibly().isSuccess();
+        // logger.debug("Message to be sent: {}", message);
+        return Channels.write(dataChannel, dataBlock).awaitUninterruptibly()
+                .isSuccess();
     }
 
     /**

@@ -1,22 +1,22 @@
 /**
- * Copyright 2009, Frederic Bregier, and individual contributors
- * by the @author tags. See the COPYRIGHT.txt in the distribution for a
- * full listing of individual contributors.
+ * Copyright 2009, Frederic Bregier, and individual contributors by the @author
+ * tags. See the COPYRIGHT.txt in the distribution for a full listing of
+ * individual contributors.
  *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 3.0 of
- * the License, or (at your option) any later version.
+ * This is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 3.0 of the License, or (at your option)
+ * any later version.
  *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
+ * This software is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
  *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this software; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
+ * site: http://www.fsf.org.
  */
 package goldengate.ftp.core.control;
 
@@ -160,8 +160,7 @@ public class NetworkHandler extends SimpleChannelHandler {
         Channel channel = e.getChannel();
         controlChannel = channel;
         session.setControlConnected();
-        FtpChannelUtils.addCommandChannel(channel, session
-                .getConfiguration());
+        FtpChannelUtils.addCommandChannel(channel, session.getConfiguration());
         if (isStillAlive()) {
             // Make the first execution ready
             AbstractCommand command = new ConnectionCommand(getFtpSession());
@@ -203,7 +202,7 @@ public class NetworkHandler extends SimpleChannelHandler {
         Channel channel = e.getChannel();
         if (session == null) {
             // should not be
-            logger.warn("NO SESSION",e1);
+            logger.warn("NO SESSION", e1);
             return;
         }
         if (e1 instanceof ConnectException) {
@@ -234,7 +233,8 @@ public class NetworkHandler extends SimpleChannelHandler {
             try {
                 if (session != null) {
                     session.setExitErrorCode("Internal error: disconnect");
-                    if ((businessHandler != null) && (session.getDataConn() != null)) {
+                    if (businessHandler != null &&
+                            session.getDataConn() != null) {
                         businessHandler.exceptionLocalCaught(e);
                         if (channel.isConnected()) {
                             writeFinalAnswer();
@@ -276,16 +276,18 @@ public class NetworkHandler extends SimpleChannelHandler {
                 }
             }
             String message = (String) e.getMessage();
-            AbstractCommand command = FtpCommandCode.getFromLine(getFtpSession(), message);
+            AbstractCommand command = FtpCommandCode.getFromLine(
+                    getFtpSession(), message);
             // Default message
             session.setReplyCode(ReplyCode.REPLY_200_COMMAND_OKAY, null);
             logger.info("RECVMSG: {} CMD: {}", message, command.getCommand());
             // First check if the command is an ABORT, QUIT or STAT
             if (!FtpCommandCode.isSpecialCommand(command.getCode())) {
                 // Now check if a transfer is on its way: illegal to have at
-                // same time two commands (except ABORT). Wait is at most 100 RETRYINMS=1s
+                // same time two commands (except ABORT). Wait is at most 100
+                // RETRYINMS=1s
                 boolean notFinished = true;
-                for (int i = 0; i < FtpInternalConfiguration.RETRYNB*100; i ++) {
+                for (int i = 0; i < FtpInternalConfiguration.RETRYNB * 100; i ++) {
                     if (session.getDataConn().getFtpTransferControl()
                             .isFtpTransferExecuting()) {
                         try {
@@ -328,10 +330,10 @@ public class NetworkHandler extends SimpleChannelHandler {
     private boolean writeFinalAnswer() {
         if (session.getReplyCode() == ReplyCode.REPLY_421_SERVICE_NOT_AVAILABLE_CLOSING_CONTROL_CONNECTION ||
                 session.getReplyCode() == ReplyCode.REPLY_221_CLOSING_CONTROL_CONNECTION) {
-            //logger.debug("Will close Control Connection since: {}", session.getAnswer());
+            // logger.debug("Will close Control Connection since: {}",
+            // session.getAnswer());
             session.getDataConn().getFtpTransferControl().clear();
-            writeIntermediateAnswer().addListener(
-                    ChannelFutureListener.CLOSE);
+            writeIntermediateAnswer().addListener(ChannelFutureListener.CLOSE);
             return true;
         }
         writeIntermediateAnswer();
@@ -354,9 +356,7 @@ public class NetworkHandler extends SimpleChannelHandler {
     private void messageRunAnswer() {
         try {
             businessHandler.beforeRunCommand();
-            logger
-                    .info("Run {}", session.getCurrentCommand()
-                            .getCommand());
+            logger.info("Run {}", session.getCurrentCommand().getCommand());
             session.getCurrentCommand().exec();
             businessHandler.afterRunCommandOk();
         } catch (CommandAbstractException e) {

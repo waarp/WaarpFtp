@@ -1,22 +1,22 @@
 /**
- * Copyright 2009, Frederic Bregier, and individual contributors
- * by the @author tags. See the COPYRIGHT.txt in the distribution for a
- * full listing of individual contributors.
+ * Copyright 2009, Frederic Bregier, and individual contributors by the @author
+ * tags. See the COPYRIGHT.txt in the distribution for a full listing of
+ * individual contributors.
  *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 3.0 of
- * the License, or (at your option) any later version.
+ * This is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 3.0 of the License, or (at your option)
+ * any later version.
  *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
+ * This software is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
  *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this software; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
+ * site: http://www.fsf.org.
  */
 package goldengate.ftp.core.config;
 
@@ -209,6 +209,7 @@ public class FtpInternalConfiguration {
          * Parent passive channel
          */
         public final Channel parent;
+
         /**
          * Number of binded Data connections
          */
@@ -228,8 +229,7 @@ public class FtpInternalConfiguration {
     /**
      * List of already bind local addresses for Passive connections
      */
-    private final ConcurrentHashMap<InetSocketAddress, BindAddress> hashBindPassiveDataConn = 
-        new ConcurrentHashMap<InetSocketAddress, BindAddress>();
+    private final ConcurrentHashMap<InetSocketAddress, BindAddress> hashBindPassiveDataConn = new ConcurrentHashMap<InetSocketAddress, BindAddress>();
 
     /**
      * Global Configuration
@@ -253,15 +253,15 @@ public class FtpInternalConfiguration {
         InternalLoggerFactory.setDefaultFactory(InternalLoggerFactory
                 .getDefaultFactory());
         // Command
-        commandChannelGroup = new DefaultChannelGroup(
-                configuration.fromClass.getName());
+        commandChannelGroup = new DefaultChannelGroup(configuration.fromClass
+                .getName());
         // ChannelGroupFactory.getGroup(configuration.fromClass);
-        commandChannelFactory = new NioServerSocketChannelFactory(
-                execBoss, execWorker,
-                configuration.SERVER_THREAD);
+        commandChannelFactory = new NioServerSocketChannelFactory(execBoss,
+                execWorker, configuration.SERVER_THREAD);
         // Data
-        dataChannelGroup = new DefaultChannelGroup(
-                configuration.fromClass.getName() + ".data");
+        dataChannelGroup = new DefaultChannelGroup(configuration.fromClass
+                .getName() +
+                ".data");
         // ChannelGroupFactory.getGroup(configuration.fromClass.getName()+".data");
         dataPassiveChannelFactory = new NioServerSocketChannelFactory(
                 execPassiveDataBoss, execPassiveDataWorker,
@@ -270,11 +270,9 @@ public class FtpInternalConfiguration {
                 execActiveDataBoss, execActiveDataWorker, 4);
 
         // Passive Data Connections
-        passiveBootstrap = new ServerBootstrap(
-                dataPassiveChannelFactory);
+        passiveBootstrap = new ServerBootstrap(dataPassiveChannelFactory);
         passiveBootstrap.setPipelineFactory(new FtpDataPipelineFactory(
-                configuration.dataBusinessHandler, configuration,
-                false));
+                configuration.dataBusinessHandler, configuration, false));
         passiveBootstrap.setOption("connectTimeoutMillis",
                 configuration.TIMEOUTCON);
         passiveBootstrap.setOption("reuseAddress", true);
@@ -285,11 +283,9 @@ public class FtpInternalConfiguration {
         passiveBootstrap.setOption("child.keepAlive", true);
         passiveBootstrap.setOption("child.reuseAddress", true);
         // Active Data Connections
-        activeBootstrap = new ClientBootstrap(
-                dataActiveChannelFactory);
+        activeBootstrap = new ClientBootstrap(dataActiveChannelFactory);
         activeBootstrap.setPipelineFactory(new FtpDataPipelineFactory(
-                configuration.dataBusinessHandler, configuration,
-                true));
+                configuration.dataBusinessHandler, configuration, true));
         activeBootstrap.setOption("connectTimeoutMillis",
                 configuration.TIMEOUTCON);
         activeBootstrap.setOption("reuseAddress", true);
@@ -313,9 +309,8 @@ public class FtpInternalConfiguration {
         serverBootstrap.setOption("connectTimeoutMillis",
                 configuration.TIMEOUTCON);
 
-        FtpChannelUtils.addCommandChannel(
-                serverBootstrap.bind(new InetSocketAddress(
-                        configuration.getServerPort())),
+        FtpChannelUtils.addCommandChannel(serverBootstrap
+                .bind(new InetSocketAddress(configuration.getServerPort())),
                 configuration);
 
         // Init signal handler
@@ -323,10 +318,10 @@ public class FtpInternalConfiguration {
         // Factory for TrafficShapingHandler
         objectSizeEstimator = new DataBlockSizeEstimator();
         globalTrafficShapingHandler = new GlobalTrafficShapingHandler(
-                objectSizeEstimator, execTrafficCounter,
-                configuration.getServerGlobalWriteLimit(),
-                configuration.getServerGlobalReadLimit(),
-                configuration.getDelayLimit());
+                objectSizeEstimator, execTrafficCounter, configuration
+                        .getServerGlobalWriteLimit(), configuration
+                        .getServerGlobalReadLimit(), configuration
+                        .getDelayLimit());
     }
 
     /**
@@ -338,7 +333,7 @@ public class FtpInternalConfiguration {
      */
     public void setNewFtpSession(InetAddress ipOnly, InetSocketAddress fullIp,
             FtpSession session) {
-        //logger.debug("SetNewSession");
+        // logger.debug("SetNewSession");
         ftpSessionReference.setNewFtpSession(ipOnly, fullIp, session);
     }
 
@@ -350,7 +345,7 @@ public class FtpInternalConfiguration {
      * @return the FtpSession if it exists associated to this channel
      */
     public FtpSession getFtpSession(Channel channel, boolean active) {
-        //logger.debug("getSession");
+        // logger.debug("getSession");
         if (active) {
             return ftpSessionReference.getActiveFtpSession(channel);
         } else {
@@ -365,11 +360,13 @@ public class FtpInternalConfiguration {
      * @param fullIp
      */
     public void delFtpSession(InetAddress ipOnly, InetSocketAddress fullIp) {
-        //logger.debug("delSession");
+        // logger.debug("delSession");
         ftpSessionReference.delFtpSession(ipOnly, fullIp);
     }
+
     /**
      * Test if the couple of addresses is already in the context
+     *
      * @param ipOnly
      * @param fullIp
      * @return True if the couple is present
@@ -401,8 +398,7 @@ public class FtpInternalConfiguration {
                             "Cannot open a Passive Connection ");
                 }
                 bindAddress = new BindAddress(parentChannel);
-                FtpChannelUtils.addDataChannel(parentChannel,
-                        configuration);
+                FtpChannelUtils.addDataChannel(parentChannel, configuration);
             }
             bindAddress.nbBind.incrementAndGet();
             logger.info("Bind number to {} is {}", address, bindAddress.nbBind);
@@ -412,7 +408,6 @@ public class FtpInternalConfiguration {
         }
     }
 
-    
     /**
      * Try to unbind (closing the parent channel) the Passive Channel listening
      * to the specified local address if the last one. It returns only when the
@@ -427,8 +422,7 @@ public class FtpInternalConfiguration {
             BindAddress bindAddress = hashBindPassiveDataConn.get(address);
             if (bindAddress != null) {
                 int nbBind = bindAddress.nbBind.decrementAndGet();
-                logger.info("Bind number to {} left is {}", address,
-                        nbBind);
+                logger.info("Bind number to {} left is {}", address, nbBind);
                 if (nbBind == 0) {
                     Channels.close(bindAddress.parent);
                     hashBindPassiveDataConn.remove(address);
@@ -440,6 +434,7 @@ public class FtpInternalConfiguration {
             configuration.getLock().unlock();
         }
     }
+
     /**
      *
      * @return the number of Binded Passive Connections
@@ -558,9 +553,8 @@ public class FtpInternalConfiguration {
      */
     public ChannelTrafficShapingHandler newChannelTrafficShapingHandler() {
         return new ChannelTrafficShapingHandler(objectSizeEstimator,
-                execTrafficCounter, configuration
-                        .getServerChannelWriteLimit(), configuration
-                        .getServerChannelReadLimit(), configuration
+                execTrafficCounter, configuration.getServerChannelWriteLimit(),
+                configuration.getServerChannelReadLimit(), configuration
                         .getDelayLimit());
     }
 }

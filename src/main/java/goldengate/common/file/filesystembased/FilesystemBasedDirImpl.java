@@ -1,22 +1,22 @@
 /**
- * Copyright 2009, Frederic Bregier, and individual contributors
- * by the @author tags. See the COPYRIGHT.txt in the distribution for a
- * full listing of individual contributors.
+ * Copyright 2009, Frederic Bregier, and individual contributors by the @author
+ * tags. See the COPYRIGHT.txt in the distribution for a full listing of
+ * individual contributors.
  *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 3.0 of
- * the License, or (at your option) any later version.
+ * This is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 3.0 of the License, or (at your option)
+ * any later version.
  *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
+ * This software is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
  *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this software; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
+ * site: http://www.fsf.org.
  */
 package goldengate.common.file.filesystembased;
 
@@ -137,7 +137,7 @@ public abstract class FilesystemBasedDirImpl implements DirInterface {
                 .getBaseDirectory();
         // Get the translated real file path (removing '..')
         File newDir = new File(baseDir, extDir);
-        //logger.debug("Will validate {}", newDir);
+        // logger.debug("Will validate {}", newDir);
         return validatePath(newDir);
     }
 
@@ -183,7 +183,7 @@ public abstract class FilesystemBasedDirImpl implements DirInterface {
                 .getRelativePath(extDir);
         // Check if this business path is valid
         if (getSession().getAuth().isBusinessPathValid(extDir)) {
-            //logger.debug("ValidatePath: validated: {}", extDir);
+            // logger.debug("ValidatePath: validated: {}", extDir);
             return extDir;
         }
         throw new Reply553Exception("Pathname not allowed");
@@ -209,9 +209,8 @@ public abstract class FilesystemBasedDirImpl implements DirInterface {
                 .contains("~"))) {
             // No so simply return the list containing this path after
             // validating it
-            if (getSession().getAuth().isBusinessPathValid(
-                    pathWithWildcard)) {
-                //logger.debug("Found simple {}", pathWithWildcard);
+            if (getSession().getAuth().isBusinessPathValid(pathWithWildcard)) {
+                // logger.debug("Found simple {}", pathWithWildcard);
                 resultPaths.add(pathWithWildcard);
             }
             return resultPaths;
@@ -227,7 +226,8 @@ public abstract class FilesystemBasedDirImpl implements DirInterface {
         List<String> subdirs = new ArrayList<String>();
         while (wildcardFile != null) {
             File parent = wildcardFile.getParentFile();
-            //logger.debug("Wildcard: current= {} parent= {}", wildcardFile, (parent != null? parent : "no parent"));
+            // logger.debug("Wildcard: current= {} parent= {}", wildcardFile,
+            // (parent != null? parent : "no parent"));
             if (parent == null) {
                 subdirs.add(0, wildcardFile.getPath());
                 break;
@@ -247,7 +247,7 @@ public abstract class FilesystemBasedDirImpl implements DirInterface {
         // For each wilcard subdirectory
         while (i < subdirs.size()) {
             // Set current filter
-            //logger.debug("Filter: {}", subdirs.get(i));
+            // logger.debug("Filter: {}", subdirs.get(i));
             FileFilter fileFilter = FilesystemBasedCommonsIo
                     .getWildcardFileFilter(subdirs.get(i));
             List<File> newBasedPaths = new ArrayList<File>();
@@ -269,7 +269,7 @@ public abstract class FilesystemBasedDirImpl implements DirInterface {
                     .getAuth()).getRelativePath(normalizePath(file
                     .getAbsolutePath()));
             String newpath = this.validatePath(relativePath);
-            //logger.debug("Wildcard found {}", newpath);
+            // logger.debug("Wildcard found {}", newpath);
             resultPaths.add(newpath);
         }
         return resultPaths;
@@ -286,11 +286,13 @@ public abstract class FilesystemBasedDirImpl implements DirInterface {
         String newdir = validatePath(path);
         String truedir = ((FilesystemBasedAuthImpl) getSession().getAuth())
                 .getAbsolutePath(newdir);
-        //logger.debug("getFile: {}", truedir);
+        // logger.debug("getFile: {}", truedir);
         return new File(truedir);
     }
+
     /**
      * Get the true file from the path
+     *
      * @param path
      * @return the true File from the path
      * @throws CommandAbstractException
@@ -300,8 +302,8 @@ public abstract class FilesystemBasedDirImpl implements DirInterface {
         String newpath = consolidatePath(path);
         List<String> paths = wildcardFiles(normalizePath(newpath));
         if (paths.size() != 1) {
-            throw new Reply550Exception("File not found: " +
-                    paths.size() + " founds");
+            throw new Reply550Exception("File not found: " + paths.size() +
+                    " founds");
         }
         String extDir = paths.get(0);
         extDir = this.validatePath(extDir);
@@ -311,6 +313,7 @@ public abstract class FilesystemBasedDirImpl implements DirInterface {
         }
         return file;
     }
+
     /**
      * Get the relative path (without mount point)
      *
@@ -402,7 +405,7 @@ public abstract class FilesystemBasedDirImpl implements DirInterface {
     public boolean isDirectory(String path) throws CommandAbstractException {
         checkIdentify();
         File dir = getFileFromPath(path);
-        //logger.debug("ISDIR: {} {}", dir, dir.isDirectory());
+        // logger.debug("ISDIR: {} {}", dir, dir.isDirectory());
         return dir.isDirectory();
     }
 
@@ -500,7 +503,7 @@ public abstract class FilesystemBasedDirImpl implements DirInterface {
             }
         }
         newpath = consolidatePath(newpath);
-        //logger.debug("List {}", newpath);
+        // logger.debug("List {}", newpath);
         List<String> paths = wildcardFiles(newpath);
         if (paths.isEmpty()) {
             throw new Reply550Exception("No files found");
@@ -513,8 +516,8 @@ public abstract class FilesystemBasedDirImpl implements DirInterface {
                 if (dir.isDirectory()) {
                     String[] files = dir.list();
                     for (String finalFile: files) {
-                        String relativePath = ((FilesystemBasedAuthImpl) getSession().getAuth())
-                                .getRelativePath(finalFile);
+                        String relativePath = ((FilesystemBasedAuthImpl) getSession()
+                                .getAuth()).getRelativePath(finalFile);
                         newPaths.add(relativePath);
                     }
                 } else {
@@ -546,7 +549,7 @@ public abstract class FilesystemBasedDirImpl implements DirInterface {
             listAllFiles = true;
         }
         newpath = consolidatePath(newpath);
-        //logger.debug("ListFull {}", newpath);
+        // logger.debug("ListFull {}", newpath);
         // First get all base directories
         List<String> paths = wildcardFiles(newpath);
         if (paths.isEmpty()) {
@@ -596,7 +599,7 @@ public abstract class FilesystemBasedDirImpl implements DirInterface {
             throws CommandAbstractException {
         checkIdentify();
         String newpath = consolidatePath(path);
-        //logger.debug("FileFull {}", newpath);
+        // logger.debug("FileFull {}", newpath);
         List<String> paths = wildcardFiles(normalizePath(newpath));
         if (paths.size() != 1) {
             throw new Reply550Exception("No files found " + paths.size() +
@@ -684,7 +687,7 @@ public abstract class FilesystemBasedDirImpl implements DirInterface {
      * @return the MLSx information: ' Fact=facts;...; filename'
      */
     protected String mlsxInfo(File file) {
-        //logger.debug("fullInfo of {}", file);
+        // logger.debug("fullInfo of {}", file);
         // don't have create, unique, lang, media-type, charset
         StringBuilder builder = new StringBuilder();
         if (getOptsMLSx().getOptsSize() == 1) {
@@ -834,14 +837,14 @@ public abstract class FilesystemBasedDirImpl implements DirInterface {
         checkIdentify();
         return getFileFromPath(currentDir).exists();
     }
-    
+
     /*
      * (non-Javadoc)
      *
      * @see goldengate.ftp.core.file.FtpFile#getCRC(String)
      */
     public long getCRC(String path) throws CommandAbstractException {
-        File file = this.getTrueFile(path);
+        File file = getTrueFile(path);
         try {
             CheckedInputStream cis = null;
             try {
@@ -866,7 +869,7 @@ public abstract class FilesystemBasedDirImpl implements DirInterface {
      * @see goldengate.ftp.core.file.FtpFile#getMD5(String)
      */
     public byte[] getMD5(String path) throws CommandAbstractException {
-        File file = this.getTrueFile(path);
+        File file = getTrueFile(path);
         try {
             if (FilesystemBasedFileParameterImpl.useNio) {
                 return FilesystemBasedDigest.getHashMd5Nio(file);
@@ -883,7 +886,7 @@ public abstract class FilesystemBasedDirImpl implements DirInterface {
      * @see goldengate.ftp.core.file.FtpFile#getSHA1(String)
      */
     public byte[] getSHA1(String path) throws CommandAbstractException {
-        File file = this.getTrueFile(path);
+        File file = getTrueFile(path);
         try {
             if (FilesystemBasedFileParameterImpl.useNio) {
                 return FilesystemBasedDigest.getHashSha1Nio(file);

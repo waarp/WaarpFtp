@@ -1,22 +1,22 @@
 /**
- * Copyright 2009, Frederic Bregier, and individual contributors
- * by the @author tags. See the COPYRIGHT.txt in the distribution for a
- * full listing of individual contributors.
+ * Copyright 2009, Frederic Bregier, and individual contributors by the @author
+ * tags. See the COPYRIGHT.txt in the distribution for a full listing of
+ * individual contributors.
  *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 3.0 of
- * the License, or (at your option) any later version.
+ * This is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 3.0 of the License, or (at your option)
+ * any later version.
  *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
+ * This software is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
  *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this software; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
+ * site: http://www.fsf.org.
  */
 package goldengate.ftp.core.data;
 
@@ -134,8 +134,8 @@ public class FtpDataAsyncConn {
     public FtpDataAsyncConn(FtpSession session) {
         this.session = session;
         dataChannel = null;
-        remoteAddress = FtpChannelUtils
-                .getRemoteInetSocketAddress(this.session.getControlChannel());
+        remoteAddress = FtpChannelUtils.getRemoteInetSocketAddress(this.session
+                .getControlChannel());
         remotePort = remoteAddress.getPort();
         setDefaultLocalPort();
         localAddress = new InetSocketAddress(FtpChannelUtils
@@ -225,11 +225,10 @@ public class FtpDataAsyncConn {
     public void setPassive() {
         unbindPassive();
         localAddress = new InetSocketAddress(FtpChannelUtils
-                .getLocalInetAddress(session.getControlChannel()),
-                localPort);
+                .getLocalInetAddress(session.getControlChannel()), localPort);
         passiveMode = true;
         isBind = false;
-        //logger.debug("Passive prepared");
+        // logger.debug("Passive prepared");
     }
 
     /**
@@ -328,7 +327,8 @@ public class FtpDataAsyncConn {
      */
     public boolean isFileStreamBlockAsciiImage() {
         return transferStructure == TransferStructure.FILE &&
-                (transferMode == TransferMode.STREAM || transferMode == TransferMode.BLOCK) && (transferType == TransferType.ASCII || transferType == TransferType.IMAGE);
+                (transferMode == TransferMode.STREAM || transferMode == TransferMode.BLOCK) &&
+                (transferType == TransferType.ASCII || transferType == TransferType.IMAGE);
     }
 
     /**
@@ -336,7 +336,8 @@ public class FtpDataAsyncConn {
      * @return True if the current mode for data connection is Stream
      */
     public boolean isStreamFile() {
-        return transferMode == TransferMode.STREAM && transferStructure == TransferStructure.FILE;
+        return transferMode == TransferMode.STREAM &&
+                transferStructure == TransferStructure.FILE;
     }
 
     /**
@@ -361,10 +362,10 @@ public class FtpDataAsyncConn {
             isBind = false;
             InetSocketAddress local = getLocalAddress();
             if (dataChannel != null && dataChannel.isConnected()) {
-                //logger.debug("PASSIVE MODE CLOSE");
+                // logger.debug("PASSIVE MODE CLOSE");
                 Channels.close(dataChannel);
             }
-            //logger.debug("Passive mode unbind");
+            // logger.debug("Passive mode unbind");
             session.getConfiguration().getFtpInternalConfiguration()
                     .unbindPassive(local);
             // Previous mode was Passive so remove the current configuration if
@@ -388,7 +389,7 @@ public class FtpDataAsyncConn {
             // Connection is enable but the client will do the real connection
             session.getConfiguration().getFtpInternalConfiguration()
                     .bindPassive(getLocalAddress());
-            //logger.debug("Passive mode ready");
+            // logger.debug("Passive mode ready");
             isBind = true;
             return true;
         }
@@ -481,12 +482,13 @@ public class FtpDataAsyncConn {
     /**
      * Set the new connected Data Channel
      *
-     * @param dataChannel the new Data Channel
+     * @param dataChannel
+     *            the new Data Channel
      * @throws InterruptedException
      * @throws Reply425Exception
      */
-    public void setNewOpenedDataChannel(Channel dataChannel) throws InterruptedException,
-            Reply425Exception {
+    public void setNewOpenedDataChannel(Channel dataChannel)
+            throws InterruptedException, Reply425Exception {
         this.dataChannel = dataChannel;
         if (dataChannel == null) {
             String curmode = null;
@@ -495,7 +497,7 @@ public class FtpDataAsyncConn {
             } else {
                 curmode = "active";
             }
-            //logger.debug("Connection impossible in {} mode", curmode);
+            // logger.debug("Connection impossible in {} mode", curmode);
             // Cannot open connection
             throw new Reply425Exception("Cannot open " + curmode +
                     " data connection");

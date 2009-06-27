@@ -1,24 +1,23 @@
 /**
- * Copyright Santeri Paavolainen <sjpaavol@cc.helsinki.fi> and
- * Timothy W Macinta (twm@alum.mit.edu) (optimizations and bug fixes)
- * and individual contributors
- * by the @author tags. See the COPYRIGHT.txt in the distribution for a
- * full listing of individual contributors.
+ * Copyright Santeri Paavolainen <sjpaavol@cc.helsinki.fi> and Timothy W Macinta
+ * (twm@alum.mit.edu) (optimizations and bug fixes) and individual contributors
+ * by the @author tags. See the COPYRIGHT.txt in the distribution for a full
+ * listing of individual contributors.
  *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
+ * This is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 2.1 of the License, or (at your option)
+ * any later version.
  *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
+ * This software is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
  *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this software; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
+ * site: http://www.fsf.org.
  */
 package goldengate.common.digest;
 
@@ -120,7 +119,8 @@ import javax.crypto.CipherInputStream;
  *
  * @author Santeri Paavolainen <sjpaavol@cc.helsinki.fi>
  * @author Timothy W Macinta (twm@alum.mit.edu) (optimizations and bug fixes)
- * @author Frederic Bregier Bregier (add NIO support and dynamic library path loading)
+ * @author Frederic Bregier Bregier (add NIO support and dynamic library path
+ *         loading)
  */
 
 public class MD5 {
@@ -189,70 +189,38 @@ public class MD5 {
          */
 
         // unrolled loop (original loop shown above)
-        out[0] = buffer[shift] & 0xff |
-                (buffer[shift + 1] & 0xff) << 8 |
-                (buffer[shift + 2] & 0xff) << 16 |
-                buffer[shift + 3] << 24;
-        out[1] = buffer[shift + 4] & 0xff |
-                (buffer[shift + 5] & 0xff) << 8 |
-                (buffer[shift + 6] & 0xff) << 16 |
-                buffer[shift + 7] << 24;
-        out[2] = buffer[shift + 8] & 0xff |
-                (buffer[shift + 9] & 0xff) << 8 |
-                (buffer[shift + 10] & 0xff) << 16 |
-                buffer[shift + 11] << 24;
-        out[3] = buffer[shift + 12] & 0xff |
-                (buffer[shift + 13] & 0xff) << 8 |
-                (buffer[shift + 14] & 0xff) << 16 |
-                buffer[shift + 15] << 24;
-        out[4] = buffer[shift + 16] & 0xff |
-                (buffer[shift + 17] & 0xff) << 8 |
-                (buffer[shift + 18] & 0xff) << 16 |
-                buffer[shift + 19] << 24;
-        out[5] = buffer[shift + 20] & 0xff |
-                (buffer[shift + 21] & 0xff) << 8 |
-                (buffer[shift + 22] & 0xff) << 16 |
-                buffer[shift + 23] << 24;
-        out[6] = buffer[shift + 24] & 0xff |
-                (buffer[shift + 25] & 0xff) << 8 |
-                (buffer[shift + 26] & 0xff) << 16 |
-                buffer[shift + 27] << 24;
-        out[7] = buffer[shift + 28] & 0xff |
-                (buffer[shift + 29] & 0xff) << 8 |
-                (buffer[shift + 30] & 0xff) << 16 |
-                buffer[shift + 31] << 24;
-        out[8] = buffer[shift + 32] & 0xff |
-                (buffer[shift + 33] & 0xff) << 8 |
-                (buffer[shift + 34] & 0xff) << 16 |
-                buffer[shift + 35] << 24;
-        out[9] = buffer[shift + 36] & 0xff |
-                (buffer[shift + 37] & 0xff) << 8 |
-                (buffer[shift + 38] & 0xff) << 16 |
-                buffer[shift + 39] << 24;
-        out[10] = buffer[shift + 40] & 0xff |
-                (buffer[shift + 41] & 0xff) << 8 |
-                (buffer[shift + 42] & 0xff) << 16 |
-                buffer[shift + 43] << 24;
-        out[11] = buffer[shift + 44] & 0xff |
-                (buffer[shift + 45] & 0xff) << 8 |
-                (buffer[shift + 46] & 0xff) << 16 |
-                buffer[shift + 47] << 24;
-        out[12] = buffer[shift + 48] & 0xff |
-                (buffer[shift + 49] & 0xff) << 8 |
-                (buffer[shift + 50] & 0xff) << 16 |
-                buffer[shift + 51] << 24;
-        out[13] = buffer[shift + 52] & 0xff |
-                (buffer[shift + 53] & 0xff) << 8 |
-                (buffer[shift + 54] & 0xff) << 16 |
-                buffer[shift + 55] << 24;
-        out[14] = buffer[shift + 56] & 0xff |
-                (buffer[shift + 57] & 0xff) << 8 |
-                (buffer[shift + 58] & 0xff) << 16 |
-                buffer[shift + 59] << 24;
-        out[15] = buffer[shift + 60] & 0xff |
-                (buffer[shift + 61] & 0xff) << 8 |
-                (buffer[shift + 62] & 0xff) << 16 |
-                buffer[shift + 63] << 24;
+        out[0] = buffer[shift] & 0xff | (buffer[shift + 1] & 0xff) << 8 |
+                (buffer[shift + 2] & 0xff) << 16 | buffer[shift + 3] << 24;
+        out[1] = buffer[shift + 4] & 0xff | (buffer[shift + 5] & 0xff) << 8 |
+                (buffer[shift + 6] & 0xff) << 16 | buffer[shift + 7] << 24;
+        out[2] = buffer[shift + 8] & 0xff | (buffer[shift + 9] & 0xff) << 8 |
+                (buffer[shift + 10] & 0xff) << 16 | buffer[shift + 11] << 24;
+        out[3] = buffer[shift + 12] & 0xff | (buffer[shift + 13] & 0xff) << 8 |
+                (buffer[shift + 14] & 0xff) << 16 | buffer[shift + 15] << 24;
+        out[4] = buffer[shift + 16] & 0xff | (buffer[shift + 17] & 0xff) << 8 |
+                (buffer[shift + 18] & 0xff) << 16 | buffer[shift + 19] << 24;
+        out[5] = buffer[shift + 20] & 0xff | (buffer[shift + 21] & 0xff) << 8 |
+                (buffer[shift + 22] & 0xff) << 16 | buffer[shift + 23] << 24;
+        out[6] = buffer[shift + 24] & 0xff | (buffer[shift + 25] & 0xff) << 8 |
+                (buffer[shift + 26] & 0xff) << 16 | buffer[shift + 27] << 24;
+        out[7] = buffer[shift + 28] & 0xff | (buffer[shift + 29] & 0xff) << 8 |
+                (buffer[shift + 30] & 0xff) << 16 | buffer[shift + 31] << 24;
+        out[8] = buffer[shift + 32] & 0xff | (buffer[shift + 33] & 0xff) << 8 |
+                (buffer[shift + 34] & 0xff) << 16 | buffer[shift + 35] << 24;
+        out[9] = buffer[shift + 36] & 0xff | (buffer[shift + 37] & 0xff) << 8 |
+                (buffer[shift + 38] & 0xff) << 16 | buffer[shift + 39] << 24;
+        out[10] = buffer[shift + 40] & 0xff | (buffer[shift + 41] & 0xff) << 8 |
+                (buffer[shift + 42] & 0xff) << 16 | buffer[shift + 43] << 24;
+        out[11] = buffer[shift + 44] & 0xff | (buffer[shift + 45] & 0xff) << 8 |
+                (buffer[shift + 46] & 0xff) << 16 | buffer[shift + 47] << 24;
+        out[12] = buffer[shift + 48] & 0xff | (buffer[shift + 49] & 0xff) << 8 |
+                (buffer[shift + 50] & 0xff) << 16 | buffer[shift + 51] << 24;
+        out[13] = buffer[shift + 52] & 0xff | (buffer[shift + 53] & 0xff) << 8 |
+                (buffer[shift + 54] & 0xff) << 16 | buffer[shift + 55] << 24;
+        out[14] = buffer[shift + 56] & 0xff | (buffer[shift + 57] & 0xff) << 8 |
+                (buffer[shift + 58] & 0xff) << 16 | buffer[shift + 59] << 24;
+        out[15] = buffer[shift + 60] & 0xff | (buffer[shift + 61] & 0xff) << 8 |
+                (buffer[shift + 62] & 0xff) << 16 | buffer[shift + 63] << 24;
     }
 
     private native void TransformJni(int[] stat, byte buffer[], int shift,
@@ -822,8 +790,7 @@ public class MD5 {
 
                 // fill in settings Mac OS X on PPC
 
-            } else if (os_name.startsWith("mac os x") &&
-                    os_arch.equals("ppc")) {
+            } else if (os_name.startsWith("mac os x") && os_arch.equals("ppc")) {
                 arch_lib_path = new File(new File(new File("lib"), "arch"),
                         "darwin_ppc");
                 arch_libfile_suffix = ".jnilib";
