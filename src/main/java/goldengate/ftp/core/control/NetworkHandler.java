@@ -66,12 +66,12 @@ public class NetworkHandler extends SimpleChannelHandler {
     /**
      * Business Handler
      */
-    private BusinessHandler businessHandler = null;
+    private final BusinessHandler businessHandler;
 
     /**
      * Internal store for the SessionInterface
      */
-    private FtpSession session = null;
+    private final FtpSession session;
 
     /**
      * The associated Channel
@@ -234,12 +234,10 @@ public class NetworkHandler extends SimpleChannelHandler {
             try {
                 if (session != null) {
                     session.setExitErrorCode("Internal error: disconnect");
-                    if (businessHandler != null) {
-                        if (session.getDataConn() != null) {
-                            businessHandler.exceptionLocalCaught(e);
-                            if (channel.isConnected()) {
-                                writeFinalAnswer();
-                            }
+                    if ((businessHandler != null) && (session.getDataConn() != null)) {
+                        businessHandler.exceptionLocalCaught(e);
+                        if (channel.isConnected()) {
+                            writeFinalAnswer();
                         }
                     }
                 }

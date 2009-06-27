@@ -59,7 +59,7 @@ public abstract class FilesystemBasedAuthImpl implements AuthInterface {
     /**
      * SessionInterface
      */
-    private SessionInterface session = null;
+    private final SessionInterface session;
 
     /**
      * Relative Path after Authentication

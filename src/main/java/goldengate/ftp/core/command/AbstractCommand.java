@@ -173,7 +173,7 @@ public abstract class AbstractCommand implements CommandInterface {
         try {
             i = Integer.parseInt(argx);
         } catch (NumberFormatException e) {
-            throw new InvalidArgumentException("Not an integer");
+            throw new InvalidArgumentException("Not an integer", e);
         }
         return i;
     }

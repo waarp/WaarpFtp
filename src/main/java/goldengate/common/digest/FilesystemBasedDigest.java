@@ -166,8 +166,8 @@ public class FilesystemBasedDigest {
             try {
                 digest = MessageDigest.getInstance(algo);
             } catch (NoSuchAlgorithmException e) {
-                throw new FileNotFoundException(algo +
-                        " Algorithm not supported by this JVM");
+                throw new IOException(algo +
+                        " Algorithm not supported by this JVM", e);
             }
             int size = 0;
             while ((size = fileChannel.read(bb)) >= 0) {
@@ -222,8 +222,8 @@ public class FilesystemBasedDigest {
             try {
                 digest = MessageDigest.getInstance(algo);
             } catch (NoSuchAlgorithmException e) {
-                throw new FileNotFoundException(algo +
-                        " Algorithm not supported by this JVM");
+                throw new IOException(algo +
+                        " Algorithm not supported by this JVM",e);
             }
             int read = 0;
             while ((read = in.read(buf)) >= 0) {

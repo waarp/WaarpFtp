@@ -73,7 +73,7 @@ public abstract class FilesystemBasedFileImpl implements
     /**
      * {@link FilesystemBasedAuthImpl}
      */
-    private FilesystemBasedAuthImpl auth = null;
+    private final FilesystemBasedAuthImpl auth;
 
     /**
      * Current file if any
@@ -224,8 +224,7 @@ public abstract class FilesystemBasedFileImpl implements
         if (!exists()) {
             return -1;
         }
-        long length = getFileFromPath(currentFile).length();
-        return length;
+        return getFileFromPath(currentFile).length();
     }
 
     public boolean isInReading() throws CommandAbstractException {
