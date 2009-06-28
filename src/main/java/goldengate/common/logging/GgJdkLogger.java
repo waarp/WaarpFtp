@@ -46,27 +46,27 @@ public class GgJdkLogger extends GgInternalLogger {
     }
 
     public void debug(String msg) {
-        logger.logp(Level.FINE, loggerName, null, msg);
+        logger.logp(Level.FINE, loggerName, null, getLoggerMethodAndLine()+msg);
     }
 
     public void debug(String msg, Throwable cause) {
-        logger.logp(Level.FINE, loggerName, null, msg, cause);
+        logger.logp(Level.FINE, loggerName, null, getLoggerMethodAndLine()+msg, cause);
     }
 
     public void error(String msg) {
-        logger.logp(Level.SEVERE, loggerName, null, msg);
+        logger.logp(Level.SEVERE, loggerName, null, getLoggerMethodAndLine()+msg);
     }
 
     public void error(String msg, Throwable cause) {
-        logger.logp(Level.SEVERE, loggerName, null, msg, cause);
+        logger.logp(Level.SEVERE, loggerName, null, getLoggerMethodAndLine()+msg, cause);
     }
 
     public void info(String msg) {
-        logger.logp(Level.INFO, loggerName, null, msg);
+        logger.logp(Level.INFO, loggerName, null, getLoggerMethodAndLine()+msg);
     }
 
     public void info(String msg, Throwable cause) {
-        logger.logp(Level.INFO, loggerName, null, msg, cause);
+        logger.logp(Level.INFO, loggerName, null, getLoggerMethodAndLine()+msg, cause);
     }
 
     public boolean isDebugEnabled() {
@@ -86,11 +86,11 @@ public class GgJdkLogger extends GgInternalLogger {
     }
 
     public void warn(String msg) {
-        logger.logp(Level.WARNING, loggerName, null, msg);
+        logger.logp(Level.WARNING, loggerName, null, getLoggerMethodAndLine()+msg);
     }
 
     public void warn(String msg, Throwable cause) {
-        logger.logp(Level.WARNING, loggerName, null, msg, cause);
+        logger.logp(Level.WARNING, loggerName, null, getLoggerMethodAndLine()+msg, cause);
     }
 
     @Override
@@ -107,7 +107,7 @@ public class GgJdkLogger extends GgInternalLogger {
     @Override
     public void debug(String format, String arg1) {
         if (logger.isLoggable(Level.FINE)) {
-            logger.logp(Level.FINE, loggerName, null, format.replaceFirst("{}",
+            logger.logp(Level.FINE, loggerName, null, getLoggerMethodAndLine()+format.replaceFirst("{}",
                     arg1));
         }
     }
@@ -121,7 +121,7 @@ public class GgJdkLogger extends GgInternalLogger {
     @Override
     public void debug(String format, String arg1, String arg2) {
         if (logger.isLoggable(Level.FINE)) {
-            logger.logp(Level.FINE, loggerName, null, format.replaceFirst("{}",
+            logger.logp(Level.FINE, loggerName, null, getLoggerMethodAndLine()+format.replaceFirst("{}",
                     arg1).replaceFirst("{}", arg2));
         }
     }
@@ -135,7 +135,7 @@ public class GgJdkLogger extends GgInternalLogger {
     @Override
     public void debug(String format, Object arg1, Object arg2) {
         if (logger.isLoggable(Level.FINE)) {
-            logger.logp(Level.FINE, loggerName, null, format.replaceFirst("{}",
+            logger.logp(Level.FINE, loggerName, null, getLoggerMethodAndLine()+format.replaceFirst("{}",
                     arg1.toString()).replaceFirst("{}", arg2.toString()));
         }
     }
@@ -149,7 +149,7 @@ public class GgJdkLogger extends GgInternalLogger {
     @Override
     public void debug(String format, Object arg1) {
         if (logger.isLoggable(Level.FINE)) {
-            logger.logp(Level.FINE, loggerName, null, format.replaceFirst("{}",
+            logger.logp(Level.FINE, loggerName, null, getLoggerMethodAndLine()+format.replaceFirst("{}",
                     arg1.toString()));
         }
     }
@@ -163,7 +163,7 @@ public class GgJdkLogger extends GgInternalLogger {
     @Override
     public void error(String format, String arg1) {
         if (logger.isLoggable(Level.SEVERE)) {
-            logger.logp(Level.SEVERE, loggerName, null, format.replaceFirst(
+            logger.logp(Level.SEVERE, loggerName, null, getLoggerMethodAndLine()+format.replaceFirst(
                     "{}", arg1));
         }
     }
@@ -177,7 +177,7 @@ public class GgJdkLogger extends GgInternalLogger {
     @Override
     public void error(String format, String arg1, String arg2) {
         if (logger.isLoggable(Level.SEVERE)) {
-            logger.logp(Level.SEVERE, loggerName, null, format.replaceFirst(
+            logger.logp(Level.SEVERE, loggerName, null, getLoggerMethodAndLine()+format.replaceFirst(
                     "{}", arg1).replaceFirst("{}", arg2));
         }
     }
@@ -191,7 +191,7 @@ public class GgJdkLogger extends GgInternalLogger {
     @Override
     public void error(String format, Object arg1, Object arg2) {
         if (logger.isLoggable(Level.SEVERE)) {
-            logger.logp(Level.SEVERE, loggerName, null, format.replaceFirst(
+            logger.logp(Level.SEVERE, loggerName, null, getLoggerMethodAndLine()+format.replaceFirst(
                     "{}", arg1.toString()).replaceFirst("{}", arg2.toString()));
         }
     }
@@ -205,7 +205,7 @@ public class GgJdkLogger extends GgInternalLogger {
     @Override
     public void error(String format, Object arg1) {
         if (logger.isLoggable(Level.SEVERE)) {
-            logger.logp(Level.SEVERE, loggerName, null, format.replaceFirst(
+            logger.logp(Level.SEVERE, loggerName, null, getLoggerMethodAndLine()+format.replaceFirst(
                     "{}", arg1.toString()));
         }
     }
@@ -219,7 +219,7 @@ public class GgJdkLogger extends GgInternalLogger {
     @Override
     public void info(String format, String arg1) {
         if (logger.isLoggable(Level.INFO)) {
-            logger.logp(Level.INFO, loggerName, null, format.replaceFirst("{}",
+            logger.logp(Level.INFO, loggerName, null, getLoggerMethodAndLine()+format.replaceFirst("{}",
                     arg1));
         }
     }
@@ -233,7 +233,7 @@ public class GgJdkLogger extends GgInternalLogger {
     @Override
     public void info(String format, String arg1, String arg2) {
         if (logger.isLoggable(Level.INFO)) {
-            logger.logp(Level.INFO, loggerName, null, format.replaceFirst("{}",
+            logger.logp(Level.INFO, loggerName, null, getLoggerMethodAndLine()+format.replaceFirst("{}",
                     arg1).replaceFirst("{}", arg2));
         }
     }
@@ -247,7 +247,7 @@ public class GgJdkLogger extends GgInternalLogger {
     @Override
     public void info(String format, Object arg1, Object arg2) {
         if (logger.isLoggable(Level.INFO)) {
-            logger.logp(Level.INFO, loggerName, null, format.replaceFirst("{}",
+            logger.logp(Level.INFO, loggerName, null, getLoggerMethodAndLine()+format.replaceFirst("{}",
                     arg1.toString()).replaceFirst("{}", arg2.toString()));
         }
     }
@@ -261,7 +261,7 @@ public class GgJdkLogger extends GgInternalLogger {
     @Override
     public void info(String format, Object arg1) {
         if (logger.isLoggable(Level.INFO)) {
-            logger.logp(Level.INFO, loggerName, null, format.replaceFirst("{}",
+            logger.logp(Level.INFO, loggerName, null, getLoggerMethodAndLine()+format.replaceFirst("{}",
                     arg1.toString()));
         }
     }
@@ -275,7 +275,7 @@ public class GgJdkLogger extends GgInternalLogger {
     @Override
     public void warn(String format, String arg1) {
         if (logger.isLoggable(Level.WARNING)) {
-            logger.logp(Level.WARNING, loggerName, null, format.replaceFirst(
+            logger.logp(Level.WARNING, loggerName, null, getLoggerMethodAndLine()+format.replaceFirst(
                     "{}", arg1));
         }
     }
@@ -289,7 +289,7 @@ public class GgJdkLogger extends GgInternalLogger {
     @Override
     public void warn(String format, String arg1, String arg2) {
         if (logger.isLoggable(Level.WARNING)) {
-            logger.logp(Level.WARNING, loggerName, null, format.replaceFirst(
+            logger.logp(Level.WARNING, loggerName, null, getLoggerMethodAndLine()+format.replaceFirst(
                     "{}", arg1).replaceFirst("{}", arg2));
         }
     }
@@ -303,7 +303,7 @@ public class GgJdkLogger extends GgInternalLogger {
     @Override
     public void warn(String format, Object arg1, Object arg2) {
         if (logger.isLoggable(Level.WARNING)) {
-            logger.logp(Level.WARNING, loggerName, null, format.replaceFirst(
+            logger.logp(Level.WARNING, loggerName, null, getLoggerMethodAndLine()+format.replaceFirst(
                     "{}", arg1.toString()).replaceFirst("{}", arg2.toString()));
         }
     }
@@ -317,7 +317,7 @@ public class GgJdkLogger extends GgInternalLogger {
     @Override
     public void warn(String format, Object arg1) {
         if (logger.isLoggable(Level.WARNING)) {
-            logger.logp(Level.WARNING, loggerName, null, format.replaceFirst(
+            logger.logp(Level.WARNING, loggerName, null, getLoggerMethodAndLine()+format.replaceFirst(
                     "{}", arg1.toString()));
         }
     }

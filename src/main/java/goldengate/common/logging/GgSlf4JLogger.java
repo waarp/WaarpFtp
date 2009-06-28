@@ -51,7 +51,7 @@ public class GgSlf4JLogger extends GgInternalLogger {
      */
     @Override
     public void debug(String format, String arg1, String arg2) {
-        logger.debug(format, arg1, arg2);
+        logger.debug(getLoggerMethodAndLine()+format, arg1, arg2);
     }
 
     /*
@@ -62,7 +62,7 @@ public class GgSlf4JLogger extends GgInternalLogger {
      */
     @Override
     public void debug(String format, String arg1) {
-        logger.debug(format, arg1);
+        logger.debug(getLoggerMethodAndLine()+format, arg1);
     }
 
     /*
@@ -73,7 +73,7 @@ public class GgSlf4JLogger extends GgInternalLogger {
      */
     @Override
     public void error(String format, String arg1, String arg2) {
-        logger.error(format, arg1, arg2);
+        logger.error(getLoggerMethodAndLine()+format, arg1, arg2);
     }
 
     /*
@@ -84,7 +84,7 @@ public class GgSlf4JLogger extends GgInternalLogger {
      */
     @Override
     public void error(String format, String arg1) {
-        logger.error(format, arg1);
+        logger.error(getLoggerMethodAndLine()+format, arg1);
     }
 
     /*
@@ -95,7 +95,7 @@ public class GgSlf4JLogger extends GgInternalLogger {
      */
     @Override
     public void info(String format, String arg1, String arg2) {
-        logger.info(format, arg1, arg2);
+        logger.info(getLoggerMethodAndLine()+format, arg1, arg2);
     }
 
     /*
@@ -106,7 +106,7 @@ public class GgSlf4JLogger extends GgInternalLogger {
      */
     @Override
     public void info(String format, String arg1) {
-        logger.info(format, arg1);
+        logger.info(getLoggerMethodAndLine()+format, arg1);
     }
 
     /*
@@ -117,7 +117,7 @@ public class GgSlf4JLogger extends GgInternalLogger {
      */
     @Override
     public void warn(String format, String arg1, String arg2) {
-        logger.warn(format, arg1, arg2);
+        logger.warn(getLoggerMethodAndLine()+format, arg1, arg2);
     }
 
     /*
@@ -128,32 +128,32 @@ public class GgSlf4JLogger extends GgInternalLogger {
      */
     @Override
     public void warn(String format, String arg1) {
-        logger.warn(format, arg1);
+        logger.warn(getLoggerMethodAndLine()+format, arg1);
     }
 
     // original form
     public void debug(String msg) {
-        logger.debug(msg);
+        logger.debug(getLoggerMethodAndLine()+msg);
     }
 
     public void debug(String msg, Throwable cause) {
-        logger.debug(msg, cause);
+        logger.debug(getLoggerMethodAndLine()+msg, cause);
     }
 
     public void error(String msg) {
-        logger.error(msg);
+        logger.error(getLoggerMethodAndLine()+msg);
     }
 
     public void error(String msg, Throwable cause) {
-        logger.error(msg, cause);
+        logger.error(getLoggerMethodAndLine()+msg, cause);
     }
 
     public void info(String msg) {
-        logger.info(msg);
+        logger.info(getLoggerMethodAndLine()+msg);
     }
 
     public void info(String msg, Throwable cause) {
-        logger.info(msg, cause);
+        logger.info(getLoggerMethodAndLine()+msg, cause);
     }
 
     public boolean isDebugEnabled() {
@@ -173,11 +173,11 @@ public class GgSlf4JLogger extends GgInternalLogger {
     }
 
     public void warn(String msg) {
-        logger.warn(msg);
+        logger.warn(getLoggerMethodAndLine()+msg);
     }
 
     public void warn(String msg, Throwable cause) {
-        logger.warn(msg, cause);
+        logger.warn(getLoggerMethodAndLine()+msg, cause);
     }
 
     @Override
@@ -187,41 +187,41 @@ public class GgSlf4JLogger extends GgInternalLogger {
 
     @Override
     public void debug(String format, Object arg1, Object arg2) {
-        logger.debug(format, arg1, arg2);
+        logger.debug(getLoggerMethodAndLine()+format, arg1, arg2);
     }
 
     @Override
     public void debug(String format, Object arg1) {
-        logger.debug(format, arg1);
+        logger.debug(getLoggerMethodAndLine()+format, arg1);
     }
 
     @Override
     public void error(String format, Object arg1, Object arg2) {
-        logger.error(format, arg1, arg2);
+        logger.error(getLoggerMethodAndLine()+format, arg1, arg2);
     }
 
     @Override
     public void error(String format, Object arg1) {
-        logger.error(format, arg1);
+        logger.error(getLoggerMethodAndLine()+format, arg1);
     }
 
     @Override
     public void info(String format, Object arg1, Object arg2) {
-        logger.info(format, arg1, arg2);
+        logger.info(getLoggerMethodAndLine()+format, arg1, arg2);
     }
 
     @Override
     public void info(String format, Object arg1) {
-        logger.info(format, arg1);
+        logger.info(getLoggerMethodAndLine()+format, arg1);
     }
 
     @Override
     public void warn(String format, Object arg1, Object arg2) {
-        logger.warn(format, arg1, arg2);
+        logger.warn(getLoggerMethodAndLine()+format, arg1, arg2);
     }
 
     @Override
     public void warn(String format, Object arg1) {
-        logger.warn(format, arg1);
+        logger.warn(getLoggerMethodAndLine()+format, arg1);
     }
 }

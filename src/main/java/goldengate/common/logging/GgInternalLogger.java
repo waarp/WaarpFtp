@@ -37,6 +37,52 @@ import org.jboss.netty.logging.InternalLogger;
  */
 public abstract class GgInternalLogger implements InternalLogger {
     /**
+     * To be used in message for logger (rank 2) like
+     * logger.warn(code,"message:"+getImmediateMethodAndLine(),null);
+     * 
+     * @return "ClassAndMethodName(FileName:LineNumber)"
+     */
+    public static String getImmediateMethodAndLine() {
+        StackTraceElement elt = Thread.currentThread().getStackTrace()[2];
+        return getMethodAndLine(elt);
+    }
+
+    /**
+     * To be used only by Logger (rank 5)
+     * 
+     * @return "MethodName(FileName:LineNumber)"
+     */
+    protected static String getLoggerMethodAndLine() {
+        StackTraceElement elt = Thread.currentThread().getStackTrace()[3];
+        return getMethodAndLine(elt);
+    }
+
+    /**
+     * @param rank
+     *            is the current depth of call+1 (immediate = 1+1=2)
+     * @return "ClassAndMethodName(FileName:LineNumber)"
+     */
+    public static String getRankMethodAndLine(int rank) {
+        StackTraceElement elt = Thread.currentThread().getStackTrace()[rank];
+        return getMethodAndLine(elt);
+    }
+    /**
+     * 
+     * @param elt
+     * @return "MethodName(FileName:LineNumber) " from elt
+     */
+    private static String getMethodAndLine(StackTraceElement elt) {
+        StringBuilder builder = new StringBuilder(elt.getClassName());
+        builder.append(".");
+        builder.append(elt.getMethodName());
+        builder.append("(");
+        builder.append(elt.getFileName());
+        builder.append(":");
+        builder.append(elt.getLineNumber());
+        builder.append(") : ");
+        return builder.toString();
+    }
+    /**
      * @param level
      * @return True if the level is enabled
      */
