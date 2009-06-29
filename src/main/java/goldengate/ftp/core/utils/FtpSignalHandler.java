@@ -102,10 +102,12 @@ public final class FtpSignalHandler implements SignalHandler {
         FtpTimerTask timerTask = new FtpTimerTask(FtpTimerTask.TIMER_EXIT);
         timer.schedule(timerTask, configuration.TIMEOUTCON * 4);
         if (shutdown) {
-            FtpChannelUtils.exit(configuration);
+        	new Thread(new FtpChannelUtils(configuration)).start();
+            //FtpChannelUtils.exit(configuration);
             // shouldn't be System.exit(2);
         } else {
-            FtpChannelUtils.exit(configuration);
+        	new Thread(new FtpChannelUtils(configuration)).start();
+            //FtpChannelUtils.exit(configuration);
             shutdown = true;
         }
     }

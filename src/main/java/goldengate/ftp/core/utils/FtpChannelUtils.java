@@ -42,7 +42,7 @@ import org.jboss.netty.handler.execution.OrderedMemoryAwareThreadPoolExecutor;
  * @author Frederic Bregier
  *
  */
-public class FtpChannelUtils {
+public class FtpChannelUtils implements Runnable {
     /**
      * Internal Logger
      */
@@ -374,13 +374,12 @@ public class FtpChannelUtils {
         }
         return result;
     }
-
     /**
      * Exit global ChannelFactory
      *
      * @param configuration
      */
-    public static void exit(FtpConfiguration configuration) {
+    private static void exit(FtpConfiguration configuration) {
         configuration.isShutdown = true;
         long delay = 2 * configuration.TIMEOUTCON;
         logger.warn("Exit: Give a delay of " + delay + " ms");
@@ -432,5 +431,16 @@ public class FtpChannelUtils {
         configuration.getFtpInternalConfiguration().getDataChannelGroup().add(
                 channel);
     }
+    /**
+     * Used to run Exit command
+     */
+    private FtpConfiguration configuration;
+    public FtpChannelUtils(FtpConfiguration configuration) {
+    	this.configuration = configuration;
+    }
+	@Override
+	public void run() {
+		exit(configuration);
+	}
 
 }
