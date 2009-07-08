@@ -457,7 +457,7 @@ public class FtpInternalConfiguration {
                 pipelineExecutor = new OrderedMemoryAwareThreadPoolExecutor(
                         configuration.SERVER_THREAD * 4,
                         configuration.maxGlobalMemory / 40,
-                        configuration.maxGlobalMemory / 4, 200,
+                        configuration.maxGlobalMemory / 4, 500,
                         TimeUnit.MILLISECONDS, Executors.defaultThreadFactory());
             }
         } finally {
@@ -480,7 +480,7 @@ public class FtpInternalConfiguration {
                 pipelineDataExecutor = new OrderedMemoryAwareThreadPoolExecutor(
                         configuration.SERVER_THREAD * 4,
                         configuration.maxGlobalMemory / 10,
-                        configuration.maxGlobalMemory, 200,
+                        configuration.maxGlobalMemory, 500,
                         TimeUnit.MILLISECONDS, Executors.defaultThreadFactory());
             }
         } finally {
