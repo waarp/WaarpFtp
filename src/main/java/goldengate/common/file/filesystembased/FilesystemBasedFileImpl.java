@@ -375,7 +375,7 @@ public abstract class FilesystemBasedFileImpl implements
     }
 
     public void writeDataBlock(DataBlock dataBlock)
-            throws FileTransferException, FileEndOfTransferException {
+            throws FileTransferException {
         if (isReady) {
             if (dataBlock.isEOF()) {
                 writeBlockEnd(dataBlock.getBlock());

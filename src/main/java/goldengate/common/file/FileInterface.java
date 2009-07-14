@@ -191,7 +191,7 @@ public interface FileInterface {
      * @throws FileEndOfTransferException
      */
     public void writeDataBlock(DataBlock dataBlock)
-            throws FileEndOfTransferException, FileTransferException;
+            throws FileTransferException;
 
     /**
      * Read a new block for FileInterface

@@ -20,7 +20,6 @@
  */
 package goldengate.ftp.core.data.handler;
 
-import goldengate.common.exception.FileEndOfTransferException;
 import goldengate.common.exception.FileTransferException;
 import goldengate.common.exception.InvalidArgumentException;
 import goldengate.common.file.DataBlock;
@@ -369,11 +368,6 @@ public class DataNetworkHandler extends SimpleChannelHandler {
                 session.getDataConn().getFtpTransferControl()
                         .setTransferAbortedFromInternal(true);
                 return;
-            } catch (FileEndOfTransferException e1) {
-                if (dataBlock.isEOF()) {
-                    session.getDataConn().getFtpTransferControl()
-                            .setPreEndOfTransfer();
-                }
             } catch (FileTransferException e1) {
                 // logger.debug("TransferException", e1);
                 session.getDataConn().getFtpTransferControl()

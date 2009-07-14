@@ -44,11 +44,6 @@ public class FilesystemBasedFtpRestart extends FilesystemBasedRestartImpl {
         super(session);
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see goldengate.ftp.core.file.FtpRestart#restartMarker(java.lang.String)
-     */
     @Override
     public boolean restartMarker(String marker) throws CommandAbstractException {
         FtpDataAsyncConn dataConn = ((FtpSession) getSession()).getDataConn();

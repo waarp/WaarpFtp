@@ -125,11 +125,6 @@ public abstract class FilesystemBasedDirImpl implements DirInterface {
         return session;
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see goldengate.ftp.core.file.FtpFile#validatePath(java.lang.String)
-     */
     public String validatePath(String path) throws CommandAbstractException {
         String extDir = consolidatePath(path);
         // Get the baseDir (mount point)
@@ -351,11 +346,6 @@ public abstract class FilesystemBasedDirImpl implements DirInterface {
         return changeDirectory("..");
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see goldengate.ftp.core.file.FtpFile#mkdir(java.lang.String)
-     */
     public String mkdir(String directory) throws CommandAbstractException {
         checkIdentify();
         String newdirectory = consolidatePath(directory);
@@ -375,11 +365,6 @@ public abstract class FilesystemBasedDirImpl implements DirInterface {
         throw new Reply550Exception("Cannot create directory " + newDir);
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see goldengate.ftp.core.file.FtpFile#rmdir(java.lang.String)
-     */
     public String rmdir(String directory) throws CommandAbstractException {
         checkIdentify();
         String newdirectory = consolidatePath(directory);
@@ -397,11 +382,6 @@ public abstract class FilesystemBasedDirImpl implements DirInterface {
         throw new Reply550Exception("Cannot delete directory " + extDir);
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see goldengate.ftp.core.file.FtpFile#isDirectory(java.lang.String)
-     */
     public boolean isDirectory(String path) throws CommandAbstractException {
         checkIdentify();
         File dir = getFileFromPath(path);
@@ -409,22 +389,11 @@ public abstract class FilesystemBasedDirImpl implements DirInterface {
         return dir.isDirectory();
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see goldengate.ftp.core.file.FtpFile#isFile(java.lang.String)
-     */
     public boolean isFile(String path) throws CommandAbstractException {
         checkIdentify();
         return getFileFromPath(path).isFile();
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * goldengate.ftp.core.file.FtpDir#getModificationTime(java.lang.String)
-     */
     public String getModificationTime(String path)
             throws CommandAbstractException {
         checkIdentify();
@@ -485,11 +454,6 @@ public abstract class FilesystemBasedDirImpl implements DirInterface {
         return sb.toString();
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see goldengate.ftp.core.file.FtpFile#list(java.lang.String)
-     */
     public List<String> list(String path) throws CommandAbstractException {
         checkIdentify();
         // First get all base directories
@@ -528,12 +492,6 @@ public abstract class FilesystemBasedDirImpl implements DirInterface {
         return newPaths;
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see goldengate.ftp.core.file.FtpFile#listFull(java.lang.String,
-     * java.lang.boolean)
-     */
     public List<String> listFull(String path, boolean lsFormat)
             throws CommandAbstractException {
         checkIdentify();
@@ -589,12 +547,6 @@ public abstract class FilesystemBasedDirImpl implements DirInterface {
         return newPaths;
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see goldengate.ftp.core.file.FtpDir#fileFull(java.lang.String,
-     * java.lang.boolean)
-     */
     public String fileFull(String path, boolean lsFormat)
             throws CommandAbstractException {
         checkIdentify();
@@ -759,22 +711,12 @@ public abstract class FilesystemBasedDirImpl implements DirInterface {
         return builder.toString();
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see goldengate.ftp.core.file.FtpFile#getFreeSpace()
-     */
     public long getFreeSpace() throws CommandAbstractException {
         checkIdentify();
         File directory = getFileFromPath(currentDir);
         return filesystemBasedFtpDirJdk.getFreeSpace(directory);
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see goldengate.ftp.core.file.FtpFile#setFile(java.lang.String, boolean)
-     */
     public goldengate.common.file.FileInterface setFile(String path,
             boolean append) throws CommandAbstractException {
         checkIdentify();
@@ -788,11 +730,6 @@ public abstract class FilesystemBasedDirImpl implements DirInterface {
         return newFile(extDir, append);
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see goldengate.ftp.core.file.FtpFile#setUniqueFile()
-     */
     public goldengate.common.file.FileInterface setUniqueFile()
             throws CommandAbstractException {
         checkIdentify();
@@ -807,42 +744,22 @@ public abstract class FilesystemBasedDirImpl implements DirInterface {
         return newFile(normalizePath(currentFile), false);
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see goldengate.ftp.core.file.FtpFile#canRead()
-     */
     public boolean canRead() throws CommandAbstractException {
         checkIdentify();
         return getFileFromPath(currentDir).canRead();
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see goldengate.ftp.core.file.FtpFile#canWrite()
-     */
     public boolean canWrite() throws CommandAbstractException {
         checkIdentify();
         File file = getFileFromPath(currentDir);
         return file.canWrite();
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see goldengate.ftp.core.file.FtpFile#exists()
-     */
     public boolean exists() throws CommandAbstractException {
         checkIdentify();
         return getFileFromPath(currentDir).exists();
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see goldengate.ftp.core.file.FtpFile#getCRC(String)
-     */
     public long getCRC(String path) throws CommandAbstractException {
         File file = getTrueFile(path);
         try {
@@ -863,11 +780,6 @@ public abstract class FilesystemBasedDirImpl implements DirInterface {
         }
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see goldengate.ftp.core.file.FtpFile#getMD5(String)
-     */
     public byte[] getMD5(String path) throws CommandAbstractException {
         File file = getTrueFile(path);
         try {
@@ -880,11 +792,6 @@ public abstract class FilesystemBasedDirImpl implements DirInterface {
         }
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see goldengate.ftp.core.file.FtpFile#getSHA1(String)
-     */
     public byte[] getSHA1(String path) throws CommandAbstractException {
         File file = getTrueFile(path);
         try {
