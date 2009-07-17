@@ -104,7 +104,6 @@ public abstract class FilesystemBasedFileImpl implements
         this.session = session;
         auth = (FilesystemBasedAuthImpl) session.getAuth();
         this.dir = dir;
-        isReady = false;
         currentFile = path;
         isReady = true;
         isAppend = append;
@@ -145,7 +144,7 @@ public abstract class FilesystemBasedFileImpl implements
     }
 
     /**
-     * Get the FileInterface from this path, checking first its validity
+     * Get the File from this path, checking first its validity
      *
      * @param path
      * @return the FileInterface
@@ -272,7 +271,7 @@ public abstract class FilesystemBasedFileImpl implements
     public boolean delete() throws CommandAbstractException {
         checkIdentify();
         if (!isReady) {
-            return true;
+            return false;
         }
         if (!exists()) {
             return true;
@@ -284,7 +283,7 @@ public abstract class FilesystemBasedFileImpl implements
     public boolean renameTo(String path) throws CommandAbstractException {
         checkIdentify();
         if (!isReady) {
-            return true;
+            return false;
         }
         File file = getFileFromPath(currentFile);
         if (file.canRead()) {
@@ -591,7 +590,7 @@ public abstract class FilesystemBasedFileImpl implements
      * @param fileChannelOut
      * @return True if OK, False in error.
      */
-    private boolean get(FileChannel fileChannelOut) {
+    protected boolean get(FileChannel fileChannelOut) {
         if (!isReady) {
             return false;
         }
@@ -631,7 +630,7 @@ public abstract class FilesystemBasedFileImpl implements
      * @param isOut
      * @return the FileChannel (OUT or IN)
      */
-    private FileChannel getFileChannel(boolean isOut) {
+    protected FileChannel getFileChannel(boolean isOut) {
         if (!isReady) {
             return null;
         }

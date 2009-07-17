@@ -317,7 +317,7 @@ public abstract class FilesystemBasedDirImpl implements DirInterface {
      */
     protected String getRelativePath(File file) {
         return ((FilesystemBasedAuthImpl) getSession().getAuth())
-                .getRelativePath(file.getAbsolutePath());
+                .getRelativePath(normalizePath(file.getAbsolutePath()));
     }
 
     public String getPwd() throws CommandAbstractException {
