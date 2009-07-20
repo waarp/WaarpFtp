@@ -736,7 +736,7 @@ public abstract class FilesystemBasedDirImpl implements DirInterface {
         File file = null;
         try {
             file = File.createTempFile(getSession().getAuth().getUser(),
-                    ".stou", getFileFromPath(currentDir));
+                    this.session.getUniqueExtension(), getFileFromPath(currentDir));
         } catch (IOException e) {
             throw new Reply550Exception("Cannot create unique file");
         }

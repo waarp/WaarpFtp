@@ -354,4 +354,12 @@ public class FtpSession implements SessionInterface {
     public void openDataConnection() throws Reply425Exception {
         getDataConn().getFtpTransferControl().openDataConnection();
     }
+
+    /* (non-Javadoc)
+     * @see goldengate.common.file.SessionInterface#getUniqueExtension()
+     */
+    @Override
+    public String getUniqueExtension() {
+        return configuration.getUniqueExtension();
+    }
 }

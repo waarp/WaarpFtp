@@ -60,4 +60,10 @@ public interface SessionInterface {
      * @return the Restart
      */
     public Restart getRestart();
+
+    /**
+     *
+     * @return the extension to give to Unique File (STOU)
+     */
+    public String getUniqueExtension();
 }

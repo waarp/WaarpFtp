@@ -515,4 +515,8 @@ public abstract class FtpConfiguration {
         return fileParameter;
     }
 
+    public String getUniqueExtension() {
+        // Can be overriden if necessary
+        return ".stou";
+    }
 }
