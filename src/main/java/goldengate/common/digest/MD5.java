@@ -32,6 +32,8 @@ import java.util.Date;
 
 import javax.crypto.CipherInputStream;
 
+import org.jboss.netty.buffer.ChannelBuffer;
+
 /**
  * Fast implementation of RSA's MD5 hash generator in Java JDK Beta-2 or higher.
  * <p>
@@ -147,7 +149,7 @@ public class MD5 {
 
     private static boolean native_lib_init_pending = true;
 
-    private static String native_lib_path = "D:/NEWJARS/goldengate/lib/arch/win32_x86/MD5.dll";
+    private static String native_lib_path = "D:/somewhere/goldengate/lib/arch/win32_x86/MD5.dll";
 
     /**
      * Initialize MD5 internal state (object can be reused just by calling
@@ -564,6 +566,17 @@ public class MD5 {
 
     public void Update(int i) {
         Update((byte) (i & 0xff));
+    }
+    /**
+     * Updates hash with given {@link ChannelBuffer} (from Netty)
+     *
+     * @param buffer
+     *            ChannelBuffer to use for updating the hash
+     */
+    public void Update(ChannelBuffer buffer) {
+        byte[] bytes = new byte[buffer.readableBytes()];
+        buffer.getBytes(buffer.readerIndex(), bytes);
+        Update(state, bytes, 0, bytes.length);
     }
 
     private byte[] Encode(int input[], int len) {
