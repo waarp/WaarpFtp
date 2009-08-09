@@ -5,6 +5,10 @@
 		<author email="fredbregier@free.fr">Frederic Bregier</author>
 	</properties>
 	<body>
+		<release version="0.9.5" date="2009-08-09" description="Fixed version after OpenR66 creation">
+			<action dev="Frederic Bregier" type="add">Fixed several points to enable OpenR66 project</action>
+			<action dev="Frederic Bregier" type="fix">Fix some bugs</action>
+		</release>
 		<release version="0.9.4" date="2009-06-24" description="Refactorized version">
 			<action dev="Frederic Bregier" type="add">Refactorization of Digest and Logging part</action>
 			<action dev="Frederic Bregier" type="fix">Fix some bugs</action>

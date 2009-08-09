@@ -3,7 +3,7 @@
   <parent>
 	  <groupId>GoldenGateFtp</groupId>
 	  <artifactId>GoldenGateFtp</artifactId>
-	  <version>0.9.4</version>
+	  <version>0.9.5</version>
 	  <relativePath>../pom.xml</relativePath>
   </parent>
   <name>GoldenGateFtp-Digest</name>
