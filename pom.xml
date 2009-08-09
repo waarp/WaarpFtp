@@ -6,18 +6,18 @@
   <version>0.9.5</version>
   <packaging>pom</packaging>
   <description>
-	  The GoldenGate FTP project is a proposal of a new fresh FTP server implementation, 
-	  fully in Java according to the following RFC: RFC 959, RFC 775, RFC 2389, RFC 2428, RFC 3659. 
-	  It includes also extra commands like XCRC, XMD5, XSHA1, INTERNALSHUTDOWN. It is based mainly 
-	  on the NETTY framework (NIO great framework support) and is tend to be really efficient, both 
-	  in term of memory, threads and network bandwidth. Bandwidth limitation can be configured both 
-	  in store and retrieve, per session (although only one value is set by default, but it can be 
-	  changed dynamically if needed) or globally to the server and of course with no limitation at 
-	  all if wanted. Limitation should be enough to change the bandwidth behaviour for instance 
-	  depending on the time in the day, so as to allow to limit bandwidth usage when users are at 
-	  work and in contrary to allow more speed when only batchs are running. The specificity of this 
-	  project is you can adapt this software to your particular needs by: changing the pre or post 
-	  action on commands (not ony transfer), changing the underlying representation of files and 
+	  The GoldenGate FTP project is a proposal of a new fresh FTP server implementation,
+	  fully in Java according to the following RFC: RFC 959, RFC 775, RFC 2389, RFC 2428, RFC 3659.
+	  It includes also extra commands like XCRC, XMD5, XSHA1, INTERNALSHUTDOWN. It is based mainly
+	  on the NETTY framework (NIO great framework support) and is tend to be really efficient, both
+	  in term of memory, threads and network bandwidth. Bandwidth limitation can be configured both
+	  in store and retrieve, per session (although only one value is set by default, but it can be
+	  changed dynamically if needed) or globally to the server and of course with no limitation at
+	  all if wanted. Limitation should be enough to change the bandwidth behaviour for instance
+	  depending on the time in the day, so as to allow to limit bandwidth usage when users are at
+	  work and in contrary to allow more speed when only batchs are running. The specificity of this
+	  project is you can adapt this software to your particular needs by: changing the pre or post
+	  action on commands (not ony transfer), changing the underlying representation of files and
 	  directories (for instance with database entries), using any particular authentication mechanism.
   </description>
   <url>http://openr66.free.fr/GoldenGateFTP</url>
@@ -39,7 +39,7 @@
   			<role>Project Manager</role>
   			<role>Architect</role>
 		</roles>
-  		<email>fredbregier@free.fr</email>
+  		<email>fredbregier at free.fr</email>
   	</developer>
   	<developer>
   		<name>Frederic Bregier</name>
@@ -47,7 +47,7 @@
   		<roles>
   			<role>Developer</role>
 		</roles>
-  		<email>fredbregier@free.fr</email>
+  		<email>fredbregier at free.fr</email>
   	</developer>
   </developers>
   <issueManagement>
@@ -375,7 +375,7 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
         <version>2.5</version>
-        
+
         <reportSets>
          <reportSet>
           <id>aggregate</id>
@@ -412,13 +412,13 @@
 	            -link http://www.slf4j.org/apidocs/
 	            -link http://commons.apache.org/logging/commons-logging-1.1.1/apidocs/
 	            -link http://logging.apache.org/log4j/1.2/apidocs/
-	
+
 				-group "GoldenGate Common Digest package" "goldengate.common.digest*"
 				-group "GoldenGate Common Logging Future Command Authentication Session and File package" "goldengate.common.command*:goldengate.common.exception*:goldengate.common.file*:goldengate.common.future*:goldengate.common.logging*"
 				-group "GoldenGate FTP Main Core package" "goldengate.ftp.core*"
 				-group "GoldenGate FTP Filesystem Implementation package" "goldengate.ftp.filesystembased*"
 				-group "GoldenGate Simple FTP Server package" "goldengate.ftp.simpleimpl*"
-	
+
 	            -sourceclasspath ${basedir}/digest/target/classes
 	            -sourceclasspath ${basedir}/common/target/classes
 	            -sourceclasspath ${basedir}/core/target/classes
