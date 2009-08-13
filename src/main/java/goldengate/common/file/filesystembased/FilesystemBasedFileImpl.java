@@ -194,6 +194,10 @@ public abstract class FilesystemBasedFileImpl implements
         }
         if (bfileChannelOut != null) {
             try {
+                bfileChannelOut.force(true);
+            } catch (IOException e1) {
+            }
+            try {
                 bfileChannelOut.close();
             } catch (IOException e) {
             }
@@ -432,7 +436,17 @@ public abstract class FilesystemBasedFileImpl implements
         }
         this.position = position;
     }
-
+    /**
+     * Try to flush written data if possible
+     */
+    public void flush() {
+        if (bfileChannelOut != null && isReady) {
+            try {
+                bfileChannelOut.force(false);
+            } catch (IOException e1) {
+            }
+        }
+    }
     /**
      * Write the current FileInterface with the given ChannelBuffer. The file is
      * not limited to 2^32 bytes since this write operation is in add mode.
@@ -602,8 +616,8 @@ public abstract class FilesystemBasedFileImpl implements
         long transfert = 0;
         try {
             size = fileChannelIn.size();
-            fileChannelOut.force(true);
             transfert = fileChannelOut.transferFrom(fileChannelIn, 0, size);
+            fileChannelOut.force(true);
             fileChannelIn.close();
             fileChannelIn = null;
             fileChannelOut.close();
