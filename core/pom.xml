@@ -3,7 +3,7 @@
   <parent>
 	  <groupId>GoldenGateFtp</groupId>
 	  <artifactId>GoldenGateFtp</artifactId>
-	  <version>0.9.5</version>
+	  <version>0.9.6</version>
 	  <relativePath>../pom.xml</relativePath>
   </parent>
   <name>GoldenGateFtp-Core</name>
@@ -16,13 +16,13 @@
     <dependency>
       <groupId>GoldenGateFtp</groupId>
       <artifactId>digest</artifactId>
-      <version>0.9.5</version>
+      <version>0.9.6</version>
       <optional>false</optional>
     </dependency>
     <dependency>
       <groupId>GoldenGateFtp</groupId>
       <artifactId>common</artifactId>
-      <version>0.9.5</version>
+      <version>0.9.6</version>
       <optional>false</optional>
     </dependency>
   </dependencies>
