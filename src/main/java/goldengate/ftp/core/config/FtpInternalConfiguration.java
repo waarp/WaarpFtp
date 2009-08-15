@@ -333,7 +333,6 @@ public class FtpInternalConfiguration {
      */
     public void setNewFtpSession(InetAddress ipOnly, InetSocketAddress fullIp,
             FtpSession session) {
-        // logger.debug("SetNewSession");
         ftpSessionReference.setNewFtpSession(ipOnly, fullIp, session);
     }
 
@@ -345,7 +344,6 @@ public class FtpInternalConfiguration {
      * @return the FtpSession if it exists associated to this channel
      */
     public FtpSession getFtpSession(Channel channel, boolean active) {
-        // logger.debug("getSession");
         if (active) {
             return ftpSessionReference.getActiveFtpSession(channel);
         } else {
@@ -360,7 +358,6 @@ public class FtpInternalConfiguration {
      * @param fullIp
      */
     public void delFtpSession(InetAddress ipOnly, InetSocketAddress fullIp) {
-        // logger.debug("delSession");
         ftpSessionReference.delFtpSession(ipOnly, fullIp);
     }
 

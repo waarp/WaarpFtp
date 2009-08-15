@@ -72,7 +72,7 @@ public class PASV extends AbstractCommand {
                         .getRemoteAddress().getAddress();
                 getConfiguration().delFtpSession(remote, local);
             }
-            logger.info("PASV: set Passive Port " + newport);
+            logger.info("PASV: set Passive Port {}",newport);
             getSession().getDataConn().setLocalPort(newport);
             getSession().getDataConn().setPassive();
             // Init the connection
@@ -100,7 +100,7 @@ public class PASV extends AbstractCommand {
         getConfiguration().setNewFtpSession(remote, local, getSession());
         getSession().setReplyCode(ReplyCode.REPLY_227_ENTERING_PASSIVE_MODE,
                 slocal);
-        logger.info("PASV: answer ready on " + slocal);
+        logger.info("PASV: answer ready on {}",slocal);
     }
 
 }

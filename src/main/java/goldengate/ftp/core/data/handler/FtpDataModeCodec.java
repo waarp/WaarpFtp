@@ -23,8 +23,6 @@ package goldengate.ftp.core.data.handler;
 import goldengate.common.exception.InvalidArgumentException;
 import goldengate.common.file.DataBlock;
 import goldengate.common.future.GgFuture;
-import goldengate.common.logging.GgInternalLogger;
-import goldengate.common.logging.GgInternalLoggerFactory;
 import goldengate.ftp.core.command.FtpArgumentCode.TransferMode;
 import goldengate.ftp.core.command.FtpArgumentCode.TransferStructure;
 
@@ -130,12 +128,6 @@ public class FtpDataModeCodec extends FrameDecoder implements
      * bits | 8 bits | +--------+--------+--------+
      */
     /**
-     * Internal Logger
-     */
-    private static final GgInternalLogger logger = GgInternalLoggerFactory
-            .getLogger(FtpDataModeCodec.class);
-
-    /**
      * Transfer Mode
      */
     private TransferMode mode = null;
@@ -182,7 +174,6 @@ public class FtpDataModeCodec extends FrameDecoder implements
      *
      */
     public void setCodecReady() {
-        // logger.debug("ModeCodec ready");
         codecLocked.setSuccess();
     }
 
@@ -203,7 +194,6 @@ public class FtpDataModeCodec extends FrameDecoder implements
         if (!isReady) {
             codecLocked.await();
             isReady = true;
-            // logger.debug("ModeCodec ready");
         }
         // If STREAM Mode, no task to do, just next filter
         if (mode == TransferMode.STREAM) {
@@ -483,7 +473,6 @@ public class FtpDataModeCodec extends FrameDecoder implements
         if (!isReady) {
             codecLocked.await();
             isReady = true;
-            // logger.debug("ModeCodec ready");
         }
         DataBlock newDataBlock = (DataBlock) evt.getMessage();
         ChannelBuffer next = encode(newDataBlock);

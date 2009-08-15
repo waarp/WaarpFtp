@@ -330,8 +330,6 @@ public class NetworkHandler extends SimpleChannelHandler {
     private boolean writeFinalAnswer() {
         if (session.getReplyCode() == ReplyCode.REPLY_421_SERVICE_NOT_AVAILABLE_CLOSING_CONTROL_CONNECTION ||
                 session.getReplyCode() == ReplyCode.REPLY_221_CLOSING_CONTROL_CONNECTION) {
-            // logger.debug("Will close Control Connection since: {}",
-            // session.getAnswer());
             session.getDataConn().getFtpTransferControl().clear();
             writeIntermediateAnswer().addListener(ChannelFutureListener.CLOSE);
             return true;

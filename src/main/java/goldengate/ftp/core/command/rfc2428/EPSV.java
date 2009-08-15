@@ -69,7 +69,7 @@ public class EPSV extends AbstractCommand {
                         .getRemoteAddress().getAddress();
                 getConfiguration().delFtpSession(remote, local);
             }
-            logger.info("EPSV: set Passive Port " + newport);
+            logger.info("EPSV: set Passive Port {}", newport);
             getSession().getDataConn().setLocalPort(newport);
             getSession().getDataConn().setPassive();
             // Init the connection
@@ -97,7 +97,7 @@ public class EPSV extends AbstractCommand {
         getConfiguration().setNewFtpSession(remote, local, getSession());
         getSession().setReplyCode(ReplyCode.REPLY_229_ENTERING_PASSIVE_MODE,
                 "Entering Extended Passive Mode (|||" + newport + "|)");
-        logger.info("EPSV: answer ready on " + slocal);
+        logger.info("EPSV: answer ready on {}", slocal);
         /*
          * Could be:this.getFtpSession().setReplyCode(ReplyCode.
          * REPLY_229_ENTERING_PASSIVE_MODE, slocal);

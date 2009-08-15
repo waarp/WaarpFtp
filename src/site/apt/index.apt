@@ -1,79 +1,79 @@
 GoldenGate FTP Server
 
-  The GoldenGate FTP project is a proposal of a new fresh FTP server implementation, 
-  fully in Java according to the following RFC: RFC 959, RFC 775, RFC 2389, RFC 2428, RFC 3659. 
-  It includes also extra commands like XCRC, XMD5, XSHA1, INTERNALSHUTDOWN. 
-	  
-Dependency	  
+  The GoldenGate FTP project is a proposal of a new fresh FTP server implementation,
+  fully in Java according to the following RFC: RFC 959, RFC 775, RFC 2389, RFC 2428, RFC 3659.
+  It includes also extra commands like XCRC, XMD5, XSHA1, INTERNALSHUTDOWN.
+
+Dependency
 
   It is based mainly on the NETTY framework (NIO great framework support at {{http://www.jboss.org/netty}}
-  and is tend to be really efficient, both in term of memory, threads and network bandwidth. 
-	  
+  and is tend to be really efficient, both in term of memory, threads and network bandwidth.
+
 Specificities
-	  
-  Bandwidth limitation can be configured both 
-  in store and retrieve, per session (although only one value is set by default, but it can be 
-  changed dynamically if needed) or globally to the server and of course with no limitation at 
-  all if wanted. Limitation should be enough to change the bandwidth behavior for instance 
-  depending on the time in the day, so as to allow to limit bandwidth usage when users are at 
-  work and in contrary to allow more speed when only batchs are running. 
-	  
-  The specificity of this 
-  project is you can adapt this software to your particular needs by: changing the pre or post 
-  action on commands (not ony transfer), changing the underlying representation of files and 
+
+  Bandwidth limitation can be configured both
+  in store and retrieve, per session (although only one value is set by default, but it can be
+  changed dynamically if needed) or globally to the server and of course with no limitation at
+  all if wanted. Limitation should be enough to change the bandwidth behavior for instance
+  depending on the time in the day, so as to allow to limit bandwidth usage when users are at
+  work and in contrary to allow more speed when only batchs are running.
+
+  The specificity of this
+  project is you can adapt this software to your particular needs by: changing the pre or post
+  action on commands (not only transfer), changing the underlying representation of files and
   directories (for instance with database entries), using any particular authentication mechanism.
-  
+
 [images/goldengatesmall.jpg] GoldenGate Main Project Logo
 
-  See global GoldenGate project at {{http://openr66.free.fr/}}
-	  
+  See global GoldenGate project at {{http://openr66.free.fr/}}and particular GoldenGate FTP project at
+  {{http://openr66.free.fr/GoldenGateFTP.html}}
+
 Benchmarks
-	  
+
   Benchmarks were done on 2 Intel Xeon Blade servers in one Blade Center. Each Blade is 2 Xeon
-  Dual Core 1.66 Ghz with 4 GB of memory with a 1 Gb lan connection, one using as client simulator, 
+  Dual Core 1.66 Ghz with 4 GB of memory with a 1 Gb lan connection, one using as client simulator,
   the other one as server. Clients were realized using the Apache Net Ftp Client library.
   All tests were done using the IBM JDK 1.6. Same tests were done on Sun JDK 1.6 too with
   similar results except that in heavy condition (100% long time cpu), there were more errors
   (disconnections or stack ip full) compared to the IBM version. Also the results with Sun JDK
   were higher in performance, but as we fill they were less stable too, we decided to show the
   result graphically from the IBM JDK.
-  
+
   The first benchmark is about only Control Connection. It computes how many connections by
   second GoldenGateFtp server can allow, starting from 1 virtual user up to 1000 virtual users.
-  
-  The result is on a single 2-Xeon server, the GoldenGateFtp Server allows up to 
-  450 connections/second (with Sun JDK, we reached 510 c/s). 
-  
+
+  The result is on a single 2-Xeon server, the GoldenGateFtp Server allows up to
+  450 connections/second (with Sun JDK, we reached 510 c/s).
+
 [images/image001.gif] Connections Benchmark
- 
+
   The second benchmark is about transfer capacity on small files (1024 bytes only). Each user
   will try to transfer 100 times one file of 1024 bytes in both ways (store and retrieve),
   so that each virtual users will do 200 transfers operations sequentially. We start from 1
   user up to 1000 users. We test both passive (client connect to the server for the data
   connection) and active (server connects to the client for the data connection) modes.
-  
+
   The result is on a single 2-Xeon server, the GoldenGateFtp Server allows up to 1750 transfers
-  by second in active mode and up to 1400 transfers by second in passive mode with 100 virtual 
+  by second in active mode and up to 1400 transfers by second in passive mode with 100 virtual
   users. The difference
   is mainly due to the need in passive mode to made a special synchronization since the
   data connection will be initiated by the client on a port defined on the server, but as
   this port could be used by many clients at the same time, there are some extra check to correctly
   assign this data connection to the correct control connection. (with Sun JDK, we reached
   1884 t/s in active mode and 1615 t/s in passive mode but with 10 virtual users only).
-    
+
 [images/image002.gif] Transfers Benchmark
- 
+
   The third benchmark is about the global bandwidth usage. Since with 100 users and 100 transfers
   in both ways we get the higher performance, we start from this set and increase the file size
   from 1024 bytes up to 1 024 000 bytes. In the graph, the first file size if for passive mode,
   the second is for active mode. Without surprise, active mode is still better than passive mode.
-  
+
   The result is on a single 2-Xeon server, the GoldenGateFtp Server allows to use up to 90%
   of the available bandwidth (here 0.9 Gb were used on a 1 Gb local network). Note that obviously
   the number of transfer/second is going down when the file size is going up. At 1024 bytes, we reached
   up to 1750 transfers/s; at 10 240 = 1470 t/s, at 102 400 = 790 t/s, at 1 024 000 = 115 t/s.
   (with Sun JDK, the results were similar but with less stability with 100 users, so that 10 users
   were used).
-  
+
 [images/image003.gif] Bandwidth Benchmark
-  
