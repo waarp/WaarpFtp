@@ -23,8 +23,6 @@ package goldengate.ftp.core.command;
 import goldengate.common.command.CommandInterface;
 import goldengate.common.exception.InvalidArgumentException;
 import goldengate.common.file.SessionInterface;
-import goldengate.common.logging.GgInternalLogger;
-import goldengate.common.logging.GgInternalLoggerFactory;
 import goldengate.ftp.core.config.FtpConfiguration;
 import goldengate.ftp.core.session.FtpSession;
 
@@ -35,12 +33,6 @@ import goldengate.ftp.core.session.FtpSession;
  *
  */
 public abstract class AbstractCommand implements CommandInterface {
-    /**
-     * Internal Logger
-     */
-    private static final GgInternalLogger logger = GgInternalLoggerFactory
-            .getLogger(AbstractCommand.class);
-
     /**
      * Code of Command
      */
