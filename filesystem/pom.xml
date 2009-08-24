@@ -1,34 +1,34 @@
 <project>
   <modelVersion>4.0.0</modelVersion>
   <parent>
-	  <groupId>GoldenGateFtp</groupId>
+	  <groupId>GoldenGate</groupId>
 	  <artifactId>GoldenGateFtp</artifactId>
-	  <version>0.9.6</version>
+	  <version>1.0.0</version>
 	  <relativePath>../pom.xml</relativePath>
   </parent>
   <name>GoldenGateFtp-Filesystem</name>
-  <artifactId>filesystem</artifactId>
+  <artifactId>GoldenGateFtp-Filesystem</artifactId>
   <properties>
     <filtermodule>ftp/filesystembased</filtermodule>
     <filterexclude>zzz</filterexclude>
   </properties>
   <dependencies>
     <dependency>
-      <groupId>GoldenGateFtp</groupId>
-      <artifactId>digest</artifactId>
-      <version>0.9.6</version>
+      <groupId>GoldenGate</groupId>
+      <artifactId>GoldenGateDigest</artifactId>
+      <version>1.0.0</version>
       <optional>false</optional>
     </dependency>
     <dependency>
-      <groupId>GoldenGateFtp</groupId>
-      <artifactId>common</artifactId>
-      <version>0.9.6</version>
+      <groupId>GoldenGate</groupId>
+      <artifactId>GoldenGateCommon</artifactId>
+      <version>1.0.0</version>
       <optional>false</optional>
     </dependency>
     <dependency>
-      <groupId>GoldenGateFtp</groupId>
-      <artifactId>core</artifactId>
-      <version>0.9.6</version>
+      <groupId>GoldenGate</groupId>
+      <artifactId>GoldenGateFtp-Core</artifactId>
+      <version>1.0.0</version>
       <optional>false</optional>
     </dependency>
   </dependencies>

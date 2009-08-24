@@ -1,9 +1,9 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <groupId>GoldenGateFtp</groupId>
+  <groupId>GoldenGate</groupId>
   <artifactId>GoldenGateFtp</artifactId>
   <name>GoldenGateFtp</name>
-  <version>0.9.6</version>
+  <version>1.0.0</version>
   <packaging>pom</packaging>
   <description>
 	  The GoldenGate FTP project is a proposal of a new fresh FTP server implementation,
@@ -81,6 +81,17 @@
   		<id>jboss.releases</id>
   		<name>JBoss releases</name>
   		<url>http://repository.jboss.org/maven2</url>
+  		<releases>
+  			<enabled>true</enabled>
+  		</releases>
+  		<snapshots>
+  			<enabled>false</enabled>
+  		</snapshots>
+  	</repository>
+  	<repository>
+  		<id>goldengate.releases</id>
+  		<name>GoldenGate releases</name>
+  		<url>http://openr66.free.fr/maven2</url>
   		<releases>
   			<enabled>true</enabled>
   		</releases>
@@ -170,16 +181,26 @@
     <dependency>
       <groupId>org.jboss.netty</groupId>
       <artifactId>netty</artifactId>
-      <version>3.1.1.GA</version>
+      <version>3.1.2.GA</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
-    	<groupId>Netty-Extension</groupId>
-    	<artifactId>Netty-Extension</artifactId>
-    	<version>3.2.0</version>
-    	<scope>system</scope>
-    	<systemPath>D:/NEWJARS/Netty-Extension.jar</systemPath>
-    	<optional>false</optional>
+    	<groupId>NettyExtension</groupId>
+    	<artifactId>NettyExtension</artifactId>
+    	<version>1.0.0</version>
+    	<scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>GoldenGate</groupId>
+      <artifactId>GoldenGateDigest</artifactId>
+      <version>1.0.0</version>
+      <scope>compile</scope>
+    </dependency>
+        <dependency>
+      <groupId>GoldenGate</groupId>
+      <artifactId>GoldenGateCommon</artifactId>
+      <version>1.0.0</version>
+      <scope>compile</scope>
     </dependency>
   </dependencies>
   <properties>
@@ -187,8 +208,6 @@
     <filtermodule>**</filtermodule>
   </properties>
   <modules>
-  	<module>digest</module>
-  	<module>common</module>
   	<module>core</module>
   	<module>filesystem</module>
   	<module>simpleimpl</module>
@@ -254,13 +273,9 @@
                 <equals arg1="${project.artifactId}" arg2="GoldenGateFtp"/>
                 <then>
                 	<mkdir dir="${project.build.directory}/site"/>
-                	<mkdir dir="${project.build.directory}/site/digest"/>
-                	<mkdir dir="${project.build.directory}/site/common"/>
                 	<mkdir dir="${project.build.directory}/site/core"/>
                 	<mkdir dir="${project.build.directory}/site/filesystem"/>
                 	<mkdir dir="${project.build.directory}/site/simpleimpl"/>
-                	<copy file="${basedir}/src/site/resources/html/digest/index.html" toDir="${project.build.directory}/site/digest/"/>
-                	<copy file="${basedir}/src/site/resources/html/common/index.html" toDir="${project.build.directory}/site/common/"/>
                 	<copy file="${basedir}/src/site/resources/html/core/index.html" toDir="${project.build.directory}/site/core/"/>
                 	<copy file="${basedir}/src/site/resources/html/filesystem/index.html" toDir="${project.build.directory}/site/filesystem/"/>
                 	<copy file="${basedir}/src/site/resources/html/simpleimpl/index.html" toDir="${project.build.directory}/site/simpleimpl/"/>
@@ -432,23 +447,12 @@
 	          <additionalparam>
 	            -link http://java.sun.com/javase/6/docs/api/
 	            -link http://www.jboss.org/file-access/default/members/netty/freezone/api/3.1/index.html
-	            -link http://code.google.com/apis/protocolbuffers/docs/reference/java/
-	            -link http://java.sun.com/products/servlet/2.5/docs/servlet-2_5-mr2/
-	            -link http://www.osgi.org/javadoc/r4v41/
-	            -link http://google-guice.googlecode.com/svn/trunk/javadoc/
-	            -link http://static.springframework.org/spring/docs/2.5.x/api/
 	            -link http://www.slf4j.org/apidocs/
-	            -link http://commons.apache.org/logging/commons-logging-1.1.1/apidocs/
-	            -link http://logging.apache.org/log4j/1.2/apidocs/
 
-				-group "GoldenGate Common Digest package" "goldengate.common.digest*"
-				-group "GoldenGate Common Logging Future Command Authentication Session and File package" "goldengate.common.command*:goldengate.common.exception*:goldengate.common.file*:goldengate.common.future*:goldengate.common.logging*"
 				-group "GoldenGate FTP Main Core package" "goldengate.ftp.core*"
 				-group "GoldenGate FTP Filesystem Implementation package" "goldengate.ftp.filesystembased*"
 				-group "GoldenGate Simple FTP Server package" "goldengate.ftp.simpleimpl*"
 
-	            -sourceclasspath ${basedir}/digest/target/classes
-	            -sourceclasspath ${basedir}/common/target/classes
 	            -sourceclasspath ${basedir}/core/target/classes
 	            -sourceclasspath ${basedir}/filesystem/target/classes
 	            -sourceclasspath ${basedir}/simpleimpl/target/classes
