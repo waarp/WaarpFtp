@@ -18,38 +18,20 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package goldengate.ftp.core.session;
+package goldengate.ftp.core.file;
 
-import goldengate.common.command.NextCommandReply;
-import goldengate.common.command.exception.Reply421Exception;
-import goldengate.common.command.exception.Reply502Exception;
-import goldengate.common.command.exception.Reply530Exception;
-import goldengate.common.file.AuthInterface;
+import goldengate.common.file.FileInterface;
 
 /**
  * @author Frederic Bregier
  *
  */
-public interface FtpAuth extends AuthInterface {
+public interface FtpFile extends FileInterface {
 
     /**
-     * @return the account
+     * Launch retrieve operation (internal method, should not be called
+     * directly)
+     *
      */
-    public String getAccount();
-
-    /**
-     * @param account
-     *            the account to set
-     * @return (NOOP,230) if the Account is OK, else return the following
-     *         command that must follow and the associated reply
-     * @throws Reply421Exception
-     *             if there is a problem during the authentication
-     * @throws Reply530Exception
-     *             if there is a problem during the authentication
-     * @throws Reply502Exception
-     */
-    public NextCommandReply setAccount(String account)
-            throws Reply421Exception, Reply530Exception, Reply502Exception;
-
-
+    public void trueRetrieve();
 }

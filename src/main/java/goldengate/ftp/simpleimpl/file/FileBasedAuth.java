@@ -28,7 +28,7 @@ import goldengate.common.command.exception.Reply530Exception;
 import goldengate.common.logging.GgInternalLogger;
 import goldengate.common.logging.GgInternalLoggerFactory;
 import goldengate.ftp.core.command.FtpCommandCode;
-import goldengate.ftp.core.session.FtpDir;
+import goldengate.ftp.core.file.FtpDir;
 import goldengate.ftp.core.session.FtpSession;
 import goldengate.ftp.filesystembased.FilesystemBasedFtpAuth;
 import goldengate.ftp.simpleimpl.config.FileBasedConfiguration;

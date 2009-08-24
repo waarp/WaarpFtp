@@ -25,7 +25,7 @@ import goldengate.common.command.exception.CommandAbstractException;
 import goldengate.ftp.core.command.AbstractCommand;
 import goldengate.ftp.core.exception.FtpNoFileException;
 import goldengate.ftp.core.exception.FtpNoTransferException;
-import goldengate.ftp.core.session.FtpFile;
+import goldengate.ftp.core.file.FtpFile;
 import goldengate.ftp.core.utils.FtpChannelUtils;
 
 import java.util.List;

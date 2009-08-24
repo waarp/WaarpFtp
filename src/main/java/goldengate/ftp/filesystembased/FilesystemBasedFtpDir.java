@@ -23,8 +23,8 @@ package goldengate.ftp.filesystembased;
 import goldengate.common.command.exception.CommandAbstractException;
 import goldengate.common.file.filesystembased.FilesystemBasedDirImpl;
 import goldengate.common.file.filesystembased.FilesystemBasedOptsMLSxImpl;
-import goldengate.ftp.core.session.FtpDir;
-import goldengate.ftp.core.session.FtpFile;
+import goldengate.ftp.core.file.FtpDir;
+import goldengate.ftp.core.file.FtpFile;
 import goldengate.ftp.core.session.FtpSession;
 
 /**

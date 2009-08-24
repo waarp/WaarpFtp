@@ -25,7 +25,7 @@ import goldengate.common.command.exception.Reply450Exception;
 import goldengate.common.command.exception.Reply501Exception;
 import goldengate.common.command.exception.Reply553Exception;
 import goldengate.ftp.core.command.AbstractCommand;
-import goldengate.ftp.core.session.FtpFile;
+import goldengate.ftp.core.file.FtpFile;
 
 /**
  * STOU command

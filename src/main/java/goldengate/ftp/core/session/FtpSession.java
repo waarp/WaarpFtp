@@ -33,6 +33,8 @@ import goldengate.ftp.core.config.FtpConfiguration;
 import goldengate.ftp.core.control.BusinessHandler;
 import goldengate.ftp.core.control.NetworkHandler;
 import goldengate.ftp.core.data.FtpDataAsyncConn;
+import goldengate.ftp.core.file.FtpAuth;
+import goldengate.ftp.core.file.FtpDir;
 
 import org.jboss.netty.channel.Channel;
 

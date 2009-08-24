@@ -21,7 +21,7 @@
 package goldengate.ftp.simpleimpl.file;
 
 import goldengate.common.command.exception.CommandAbstractException;
-import goldengate.ftp.core.session.FtpFile;
+import goldengate.ftp.core.file.FtpFile;
 import goldengate.ftp.core.session.FtpSession;
 import goldengate.ftp.filesystembased.FilesystemBasedFtpDir;
 

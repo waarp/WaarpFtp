@@ -34,7 +34,7 @@ import goldengate.ftp.core.data.handler.DataNetworkHandler;
 import goldengate.ftp.core.exception.FtpNoConnectionException;
 import goldengate.ftp.core.exception.FtpNoFileException;
 import goldengate.ftp.core.exception.FtpNoTransferException;
-import goldengate.ftp.core.session.FtpFile;
+import goldengate.ftp.core.file.FtpFile;
 import goldengate.ftp.core.session.FtpSession;
 
 import java.net.InetAddress;

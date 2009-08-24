@@ -28,7 +28,7 @@ import goldengate.common.file.filesystembased.FilesystemBasedFileImpl;
 import goldengate.common.logging.GgInternalLogger;
 import goldengate.common.logging.GgInternalLoggerFactory;
 import goldengate.ftp.core.exception.FtpNoConnectionException;
-import goldengate.ftp.core.session.FtpFile;
+import goldengate.ftp.core.file.FtpFile;
 import goldengate.ftp.core.session.FtpSession;
 
 import java.util.concurrent.locks.ReentrantLock;

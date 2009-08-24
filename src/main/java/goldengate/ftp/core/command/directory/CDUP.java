@@ -24,7 +24,7 @@ import goldengate.common.command.ReplyCode;
 import goldengate.common.command.exception.CommandAbstractException;
 import goldengate.common.command.exception.Reply530Exception;
 import goldengate.ftp.core.command.AbstractCommand;
-import goldengate.ftp.core.session.FtpDir;
+import goldengate.ftp.core.file.FtpDir;
 
 /**
  * CDUP command

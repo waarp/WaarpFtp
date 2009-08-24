@@ -26,8 +26,8 @@ import goldengate.common.command.exception.Reply421Exception;
 import goldengate.common.command.exception.Reply502Exception;
 import goldengate.common.command.exception.Reply530Exception;
 import goldengate.common.file.filesystembased.FilesystemBasedAuthImpl;
-import goldengate.ftp.core.session.FtpAuth;
-import goldengate.ftp.core.session.FtpDir;
+import goldengate.ftp.core.file.FtpAuth;
+import goldengate.ftp.core.file.FtpDir;
 import goldengate.ftp.core.session.FtpSession;
 
 /**

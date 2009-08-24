@@ -23,7 +23,7 @@ package goldengate.ftp.core.data;
 import goldengate.common.command.exception.CommandAbstractException;
 import goldengate.ftp.core.command.FtpCommandCode;
 import goldengate.ftp.core.exception.FtpNoFileException;
-import goldengate.ftp.core.session.FtpFile;
+import goldengate.ftp.core.file.FtpFile;
 
 import java.util.List;
 

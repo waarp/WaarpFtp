@@ -25,8 +25,8 @@ import goldengate.common.file.Restart;
 import goldengate.common.file.filesystembased.FilesystemBasedOptsMLSxImpl;
 import goldengate.ftp.core.command.FtpCommandCode;
 import goldengate.ftp.core.data.FtpTransfer;
-import goldengate.ftp.core.session.FtpAuth;
-import goldengate.ftp.core.session.FtpDir;
+import goldengate.ftp.core.file.FtpAuth;
+import goldengate.ftp.core.file.FtpDir;
 import goldengate.ftp.core.session.FtpSession;
 
 import org.jboss.netty.channel.Channel;

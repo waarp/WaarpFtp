@@ -26,7 +26,7 @@ import goldengate.common.command.exception.Reply530Exception;
 import goldengate.common.logging.GgInternalLogger;
 import goldengate.common.logging.GgInternalLoggerFactory;
 import goldengate.ftp.core.command.AbstractCommand;
-import goldengate.ftp.core.session.FtpDir;
+import goldengate.ftp.core.file.FtpDir;
 
 /**
  * CWD command
