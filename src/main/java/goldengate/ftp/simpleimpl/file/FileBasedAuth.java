@@ -25,10 +25,10 @@ import goldengate.common.command.ReplyCode;
 import goldengate.common.command.exception.Reply421Exception;
 import goldengate.common.command.exception.Reply502Exception;
 import goldengate.common.command.exception.Reply530Exception;
-import goldengate.common.file.DirInterface;
 import goldengate.common.logging.GgInternalLogger;
 import goldengate.common.logging.GgInternalLoggerFactory;
 import goldengate.ftp.core.command.FtpCommandCode;
+import goldengate.ftp.core.session.FtpDir;
 import goldengate.ftp.core.session.FtpSession;
 import goldengate.ftp.filesystembased.FilesystemBasedFtpAuth;
 import goldengate.ftp.simpleimpl.config.FileBasedConfiguration;
@@ -166,9 +166,9 @@ public class FileBasedAuth extends FilesystemBasedFtpAuth {
     protected String setBusinessRootFromAuth() throws Reply421Exception {
         String path = null;
         if (account == null) {
-            path = DirInterface.SEPARATOR + user;
+            path = FtpDir.SEPARATOR + user;
         } else {
-            path = DirInterface.SEPARATOR + user + DirInterface.SEPARATOR +
+            path = FtpDir.SEPARATOR + user + FtpDir.SEPARATOR +
                     account;
         }
         String fullpath = getAbsolutePath(path);

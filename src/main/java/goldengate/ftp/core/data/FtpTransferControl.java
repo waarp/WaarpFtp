@@ -23,7 +23,6 @@ package goldengate.ftp.core.data;
 import goldengate.common.command.ReplyCode;
 import goldengate.common.command.exception.CommandAbstractException;
 import goldengate.common.command.exception.Reply425Exception;
-import goldengate.common.file.FileInterface;
 import goldengate.common.future.GgChannelFuture;
 import goldengate.common.future.GgFuture;
 import goldengate.common.logging.GgInternalLogger;
@@ -35,6 +34,7 @@ import goldengate.ftp.core.data.handler.DataNetworkHandler;
 import goldengate.ftp.core.exception.FtpNoConnectionException;
 import goldengate.ftp.core.exception.FtpNoFileException;
 import goldengate.ftp.core.exception.FtpNoTransferException;
+import goldengate.ftp.core.session.FtpFile;
 import goldengate.ftp.core.session.FtpSession;
 
 import java.net.InetAddress;
@@ -138,7 +138,7 @@ public class FtpTransferControl {
 
     /**
      * Wait for the DataNetworkHandler to be ready (from trueRetrieve of
-     * {@link FileInterface})
+     * {@link FtpFile})
      *
      * @throws InterruptedException
      *
@@ -339,7 +339,7 @@ public class FtpTransferControl {
      * @param command
      * @param file
      */
-    public void setNewFtpTransfer(FtpCommandCode command, FileInterface file) {
+    public void setNewFtpTransfer(FtpCommandCode command, FtpFile file) {
         isExecutingCommandFinished = false;
         // logger.debug("setNewCommand: {}", command);
         setDataNetworkHandlerReady();
@@ -456,22 +456,22 @@ public class FtpTransferControl {
             return false;
         } else if (FtpCommandCode.isRetrLikeCommand(executedTransfer
                 .getCommand())) {
-            FileInterface file = null;
+            FtpFile file = null;
             try {
                 file = executedTransfer.getFtpFile();
             } catch (FtpNoFileException e) {
-                // logger.debug("Check: Retr no FileInterface for Retr");
+                // logger.debug("Check: Retr no FtpFile for Retr");
                 abortTransfer(true);
                 return false;
             }
             try {
                 if (file.isInReading()) {
                     logger
-                            .debug("Check: Retr FileInterface still in reading KO");
+                            .debug("Check: Retr FtpFile still in reading KO");
                     abortTransfer(true);
                 } else {
                     logger
-                            .debug("Check: Retr FileInterface no more in reading OK");
+                            .debug("Check: Retr FtpFile no more in reading OK");
                     closeTransfer(true);
                 }
             } catch (CommandAbstractException e) {
@@ -500,7 +500,7 @@ public class FtpTransferControl {
      */
     private void abortTransfer(boolean write) {
         // logger.debug("Will abort transfer and write: ", write);
-        FileInterface file = null;
+        FtpFile file = null;
         FtpTransfer current = null;
         try {
             current = getExecutingFtpTransfer();
@@ -541,7 +541,7 @@ public class FtpTransferControl {
      */
     private void closeTransfer(boolean write) {
         // logger.debug("Will close transfer and write: {}", write);
-        FileInterface file = null;
+        FtpFile file = null;
         FtpTransfer current = null;
         try {
             current = getExecutingFtpTransfer();
@@ -602,7 +602,7 @@ public class FtpTransferControl {
 
     /**
      * Called by messageReceived, channelClosed (from {@link DataNetworkHandler}
-     * ) and trueRetrieve (from {@link FileInterface}) when the transfer is over
+     * ) and trueRetrieve (from {@link FtpFile}) when the transfer is over
      * or by channelClosed
      */
     public void setPreEndOfTransfer() {

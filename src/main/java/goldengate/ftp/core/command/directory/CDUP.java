@@ -23,8 +23,8 @@ package goldengate.ftp.core.command.directory;
 import goldengate.common.command.ReplyCode;
 import goldengate.common.command.exception.CommandAbstractException;
 import goldengate.common.command.exception.Reply530Exception;
-import goldengate.common.file.DirInterface;
 import goldengate.ftp.core.command.AbstractCommand;
+import goldengate.ftp.core.session.FtpDir;
 
 /**
  * CDUP command
@@ -40,7 +40,7 @@ public class CDUP extends AbstractCommand {
      * @see goldengate.ftp.core.command.AbstractCommand#exec()
      */
     public void exec() throws CommandAbstractException {
-        DirInterface current = getSession().getDir();
+        FtpDir current = getSession().getDir();
         if (current == null) {
             throw new Reply530Exception("Not authentificated");
         }

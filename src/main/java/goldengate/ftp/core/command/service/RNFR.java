@@ -24,8 +24,8 @@ import goldengate.common.command.ReplyCode;
 import goldengate.common.command.exception.CommandAbstractException;
 import goldengate.common.command.exception.Reply501Exception;
 import goldengate.common.command.exception.Reply550Exception;
-import goldengate.common.file.FileInterface;
 import goldengate.ftp.core.command.AbstractCommand;
+import goldengate.ftp.core.session.FtpFile;
 
 /**
  * RNFR command
@@ -46,7 +46,7 @@ public class RNFR extends AbstractCommand {
             throw new Reply501Exception("Need a pathname as argument");
         }
         String filename = getArg();
-        FileInterface file = getSession().getDir().setFile(filename, false);
+        FtpFile file = getSession().getDir().setFile(filename, false);
         if (file != null && file.exists()) {
             getSession()
                     .setReplyCode(
@@ -54,7 +54,7 @@ public class RNFR extends AbstractCommand {
                             "Need RNTO command");
             return;
         }
-        // FileInterface name not allowed or not found
+        // FtpFile name not allowed or not found
         throw new Reply550Exception("Filename not allowed");
     }
 

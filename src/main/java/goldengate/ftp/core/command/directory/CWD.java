@@ -23,10 +23,10 @@ package goldengate.ftp.core.command.directory;
 import goldengate.common.command.ReplyCode;
 import goldengate.common.command.exception.CommandAbstractException;
 import goldengate.common.command.exception.Reply530Exception;
-import goldengate.common.file.DirInterface;
 import goldengate.common.logging.GgInternalLogger;
 import goldengate.common.logging.GgInternalLoggerFactory;
 import goldengate.ftp.core.command.AbstractCommand;
+import goldengate.ftp.core.session.FtpDir;
 
 /**
  * CWD command
@@ -47,7 +47,7 @@ public class CWD extends AbstractCommand {
      * @see goldengate.ftp.core.command.AbstractCommand#exec()
      */
     public void exec() throws CommandAbstractException {
-        DirInterface current = getSession().getDir();
+        FtpDir current = getSession().getDir();
         if (current == null) {
             logger.warn("not identidied");
             throw new Reply530Exception("Not authentificated");

@@ -224,7 +224,7 @@ public abstract class FtpConfiguration {
     /**
      *
      * @param key
-     * @return The FileInterface property associated to the key
+     * @return The File associated to the key
      * @throws FtpUnknownFieldException
      */
     public File getFileProperty(String key) throws FtpUnknownFieldException {

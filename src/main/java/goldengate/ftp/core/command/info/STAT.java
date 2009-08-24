@@ -22,10 +22,10 @@ package goldengate.ftp.core.command.info;
 
 import goldengate.common.command.ReplyCode;
 import goldengate.common.command.exception.CommandAbstractException;
-import goldengate.common.file.FileInterface;
 import goldengate.ftp.core.command.AbstractCommand;
 import goldengate.ftp.core.exception.FtpNoFileException;
 import goldengate.ftp.core.exception.FtpNoTransferException;
+import goldengate.ftp.core.session.FtpFile;
 import goldengate.ftp.core.utils.FtpChannelUtils;
 
 import java.util.List;
@@ -46,8 +46,8 @@ public class STAT extends AbstractCommand {
     public void exec() throws CommandAbstractException {
         String path = null;
         String message = null;
-        message = "STATUS information\nNo FileInterface currently in transfer\n";
-        FileInterface file = null;
+        message = "STATUS information\nNo FtpFile currently in transfer\n";
+        FtpFile file = null;
         try {
             file = getSession().getDataConn().getFtpTransferControl()
                     .getExecutingFtpTransfer().getFtpFile();

@@ -5,6 +5,9 @@
 		<author email="fredbregier@free.fr">Frederic Bregier</author>
 	</properties>
 	<body>
+		<release version="0.9.7" date="2009-08-23" description="Small release after Netty-Extension creation and split of Common and Digest Package out of GoldenGateFtp project">
+			<action dev="Frederic Bregier" type="fix">Remove Common and Digest out of GoldenGateFtp project to GoldenGate Commons project</action>
+		</release>
 		<release version="0.9.6" date="2009-08-15" description="Small release after new version of OpenR66">
 			<action dev="Frederic Bregier" type="fix">Fix some bugs</action>
 		</release>

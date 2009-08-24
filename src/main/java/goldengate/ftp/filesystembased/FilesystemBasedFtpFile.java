@@ -28,6 +28,7 @@ import goldengate.common.file.filesystembased.FilesystemBasedFileImpl;
 import goldengate.common.logging.GgInternalLogger;
 import goldengate.common.logging.GgInternalLoggerFactory;
 import goldengate.ftp.core.exception.FtpNoConnectionException;
+import goldengate.ftp.core.session.FtpFile;
 import goldengate.ftp.core.session.FtpSession;
 
 import java.util.concurrent.locks.ReentrantLock;
@@ -37,12 +38,12 @@ import org.jboss.netty.channel.ChannelFuture;
 import org.jboss.netty.channel.Channels;
 
 /**
- * Filesystem implementation of a FileInterface
+ * Filesystem implementation of a FtpFile
  *
  * @author Frederic Bregier
  *
  */
-public abstract class FilesystemBasedFtpFile extends FilesystemBasedFileImpl {
+public abstract class FilesystemBasedFtpFile extends FilesystemBasedFileImpl implements FtpFile {
     /**
      * Internal Logger
      */
@@ -80,6 +81,11 @@ public abstract class FilesystemBasedFtpFile extends FilesystemBasedFileImpl {
         return length;
     }
 
+    /**
+     * Launch retrieve operation (internal method, should not be called
+     * directly)
+     *
+     */
     public void trueRetrieve() {
         retrieveLock.lock();
         try {

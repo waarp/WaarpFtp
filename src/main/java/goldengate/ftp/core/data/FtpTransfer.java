@@ -21,9 +21,9 @@
 package goldengate.ftp.core.data;
 
 import goldengate.common.command.exception.CommandAbstractException;
-import goldengate.common.file.FileInterface;
 import goldengate.ftp.core.command.FtpCommandCode;
 import goldengate.ftp.core.exception.FtpNoFileException;
+import goldengate.ftp.core.session.FtpFile;
 
 import java.util.List;
 
@@ -52,7 +52,7 @@ public class FtpTransfer {
     /**
      * Current Ftp FileInterface
      */
-    private final FileInterface currentFile;
+    private final FtpFile currentFile;
 
     /**
      * The status
@@ -76,7 +76,7 @@ public class FtpTransfer {
      * @param command
      * @param file
      */
-    public FtpTransfer(FtpCommandCode command, FileInterface file) {
+    public FtpTransfer(FtpCommandCode command, FtpFile file) {
         this.command = command;
         currentFile = file;
         try {
@@ -97,7 +97,7 @@ public class FtpTransfer {
      * @return the file
      * @throws FtpNoFileException
      */
-    public FileInterface getFtpFile() throws FtpNoFileException {
+    public FtpFile getFtpFile() throws FtpNoFileException {
         if (currentFile == null) {
             throw new FtpNoFileException("No file associated with the transfer");
         }

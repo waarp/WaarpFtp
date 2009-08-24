@@ -21,6 +21,7 @@
 package goldengate.ftp.simpleimpl.file;
 
 import goldengate.common.command.exception.CommandAbstractException;
+import goldengate.ftp.core.session.FtpFile;
 import goldengate.ftp.core.session.FtpSession;
 import goldengate.ftp.filesystembased.FilesystemBasedFtpFile;
 
@@ -47,9 +48,9 @@ public class FileBasedFile extends FilesystemBasedFtpFile {
     }
 
     /**
-     * This method is a good to have in a true FileInterface implementation.
+     * This method is a good to have in a true {@link FtpFile} implementation.
      *
-     * @return the FileInterface associated with the current FileInterface
+     * @return the File associated with the current FtpFile
      *         operation
      */
     public File getTrueFile() {

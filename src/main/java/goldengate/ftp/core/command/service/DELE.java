@@ -25,8 +25,8 @@ import goldengate.common.command.exception.CommandAbstractException;
 import goldengate.common.command.exception.Reply450Exception;
 import goldengate.common.command.exception.Reply501Exception;
 import goldengate.common.command.exception.Reply550Exception;
-import goldengate.common.file.FileInterface;
 import goldengate.ftp.core.command.AbstractCommand;
+import goldengate.ftp.core.session.FtpFile;
 
 /**
  * DELE command
@@ -47,12 +47,12 @@ public class DELE extends AbstractCommand {
             throw new Reply501Exception("Need a pathname as argument");
         }
         String filename = getArg();
-        FileInterface file = getSession().getDir().setFile(filename, false);
+        FtpFile file = getSession().getDir().setFile(filename, false);
         if (file != null) {
             if (file.delete()) {
                 getSession().setReplyCode(
                         ReplyCode.REPLY_250_REQUESTED_FILE_ACTION_OKAY,
-                        "\"" + file.getFile() + "\" FileInterface is deleted");
+                        "\"" + file.getFile() + "\" FtpFile is deleted");
                 return;
             }
             throw new Reply450Exception("Delete operation not allowed");

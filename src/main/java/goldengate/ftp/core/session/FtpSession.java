@@ -24,8 +24,6 @@ import goldengate.common.command.CommandInterface;
 import goldengate.common.command.ReplyCode;
 import goldengate.common.command.exception.CommandAbstractException;
 import goldengate.common.command.exception.Reply425Exception;
-import goldengate.common.file.AuthInterface;
-import goldengate.common.file.DirInterface;
 import goldengate.common.file.FileParameterInterface;
 import goldengate.common.file.Restart;
 import goldengate.common.file.SessionInterface;
@@ -64,12 +62,12 @@ public class FtpSession implements SessionInterface {
     /**
      * Ftp Authentication
      */
-    private AuthInterface ftpAuth = null;
+    private FtpAuth ftpAuth = null;
 
     /**
      * Ftp DirInterface configuration and access
      */
-    private DirInterface ftpDir = null;
+    private FtpDir ftpDir = null;
 
     /**
      * Previous Command
@@ -129,7 +127,7 @@ public class FtpSession implements SessionInterface {
         return configuration;
     }
 
-    public DirInterface getDir() {
+    public FtpDir getDir() {
         return ftpDir;
     }
 
@@ -140,7 +138,7 @@ public class FtpSession implements SessionInterface {
         return dataConn;
     }
 
-    public AuthInterface getAuth() {
+    public FtpAuth getAuth() {
         return ftpAuth;
     }
 

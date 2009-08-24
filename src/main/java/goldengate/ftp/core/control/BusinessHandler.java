@@ -21,12 +21,12 @@
 package goldengate.ftp.core.control;
 
 import goldengate.common.command.exception.CommandAbstractException;
-import goldengate.common.file.AuthInterface;
-import goldengate.common.file.DirInterface;
 import goldengate.common.file.Restart;
 import goldengate.common.file.filesystembased.FilesystemBasedOptsMLSxImpl;
 import goldengate.ftp.core.command.FtpCommandCode;
 import goldengate.ftp.core.data.FtpTransfer;
+import goldengate.ftp.core.session.FtpAuth;
+import goldengate.ftp.core.session.FtpDir;
 import goldengate.ftp.core.session.FtpSession;
 
 import org.jboss.netty.channel.Channel;
@@ -87,16 +87,16 @@ public abstract class BusinessHandler {
     /**
      * Create a new AuthInterface according to business choice
      *
-     * @return the new AuthInterface
+     * @return the new FtpAuth
      */
-    public abstract AuthInterface getBusinessNewAuth();
+    public abstract FtpAuth getBusinessNewAuth();
 
     /**
      * Create a new FtpDir according to business choice
      *
      * @return the new FtpDir
      */
-    public abstract DirInterface getBusinessNewDir();
+    public abstract FtpDir getBusinessNewDir();
 
     /**
      * Create a new Restart according to business choice

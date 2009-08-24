@@ -18,7 +18,7 @@
  * closed before any new startup.
  * <li>The transfer command is received</li> and is followed by several steps:
  * <ul>
- * <li>First it prepares the FileInterface object</li>
+ * <li>First it prepares the FtpFile object</li>
  * <li>It opens the data connection</li>. Two possibilities:<br>
  * 1) PASSIVE mode where the server waits for the client to initiate the real
  * connection.<br>

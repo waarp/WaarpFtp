@@ -24,8 +24,8 @@ import goldengate.common.command.exception.CommandAbstractException;
 import goldengate.common.command.exception.Reply450Exception;
 import goldengate.common.command.exception.Reply501Exception;
 import goldengate.common.command.exception.Reply553Exception;
-import goldengate.common.file.FileInterface;
 import goldengate.ftp.core.command.AbstractCommand;
+import goldengate.ftp.core.session.FtpFile;
 
 /**
  * STOU command
@@ -45,7 +45,7 @@ public class STOU extends AbstractCommand {
             invalidCurrentCommand();
             throw new Reply501Exception("No argument is allowed");
         }
-        FileInterface file = getSession().getDir().setUniqueFile();
+        FtpFile file = getSession().getDir().setUniqueFile();
         if (file != null) {
             if (file.store()) {
                 getSession().openDataConnection();

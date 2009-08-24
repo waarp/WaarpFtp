@@ -24,8 +24,8 @@ import goldengate.common.command.exception.CommandAbstractException;
 import goldengate.common.command.exception.Reply450Exception;
 import goldengate.common.command.exception.Reply501Exception;
 import goldengate.common.command.exception.Reply553Exception;
-import goldengate.common.file.FileInterface;
 import goldengate.ftp.core.command.AbstractCommand;
+import goldengate.ftp.core.session.FtpFile;
 
 /**
  * APPE command
@@ -46,7 +46,7 @@ public class APPE extends AbstractCommand {
             throw new Reply501Exception("Need a pathname as argument");
         }
         String filename = getArg();
-        FileInterface file = getSession().getDir().setFile(filename, true);
+        FtpFile file = getSession().getDir().setFile(filename, true);
         if (file != null) {
             if (file.store()) {
                 getSession().openDataConnection();

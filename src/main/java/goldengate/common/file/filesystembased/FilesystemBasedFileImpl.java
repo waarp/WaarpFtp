@@ -471,19 +471,21 @@ public abstract class FilesystemBasedFileImpl implements
         long bufferSize = buffer.readableBytes();
         ByteBuffer byteBuffer = buffer.toByteBuffer();
         long size = 0;
-        try {
-            size = bfileChannelOut.write(byteBuffer);
-        } catch (IOException e) {
-            logger.error("Error during write:", e);
+        while (size < bufferSize) {
             try {
-                bfileChannelOut.close();
-            } catch (IOException e1) {
+                size += bfileChannelOut.write(byteBuffer);
+            } catch (IOException e) {
+                logger.error("Error during write:", e);
+                try {
+                    bfileChannelOut.close();
+                } catch (IOException e1) {
+                }
+                bfileChannelOut = null;
+                byteBuffer = null;
+                // NO this.realFile.delete(); NO DELETE SINCE BY BLOCK IT CAN BE
+                // REDO
+                throw new FileTransferException("Internal error, file is not ready");
             }
-            bfileChannelOut = null;
-            byteBuffer = null;
-            // NO this.realFile.delete(); NO DELETE SINCE BY BLOCK IT CAN BE
-            // REDO
-            throw new FileTransferException("Internal error, file is not ready");
         }
         boolean result = size == bufferSize;
         byteBuffer = null;

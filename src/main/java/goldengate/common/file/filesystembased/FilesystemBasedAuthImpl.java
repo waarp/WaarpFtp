@@ -23,7 +23,6 @@ package goldengate.common.file.filesystembased;
 import goldengate.common.command.NextCommandReply;
 import goldengate.common.command.ReplyCode;
 import goldengate.common.command.exception.Reply421Exception;
-import goldengate.common.command.exception.Reply502Exception;
 import goldengate.common.command.exception.Reply530Exception;
 import goldengate.common.file.AuthInterface;
 import goldengate.common.file.DirInterface;
@@ -47,11 +46,6 @@ public abstract class FilesystemBasedAuthImpl implements AuthInterface {
     protected String password = null;
 
     /**
-     * Account name
-     */
-    protected String account = null;
-
-    /**
      * Is Identified
      */
     protected boolean isIdentified = false;
@@ -59,7 +53,7 @@ public abstract class FilesystemBasedAuthImpl implements AuthInterface {
     /**
      * SessionInterface
      */
-    private final SessionInterface session;
+    protected final SessionInterface session;
 
     /**
      * Relative Path after Authentication
@@ -161,52 +155,6 @@ public abstract class FilesystemBasedAuthImpl implements AuthInterface {
     }
 
     /**
-     * @return the account
-     */
-    public String getAccount() {
-        return account;
-    }
-
-    /**
-     * Set the account according to any implementation and could set the
-     * rootFromAuth. If NOOP is returned, isIdentifed must be TRUE.
-     *
-     * @param account
-     * @return (NOOP,230) if the Account is OK, else return the following
-     *         command that must follow and the associated reply
-     * @throws Reply421Exception
-     *             if there is a problem during the authentication
-     * @throws Reply530Exception
-     *             if there is a problem during the authentication
-     * @throws Reply502Exception
-     *             if there is a problem during the authentication
-     */
-    protected abstract NextCommandReply setBusinessAccount(String account)
-            throws Reply421Exception, Reply530Exception, Reply502Exception;
-
-    /**
-     * @param account
-     *            the account to set
-     * @return (NOOP,230) if the Account is OK, else return the following
-     *         command that must follow and the associated reply
-     * @throws Reply421Exception
-     *             if there is a problem during the authentication
-     * @throws Reply530Exception
-     *             if there is a problem during the authentication
-     * @throws Reply502Exception
-     */
-    public NextCommandReply setAccount(String account)
-            throws Reply421Exception, Reply530Exception, Reply502Exception {
-        NextCommandReply next = setBusinessAccount(account);
-        this.account = account;
-        if (next.reply == ReplyCode.REPLY_230_USER_LOGGED_IN) {
-            setRootFromAuth();
-            session.getDir().initAfterIdentification();
-        }
-        return next;
-    }
-
-    /**
      * Set the Authentication to Identified or Not
      *
      * @param isIdentified
@@ -251,12 +199,7 @@ public abstract class FilesystemBasedAuthImpl implements AuthInterface {
     private void setRootFromAuth() throws Reply421Exception {
         rootFromAuth = setBusinessRootFromAuth();
         if (rootFromAuth == null) {
-            if (account == null) {
-                rootFromAuth = DirInterface.SEPARATOR + user;
-            } else {
-                rootFromAuth = DirInterface.SEPARATOR + user +
-                        DirInterface.SEPARATOR + account;
-            }
+            rootFromAuth = DirInterface.SEPARATOR + user;
         }
     }
 
@@ -277,7 +220,6 @@ public abstract class FilesystemBasedAuthImpl implements AuthInterface {
     public void clear() {
         businessClean();
         user = null;
-        account = null;
         password = null;
         rootFromAuth = null;
         isIdentified = false;

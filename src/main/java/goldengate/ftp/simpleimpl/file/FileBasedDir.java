@@ -21,7 +21,7 @@
 package goldengate.ftp.simpleimpl.file;
 
 import goldengate.common.command.exception.CommandAbstractException;
-import goldengate.common.file.FileInterface;
+import goldengate.ftp.core.session.FtpFile;
 import goldengate.ftp.core.session.FtpSession;
 import goldengate.ftp.filesystembased.FilesystemBasedFtpDir;
 
@@ -39,7 +39,7 @@ public class FileBasedDir extends FilesystemBasedFtpDir {
         super(session);
     }
 
-    public FileInterface newFile(String path, boolean append)
+    public FtpFile newFile(String path, boolean append)
             throws CommandAbstractException {
         return new FileBasedFile((FtpSession) getSession(), this, path, append);
     }

@@ -20,7 +20,6 @@
  */
 package goldengate.ftp.core.command;
 
-import goldengate.common.file.FileInterface;
 import goldengate.ftp.core.command.internal.ConnectionCommand;
 import goldengate.ftp.core.command.internal.IncorrectCommand;
 import goldengate.ftp.core.command.internal.UnimplementedCommand;
@@ -266,12 +265,12 @@ public enum FtpCommandCode {
      * The following codes are assigned for structure:<br>
      *
      * <pre>
-     * F - FileInterface (no record structure)
+     * F - FtpFile (no record structure)
      *                R - Record structure
      *                P - Page structure
      * </pre>
      *
-     * The default structure is FileInterface.<br>
+     * The default structure is FtpFile.<br>
      *
      *
      * 200<br>
@@ -396,7 +395,7 @@ public enum FtpCommandCode {
      * would imply to store those informations somewhere (how?).<br>
      * <br>
      * However, it could be changed if necessary by modifying the
-     * {@link FileInterface} restartMarker method.<br>
+     * {@link FtpFile} restartMarker method.<br>
      * <br>
      * This command will accept commands of transfer parameter following since
      * some clients do this.<br>

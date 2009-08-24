@@ -125,8 +125,7 @@ public interface FileInterface {
 
     /**
      * Ask to store the current FileInterface. This command returns quickly
-     * since it does not store really. It prepares the connection and make a
-     * temporary answer.
+     * since it does not store really. It prepares the object.
      *
      * @return True if everything is ready
      * @throws CommandAbstractException
@@ -135,7 +134,7 @@ public interface FileInterface {
 
     /**
      * Ask to retrieve the current FileInterface. This command returns quickly
-     * since it does not retrieve really. It prepares the connection.
+     * since it does not retrieve really. It prepares the object.
      *
      * @return True if everything is ready
      * @throws CommandAbstractException
@@ -202,11 +201,4 @@ public interface FileInterface {
      */
     public DataBlock readDataBlock() throws FileEndOfTransferException,
             FileTransferException;
-
-    /**
-     * Launch retrieve operation (internal method, should not be called
-     * directly)
-     *
-     */
-    public void trueRetrieve();
 }

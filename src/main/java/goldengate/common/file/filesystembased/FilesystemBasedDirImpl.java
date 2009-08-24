@@ -27,6 +27,7 @@ import goldengate.common.command.exception.Reply550Exception;
 import goldengate.common.command.exception.Reply553Exception;
 import goldengate.common.digest.FilesystemBasedDigest;
 import goldengate.common.file.DirInterface;
+import goldengate.common.file.FileInterface;
 import goldengate.common.file.OptsMLSxInterface;
 import goldengate.common.file.SessionInterface;
 import goldengate.common.file.filesystembased.specific.FilesystemBasedCommonsIo;
@@ -704,7 +705,7 @@ public abstract class FilesystemBasedDirImpl implements DirInterface {
         return filesystemBasedFtpDirJdk.getFreeSpace(directory);
     }
 
-    public goldengate.common.file.FileInterface setFile(String path,
+    public FileInterface setFile(String path,
             boolean append) throws CommandAbstractException {
         checkIdentify();
         String newpath = consolidatePath(path);
@@ -717,7 +718,7 @@ public abstract class FilesystemBasedDirImpl implements DirInterface {
         return newFile(extDir, append);
     }
 
-    public goldengate.common.file.FileInterface setUniqueFile()
+    public FileInterface setUniqueFile()
             throws CommandAbstractException {
         checkIdentify();
         File file = null;

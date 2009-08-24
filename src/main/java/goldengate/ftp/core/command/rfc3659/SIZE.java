@@ -24,8 +24,8 @@ import goldengate.common.command.ReplyCode;
 import goldengate.common.command.exception.CommandAbstractException;
 import goldengate.common.command.exception.Reply501Exception;
 import goldengate.common.command.exception.Reply550Exception;
-import goldengate.common.file.FileInterface;
 import goldengate.ftp.core.command.AbstractCommand;
+import goldengate.ftp.core.session.FtpFile;
 
 /**
  * SIZE command
@@ -49,7 +49,7 @@ public class SIZE extends AbstractCommand {
         if (!getSession().getDir().isFile(arg)) {
             throw new Reply550Exception("Not a file " + arg);
         }
-        FileInterface file = getSession().getDir().setFile(arg, false);
+        FtpFile file = getSession().getDir().setFile(arg, false);
         long length = file.length();
         getSession().setReplyCode(ReplyCode.REPLY_213_FILE_STATUS, "" + length);
     }

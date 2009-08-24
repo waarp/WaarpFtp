@@ -20,22 +20,34 @@
  */
 package goldengate.ftp.filesystembased;
 
+import goldengate.common.command.exception.CommandAbstractException;
 import goldengate.common.file.filesystembased.FilesystemBasedDirImpl;
 import goldengate.common.file.filesystembased.FilesystemBasedOptsMLSxImpl;
+import goldengate.ftp.core.session.FtpDir;
+import goldengate.ftp.core.session.FtpFile;
 import goldengate.ftp.core.session.FtpSession;
 
 /**
- * Filesystem implementation of a DirInterface
+ * Filesystem implementation of a FtpDir
  *
  * @author Frederic Bregier
  *
  */
-public abstract class FilesystemBasedFtpDir extends FilesystemBasedDirImpl {
+public abstract class FilesystemBasedFtpDir extends FilesystemBasedDirImpl implements FtpDir {
     /**
      *
      * @param session
      */
     public FilesystemBasedFtpDir(FtpSession session) {
         super(session, new FilesystemBasedOptsMLSxImpl());
+    }
+
+    public FtpFile setUniqueFile()
+        throws CommandAbstractException {
+        return (FtpFile) super.setUniqueFile();
+    }
+    public FtpFile setFile(String path,
+            boolean append) throws CommandAbstractException {
+        return (FtpFile) super.setFile(path, append);
     }
 }

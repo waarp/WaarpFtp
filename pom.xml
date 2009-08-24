@@ -168,11 +168,17 @@
       <optional>true</optional>
     </dependency>
     <dependency>
-    	<groupId>Netty</groupId>
-    	<artifactId>Netty</artifactId>
-    	<version>Netty-branche-traffic see http://www.jboss.org/netty</version>
+      <groupId>org.jboss.netty</groupId>
+      <artifactId>netty</artifactId>
+      <version>3.1.1.GA</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+    	<groupId>Netty-Extension</groupId>
+    	<artifactId>Netty-Extension</artifactId>
+    	<version>3.2.0</version>
     	<scope>system</scope>
-    	<systemPath>D:/NEWJARS/Netty-Jboss.jar</systemPath>
+    	<systemPath>D:/NEWJARS/Netty-Extension.jar</systemPath>
     	<optional>false</optional>
     </dependency>
   </dependencies>
