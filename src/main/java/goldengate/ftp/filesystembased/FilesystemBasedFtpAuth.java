@@ -128,7 +128,7 @@ public abstract class FilesystemBasedFtpAuth extends FilesystemBasedAuthImpl imp
     }
 
     @Override
-    protected String getBaseDirectory() {
+    public String getBaseDirectory() {
         return ((FtpSession) getSession()).getConfiguration()
                 .getBaseDirectory();
     }
