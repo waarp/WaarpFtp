@@ -5,6 +5,9 @@
 		<author email="fredbregier@free.fr">Frederic Bregier</author>
 	</properties>
 	<body>
+		<release version="1.0.1" date="2009-09-14" description="Small update due to Common update">
+			<action dev="Frederic Bregier" type="fix">Update from Common</action>
+		</release>
 		<release version="1.0.0" date="2009-08-24" description="First Final Release after NettyExtension creation and split of Common and Digest Package out of GoldenGateFtp project">
 			<action dev="Frederic Bregier" type="fix">Remove Common and Digest out of GoldenGateFtp project to GoldenGate Commons project</action>
 			<action dev="Frederic Bregier" type="fix">Creation of NettyExtension project</action>

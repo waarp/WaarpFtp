@@ -1,0 +1,136 @@
+GoldenGateFtp and GoldenGateFtp-Simpleimpl Configuration
+
+*How to configure GoldenGate Ftp using default implementation
+
+  In the zip distribution <GoldenGateFtp-X.Y.Z-dist.zip> (available at sourceforge for download),
+  you will find an extra directory named: <src/main/config> where two examples files are:
+  <config.xml> and <authent.xml>.
+  Those two files are related to the simple implementation of the Ftp Server.
+
+  The first one (config.xml) specifies the general behavior:
+
+  * server password (for admin functions)
+
+  * server port, home directory, bandwidth limitation
+
+  * server special configuration like threads number, timeout of connection, deleteOnAbort,
+    usenio, fastmd5, blocksize, rangeport and the localization of the authentfile (second file)
+
+  []
+
+  The second one (authent.xml) is a simple authentication file containing user definition
+  (user name, password, account, admin status).
+
+  These two files are for the simple implementation (which is a simple FtpServer without any
+  special actions), and using a simple authentication mechanism (from authent.xml). The simple
+  Ftp Server is included in the <GoldenGateFtp-Simpleimpl-X.Y.Z.jar> .
+
+  If you want to implement something different, here are the files you may want to re write.
+  They can all be found in the <simpleimpl> sub project at <goldengate.ftp.simpleimpl> package.
+
+  * the server startup itself : <SimpleGatewayFtpServer>
+
+  * the Configuration file : <config.FileBasedConfiguration>
+
+    By default an XML file is used. If you want to use other ways to implement the load of
+    the configuration, you can change this implementation by the one you want (for instance
+    from a database).
+
+    If you want to include some others configurations properties and XML is ok for you,
+    you can extend it to fit your needs.
+
+  * the virtual Directory, File implementation : <file.FileBasedDir>, <file.FileBasedFile>
+
+    For instance, if you want to implement File and Directory as content in a database,
+    you will have to not use the <GoldenGateFtp-Filesystem-X.Y.Z.jar> package an to implement
+    your own File and Directory representation.
+
+    If you are OK with real file and directory, then nothing has to be done.
+
+  * the authentication system : <file.FileBasedAuth> and its associated <file.SimpleAuth>
+
+    For instance, if you want to inherit authentication from a LDAP, you will have to
+    implement your own extension of <goldengate.ftp.filesystembased.FilesystemBasedFtpAuth>
+    instead of this simple one.
+
+  * then you have two classes that implements business actions on pre and post actions on transfer:
+
+    *<control.SimpleBusinessHandler> : for the control connection of FTP service
+
+    *<data.FileSystemBasedDataBusinessHandler> : for the data connection of FTP service
+
+    []
+
+    By default, this classes does nothing except logging.
+
+*How to run GoldenGate Ftp using default implementation
+
+  It can be started like:
+
+  java ... classpath and jvm settings ... <goldengate.ftp.simpleimpl.SimpleGatewayFtpServer> <src/main/config/config.xml>
+
+  Note that in the classpath you need :
+
+  *External jars:
+
+    *{{{http://www.jboss.org/netty/index.html}Netty}}
+
+    *{{{http://commons.apache.org/io/}Apache-Common-IO}}
+
+    *{{{http://www.dom4j.org/}DOM4J}}
+
+    *{{{http://jaxen.codehaus.org/}Jaxen}}
+
+    *{{{http://www.slf4j.org/}SLF4J}}
+
+    *{{{http://logback.qos.ch/}Logback}}
+
+  *Goldengate jars:
+
+    *<NettyExtension>
+
+    *<GoldenGateDigest>
+
+    *<GoldenGateCommon>
+
+    *<GoldenGateFtp-Core> of course
+
+    *<GoldenGateFtp-Filesystem> probably, except if you want to implement virtual Directory
+     and File in something different than true directories and files
+
+    *<GoldengateFtp-Simpleimpl> if you are ok with the default implementation
+
+  []
+
+  Some of them can be replaced if you change the implementation (Common IO is optional,
+  Dom4J and Jaxen are only used if XML configuration file is used, SLF4J and Logback could be
+  replaced with other logger framework, see the <goldengate.common.logging> from <GoldenGateCommon>
+  where JDK is also supported, others can easily be supported).
+
+  To shutdown the service, either you do a CTRL-C or better if Unix (but not IBM JDK)
+
+----------------------------------------
+  kill -SIGUSR1 <processID>
+----------------------------------------
+
+  or even better you connect as an admin user and execute the special command:
+
+----------------------------------------
+  internalshutdown <password>
+----------------------------------------
+
+  where the password is the one in the <config.xml> for admin actions.
+
+  For instance, using FTP Client from windows you have to type the command <quote> to pass
+  a non standard command to the FTP Server.
+
+----------------------------------------
+  >quote internalshutdown <password>
+----------------------------------------
+
+  Note that this FTP Server can be used as a simple one, but also for more complicated cases.
+  It is in the middle of a self FTP server (<simpleimpl> package) and a framework to implement
+  its own FTP service, which is the main reason of this project since I've not found any other
+  open source  implementations allowing to have pre or post actions on transfers or commands.
+
+  Hope this helps a bit... If you have any questions, remarks, just ask!
