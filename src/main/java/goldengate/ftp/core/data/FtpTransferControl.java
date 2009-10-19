@@ -164,7 +164,7 @@ public class FtpTransferControl {
             waitForOpenedDataChannel.setChannel(channel);
             waitForOpenedDataChannel.setSuccess();
         } else {
-            waitForOpenedDataChannel.setFailure(null);
+            waitForOpenedDataChannel.cancel();
         }
     }
 
