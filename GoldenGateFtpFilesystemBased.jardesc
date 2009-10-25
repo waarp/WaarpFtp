@@ -1,7 +1,7 @@
-<?xml version="1.0" encoding="WINDOWS-1252" standalone="no"?>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <jardesc>
     <jar path="D:/NEWJARS/GG-FTP-FilesystemBased.jar"/>
-    <options buildIfNeeded="true" compress="true" descriptionLocation="/GoldenGateFtpTrunk/GoldenGateFtpFilesystemBased.jardesc" exportErrors="true" exportWarnings="true" includeDirectoryEntries="false" overwrite="false" saveDescription="true" storeRefactorings="false" useSourceFolders="false"/>
+    <options buildIfNeeded="true" compress="true" descriptionLocation="/GoldenGateFtp/GoldenGateFtpFilesystemBased.jardesc" exportErrors="true" exportWarnings="true" includeDirectoryEntries="false" overwrite="false" saveDescription="true" storeRefactorings="false" useSourceFolders="false"/>
     <storedRefactorings deprecationInfo="true" structuralOnly="false"/>
     <selectedProjects/>
     <manifest generateManifest="true" manifestLocation="" manifestVersion="1.0" reuseManifest="false" saveManifest="false" usesManifest="true">
@@ -11,7 +11,7 @@
         </sealing>
     </manifest>
     <selectedElements exportClassFiles="true" exportJavaFiles="false" exportOutputFolder="false">
-        <javaElement handleIdentifier="=GoldenGateFtpTrunk/src\/main\/java&lt;goldengate.ftp.filesystembased"/>
+        <javaElement handleIdentifier="=GoldenGateFtp/src\/main\/java&lt;goldengate.ftp.filesystembased"/>
     </selectedElements>
     <fatjar builder="org.eclipse.jdt.ui.plain_jar_builder" launchConfig=""/>
 </jardesc>

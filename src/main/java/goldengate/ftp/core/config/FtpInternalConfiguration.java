@@ -36,6 +36,7 @@ import java.net.InetSocketAddress;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -83,14 +84,29 @@ public class FtpInternalConfiguration {
     /**
      * Hack to say Windows or Unix (USR1 not OK on Windows)
      */
-    public static final boolean ISUNIX = !System.getProperty("os.name")
-            .toLowerCase().startsWith("windows");
+    public static Boolean ISUNIX = null;
 
     /**
      * Default size for buffers (NIO)
      */
     public static final int BUFFERSIZEDEFAULT = 0x10000; // 64K
 
+    private class FtpThreadFactory implements ThreadFactory {
+        private String GlobalName;
+        public FtpThreadFactory(String globalName) {
+            GlobalName = globalName;
+        }
+        /* (non-Javadoc)
+         * @see java.util.concurrent.ThreadFactory#newThread(java.lang.Runnable)
+         */
+        @Override
+        public Thread newThread(Runnable arg0) {
+            Thread thread = new Thread(arg0);
+            thread.setName(GlobalName+thread.getName());
+            return thread;
+        }
+
+    }
     // Dynamic values
     /**
      * List of all Command Channels to enable the close call on them using Netty
@@ -229,7 +245,8 @@ public class FtpInternalConfiguration {
     /**
      * List of already bind local addresses for Passive connections
      */
-    private final ConcurrentHashMap<InetSocketAddress, BindAddress> hashBindPassiveDataConn = new ConcurrentHashMap<InetSocketAddress, BindAddress>();
+    private final ConcurrentHashMap<InetSocketAddress, BindAddress> hashBindPassiveDataConn =
+        new ConcurrentHashMap<InetSocketAddress, BindAddress>();
 
     /**
      * Global Configuration
@@ -243,6 +260,7 @@ public class FtpInternalConfiguration {
      */
     public FtpInternalConfiguration(FtpConfiguration configuration) {
         this.configuration = configuration;
+        ISUNIX = !System.getProperty("os.name").toLowerCase().startsWith("windows");
     }
 
     /**
@@ -255,14 +273,12 @@ public class FtpInternalConfiguration {
         // Command
         commandChannelGroup = new DefaultChannelGroup(configuration.fromClass
                 .getName());
-        // ChannelGroupFactory.getGroup(configuration.fromClass);
         commandChannelFactory = new NioServerSocketChannelFactory(execBoss,
                 execWorker, configuration.SERVER_THREAD);
         // Data
         dataChannelGroup = new DefaultChannelGroup(configuration.fromClass
                 .getName() +
                 ".data");
-        // ChannelGroupFactory.getGroup(configuration.fromClass.getName()+".data");
         dataPassiveChannelFactory = new NioServerSocketChannelFactory(
                 execPassiveDataBoss, execPassiveDataWorker,
                 configuration.SERVER_THREAD);
@@ -455,7 +471,7 @@ public class FtpInternalConfiguration {
                         configuration.SERVER_THREAD * 4,
                         configuration.maxGlobalMemory / 40,
                         configuration.maxGlobalMemory / 4, 500,
-                        TimeUnit.MILLISECONDS, Executors.defaultThreadFactory());
+                        TimeUnit.MILLISECONDS, new FtpThreadFactory("CommandExecutor_"));
             }
         } finally {
             configuration.getLock().unlock();
@@ -478,7 +494,7 @@ public class FtpInternalConfiguration {
                         configuration.SERVER_THREAD * 4,
                         configuration.maxGlobalMemory / 10,
                         configuration.maxGlobalMemory, 500,
-                        TimeUnit.MILLISECONDS, Executors.defaultThreadFactory());
+                        TimeUnit.MILLISECONDS, new FtpThreadFactory("DataExecutor_"));
             }
         } finally {
             configuration.getLock().unlock();
@@ -549,6 +565,11 @@ public class FtpInternalConfiguration {
      * @return a new ChannelTrafficShapingHandler
      */
     public ChannelTrafficShapingHandler newChannelTrafficShapingHandler() {
+        if (configuration.getServerChannelWriteLimit() == 0 &&
+                configuration.getServerChannelReadLimit() == 0 &&
+                configuration.getDelayLimit() == 0) {
+            return null;
+        }
         return new ChannelTrafficShapingHandler(objectSizeEstimator,
                 execTrafficCounter, configuration.getServerChannelWriteLimit(),
                 configuration.getServerChannelReadLimit(), configuration

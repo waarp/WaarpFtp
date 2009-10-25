@@ -43,6 +43,10 @@ import org.jboss.netty.channel.Channel;
  *
  */
 public abstract class FtpConfiguration {
+    /**
+     * True if use of JDK6 or upper, False if JDK5.
+     */
+    public static final boolean USEJDK6 = true;
     // FTP Configuration: Externals
     /**
      * Default session limit 64Mbit, so up to 8 full simultaneous clients
@@ -443,6 +447,9 @@ public abstract class FtpConfiguration {
      */
     public void computeNbThreads() {
         int nb = Runtime.getRuntime().availableProcessors() * 2 + 1;
+        if (nb > 32) {
+            nb = Runtime.getRuntime().availableProcessors() + 1;
+        }
         if (SERVER_THREAD < nb) {
             SERVER_THREAD = nb;
         }
@@ -516,7 +523,7 @@ public abstract class FtpConfiguration {
     }
 
     public String getUniqueExtension() {
-        // Can be overriden if necessary
+        // Can be overridden if necessary
         return ".stou";
     }
 }

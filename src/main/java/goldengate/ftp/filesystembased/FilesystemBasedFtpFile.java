@@ -136,13 +136,31 @@ public abstract class FilesystemBasedFtpFile extends FilesystemBasedFileImpl imp
                     } catch (FileEndOfTransferException e) {
                         closeFile();
                         // Wait for last write
-                        future.awaitUninterruptibly();
-                        ((FtpSession) session).getDataConn()
+                        try {
+                            future.await();
+                        } catch (InterruptedException e1) {
+                            throw new FileTransferException("Interruption catched");
+                        }
+                        if (future.isSuccess()) {
+                            ((FtpSession) session).getDataConn()
                                 .getFtpTransferControl().setPreEndOfTransfer();
+                        } else {
+                            throw new FileTransferException("File transfer in error");
+                        }
                         return;
                     }
                 } else {
                     return;// Wait for the next InterestChanged
+                }
+                try {
+                    future.await();
+                } catch (InterruptedException e) {
+                    closeFile();
+                    throw new FileTransferException("Interruption catched");
+                }
+                if (! future.isSuccess()) {
+                    closeFile();
+                    throw new FileTransferException("File transfer in error");
                 }
             }
             // Last block
@@ -152,9 +170,17 @@ public abstract class FilesystemBasedFtpFile extends FilesystemBasedFileImpl imp
             }
             // Wait for last write
             if (future != null) {
-                future.awaitUninterruptibly();
-                ((FtpSession) session).getDataConn().getFtpTransferControl()
+                try {
+                    future.await();
+                } catch (InterruptedException e) {
+                    throw new FileTransferException("Interruption catched");
+                }
+                if (future.isSuccess()) {
+                    ((FtpSession) session).getDataConn().getFtpTransferControl()
                         .setPreEndOfTransfer();
+                } else {
+                    throw new FileTransferException("Write is not successful");
+                }
             }
         } catch (FileTransferException e) {
             // An error occurs!

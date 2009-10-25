@@ -46,6 +46,7 @@ import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelException;
+import org.jboss.netty.channel.ChannelFuture;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.ChannelPipeline;
 import org.jboss.netty.channel.ChannelPipelineCoverage;
@@ -382,8 +383,13 @@ public class DataNetworkHandler extends SimpleChannelHandler {
         dataBlock.setEOF(true);
         ChannelBuffer buffer = ChannelBuffers.wrappedBuffer(message.getBytes());
         dataBlock.setBlock(buffer);
-        return Channels.write(dataChannel, dataBlock).awaitUninterruptibly()
-                .isSuccess();
+        ChannelFuture future;
+        try {
+            future = Channels.write(dataChannel, dataBlock).await();
+        } catch (InterruptedException e) {
+            return false;
+        }
+        return future.isSuccess();
     }
 
     /**

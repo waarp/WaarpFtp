@@ -23,9 +23,11 @@ package goldengate.ftp.simpleimpl;
 import goldengate.common.file.filesystembased.FilesystemBasedDirImpl;
 import goldengate.common.file.filesystembased.FilesystemBasedFileParameterImpl;
 import goldengate.common.file.filesystembased.specific.FilesystemBasedDirJdk5;
+import goldengate.common.file.filesystembased.specific.FilesystemBasedDirJdk6;
 import goldengate.common.logging.GgInternalLogger;
 import goldengate.common.logging.GgInternalLoggerFactory;
 import goldengate.common.logging.GgSlf4JLoggerFactory;
+import goldengate.ftp.core.config.FtpConfiguration;
 import goldengate.ftp.simpleimpl.config.FileBasedConfiguration;
 import goldengate.ftp.simpleimpl.control.SimpleBusinessHandler;
 import goldengate.ftp.simpleimpl.data.FileSystemBasedDataBusinessHandler;
@@ -72,7 +74,11 @@ public class SimpleGatewayFtpServer {
             return;
         }
         // Init according JDK
-        FilesystemBasedDirImpl.initJdkDependent(new FilesystemBasedDirJdk5());
+        if (FtpConfiguration.USEJDK6) {
+            FilesystemBasedDirImpl.initJdkDependent(new FilesystemBasedDirJdk6());
+        } else {
+            FilesystemBasedDirImpl.initJdkDependent(new FilesystemBasedDirJdk5());
+        }
         // Start server.
         configuration.serverStartup();
         logger.warn("FTP started");

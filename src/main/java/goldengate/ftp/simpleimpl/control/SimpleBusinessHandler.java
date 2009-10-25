@@ -25,6 +25,7 @@ import goldengate.common.command.exception.Reply502Exception;
 import goldengate.common.logging.GgInternalLogger;
 import goldengate.common.logging.GgInternalLoggerFactory;
 import goldengate.ftp.core.command.FtpCommandCode;
+import goldengate.ftp.core.command.service.MKD;
 import goldengate.ftp.core.control.BusinessHandler;
 import goldengate.ftp.core.data.FtpTransfer;
 import goldengate.ftp.filesystembased.FilesystemBasedFtpRestart;
@@ -51,7 +52,11 @@ public class SimpleBusinessHandler extends BusinessHandler {
     @Override
     public void afterRunCommandKo(CommandAbstractException e) {
         // TODO Auto-generated method stub
-        logger.warn("GBBH: AFTKO: {} {}", getFtpSession(), e.getMessage());
+        if (getFtpSession().getCurrentCommand() instanceof MKD) {
+            // do nothing
+        } else {
+            logger.warn("GBBH: AFTKO: {} {}", getFtpSession(), e.getMessage());
+        }
     }
 
     @Override

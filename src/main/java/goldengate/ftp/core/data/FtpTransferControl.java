@@ -273,7 +273,10 @@ public class FtpTransferControl {
             // Set the session for the future dataChannel
             ChannelFuture future = clientBootstrap.connect(dataAsyncConn
                     .getRemoteAddress(), dataAsyncConn.getLocalAddress());
-            future.awaitUninterruptibly();
+            try {
+                future.await();
+            } catch (InterruptedException e1) {
+            }
             if (!future.isSuccess()) {
                 logger.warn("Connection abort in active mode from future",
                         future.getCause());
@@ -619,7 +622,7 @@ public class FtpTransferControl {
      */
     public void waitForEndOfTransfer() throws InterruptedException {
         endOfCommand.await();
-        if (endOfCommand.isCancelled()) {
+        if (endOfCommand.isFailed()) {
             throw new InterruptedException("Transfer aborted");
         }
         // logger.debug("waitEndOfCommand over");

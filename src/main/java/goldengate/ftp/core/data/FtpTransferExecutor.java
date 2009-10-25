@@ -82,7 +82,7 @@ public class FtpTransferExecutor implements Runnable {
         try {
             runNextCommand();
         } catch (InterruptedException e) {
-            logger.error("Executor Interrupted", e);
+            logger.error("Executor Interrupted {}", e.getMessage());
         }
     }
 

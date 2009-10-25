@@ -125,6 +125,10 @@ public final class FtpSignalHandler implements SignalHandler {
         FtpSignalHandler diagHandler = new FtpSignalHandler(configuration);
         diagHandler.oldHandler = Signal.handle(diagSignal, diagHandler);
         // Not on WINDOWS
+        if (FtpInternalConfiguration.ISUNIX == null) {
+            FtpInternalConfiguration.ISUNIX =
+                !System.getProperty("os.name").toLowerCase().startsWith("windows");
+        }
         if (FtpInternalConfiguration.ISUNIX) {
             String vendor = SystemPropertyUtil.get("java.vm.vendor");
             vendor = vendor.toLowerCase();
@@ -151,6 +155,7 @@ public final class FtpSignalHandler implements SignalHandler {
             }
         } catch (Exception e) {
         }
-        System.exit(signal.getNumber());
+        System.err.println("Signal: "+signal.getNumber());
+        System.exit(0);
     }
 }

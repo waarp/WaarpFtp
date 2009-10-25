@@ -1,7 +1,7 @@
-<?xml version="1.0" encoding="WINDOWS-1252" standalone="no"?>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <jardesc>
     <jar path="D:/NEWJARS/GG-FTP-Main.jar"/>
-    <options buildIfNeeded="true" compress="true" descriptionLocation="/GoldenGateFtpTrunk/GoldenGateFtpMain.jardesc" exportErrors="true" exportWarnings="true" includeDirectoryEntries="false" overwrite="false" saveDescription="true" storeRefactorings="false" useSourceFolders="false"/>
+    <options buildIfNeeded="true" compress="true" descriptionLocation="/GoldenGateFtp/GoldenGateFtpMain.jardesc" exportErrors="true" exportWarnings="true" includeDirectoryEntries="false" overwrite="false" saveDescription="true" storeRefactorings="false" useSourceFolders="false"/>
     <storedRefactorings deprecationInfo="true" structuralOnly="false"/>
     <selectedProjects/>
     <manifest generateManifest="true" manifestLocation="" manifestVersion="1.0" reuseManifest="false" saveManifest="false" usesManifest="true">
@@ -11,25 +11,26 @@
         </sealing>
     </manifest>
     <selectedElements exportClassFiles="true" exportJavaFiles="false" exportOutputFolder="false">
-        <javaElement handleIdentifier="=GoldenGateFtpTrunk/src\/main\/java&lt;goldengate.ftp.core.control"/>
-        <javaElement handleIdentifier="=GoldenGateFtpTrunk/src\/main\/java&lt;goldengate.ftp.core.command"/>
-        <javaElement handleIdentifier="=GoldenGateFtpTrunk/src\/main\/java&lt;goldengate.ftp.core.config"/>
-        <javaElement handleIdentifier="=GoldenGateFtpTrunk/src\/main\/java&lt;goldengate.ftp.core.session"/>
-        <javaElement handleIdentifier="=GoldenGateFtpTrunk/src\/main\/java&lt;goldengate.ftp.core.command.access"/>
-        <javaElement handleIdentifier="=GoldenGateFtpTrunk/src\/main\/java&lt;goldengate.ftp.core.command.internal"/>
-        <javaElement handleIdentifier="=GoldenGateFtpTrunk/src\/main\/java&lt;goldengate.ftp.core.data"/>
-        <javaElement handleIdentifier="=GoldenGateFtpTrunk/src\/main\/java&lt;goldengate.ftp.core.command.parameter"/>
-        <javaElement handleIdentifier="=GoldenGateFtpTrunk/src\/main\/java&lt;goldengate.ftp.core.command.rfc3659"/>
-        <javaElement handleIdentifier="=GoldenGateFtpTrunk/src\/main\/java&lt;goldengate.ftp.core.command.rfc2428"/>
-        <javaElement handleIdentifier="=GoldenGateFtpTrunk/src\/main\/java&lt;goldengate.ftp.core.command.directory"/>
-        <javaElement handleIdentifier="=GoldenGateFtpTrunk/src\/main\/java&lt;goldengate.ftp.core.command.info"/>
-        <javaElement handleIdentifier="=GoldenGateFtpTrunk/src\/main\/java&lt;goldengate.ftp.core.exception"/>
-        <javaElement handleIdentifier="=GoldenGateFtpTrunk/src\/main\/java&lt;goldengate.ftp.core.command.rfc775"/>
-        <javaElement handleIdentifier="=GoldenGateFtpTrunk/src\/main\/java&lt;goldengate.ftp.core.utils"/>
-        <javaElement handleIdentifier="=GoldenGateFtpTrunk/src\/main\/java&lt;goldengate.ftp.core.command.service"/>
-        <javaElement handleIdentifier="=GoldenGateFtpTrunk/src\/main\/java&lt;goldengate.ftp.core.command.rfc2389"/>
-        <javaElement handleIdentifier="=GoldenGateFtpTrunk/src\/main\/java&lt;goldengate.ftp.core.data.handler"/>
-        <javaElement handleIdentifier="=GoldenGateFtpTrunk/src\/main\/java&lt;goldengate.ftp.core.command.extension"/>
+        <javaElement handleIdentifier="=GoldenGateFtp/src\/main\/java&lt;goldengate.ftp.core.control"/>
+        <javaElement handleIdentifier="=GoldenGateFtp/src\/main\/java&lt;goldengate.ftp.core.session"/>
+        <javaElement handleIdentifier="=GoldenGateFtp/src\/main\/java&lt;goldengate.ftp.core.command.info"/>
+        <javaElement handleIdentifier="=GoldenGateFtp/src\/main\/java&lt;goldengate.ftp.core.command.rfc3659"/>
+        <javaElement handleIdentifier="=GoldenGateFtp/src\/main\/java&lt;goldengate.ftp.core.command.rfc775"/>
+        <javaElement handleIdentifier="=GoldenGateFtp/src\/main\/java&lt;goldengate.ftp.core.command.access"/>
+        <javaElement handleIdentifier="=GoldenGateFtp/src\/main\/java&lt;goldengate.ftp.core.command"/>
+        <javaElement handleIdentifier="=GoldenGateFtp/src\/main\/java&lt;goldengate.ftp.core.command.directory"/>
+        <javaElement handleIdentifier="=GoldenGateFtp/src\/main\/java&lt;goldengate.ftp.core.command.parameter"/>
+        <javaElement handleIdentifier="=GoldenGateFtp/src\/main\/java&lt;goldengate.ftp.core.file"/>
+        <javaElement handleIdentifier="=GoldenGateFtp/src\/main\/java&lt;goldengate.ftp.core.data"/>
+        <javaElement handleIdentifier="=GoldenGateFtp/src\/main\/java&lt;goldengate.ftp.core.command.internal"/>
+        <javaElement handleIdentifier="=GoldenGateFtp/src\/main\/java&lt;goldengate.ftp.core.command.extension"/>
+        <javaElement handleIdentifier="=GoldenGateFtp/src\/main\/java&lt;goldengate.ftp.core.command.rfc2428"/>
+        <javaElement handleIdentifier="=GoldenGateFtp/src\/main\/java&lt;goldengate.ftp.core.config"/>
+        <javaElement handleIdentifier="=GoldenGateFtp/src\/main\/java&lt;goldengate.ftp.core.command.rfc2389"/>
+        <javaElement handleIdentifier="=GoldenGateFtp/src\/main\/java&lt;goldengate.ftp.core.data.handler"/>
+        <javaElement handleIdentifier="=GoldenGateFtp/src\/main\/java&lt;goldengate.ftp.core.exception"/>
+        <javaElement handleIdentifier="=GoldenGateFtp/src\/main\/java&lt;goldengate.ftp.core.utils"/>
+        <javaElement handleIdentifier="=GoldenGateFtp/src\/main\/java&lt;goldengate.ftp.core.command.service"/>
     </selectedElements>
     <fatjar builder="org.eclipse.jdt.ui.plain_jar_builder" launchConfig=""/>
 </jardesc>

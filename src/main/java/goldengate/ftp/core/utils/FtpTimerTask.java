@@ -69,7 +69,7 @@ public class FtpTimerTask extends TimerTask {
         switch (type) {
             case TIMER_EXIT:
                 logger.error("System will force EXIT");
-                System.exit(1);
+                System.exit(0);
                 break;
             default:
                 logger.warn("Type unknown in TimerTask");

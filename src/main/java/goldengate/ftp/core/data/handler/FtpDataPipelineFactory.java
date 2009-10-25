@@ -30,6 +30,7 @@ import org.jboss.netty.channel.ChannelPipeline;
 import org.jboss.netty.channel.ChannelPipelineFactory;
 import org.jboss.netty.channel.Channels;
 import org.jboss.netty.handler.execution.ExecutionHandler;
+import org.jboss.netty.handler.traffic.ChannelTrafficShapingHandler;
 
 /**
  * Pipeline Factory for Data Network.
@@ -118,9 +119,13 @@ public class FtpDataPipelineFactory implements ChannelPipelineFactory {
                 .addLast(CODEC_LIMIT, configuration
                         .getFtpInternalConfiguration()
                         .getGlobalTrafficShapingHandler());
-        pipeline.addLast(CODEC_LIMIT + "CHANNEL", configuration
-                .getFtpInternalConfiguration()
-                .newChannelTrafficShapingHandler());
+        ChannelTrafficShapingHandler limitChannel =
+            configuration
+            .getFtpInternalConfiguration()
+            .newChannelTrafficShapingHandler();
+        if (limitChannel != null) {
+            pipeline.addLast(CODEC_LIMIT + "CHANNEL", limitChannel);
+        }
         pipeline.addLast(CODEC_TYPE, ftpDataTypeCodec);
         pipeline.addLast(CODEC_STRUCTURE, ftpDataStructureCodec);
         // Threaded execution for business logic
