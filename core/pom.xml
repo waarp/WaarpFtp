@@ -22,7 +22,7 @@
     <dependency>
       <groupId>GoldenGate</groupId>
       <artifactId>GoldenGateCommon</artifactId>
-      <version>1.0.2</version>
+      <version>1.0.5</version>
       <optional>false</optional>
     </dependency>
   </dependencies>
