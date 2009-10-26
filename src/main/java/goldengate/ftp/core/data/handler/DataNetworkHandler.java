@@ -353,6 +353,14 @@ public class DataNetworkHandler extends SimpleChannelHandler {
                 session.getDataConn().getFtpTransferControl()
                         .getExecutingFtpTransfer().getFtpFile().writeDataBlock(
                                 dataBlock);
+                /*try {
+                    session.getDataConn().getFtpTransferControl()
+                        .getExecutingFtpTransfer().getFtpFile().flush();
+                } catch (IOException e1) {
+                    session.getDataConn().getFtpTransferControl()
+                        .setTransferAbortedFromInternal(true);
+                    return;
+                }*/
             } catch (FtpNoFileException e1) {
                 session.getDataConn().getFtpTransferControl()
                         .setTransferAbortedFromInternal(true);

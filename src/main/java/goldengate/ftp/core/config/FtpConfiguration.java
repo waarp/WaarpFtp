@@ -30,7 +30,6 @@ import java.io.File;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.util.HashMap;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -72,12 +71,6 @@ public abstract class FtpConfiguration {
      * PASSWORD for SHUTDOWN
      */
     private static final String FTP_PASSWORD = "FTP_PASSWORD";
-
-    /**
-     * Global reference of configuration based on the main class (or web class
-     * for web support)
-     */
-    protected static final ConcurrentHashMap<Class<?>, FtpConfiguration> hashmapConfiguration = new ConcurrentHashMap<Class<?>, FtpConfiguration>();
 
     // END OF STATIC VALUES
     /**
@@ -156,7 +149,7 @@ public abstract class FtpConfiguration {
     /**
      * Delay in ms between two checks
      */
-    protected long delayLimit = 10000;
+    protected long delayLimit = 1000;
 
     /**
      * Should the file be deleted when the transfer is aborted on STOR like

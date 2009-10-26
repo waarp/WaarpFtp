@@ -338,6 +338,16 @@ public class FtpInternalConfiguration {
                         .getServerGlobalWriteLimit(), configuration
                         .getServerGlobalReadLimit(), configuration
                         .getDelayLimit());
+        pipelineExecutor = new OrderedMemoryAwareThreadPoolExecutor(
+                configuration.SERVER_THREAD * 4,
+                configuration.maxGlobalMemory / 40,
+                configuration.maxGlobalMemory / 4, 500,
+                TimeUnit.MILLISECONDS, new FtpThreadFactory("CommandExecutor_"));
+        pipelineDataExecutor = new OrderedMemoryAwareThreadPoolExecutor(
+                configuration.SERVER_THREAD * 4,
+                configuration.maxGlobalMemory / 10,
+                configuration.maxGlobalMemory, 500,
+                TimeUnit.MILLISECONDS, new FtpThreadFactory("DataExecutor_"));
     }
 
     /**
@@ -412,10 +422,10 @@ public class FtpInternalConfiguration {
                 }
                 bindAddress = new BindAddress(parentChannel);
                 FtpChannelUtils.addDataChannel(parentChannel, configuration);
+                hashBindPassiveDataConn.put(address, bindAddress);
             }
             bindAddress.nbBind.incrementAndGet();
             logger.info("Bind number to {} is {}", address, bindAddress.nbBind);
-            hashBindPassiveDataConn.put(address, bindAddress);
         } finally {
             configuration.getLock().unlock();
         }
@@ -462,20 +472,6 @@ public class FtpInternalConfiguration {
      * @return the Command Pipeline Executor
      */
     public OrderedMemoryAwareThreadPoolExecutor getPipelineExecutor() {
-        configuration.getLock().lock();
-        try {
-            if (pipelineExecutor == null) {
-                // Memory limitation: no limit by channel, 1GB global, 100 ms of
-                // timeout
-                pipelineExecutor = new OrderedMemoryAwareThreadPoolExecutor(
-                        configuration.SERVER_THREAD * 4,
-                        configuration.maxGlobalMemory / 40,
-                        configuration.maxGlobalMemory / 4, 500,
-                        TimeUnit.MILLISECONDS, new FtpThreadFactory("CommandExecutor_"));
-            }
-        } finally {
-            configuration.getLock().unlock();
-        }
         return pipelineExecutor;
     }
 
@@ -485,20 +481,6 @@ public class FtpInternalConfiguration {
      * @return the Data Pipeline Executor
      */
     public OrderedMemoryAwareThreadPoolExecutor getDataPipelineExecutor() {
-        configuration.getLock().lock();
-        try {
-            if (pipelineDataExecutor == null) {
-                // Memory limitation: no limit by channel, 1GB global, 100 ms of
-                // timeout
-                pipelineDataExecutor = new OrderedMemoryAwareThreadPoolExecutor(
-                        configuration.SERVER_THREAD * 4,
-                        configuration.maxGlobalMemory / 10,
-                        configuration.maxGlobalMemory, 500,
-                        TimeUnit.MILLISECONDS, new FtpThreadFactory("DataExecutor_"));
-            }
-        } finally {
-            configuration.getLock().unlock();
-        }
         return pipelineDataExecutor;
     }
 
@@ -566,8 +548,7 @@ public class FtpInternalConfiguration {
      */
     public ChannelTrafficShapingHandler newChannelTrafficShapingHandler() {
         if (configuration.getServerChannelWriteLimit() == 0 &&
-                configuration.getServerChannelReadLimit() == 0 &&
-                configuration.getDelayLimit() == 0) {
+                configuration.getServerChannelReadLimit() == 0) {
             return null;
         }
         return new ChannelTrafficShapingHandler(objectSizeEstimator,

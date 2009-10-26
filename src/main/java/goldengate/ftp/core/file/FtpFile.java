@@ -20,6 +20,8 @@
  */
 package goldengate.ftp.core.file;
 
+import java.io.IOException;
+
 import goldengate.common.file.FileInterface;
 
 /**
@@ -34,4 +36,9 @@ public interface FtpFile extends FileInterface {
      *
      */
     public void trueRetrieve();
+    /**
+     * Try to flush written data if possible
+     * @throws IOException
+     */
+    public void flush() throws IOException;
 }
