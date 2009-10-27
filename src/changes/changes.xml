@@ -5,6 +5,11 @@
 		<author email="fredbregier@free.fr">Frederic Bregier</author>
 	</properties>
 	<body>
+		<release version="1.0.3" date="2009-10-28" description="Various fix due to benchmark">
+			<action dev="Frederic Bregier" type="fix">Simplify synchronization</action>
+			<action dev="Frederic Bregier" type="fix">Fix shutdown timeout</action>
+			<action dev="Frederic Bregier" type="fix">Fix reset local port when restart in Active mode</action>
+		</release>
 		<release version="1.0.2" date="2009-10-25" description="Update due to improvement and fix from benchmark">
 			<action dev="Frederic Bregier" type="fix">Update from Common</action>
 			<action dev="Frederic Bregier" type="fix">Fix Thread and ISUNIX info</action>
