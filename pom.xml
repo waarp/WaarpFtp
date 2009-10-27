@@ -3,7 +3,7 @@
   <groupId>GoldenGate</groupId>
   <artifactId>GoldenGateFtp</artifactId>
   <name>GoldenGateFtp</name>
-  <version>1.0.2</version>
+  <version>1.0.3</version>
   <packaging>pom</packaging>
   <description>
 	  The GoldenGate FTP project is a proposal of a new fresh FTP server implementation,
@@ -259,9 +259,9 @@
 	    	</goals>
             <configuration>
               <tasks>
-                <mkdir dir="${project.build.directory}"/>
-                <mkdir dir="${project.build.directory}/classes"/>
+                <mkdir dir="${project.build.directory}" />
                 <echo message="${project.version}" file="${project.build.directory}/version.txt" />
+                <mkdir dir="${project.build.directory}/classes"/>
                 <echo message="${project.artifactId}" />
                 <taskdef resource="net/sf/antcontrib/antlib.xml" />
                 <if>

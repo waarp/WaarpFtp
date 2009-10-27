@@ -2,17 +2,17 @@
  * Copyright 2009, Frederic Bregier, and individual contributors by the @author
  * tags. See the COPYRIGHT.txt in the distribution for a full listing of
  * individual contributors.
- * 
+ *
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3.0 of the License, or (at your option)
  * any later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -38,9 +38,9 @@ import org.jboss.netty.handler.execution.OrderedMemoryAwareThreadPoolExecutor;
 
 /**
  * Some useful functions related to Channel of Netty
- * 
+ *
  * @author Frederic Bregier
- * 
+ *
  */
 public class FtpChannelUtils implements Runnable {
     /**
@@ -51,7 +51,7 @@ public class FtpChannelUtils implements Runnable {
 
     /**
      * Get the Remote InetAddress
-     * 
+     *
      * @param channel
      * @return the remote InetAddress
      */
@@ -66,7 +66,7 @@ public class FtpChannelUtils implements Runnable {
 
     /**
      * Get the Local InetAddress
-     * 
+     *
      * @param channel
      * @return the local InetAddress
      */
@@ -78,7 +78,7 @@ public class FtpChannelUtils implements Runnable {
 
     /**
      * Get the Remote InetSocketAddress
-     * 
+     *
      * @param channel
      * @return the remote InetSocketAddress
      */
@@ -88,7 +88,7 @@ public class FtpChannelUtils implements Runnable {
 
     /**
      * Get the Local InetSocketAddress
-     * 
+     *
      * @param channel
      * @return the local InetSocketAddress
      */
@@ -98,7 +98,7 @@ public class FtpChannelUtils implements Runnable {
 
     /**
      * Get the InetSocketAddress corresponding to the FTP format of address
-     * 
+     *
      * @param arg
      * @return the InetSocketAddress or null if an error occurs
      */
@@ -134,7 +134,7 @@ public class FtpChannelUtils implements Runnable {
 
     /**
      * Return the Address in the format compatible with FTP argument
-     * 
+     *
      * @param address
      * @return the String representation of the address
      */
@@ -148,7 +148,7 @@ public class FtpChannelUtils implements Runnable {
     /**
      * Get the (RFC2428) InetSocketAddress corresponding to the FTP format of
      * address (RFC2428)
-     * 
+     *
      * @param arg
      * @return the InetSocketAddress or null if an error occurs
      */
@@ -228,7 +228,7 @@ public class FtpChannelUtils implements Runnable {
 
     /**
      * Return the (RFC2428) Address in the format compatible with FTP (RFC2428)
-     * 
+     *
      * @param address
      * @return the String representation of the address
      */
@@ -253,9 +253,9 @@ public class FtpChannelUtils implements Runnable {
 
     /**
      * Finalize resources attached to Control or Data handlers
-     * 
+     *
      * @author Frederic Bregier
-     * 
+     *
      */
     private static class FtpChannelGroupFutureListener implements
             ChannelGroupFutureListener {
@@ -285,7 +285,7 @@ public class FtpChannelUtils implements Runnable {
 
     /**
      * Terminate all registered command channels
-     * 
+     *
      * @param configuration
      * @return the number of previously registered command channels
      */
@@ -304,7 +304,7 @@ public class FtpChannelUtils implements Runnable {
 
     /**
      * Terminate all registered data channels
-     * 
+     *
      * @param configuration
      * @return the number of previously registered data channels
      */
@@ -325,7 +325,7 @@ public class FtpChannelUtils implements Runnable {
 
     /**
      * Return the current number of command connections
-     * 
+     *
      * @param configuration
      * @return the current number of command connections
      */
@@ -336,7 +336,7 @@ public class FtpChannelUtils implements Runnable {
 
     /**
      * Return the current number of data connections
-     * 
+     *
      * @param configuration
      * @return the current number of data connections
      */
@@ -347,7 +347,7 @@ public class FtpChannelUtils implements Runnable {
 
     /**
      * Return the number of still positive command connections
-     * 
+     *
      * @param configuration
      * @return the number of positive command connections
      */
@@ -377,12 +377,12 @@ public class FtpChannelUtils implements Runnable {
 
     /**
      * Exit global ChannelFactory
-     * 
+     *
      * @param configuration
      */
     private static void exit(FtpConfiguration configuration) {
         configuration.isShutdown = true;
-        long delay = 2 * configuration.TIMEOUTCON;
+        long delay = configuration.TIMEOUTCON;
         logger.warn("Exit: Give a delay of " + delay + " ms");
         try {
             Thread.sleep(delay);
@@ -400,7 +400,7 @@ public class FtpChannelUtils implements Runnable {
     /**
      * This function is the top function to be called when the server is to be
      * shutdown.
-     * 
+     *
      * @param configuration
      */
     public static void teminateServer(FtpConfiguration configuration) {
@@ -409,7 +409,7 @@ public class FtpChannelUtils implements Runnable {
 
     /**
      * Add a command channel into the list
-     * 
+     *
      * @param channel
      * @param configuration
      */
@@ -422,7 +422,7 @@ public class FtpChannelUtils implements Runnable {
 
     /**
      * Add a data channel into the list
-     * 
+     *
      * @param channel
      * @param configuration
      */

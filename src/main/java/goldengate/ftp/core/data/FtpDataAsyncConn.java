@@ -197,13 +197,14 @@ public class FtpDataAsyncConn {
     }
 
     /**
-     * Change to active connection (don't change localPort)
+     * Change to active connection (reset localPort to default)
      *
      * @param address
      *            remote address
      */
     public void setActive(InetSocketAddress address) {
         unbindPassive();
+        setDefaultLocalPort();
         remoteAddress = address;
         passiveMode = false;
         isBind = false;
