@@ -104,23 +104,64 @@
     <dependency>
       <groupId>ch.qos.logback</groupId>
       <artifactId>logback-access</artifactId>
-      <version>0.9.15</version>
-      <scope>compile</scope>
-      <optional>true</optional>
+      <version>0.9.17</version>
     </dependency>
     <dependency>
       <groupId>ch.qos.logback</groupId>
       <artifactId>logback-classic</artifactId>
-      <version>0.9.15</version>
-      <scope>compile</scope>
-      <optional>true</optional>
+      <version>0.9.17</version>
     </dependency>
     <dependency>
       <groupId>ch.qos.logback</groupId>
       <artifactId>logback-core</artifactId>
-      <version>0.9.15</version>
-      <scope>compile</scope>
-      <optional>true</optional>
+      <version>0.9.17</version>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+      <version>1.5.8</version>
+    </dependency>
+    <dependency>
+      <groupId>dom4j</groupId>
+      <artifactId>dom4j</artifactId>
+      <version>1.6.1</version>
+      <exclusions>
+      	<exclusion>
+      		<artifactId>xml-apis</artifactId>
+      		<groupId>xml-apis</groupId>
+      	</exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>jaxen</groupId>
+      <artifactId>jaxen</artifactId>
+      <version>1.1.1</version>
+      <exclusions>
+      	<exclusion>
+      		<artifactId>icu4j</artifactId>
+      		<groupId>com.ibm.icu</groupId>
+      	</exclusion>
+      	<exclusion>
+      		<artifactId>xml-apis</artifactId>
+      		<groupId>xml-apis</groupId>
+      	</exclusion>
+      	<exclusion>
+      		<artifactId>xml-apis</artifactId>
+      		<groupId>xml-apis</groupId>
+      	</exclusion>
+      	<exclusion>
+      		<artifactId>jdom</artifactId>
+      		<groupId>jdom</groupId>
+      	</exclusion>
+      	<exclusion>
+      		<artifactId>xom</artifactId>
+      		<groupId>xom</groupId>
+      	</exclusion>
+      	<exclusion>
+      		<artifactId>xercesImpl</artifactId>
+      		<groupId>xerces</groupId>
+      	</exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>dom4j</groupId>
@@ -134,42 +175,6 @@
       		<groupId>xml-apis</groupId>
       	</exclusion>
       </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>jaxen</groupId>
-      <artifactId>jaxen</artifactId>
-      <version>1.1.1</version>
-      <scope>compile</scope>
-      <optional>true</optional>
-      <exclusions>
-      	<exclusion>
-      		<artifactId>icu4j</artifactId>
-      		<groupId>com.ibm.icu</groupId>
-      	</exclusion>
-      	<exclusion>
-      		<artifactId>xom</artifactId>
-      		<groupId>xom</groupId>
-      	</exclusion>
-      	<exclusion>
-      		<artifactId>jdom</artifactId>
-      		<groupId>jdom</groupId>
-      	</exclusion>
-      	<exclusion>
-      		<artifactId>xml-apis</artifactId>
-      		<groupId>xml-apis</groupId>
-      	</exclusion>
-      	<exclusion>
-      		<artifactId>xercesImpl</artifactId>
-      		<groupId>xerces</groupId>
-      	</exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-api</artifactId>
-      <version>1.5.6</version>
-      <scope>compile</scope>
-      <optional>true</optional>
     </dependency>
     <dependency>
     	<groupId>commons-io</groupId>
