@@ -96,6 +96,11 @@ public abstract class FtpConfiguration {
     public int SERVER_THREAD = 8;
 
     /**
+     * Default number of threads in pool for Client part.
+     */
+    public int CLIENT_THREAD = 80;
+
+    /**
      * Which class owns this configuration
      */
     public Class<?> fromClass = null;
@@ -445,6 +450,7 @@ public abstract class FtpConfiguration {
         }
         if (SERVER_THREAD < nb) {
             SERVER_THREAD = nb;
+            CLIENT_THREAD = SERVER_THREAD*10;
         }
     }
 

@@ -217,7 +217,7 @@ public class NetworkHandler extends SimpleChannelHandler {
         } else if (e1 instanceof CommandAbstractException) {
             // FTP Exception: not close if not necessary
             CommandAbstractException e2 = (CommandAbstractException) e1;
-            logger.warn("Command Error Reply", e2);
+            logger.warn("Command Error Reply {}", e2.getMessage());
             session.setReplyCode(e2);
             businessHandler.afterRunCommandKo(e2);
             if (channel.isConnected()) {
@@ -247,7 +247,7 @@ public class NetworkHandler extends SimpleChannelHandler {
                     .getMessage(), e.getChannel());
         } else {
             logger.warn("Unexpected exception from downstream" +
-                    " Ref Channel: " + e.getChannel().toString(), e1);
+                    " Ref Channel: {}" + e.getChannel().toString(), e1.getMessage());
         }
         session.setExitErrorCode("Internal error: disconnect");
         businessHandler.exceptionLocalCaught(e);

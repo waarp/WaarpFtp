@@ -278,7 +278,7 @@ public class DataNetworkHandler extends SimpleChannelHandler {
             logger.warn("Connection closed before end");
         } else if (e1 instanceof InvalidArgumentException) {
             InvalidArgumentException e2 = (InvalidArgumentException) e1;
-            logger.warn("Bad configuration in Codec in " + e2.getMessage(), e2);
+            logger.warn("Bad configuration in Codec in {}", e2.getMessage());
         } else if (e1 instanceof NullPointerException) {
             NullPointerException e2 = (NullPointerException) e1;
             logger.warn("Null pointer Exception", e2);
@@ -313,7 +313,7 @@ public class DataNetworkHandler extends SimpleChannelHandler {
             ConnectException e2 = (ConnectException) e1;
             logger.warn("Timeout occurs {}", e2.getMessage());
         } else {
-            logger.warn("Unexpected exception from downstream:", e1);
+            logger.warn("Unexpected exception from downstream: {}", e1.getMessage());
         }
         if (dataBusinessHandler != null) {
             dataBusinessHandler.exceptionLocalCaught(e);

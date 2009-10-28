@@ -318,7 +318,7 @@ public class FtpSession implements SessionInterface {
         }
         if (ftpDir != null) {
             try {
-                mesg += "PWD: " + ftpDir.getPwd();
+                mesg += " PWD: " + ftpDir.getPwd();
             } catch (CommandAbstractException e) {
             }
         }

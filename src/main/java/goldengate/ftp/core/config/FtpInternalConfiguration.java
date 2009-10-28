@@ -339,12 +339,12 @@ public class FtpInternalConfiguration {
                         .getServerGlobalReadLimit(), configuration
                         .getDelayLimit());
         pipelineExecutor = new OrderedMemoryAwareThreadPoolExecutor(
-                configuration.SERVER_THREAD * 4,
+                configuration.CLIENT_THREAD,
                 configuration.maxGlobalMemory / 40,
                 configuration.maxGlobalMemory / 4, 500,
                 TimeUnit.MILLISECONDS, new FtpThreadFactory("CommandExecutor_"));
         pipelineDataExecutor = new OrderedMemoryAwareThreadPoolExecutor(
-                configuration.SERVER_THREAD * 4,
+                configuration.CLIENT_THREAD,
                 configuration.maxGlobalMemory / 10,
                 configuration.maxGlobalMemory, 500,
                 TimeUnit.MILLISECONDS, new FtpThreadFactory("DataExecutor_"));

@@ -80,6 +80,11 @@ public class FileBasedConfiguration extends FtpConfiguration {
     private static final String XML_SERVER_THREAD = "/config/serverthread";
 
     /**
+     * Default number of threads in pool for Client.
+     */
+    private static final String XML_CLIENT_THREAD = "/config/clientthread";
+
+    /**
      * Limit per session
      */
     private static final String XML_LIMITSESSION = "/config/sessionlimit";
@@ -243,6 +248,10 @@ public class FileBasedConfiguration extends FtpConfiguration {
         node = document.selectSingleNode(XML_SERVER_THREAD);
         if (node != null) {
             SERVER_THREAD = Integer.parseInt(node.getText());
+        }
+        node = document.selectSingleNode(XML_CLIENT_THREAD);
+        if (node != null) {
+            CLIENT_THREAD = Integer.parseInt(node.getText());
         }
         node = document.selectSingleNode(XML_LIMITGLOBAL);
         if (node != null) {
