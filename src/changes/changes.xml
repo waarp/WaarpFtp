@@ -9,6 +9,7 @@
 			<action dev="Frederic Bregier" type="fix">Simplify synchronization</action>
 			<action dev="Frederic Bregier" type="fix">Fix shutdown timeout</action>
 			<action dev="Frederic Bregier" type="fix">Fix reset local port when restart in Active mode</action>
+			<action dev="Frederic Bregier" type="fix">Fix SITE Command to allow new special commands set in the BusinessHandler</action>
 		</release>
 		<release version="1.0.2" date="2009-10-25" description="Update due to improvement and fix from benchmark">
 			<action dev="Frederic Bregier" type="fix">Update from Common</action>

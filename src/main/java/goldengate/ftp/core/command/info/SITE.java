@@ -51,13 +51,20 @@ public class SITE extends AbstractCommand {
             invalidCurrentCommand();
             throw new Reply501Exception("Need a command at least as argument");
         }
-        // Now check what is the command as if we were in the NetworkHandler
-        AbstractCommand command = FtpCommandCode.getFromLine(getSession(),
-                getArg());
+        // First check if this command is a special extension
+        AbstractCommand command = getSession().getBusinessHandler().
+            getSpecializedSiteCommand(getSession(), getArg());
+        boolean special = true;
+        if (command == null) {
+            // Now check what is the command as if we were in the NetworkHandler
+            command = FtpCommandCode.getFromLine(getSession(),
+                    getArg());
+            special = false;
+        }
         // Default message
         getSession().setReplyCode(ReplyCode.REPLY_200_COMMAND_OKAY, null);
         // First check if the command is an extension command
-        if (FtpCommandCode.isExtensionCommand(command.getCode())) {
+        if (special || FtpCommandCode.isExtensionCommand(command.getCode())) {
             // Now check if a transfer is on its way: illegal to have at same
             // time two commands
             if (getSession().getDataConn().getFtpTransferControl()

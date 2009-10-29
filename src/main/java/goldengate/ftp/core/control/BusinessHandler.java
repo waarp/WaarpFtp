@@ -23,6 +23,7 @@ package goldengate.ftp.core.control;
 import goldengate.common.command.exception.CommandAbstractException;
 import goldengate.common.file.Restart;
 import goldengate.common.file.filesystembased.FilesystemBasedOptsMLSxImpl;
+import goldengate.ftp.core.command.AbstractCommand;
 import goldengate.ftp.core.command.FtpCommandCode;
 import goldengate.ftp.core.data.FtpTransfer;
 import goldengate.ftp.core.file.FtpAuth;
@@ -193,6 +194,14 @@ public abstract class BusinessHandler {
      */
     public abstract String getOptsMessage(String[] args)
             throws CommandAbstractException;
+
+    /**
+     * Check if a command pass to SITE command is legal
+     * @param session
+     * @param line
+     * @return the AbstractCommand to execute if it is a Specialized Command, else Null
+     */
+    public abstract AbstractCommand getSpecializedSiteCommand(FtpSession session, String line);
 
     /**
      *

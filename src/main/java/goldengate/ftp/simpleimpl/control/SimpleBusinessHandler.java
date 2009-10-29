@@ -26,11 +26,13 @@ import goldengate.common.command.exception.CommandAbstractException;
 import goldengate.common.command.exception.Reply502Exception;
 import goldengate.common.logging.GgInternalLogger;
 import goldengate.common.logging.GgInternalLoggerFactory;
+import goldengate.ftp.core.command.AbstractCommand;
 import goldengate.ftp.core.command.FtpCommandCode;
 import goldengate.ftp.core.command.service.MKD;
 import goldengate.ftp.core.control.BusinessHandler;
 import goldengate.ftp.core.data.FtpTransfer;
 import goldengate.ftp.core.file.FtpFile;
+import goldengate.ftp.core.session.FtpSession;
 import goldengate.ftp.filesystembased.FilesystemBasedFtpAuth;
 import goldengate.ftp.filesystembased.FilesystemBasedFtpRestart;
 import goldengate.ftp.simpleimpl.file.FileBasedAuth;
@@ -171,5 +173,14 @@ public class SimpleBusinessHandler extends BusinessHandler {
             throw new Reply502Exception("OPTS not implemented for " + args[0]);
         }
         throw new Reply502Exception("OPTS not implemented");
+    }
+
+    /* (non-Javadoc)
+     * @see goldengate.ftp.core.control.BusinessHandler#getSpecializedSiteCommand(goldengate.ftp.core.session.FtpSession, java.lang.String)
+     */
+    @Override
+    public AbstractCommand getSpecializedSiteCommand(FtpSession session,
+            String line) {
+        return null;
     }
 }
