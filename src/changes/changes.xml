@@ -5,6 +5,9 @@
 		<author email="fredbregier@free.fr">Frederic Bregier</author>
 	</properties>
 	<body>
+		<release version="1.0.4" date="2009-11-01" description="Small fix on shutdown">
+			<action dev="Frederic Bregier" type="fix">Fix shutdown from signal</action>
+		</release>
 		<release version="1.0.3" date="2009-10-28" description="Various fix due to benchmark">
 			<action dev="Frederic Bregier" type="fix">Simplify synchronization</action>
 			<action dev="Frederic Bregier" type="fix">Fix shutdown timeout</action>

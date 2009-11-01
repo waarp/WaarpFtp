@@ -74,7 +74,7 @@ public class SimpleBusinessHandler extends BusinessHandler {
             String filename = getFtpSession().getCurrentCommand().getArg();
             FtpFile file = getFtpSession().getDir().setFile(filename, false);
             String path = file.getFile();
-            logger.warn("File is not readable: "+dir+" "+path+" "+
+            logger.warn("File is readable ? "+dir+" "+path+" "+
                     ((new File(dir+path)).canRead()));
         }
     }
