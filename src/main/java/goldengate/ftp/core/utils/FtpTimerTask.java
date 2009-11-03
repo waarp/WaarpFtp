@@ -22,6 +22,7 @@ package goldengate.ftp.core.utils;
 
 import goldengate.common.logging.GgInternalLogger;
 import goldengate.common.logging.GgInternalLoggerFactory;
+import goldengate.ftp.core.config.FtpConfiguration;
 
 import java.util.TimerTask;
 
@@ -43,11 +44,19 @@ public class FtpTimerTask extends TimerTask {
      * EXIT type (System.exit(1))
      */
     public static final int TIMER_EXIT = 1;
+    /**
+     * Finalize Control connection
+     */
+    public static final int TIMER_CONTROL = 2;
 
     /**
      * Type of execution in run() method
      */
     private final int type;
+    /**
+     * Configuration
+     */
+    public FtpConfiguration configuration = null;
 
     /**
      * Constructor from type
@@ -70,6 +79,11 @@ public class FtpTimerTask extends TimerTask {
             case TIMER_EXIT:
                 logger.error("System will force EXIT");
                 System.exit(0);
+                break;
+            case TIMER_CONTROL:
+                logger.warn("Exit Shutdown Command");
+                FtpChannelUtils.terminateCommandChannels(configuration);
+                logger.warn("Exit end of Command Shutdown");
                 break;
             default:
                 logger.warn("Type unknown in TimerTask");

@@ -28,6 +28,7 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
 import java.util.Iterator;
+import java.util.Timer;
 
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelFactory;
@@ -289,7 +290,7 @@ public class FtpChannelUtils implements Runnable {
      * @param configuration
      * @return the number of previously registered command channels
      */
-    private static int terminateCommandChannels(FtpConfiguration configuration) {
+    static int terminateCommandChannels(FtpConfiguration configuration) {
         int result = configuration.getFtpInternalConfiguration()
                 .getCommandChannelGroup().size();
         configuration.getFtpInternalConfiguration().getCommandChannelGroup()
@@ -390,11 +391,13 @@ public class FtpChannelUtils implements Runnable {
         }
         configuration.getFtpInternalConfiguration()
                 .getGlobalTrafficShapingHandler().releaseExternalResources();
+        Timer timer = new Timer(true);
+        FtpTimerTask timerTask = new FtpTimerTask(FtpTimerTask.TIMER_CONTROL);
+        timerTask.configuration = configuration;
+        timer.schedule(timerTask, configuration.TIMEOUTCON/2);
         logger.warn("Exit Shutdown Data");
         terminateDataChannels(configuration);
-        logger.warn("Exit Shutdown Command");
-        terminateCommandChannels(configuration);
-        logger.warn("Exit end of Shutdown");
+        logger.warn("Exit end of Data Shutdown");
     }
 
     /**

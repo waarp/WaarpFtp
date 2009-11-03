@@ -97,8 +97,7 @@ public final class FtpSignalHandler implements SignalHandler {
      * @param configuration
      */
     private static void terminate(FtpConfiguration configuration) {
-        Timer timer = null;
-        timer = new Timer(true);
+        Timer timer = new Timer(true);
         FtpTimerTask timerTask = new FtpTimerTask(FtpTimerTask.TIMER_EXIT);
         timer.schedule(timerTask, configuration.TIMEOUTCON * 2);
         if (shutdown) {
