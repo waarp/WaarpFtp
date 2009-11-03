@@ -5,6 +5,9 @@
 		<author email="fredbregier@free.fr">Frederic Bregier</author>
 	</properties>
 	<body>
+		<release version="1.0.5" date="2009-11-02" description="Use the new File version from Common">
+			<action dev="Frederic Bregier" type="fix">Use the new File version from Common</action>
+		</release>
 		<release version="1.0.4" date="2009-11-01" description="Small fix on shutdown">
 			<action dev="Frederic Bregier" type="fix">Fix shutdown from signal</action>
 		</release>

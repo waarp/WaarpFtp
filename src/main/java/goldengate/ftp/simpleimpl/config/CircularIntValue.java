@@ -41,7 +41,7 @@ public class CircularIntValue {
     /**
      * Current Value
      */
-    private int current;
+    private Integer current;
 
     /**
      * Create a circular range of values
@@ -52,7 +52,7 @@ public class CircularIntValue {
     public CircularIntValue(int min, int max) {
         this.min = min;
         this.max = max;
-        current = this.min;
+        current = new Integer(this.min-1);
     }
 
     /**
@@ -60,12 +60,14 @@ public class CircularIntValue {
      *
      * @return the next value
      */
-    public synchronized int getNext() {
-        int next = current;
-        current ++;
-        if (current > max) {
-            current = min;
+    public int getNext() {
+        synchronized (current) {
+            if (current >= max) {
+                current = min;
+            } else {
+                current++;
+            }
+            return current;
         }
-        return next;
     }
 }

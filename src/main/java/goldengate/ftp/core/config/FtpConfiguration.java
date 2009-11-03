@@ -57,15 +57,6 @@ public abstract class FtpConfiguration {
      */
     public static long DEFAULT_GLOBAL_LIMIT = 0x4000000L;
 
-    /**
-     * SERVER PORT
-     */
-    private static final String SERVER_PORT = "FTP_SERVER_PORT";
-
-    /**
-     * Base Directory
-     */
-    private static final String BASE_DIRECTORY = "FTP_BASE_DIRECTORY";
 
     /**
      * PASSWORD for SHUTDOWN
@@ -77,6 +68,16 @@ public abstract class FtpConfiguration {
      * Internal configuration
      */
     private final FtpInternalConfiguration internalConfiguration;
+
+    /**
+     * SERVER PORT
+     */
+    private int SERVER_PORT = 21;
+
+    /**
+     * Base Directory
+     */
+    private String BASE_DIRECTORY = null;
 
     /**
      * Associated FileParameterInterface
@@ -118,7 +119,7 @@ public abstract class FtpConfiguration {
     /**
      * Internal Lock
      */
-    private final ReentrantLock lock = new ReentrantLock();
+    private ReentrantLock lock = new ReentrantLock();
 
     /**
      * Nb of milliseconds after connection is in timeout
@@ -256,11 +257,7 @@ public abstract class FtpConfiguration {
      * @return the TCP Port to listen in the Ftp Server
      */
     public int getServerPort() {
-        try {
-            return getIntProperty(SERVER_PORT);
-        } catch (FtpUnknownFieldException e) {
-            return 21; // Default
-        }
+        return SERVER_PORT;
     }
 
     /**
@@ -332,11 +329,7 @@ public abstract class FtpConfiguration {
      * @return the Base Directory of this Ftp Server
      */
     public String getBaseDirectory() {
-        try {
-            return getStringProperty(BASE_DIRECTORY);
-        } catch (FtpUnknownFieldException e) {
-            return null;
-        }
+        return BASE_DIRECTORY;
     }
 
     /**
@@ -380,7 +373,7 @@ public abstract class FtpConfiguration {
      *            the new port
      */
     public void setServerPort(int port) {
-        setIntProperty(SERVER_PORT, port);
+        SERVER_PORT = port;
     }
 
     /**
@@ -388,7 +381,7 @@ public abstract class FtpConfiguration {
      *            the new base directory
      */
     public void setBaseDirectory(String dir) {
-        setStringProperty(BASE_DIRECTORY, dir);
+        BASE_DIRECTORY = dir;
     }
 
     /**
@@ -461,7 +454,18 @@ public abstract class FtpConfiguration {
     public Lock getLock() {
         return lock;
     }
-
+    /**
+     * In bind/unbind operation, lock
+     */
+    public void bindLock() {
+        lock.lock();
+    }
+    /**
+     * In bind/unbind operation, unlock
+     */
+    public void bindUnlock() {
+        lock.unlock();
+    }
     /**
      *
      * @return the FtpInternalConfiguration

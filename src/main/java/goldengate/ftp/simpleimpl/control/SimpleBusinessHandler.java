@@ -20,8 +20,6 @@
  */
 package goldengate.ftp.simpleimpl.control;
 
-import java.io.File;
-
 import goldengate.common.command.exception.CommandAbstractException;
 import goldengate.common.command.exception.Reply502Exception;
 import goldengate.common.logging.GgInternalLogger;
@@ -31,9 +29,7 @@ import goldengate.ftp.core.command.FtpCommandCode;
 import goldengate.ftp.core.command.service.MKD;
 import goldengate.ftp.core.control.BusinessHandler;
 import goldengate.ftp.core.data.FtpTransfer;
-import goldengate.ftp.core.file.FtpFile;
 import goldengate.ftp.core.session.FtpSession;
-import goldengate.ftp.filesystembased.FilesystemBasedFtpAuth;
 import goldengate.ftp.filesystembased.FilesystemBasedFtpRestart;
 import goldengate.ftp.simpleimpl.file.FileBasedAuth;
 import goldengate.ftp.simpleimpl.file.FileBasedDir;
@@ -69,14 +65,6 @@ public class SimpleBusinessHandler extends BusinessHandler {
     public void afterRunCommandOk() throws CommandAbstractException {
         // TODO Auto-generated method stub
         // logger.info("GBBH: AFTOK: {}", getFtpSession());
-        if (getFtpSession().getCurrentCommand().getCode() == FtpCommandCode.STOR) {
-            String dir = ((FilesystemBasedFtpAuth) getFtpSession().getAuth()).getBaseDirectory();
-            String filename = getFtpSession().getCurrentCommand().getArg();
-            FtpFile file = getFtpSession().getDir().setFile(filename, false);
-            String path = file.getFile();
-            logger.warn("File is readable ? "+dir+" "+path+" "+
-                    ((new File(dir+path)).canRead()));
-        }
     }
 
     @Override
@@ -101,8 +89,8 @@ public class SimpleBusinessHandler extends BusinessHandler {
     @Override
     public void executeChannelClosed() {
         // TODO Auto-generated method stub
-        logger.warn("GBBH: CLOSED: for user {} with session {} ",
-                getFtpSession().getAuth().getUser(), getFtpSession());
+        //logger.info("GBBH: CLOSED: for user {} with session {} ",
+        //        getFtpSession().getAuth().getUser(), getFtpSession());
     }
 
     @Override

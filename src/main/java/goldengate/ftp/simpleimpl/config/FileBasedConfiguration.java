@@ -31,7 +31,6 @@ import goldengate.common.logging.GgInternalLoggerFactory;
 import goldengate.ftp.core.config.FtpConfiguration;
 import goldengate.ftp.core.control.BusinessHandler;
 import goldengate.ftp.core.data.handler.DataBusinessHandler;
-import goldengate.ftp.core.exception.FtpUnknownFieldException;
 import goldengate.ftp.simpleimpl.file.SimpleAuth;
 
 import java.io.File;
@@ -169,7 +168,7 @@ public class FileBasedConfiguration extends FtpConfiguration {
     /**
      * RANGE of PORT for Passive Mode
      */
-    private static final String RANGE_PORT = "FTP_RANGE_PORT";
+    private CircularIntValue RANGE_PORT = null;
 
     /**
      * All authentications
@@ -400,11 +399,7 @@ public class FileBasedConfiguration extends FtpConfiguration {
      */
     @Override
     public int getNextRangePort() {
-        try {
-            return ((CircularIntValue) getProperty(RANGE_PORT)).getNext();
-        } catch (FtpUnknownFieldException e) {
-            return -1;
-        }
+        return RANGE_PORT.getNext();
     }
 
     /**
@@ -413,6 +408,6 @@ public class FileBasedConfiguration extends FtpConfiguration {
      *            the range of available ports for Passive connections
      */
     private void setRangePort(CircularIntValue rangePort) {
-        setProperty(RANGE_PORT, rangePort);
+        RANGE_PORT = rangePort;
     }
 }

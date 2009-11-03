@@ -38,7 +38,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import org.jboss.netty.bootstrap.ClientBootstrap;
 import org.jboss.netty.bootstrap.ServerBootstrap;
@@ -229,7 +228,7 @@ public class FtpInternalConfiguration {
         /**
          * Number of binded Data connections
          */
-        public final AtomicInteger nbBind;
+        public int nbBind = 0;
 
         /**
          * Constructor
@@ -238,7 +237,7 @@ public class FtpInternalConfiguration {
          */
         public BindAddress(Channel channel) {
             parent = channel;
-            nbBind = new AtomicInteger(0);
+            nbBind = 0;
         }
     }
 
@@ -406,7 +405,7 @@ public class FtpInternalConfiguration {
      *             in case the channel cannot be opened
      */
     public void bindPassive(InetSocketAddress address) throws Reply425Exception {
-        configuration.getLock().lock();
+        configuration.bindLock();
         try {
             BindAddress bindAddress = hashBindPassiveDataConn.get(address);
             if (bindAddress == null) {
@@ -424,10 +423,10 @@ public class FtpInternalConfiguration {
                 FtpChannelUtils.addDataChannel(parentChannel, configuration);
                 hashBindPassiveDataConn.put(address, bindAddress);
             }
-            bindAddress.nbBind.incrementAndGet();
+            bindAddress.nbBind++;
             logger.info("Bind number to {} is {}", address, bindAddress.nbBind);
         } finally {
-            configuration.getLock().unlock();
+            configuration.bindUnlock();
         }
     }
 
@@ -440,13 +439,13 @@ public class FtpInternalConfiguration {
      * @param address
      */
     public void unbindPassive(InetSocketAddress address) {
-        configuration.getLock().lock();
+        configuration.bindLock();
         try {
             BindAddress bindAddress = hashBindPassiveDataConn.get(address);
             if (bindAddress != null) {
-                int nbBind = bindAddress.nbBind.decrementAndGet();
-                logger.info("Bind number to {} left is {}", address, nbBind);
-                if (nbBind == 0) {
+                bindAddress.nbBind--;
+                logger.info("Bind number to {} left is {}", address, bindAddress.nbBind);
+                if (bindAddress.nbBind == 0) {
                     Channels.close(bindAddress.parent);
                     hashBindPassiveDataConn.remove(address);
                 }
@@ -454,7 +453,7 @@ public class FtpInternalConfiguration {
                 logger.warn("No Bind to {}", address);
             }
         } finally {
-            configuration.getLock().unlock();
+            configuration.bindUnlock();
         }
     }
 
