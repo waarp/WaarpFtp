@@ -171,4 +171,13 @@ public class SimpleBusinessHandler extends BusinessHandler {
             String line) {
         return null;
     }
+
+    /* (non-Javadoc)
+     * @see goldengate.ftp.core.control.BusinessHandler#afterTransferDoneBeforeAnswer(goldengate.ftp.core.data.FtpTransfer)
+     */
+    @Override
+    public void afterTransferDoneBeforeAnswer(FtpTransfer transfer)
+            throws CommandAbstractException {
+        // TODO Auto-generated method stub
+    }
 }

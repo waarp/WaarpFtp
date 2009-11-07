@@ -299,9 +299,17 @@ public abstract class BusinessHandler {
     public abstract void afterRunCommandKo(CommandAbstractException e);
 
     /**
-     * Run when a transfer is finished
+     * Run when a transfer is finished (eventually in error)
      *
      * @param transfer
      */
     public abstract void afterTransferDone(FtpTransfer transfer);
+
+    /**
+     * Run when a transfer is finished (eventually in error) but before answering
+     *
+     * @param transfer
+     * @exception CommandAbstractException
+     */
+    public abstract void afterTransferDoneBeforeAnswer(FtpTransfer transfer) throws CommandAbstractException;
 }

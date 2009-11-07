@@ -7,6 +7,7 @@
 	<body>
 		<release version="1.0.5" date="2009-11-02" description="Use the new File version from Common">
 			<action dev="Frederic Bregier" type="fix">Use the new File version from Common</action>
+			<action dev="Frederic Bregier" type="add">Add new method in BusinessHandler when a transfer is done but before asnwering</action>
 		</release>
 		<release version="1.0.4" date="2009-11-01" description="Small fix on shutdown">
 			<action dev="Frederic Bregier" type="fix">Fix shutdown from signal</action>

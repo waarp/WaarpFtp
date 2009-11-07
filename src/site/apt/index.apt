@@ -114,3 +114,6 @@ Benchmarks
 
   Again we can see the difference between Passive and Active protocol, and the disk write
   contention effect on STORe operations (around 100 Mbits at most on write).
+
+  Finally, a benchmark on the subproject GoldenGateFtpExec gives up to 105 transfers and execution
+  by second.

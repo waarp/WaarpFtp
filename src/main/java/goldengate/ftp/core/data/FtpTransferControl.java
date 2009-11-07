@@ -524,6 +524,15 @@ public class FtpTransferControl {
                 "Transfer aborted for " +
                         (current == null? "Unknown command" : current
                                 .toString()));
+        if (current != null) {
+            if (!FtpCommandCode.isListLikeCommand(current.getCommand())) {
+                try {
+                    session.getBusinessHandler().afterTransferDoneBeforeAnswer(current);
+                } catch (CommandAbstractException e) {
+                    session.setReplyCode(e);
+                }
+            }
+        }
         if (write) {
             session.getNetworkHandler().writeIntermediateAnswer();
         }
@@ -566,6 +575,15 @@ public class FtpTransferControl {
                 "Transfer correctly finished for " +
                         (current == null? "Unknown command" : current
                                 .toString()));
+        if (current != null) {
+            if (!FtpCommandCode.isListLikeCommand(current.getCommand())) {
+                try {
+                    session.getBusinessHandler().afterTransferDoneBeforeAnswer(current);
+                } catch (CommandAbstractException e) {
+                    session.setReplyCode(e);
+                }
+            }
+        }
         if (write) {
             session.getNetworkHandler().writeIntermediateAnswer();
         }
