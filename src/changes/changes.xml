@@ -5,6 +5,9 @@
 		<author email="fredbregier@free.fr">Frederic Bregier</author>
 	</properties>
 	<body>
+		<release version="1.0.6" date="2009-11-09" description="Use the new File version from GG Common">
+			<action dev="Frederic Bregier" type="fix">Use the new File version from GG Common</action>
+		</release>
 		<release version="1.0.5" date="2009-11-02" description="Use the new File version from Common">
 			<action dev="Frederic Bregier" type="fix">Use the new File version from Common</action>
 			<action dev="Frederic Bregier" type="add">Add new method in BusinessHandler when a transfer is done but before asnwering</action>

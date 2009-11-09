@@ -3,7 +3,7 @@
   <parent>
 	  <groupId>GoldenGate</groupId>
 	  <artifactId>GoldenGateFtp</artifactId>
-	  <version>1.0.5</version>
+	  <version>1.0.6</version>
 	  <relativePath>../pom.xml</relativePath>
   </parent>
   <name>GoldenGateFtp-SimpleServer</name>
@@ -15,26 +15,14 @@
   <dependencies>
     <dependency>
       <groupId>GoldenGate</groupId>
-      <artifactId>GoldenGateDigest</artifactId>
-      <version>1.0.0</version>
-      <optional>false</optional>
-    </dependency>
-    <dependency>
-      <groupId>GoldenGate</groupId>
-      <artifactId>GoldenGateCommon</artifactId>
-      <version>1.0.5</version>
-      <optional>false</optional>
-    </dependency>
-    <dependency>
-      <groupId>GoldenGate</groupId>
       <artifactId>GoldenGateFtp-Core</artifactId>
-      <version>1.0.5</version>
+      <version>1.0.6</version>
       <optional>false</optional>
     </dependency>
     <dependency>
       <groupId>GoldenGate</groupId>
       <artifactId>GoldenGateFtp-Filesystem</artifactId>
-      <version>1.0.5</version>
+      <version>1.0.6</version>
       <optional>false</optional>
     </dependency>
   </dependencies>
