@@ -20,6 +20,8 @@
  */
 package goldengate.ftp.core.session;
 
+import java.io.File;
+
 import goldengate.common.command.CommandInterface;
 import goldengate.common.command.ReplyCode;
 import goldengate.common.command.exception.CommandAbstractException;
@@ -333,6 +335,15 @@ public class FtpSession implements SessionInterface {
         return configuration.getFileParameter();
     }
 
+    /**
+    *
+    * @param path
+    * @return the basename from the given path
+    */
+    public static String getBasename(String path) {
+        File file = new File(path);
+        return file.getName();
+    }
     /**
      * Reinitialize the authentication to the connection step
      *

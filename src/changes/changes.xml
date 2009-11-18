@@ -5,6 +5,10 @@
 		<author email="fredbregier@free.fr">Frederic Bregier</author>
 	</properties>
 	<body>
+		<release version="1.0.6" date="2009-11-19" description="New Production Release">
+			<action dev="Frederic Bregier" type="fix">Use new Netty</action>
+			<action dev="Frederic Bregier" type="fix">Fix basename usage in STOR and APPE calls</action>
+		</release>
 		<release version="1.0.6" date="2009-11-09" description="Use the new File version from GG Common">
 			<action dev="Frederic Bregier" type="fix">Use the new File version from GG Common</action>
 		</release>
