@@ -213,7 +213,7 @@ public class NetworkHandler extends SimpleChannelHandler {
                             "Connection (example: timeout) impossible since {} with Channel {}",
                             e2.getMessage(), e.getChannel());
         } else if (e1 instanceof ClosedChannelException) {
-            logger.warn("Connection closed before end");
+            logger.info("Connection closed before end");
         } else if (e1 instanceof CommandAbstractException) {
             // FTP Exception: not close if not necessary
             CommandAbstractException e2 = (CommandAbstractException) e1;

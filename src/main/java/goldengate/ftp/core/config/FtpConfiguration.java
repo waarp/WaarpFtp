@@ -73,6 +73,10 @@ public abstract class FtpConfiguration {
      * SERVER PORT
      */
     private int SERVER_PORT = 21;
+    /**
+     * Default Address if any
+     */
+    private String SERVER_ADDRESS = null;
 
     /**
      * Base Directory
@@ -259,6 +263,13 @@ public abstract class FtpConfiguration {
     public int getServerPort() {
         return SERVER_PORT;
     }
+    /**
+    *
+    * @return the Address of the Ftp Server if any (may be null)
+    */
+   public String getServerAddress() {
+       return SERVER_ADDRESS;
+   }
 
     /**
      *
@@ -376,6 +387,13 @@ public abstract class FtpConfiguration {
         SERVER_PORT = port;
     }
 
+    /**
+     * @param address
+     *            the address to use while answering for address
+     */
+    public void setServerAddress(String address) {
+        SERVER_ADDRESS = address;
+    }
     /**
      * @param dir
      *            the new base directory

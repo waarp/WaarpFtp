@@ -67,7 +67,10 @@ public class FileBasedConfiguration extends FtpConfiguration {
      * SERVER PORT
      */
     private static final String XML_SERVER_PORT = "/config/serverport";
-
+    /**
+     * SERVER ADDRESS if any
+     */
+    private static final String XML_SERVER_ADDRESS = "/config/serveraddress";
     /**
      * Base Directory
      */
@@ -226,6 +229,12 @@ public class FileBasedConfiguration extends FtpConfiguration {
             port = Integer.parseInt(node.getText());
         }
         setServerPort(port);
+        node = document.selectSingleNode(XML_SERVER_ADDRESS);
+        String address = null;
+        if (node != null) {
+            address = node.getText();
+        }
+        setServerAddress(address);
         node = document.selectSingleNode(XML_SERVER_HOME);
         if (node == null) {
             logger.error("Unable to find Home in Config file: " + filename);

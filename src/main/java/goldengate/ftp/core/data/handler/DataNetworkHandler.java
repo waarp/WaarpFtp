@@ -275,7 +275,7 @@ public class DataNetworkHandler extends SimpleChannelHandler {
             logger.warn("Connection (example: timeout) impossible since {}", e2
                     .getMessage());
         } else if (e1 instanceof ClosedChannelException) {
-            logger.warn("Connection closed before end");
+            logger.info("Connection closed before end");
         } else if (e1 instanceof InvalidArgumentException) {
             InvalidArgumentException e2 = (InvalidArgumentException) e1;
             logger.warn("Bad configuration in Codec in {}", e2.getMessage());
