@@ -30,10 +30,10 @@ import java.nio.charset.Charset;
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
 import org.jboss.netty.channel.ChannelHandlerContext;
-import org.jboss.netty.channel.ChannelPipelineCoverage;
 import org.jboss.netty.channel.Channels;
 import org.jboss.netty.channel.MessageEvent;
 import org.jboss.netty.channel.SimpleChannelHandler;
+import org.jboss.netty.channel.ChannelHandler.Sharable;
 
 /**
  * Second CODEC :<br>
@@ -45,7 +45,7 @@ import org.jboss.netty.channel.SimpleChannelHandler;
  * @author Frederic Bregier
  *
  */
-@ChannelPipelineCoverage("all")
+@Sharable
 public class FtpDataTypeCodec extends SimpleChannelHandler {
     /*
      * 3.1.1. DATA TYPES
@@ -203,7 +203,7 @@ public class FtpDataTypeCodec extends SimpleChannelHandler {
     /**
      * Charset to use
      */
-    private String charsetName;
+    private Charset charsetName;
 
     /**
      * Type of transfer
@@ -258,9 +258,9 @@ public class FtpDataTypeCodec extends SimpleChannelHandler {
      */
     private void setCharset(Charset charset) {
         if (charset == null) {
-            charsetName = Charset.defaultCharset().name();
+            charsetName = Charset.defaultCharset();
         } else {
-            charsetName = charset.name();
+            charsetName = charset;
         }
     }
 
@@ -299,7 +299,7 @@ public class FtpDataTypeCodec extends SimpleChannelHandler {
     protected ChannelBuffer decode(ChannelBuffer channelBuffer)
             throws Exception {
         return ChannelBuffers.copiedBuffer(channelBuffer
-                .toString(type.charsetName), charsetName);
+                .toString(type.charset), charsetName);
     }
 
     /*
@@ -345,6 +345,6 @@ public class FtpDataTypeCodec extends SimpleChannelHandler {
     protected ChannelBuffer encode(ChannelBuffer channelBuffer)
             throws Exception {
         String chString = channelBuffer.toString(charsetName);
-        return ChannelBuffers.copiedBuffer(chString, type.charsetName);
+        return ChannelBuffers.copiedBuffer(chString, type.charset);
     }
 }

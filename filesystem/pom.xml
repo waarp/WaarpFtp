@@ -3,7 +3,7 @@
   <parent>
 	  <groupId>GoldenGate</groupId>
 	  <artifactId>GoldenGateFtp</artifactId>
-	  <version>1.0.7</version>
+	  <version>1.0.8</version>
 	  <relativePath>../pom.xml</relativePath>
   </parent>
   <name>GoldenGateFtp-Filesystem</name>
@@ -16,7 +16,7 @@
     <dependency>
       <groupId>GoldenGate</groupId>
       <artifactId>GoldenGateFtp-Core</artifactId>
-      <version>1.0.7</version>
+      <version>1.0.8</version>
       <optional>false</optional>
     </dependency>
   </dependencies>

@@ -44,7 +44,7 @@ public class FtpControlStringEncoder extends StringEncoder {
      * @param arg0
      */
     public FtpControlStringEncoder(String arg0) {
-        super(arg0);
+        super(Charset.forName(arg0));
     }
 
     /**

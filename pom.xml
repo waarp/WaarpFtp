@@ -3,7 +3,7 @@
   <groupId>GoldenGate</groupId>
   <artifactId>GoldenGateFtp</artifactId>
   <name>GoldenGateFtp</name>
-  <version>1.0.7</version>
+  <version>1.0.8</version>
   <packaging>pom</packaging>
   <description>
 	  The GoldenGate FTP project is a proposal of a new fresh FTP server implementation,
@@ -99,27 +99,36 @@
   			<enabled>false</enabled>
   		</snapshots>
   	</repository>
+  	<repository>
+  		<id>jboss org</id>
+  		<name>Jboss org</name>
+  		<url>http://repository.jboss.org/nexus/content/groups/public</url>
+  		<snapshots>
+  			<enabled>false</enabled>
+  		</snapshots>
+  	</repository>
   </repositories>
   <dependencies>
-    <dependency>
+  <dependency>
       <groupId>ch.qos.logback</groupId>
       <artifactId>logback-access</artifactId>
-      <version>0.9.17</version>
+      <version>0.9.24</version>
+      <scope>compile</scope>
+      <optional>true</optional>
     </dependency>
     <dependency>
       <groupId>ch.qos.logback</groupId>
       <artifactId>logback-classic</artifactId>
-      <version>0.9.17</version>
+      <version>0.9.24</version>
+      <scope>compile</scope>
+      <optional>true</optional>
     </dependency>
     <dependency>
       <groupId>ch.qos.logback</groupId>
       <artifactId>logback-core</artifactId>
-      <version>0.9.17</version>
-    </dependency>
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-api</artifactId>
-      <version>1.5.8</version>
+      <version>0.9.24</version>
+      <scope>compile</scope>
+      <optional>true</optional>
     </dependency>
     <dependency>
       <groupId>dom4j</groupId>
@@ -164,19 +173,6 @@
       </exclusions>
     </dependency>
     <dependency>
-      <groupId>dom4j</groupId>
-      <artifactId>dom4j</artifactId>
-      <version>1.6.1</version>
-      <scope>compile</scope>
-      <optional>true</optional>
-      <exclusions>
-      	<exclusion>
-      		<artifactId>xml-apis</artifactId>
-      		<groupId>xml-apis</groupId>
-      	</exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
     	<groupId>commons-io</groupId>
     	<artifactId>commons-io</artifactId>
     	<version>1.4</version>
@@ -186,19 +182,19 @@
     <dependency>
     	<groupId>NettyExtension</groupId>
     	<artifactId>NettyExtension</artifactId>
-    	<version>1.1.4</version>
+    	<version>1.1.6</version>
     	<scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>GoldenGate</groupId>
       <artifactId>GoldenGateDigest</artifactId>
-      <version>1.0.0</version>
+      <version>1.0.1</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>GoldenGate</groupId>
       <artifactId>GoldenGateCommon</artifactId>
-      <version>1.0.8</version>
+      <version>1.0.9</version>
       <scope>compile</scope>
     </dependency>
   </dependencies>
@@ -436,7 +432,7 @@
 	          <docletArtifact>
 	            <groupId>org.jboss.apiviz</groupId>
 	            <artifactId>apiviz</artifactId>
-	            <version>1.3.0.GA</version>
+	            <version>1.3.1.GA</version>
 	          </docletArtifact>
 	          <attach>false</attach>
 	          <useStandardDocletOptions>true</useStandardDocletOptions>

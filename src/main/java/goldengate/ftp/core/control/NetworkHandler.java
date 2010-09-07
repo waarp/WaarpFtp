@@ -41,7 +41,6 @@ import org.jboss.netty.channel.ChannelException;
 import org.jboss.netty.channel.ChannelFuture;
 import org.jboss.netty.channel.ChannelFutureListener;
 import org.jboss.netty.channel.ChannelHandlerContext;
-import org.jboss.netty.channel.ChannelPipelineCoverage;
 import org.jboss.netty.channel.ChannelStateEvent;
 import org.jboss.netty.channel.Channels;
 import org.jboss.netty.channel.ExceptionEvent;
@@ -55,7 +54,6 @@ import org.jboss.netty.channel.SimpleChannelHandler;
  * @author Frederic Bregier
  *
  */
-@ChannelPipelineCoverage("one")
 public class NetworkHandler extends SimpleChannelHandler {
     /**
      * Internal Logger

@@ -25,9 +25,9 @@ import goldengate.common.file.DataBlock;
 import goldengate.ftp.core.command.FtpArgumentCode.TransferStructure;
 
 import org.jboss.netty.channel.ChannelHandlerContext;
-import org.jboss.netty.channel.ChannelPipelineCoverage;
 import org.jboss.netty.channel.MessageEvent;
 import org.jboss.netty.channel.SimpleChannelHandler;
+import org.jboss.netty.channel.ChannelHandler.Sharable;
 
 /**
  * Third CODEC :<br>
@@ -41,7 +41,7 @@ import org.jboss.netty.channel.SimpleChannelHandler;
  * @author Frederic Bregier
  *
  */
-@ChannelPipelineCoverage("all")
+@Sharable
 public class FtpDataStructureCodec extends SimpleChannelHandler {
     /*
      * 3.1.2. DATA STRUCTURES

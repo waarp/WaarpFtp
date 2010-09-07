@@ -66,16 +66,16 @@ public class FtpArgumentCode {
         /**
          * Charset Name if any
          */
-        public String charsetName;
+        public Charset charset;
 
         private TransferType(char type) {
             this.type = type;
-            charsetName = null;
+            charset = Charset.defaultCharset();
         }
 
         private TransferType(char type, String charsetName) {
             this.type = type;
-            this.charsetName = charsetName;
+            this.charset = Charset.forName(charsetName);
         }
     }
 
