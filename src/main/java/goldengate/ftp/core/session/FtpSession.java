@@ -307,6 +307,9 @@ public class FtpSession implements SessionInterface {
     @Override
     public String toString() {
         String mesg = "FtpSession: ";
+        if (ftpAuth != null) {
+            mesg += "User: "+ftpAuth.getUser()+"/"+ftpAuth.getAccount()+" ";
+        }
         if (currentCommand != null) {
             mesg += "CMD: " + currentCommand.getCommand() + " " +
                     currentCommand.getArg() + " ";
