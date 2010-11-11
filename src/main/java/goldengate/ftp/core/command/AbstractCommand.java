@@ -71,7 +71,6 @@ public abstract class AbstractCommand implements CommandInterface {
      * goldengate.common.command.CommandInterface#setArgs(goldengate.common.
      * session.Session, java.lang.String, java.lang.String, java.lang.Enum)
      */
-    @SuppressWarnings("unchecked")
     public void setArgs(SessionInterface session, String command, String arg,
             Enum code) {
         this.session = (FtpSession) session;
@@ -87,7 +86,7 @@ public abstract class AbstractCommand implements CommandInterface {
      * goldengate.common.command.CommandInterface#setExtraNextCommand(java.lang
      * .Enum)
      */
-    @SuppressWarnings("unchecked")
+   
     public void setExtraNextCommand(Enum extraNextCommand) {
         if (extraNextCommand != FtpCommandCode.NOOP) {
             this.extraNextCommand = (FtpCommandCode) extraNextCommand;
