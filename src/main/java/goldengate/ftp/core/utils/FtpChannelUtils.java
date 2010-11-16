@@ -240,9 +240,9 @@ public class FtpChannelUtils implements Runnable {
         String hostaddress = servAddr.getHostAddress();
         builder.append('|');
         if (hostaddress.contains(":")) {
-            builder.append("2"); // IPV6
+            builder.append('2'); // IPV6
         } else {
-            builder.append("1"); // IPV4
+            builder.append('1'); // IPV4
         }
         builder.append('|');
         builder.append(hostaddress);
