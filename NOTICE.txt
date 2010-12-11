@@ -1,0 +1,86 @@
+
+                            The GoldenGate Project
+                            =================
+
+Please visit the GoldenGate web site for more information:
+
+  * http://openr66.free.fr/
+
+    Copyright (C) 2006 Frederic Bregier, and individual contributors
+    by the @author tags.  See the COPYRIGHT.txt in the distribution for a
+    full listing of individual contributors.
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+Also, please refer to each LICENSE.<component>.txt file, which is located in
+the 'license' directory of the distribution file, for the license terms of the
+components that this product depends on.
+
+-------------------------------------------------------------------------------
+This product depends on 'NETTY', an asynchronous event-driven
+network application framework, which can be obtained at:
+
+  * LICENSE:
+    * license/LICENSE.netty.txt (LGPL 2.1)
+  * HOMEPAGE:
+    * http://www.jboss.org/netty/
+
+This product contains a modified version of the 'Fast MD5', 
+a fast implementation of RSA's MD5 hash generator, 
+which can be obtained at:
+
+  * LICENSE:
+    * license/LICENSE.fastmd5.txt (LGPL 2.1)
+  * HOMEPAGE:
+    * http://www.twmacinta.com/myjava/fast_md5.php
+    
+This product optionally depends on 'SLF4J', a simple logging facade for Java,
+which can be obtained at:
+
+  * LICENSE:
+    * license/LICENSE.slf4j.txt (MIT License)
+  * HOMEPAGE:
+    * http://www.slf4j.org/
+
+This product optionally depends on 'LOGBACK', a logging
+framework, which can be obtained at:
+
+  * LICENSE:
+    * license/LICENSE.logback.txt (LGPL 2.1)
+  * HOMEPAGE:
+    * http://logback.qos.ch/
+
+This product optionally depends on 'DOM4J', open source library for working with XML, 
+XPath and XSLT, which can be obtained at:
+
+  * LICENSE:
+    * license/LICENSE.dom4j.txt (BSD style license)
+  * HOMEPAGE:
+    * http://www.dom4j.org/
+
+This product optionally depends on 'JAXEN', open source XPath library, 
+which can be obtained at:
+
+  * LICENSE:
+    * license/LICENSE.jaxen.txt (Apache-style license)
+  * HOMEPAGE:
+    * http://jaxen.codehaus.org/
+
+This product optionally depends on 'COMMONS-IO', open source XPath library, 
+which can be obtained at:
+
+  * LICENSE:
+    * license/LICENSE.commons-io.txt (Apache license)
+  * HOMEPAGE:
+    * http://commons.apache.org/io/
