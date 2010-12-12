@@ -72,7 +72,7 @@ public abstract class AbstractCommand implements CommandInterface {
      * session.Session, java.lang.String, java.lang.String, java.lang.Enum)
      */
     public void setArgs(SessionInterface session, String command, String arg,
-            Enum code) {
+            @SuppressWarnings("rawtypes") Enum code) {
         this.session = (FtpSession) session;
         this.command = command;
         this.arg = arg;
@@ -87,7 +87,7 @@ public abstract class AbstractCommand implements CommandInterface {
      * .Enum)
      */
    
-    public void setExtraNextCommand(Enum extraNextCommand) {
+    public void setExtraNextCommand(@SuppressWarnings("rawtypes") Enum extraNextCommand) {
         if (extraNextCommand != FtpCommandCode.NOOP) {
             this.extraNextCommand = (FtpCommandCode) extraNextCommand;
         } else {
