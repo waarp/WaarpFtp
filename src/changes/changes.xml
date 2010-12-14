@@ -5,7 +5,7 @@
 		<author email="fredbregier@free.fr">Frederic Bregier</author>
 	</properties>
 	<body>
-		<release version="1.0.6" date="2009-11-19" description="New Production Release">
+		<release version="1.0.7" date="2009-11-19" description="New Production Release">
 			<action dev="Frederic Bregier" type="add">Add SERVER_ADDRESS support</action>
 			<action dev="Frederic Bregier" type="fix">Use new Netty</action>
 			<action dev="Frederic Bregier" type="fix">Fix basename usage in STOR and APPE calls</action>
