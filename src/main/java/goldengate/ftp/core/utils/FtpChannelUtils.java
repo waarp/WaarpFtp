@@ -395,6 +395,7 @@ public class FtpChannelUtils implements Runnable {
         FtpTimerTask timerTask = new FtpTimerTask(FtpTimerTask.TIMER_CONTROL);
         timerTask.configuration = configuration;
         timer.schedule(timerTask, configuration.TIMEOUTCON/2);
+        configuration.releaseResources();
         logger.warn("Exit Shutdown Data");
         terminateDataChannels(configuration);
         logger.warn("Exit end of Data Shutdown");

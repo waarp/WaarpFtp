@@ -81,6 +81,10 @@ public class FtpInternalConfiguration {
     public static final int RETRYNB = 3;
 
     /**
+     * Time elapse for WRITE OR CLOSE WAIT elaps in ms
+     */
+    public static final long WAITFORNETOP = 1000;
+    /**
      * Hack to say Windows or Unix (USR1 not OK on Windows)
      */
     public static Boolean ISUNIX = null;
@@ -348,7 +352,13 @@ public class FtpInternalConfiguration {
                 configuration.maxGlobalMemory, 500,
                 TimeUnit.MILLISECONDS, new FtpThreadFactory("DataExecutor_"));
     }
-
+    /**
+     * 
+     * @return an ExecutorService
+     */
+    public ExecutorService getWorker() {
+        return execWorker;
+    }
     /**
      * Add a session from a couple of addresses
      *
@@ -396,7 +406,13 @@ public class FtpInternalConfiguration {
     public boolean hasFtpSession(InetAddress ipOnly, InetSocketAddress fullIp) {
         return ftpSessionReference.contains(ipOnly, fullIp);
     }
-
+    /**
+     * 
+     * @return the number of Active Sessions
+     */
+    public int getNumberSessions() {
+        return ftpSessionReference.sessionsNumber();
+    }
     /**
      * Try to add a Passive Channel listening to the specified local address
      *

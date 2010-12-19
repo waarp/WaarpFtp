@@ -230,4 +230,11 @@ public class FtpSessionReference {
         // logger.debug("Contains: {} {}", pAddress.ipOnly, pAddress.fullIp);
         return hashMap.containsKey(pAddress);
     }
+    /**
+     * 
+     * @return the number of active sessions
+     */
+    public int sessionsNumber() {
+        return hashMap.size();
+    }
 }

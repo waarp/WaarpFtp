@@ -547,4 +547,10 @@ public abstract class FtpConfiguration {
         // Can be overridden if necessary
         return ".stou";
     }
+    /**
+     * To use if any external resources are to be released when shutting down
+     */
+    public void releaseResources() {
+        
+    }
 }
