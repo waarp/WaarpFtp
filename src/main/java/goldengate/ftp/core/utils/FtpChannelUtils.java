@@ -22,6 +22,7 @@ package goldengate.ftp.core.utils;
 
 import goldengate.common.logging.GgInternalLogger;
 import goldengate.common.logging.GgInternalLoggerFactory;
+import goldengate.common.logging.GgSlf4JLoggerFactory;
 import goldengate.ftp.core.config.FtpConfiguration;
 
 import java.net.InetAddress;
@@ -36,6 +37,9 @@ import org.jboss.netty.channel.Channels;
 import org.jboss.netty.channel.group.ChannelGroupFuture;
 import org.jboss.netty.channel.group.ChannelGroupFutureListener;
 import org.jboss.netty.handler.execution.OrderedMemoryAwareThreadPoolExecutor;
+import org.slf4j.LoggerFactory;
+
+import ch.qos.logback.classic.LoggerContext;
 
 /**
  * Some useful functions related to Channel of Netty
@@ -399,6 +403,7 @@ public class FtpChannelUtils implements Runnable {
         logger.warn("Exit Shutdown Data");
         terminateDataChannels(configuration);
         logger.warn("Exit end of Data Shutdown");
+        stopLogger();
     }
 
     /**
@@ -449,6 +454,12 @@ public class FtpChannelUtils implements Runnable {
     @Override
     public void run() {
         exit(configuration);
+    }
+    public static void stopLogger() {
+        if (GgInternalLoggerFactory.getDefaultFactory() instanceof GgSlf4JLoggerFactory) {
+            LoggerContext lc = (LoggerContext) LoggerFactory.getILoggerFactory();
+            lc.stop();
+        }
     }
 
 }
