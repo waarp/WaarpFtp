@@ -278,7 +278,8 @@ public class FtpTransferControl {
             } catch (InterruptedException e1) {
             }
             if (!future.isSuccess()) {
-                logger.warn("Connection abort in active mode from future",
+                logger.warn("Connection abort in active mode from future while session: "+
+                        session.toString(),
                         future.getCause());
                 // Cannot open connection
                 session.getConfiguration().delFtpSession(inetAddress,
