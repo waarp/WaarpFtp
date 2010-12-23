@@ -473,11 +473,11 @@ public class FtpTransferControl {
             if (executedTransfer.getStatus()) {
                 // Special status for List Like command
                 // logger.debug("Check: List OK");
-                closeTransfer(true);
+                closeTransfer();
                 return false;
             }
             // logger.debug("Check: List Ko");
-            abortTransfer(true);
+            abortTransfer();
             return false;
         } else if (FtpCommandCode.isRetrLikeCommand(executedTransfer
                 .getCommand())) {
@@ -486,44 +486,40 @@ public class FtpTransferControl {
                 file = executedTransfer.getFtpFile();
             } catch (FtpNoFileException e) {
                 // logger.debug("Check: Retr no FtpFile for Retr");
-                abortTransfer(true);
+                abortTransfer();
                 return false;
             }
             try {
                 if (file.isInReading()) {
                     logger
                             .debug("Check: Retr FtpFile still in reading KO");
-                    abortTransfer(true);
+                    abortTransfer();
                 } else {
                     logger
                             .debug("Check: Retr FtpFile no more in reading OK");
-                    closeTransfer(true);
+                    closeTransfer();
                 }
             } catch (CommandAbstractException e) {
                 logger.warn("Retr Test is in Reading problem", e);
-                closeTransfer(true);
+                closeTransfer();
             }
             return false;
         } else if (FtpCommandCode.isStoreLikeCommand(executedTransfer
                 .getCommand())) {
             // logger.debug("Check: Store OK");
-            closeTransfer(true);
+            closeTransfer();
             return false;
         } else {
             logger.warn("Check: Unknown command");
-            abortTransfer(true);
+            abortTransfer();
         }
         return false;
     }
 
     /**
      * Abort the current transfer
-     *
-     * @param write
-     *            True means the message is write back to the control command,
-     *            false it is only prepared
      */
-    private void abortTransfer(boolean write) {
+    private void abortTransfer() {
         // logger.debug("Will abort transfer and write: ", write);
         FtpFile file = null;
         FtpTransfer current = null;
@@ -555,25 +551,14 @@ public class FtpTransferControl {
                 }
             }
         }
-        /*if (false) {//write) {
-            session.getNetworkHandler().writeIntermediateAnswer();
-        }
-        if (current != null) {
-            if (!FtpCommandCode.isListLikeCommand(current.getCommand())) {
-                session.getBusinessHandler().afterTransferDone(current);
-            }
-        }*/
         finalizeExecution();
     }
 
     /**
      * Finish correctly a transfer
      *
-     * @param write
-     *            True means the message is write back to the control command,
-     *            false it is only prepared
      */
-    private void closeTransfer(boolean write) {
+    private void closeTransfer() {
         // logger.debug("Will close transfer and write: {}", write);
         FtpFile file = null;
         FtpTransfer current = null;
@@ -612,15 +597,6 @@ public class FtpTransferControl {
                 }
             }
         }
-        /*//if (write) {
-        if (false) {
-            session.getNetworkHandler().writeIntermediateAnswer();
-        }
-        if (current != null) {
-            if (!FtpCommandCode.isListLikeCommand(current.getCommand())) {
-                session.getBusinessHandler().afterTransferDone(current);
-            }
-        }*/
         finalizeExecution();
     }
 
@@ -646,7 +622,10 @@ public class FtpTransferControl {
      */
     public void setTransferAbortedFromInternal(boolean write) {
         // logger.debug("Set transfer aborted internal {}", write);
-        abortTransfer(write);
+        abortTransfer();
+        if (write) {
+            session.getNetworkHandler().writeIntermediateAnswer();
+        }
         endOfCommand.cancel();
     }
 
