@@ -385,6 +385,7 @@ public class FtpSession implements SessionInterface {
      */
     public void openDataConnection() throws Reply425Exception {
         getDataConn().getFtpTransferControl().openDataConnection();
+        getNetworkHandler().writeIntermediateAnswer();
     }
 
     /* (non-Javadoc)

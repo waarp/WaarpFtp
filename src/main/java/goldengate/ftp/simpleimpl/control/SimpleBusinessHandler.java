@@ -115,27 +115,6 @@ public class SimpleBusinessHandler extends BusinessHandler {
     }
 
     @Override
-    public void afterTransferDone(FtpTransfer transfer) {
-        if (transfer.getCommand() == FtpCommandCode.APPE) {
-            logger.info("GBBH: Transfer: {} " + transfer.getStatus() + " {}",
-                    transfer.getCommand(), transfer.getPath());
-        } else if (transfer.getCommand() == FtpCommandCode.RETR) {
-            logger.info("GBBH: Transfer: {} " + transfer.getStatus() + " {}",
-                    transfer.getCommand(), transfer.getPath());
-        } else if (transfer.getCommand() == FtpCommandCode.STOR) {
-            logger.info("GBBH: Transfer: {} " + transfer.getStatus() + " {}",
-                    transfer.getCommand(), transfer.getPath());
-        } else if (transfer.getCommand() == FtpCommandCode.STOU) {
-            logger.info("GBBH: Transfer: {} " + transfer.getStatus() + " {}",
-                    transfer.getCommand(), transfer.getPath());
-        } else {
-            logger.warn("GBBH: Transfer unknown: {} " + transfer.getStatus() +
-                    " {}", transfer.getCommand(), transfer.getPath());
-            // Nothing to do
-        }
-    }
-
-    @Override
     public String getHelpMessage(String arg) {
         return "This FTP server is only intend as a Gateway.\n"
                 + "This FTP server refers to RFC 959, 775, 2389, 2428, 3659 and supports XCRC, XMD5 and XSHA1 commands.\n"
@@ -178,6 +157,22 @@ public class SimpleBusinessHandler extends BusinessHandler {
     @Override
     public void afterTransferDoneBeforeAnswer(FtpTransfer transfer)
             throws CommandAbstractException {
-        // TODO Auto-generated method stub
+        if (transfer.getCommand() == FtpCommandCode.APPE) {
+            logger.info("GBBH: Transfer: {} " + transfer.getStatus() + " {}",
+                    transfer.getCommand(), transfer.getPath());
+        } else if (transfer.getCommand() == FtpCommandCode.RETR) {
+            logger.info("GBBH: Transfer: {} " + transfer.getStatus() + " {}",
+                    transfer.getCommand(), transfer.getPath());
+        } else if (transfer.getCommand() == FtpCommandCode.STOR) {
+            logger.info("GBBH: Transfer: {} " + transfer.getStatus() + " {}",
+                    transfer.getCommand(), transfer.getPath());
+        } else if (transfer.getCommand() == FtpCommandCode.STOU) {
+            logger.info("GBBH: Transfer: {} " + transfer.getStatus() + " {}",
+                    transfer.getCommand(), transfer.getPath());
+        } else {
+            logger.warn("GBBH: Transfer unknown: {} " + transfer.getStatus() +
+                    " {}", transfer.getCommand(), transfer.getPath());
+            // Nothing to do
+        }
     }
 }

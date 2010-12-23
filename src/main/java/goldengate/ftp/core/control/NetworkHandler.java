@@ -29,6 +29,7 @@ import goldengate.ftp.core.command.FtpCommandCode;
 import goldengate.ftp.core.command.internal.ConnectionCommand;
 import goldengate.ftp.core.command.internal.IncorrectCommand;
 import goldengate.ftp.core.config.FtpInternalConfiguration;
+import goldengate.ftp.core.data.FtpTransferControl;
 import goldengate.ftp.core.session.FtpSession;
 import goldengate.ftp.core.utils.FtpChannelUtils;
 
@@ -280,9 +281,9 @@ public class NetworkHandler extends SimpleChannelHandler {
                 // same time two commands (except ABORT). Wait is at most 100
                 // RETRYINMS=1s
                 boolean notFinished = true;
+                FtpTransferControl control = session.getDataConn().getFtpTransferControl();
                 for (int i = 0; i < FtpInternalConfiguration.RETRYNB * 100; i ++) {
-                    if (session.getDataConn().getFtpTransferControl()
-                            .isFtpTransferExecuting() ||
+                    if (control.isFtpTransferExecuting() ||
                             (!session.isCurrentCommandFinished())) {
                         try {
                             Thread.sleep(FtpInternalConfiguration.RETRYINMS);
@@ -351,8 +352,9 @@ public class NetworkHandler extends SimpleChannelHandler {
     private void messageRunAnswer() {
         try {
             businessHandler.beforeRunCommand();
-            logger.info("Run {}", session.getCurrentCommand().getCommand());
-            session.getCurrentCommand().exec();
+            AbstractCommand command = session.getCurrentCommand();
+            logger.info("Run {}", command.getCommand());
+            command.exec();
             businessHandler.afterRunCommandOk();
         } catch (CommandAbstractException e) {
             session.setReplyCode(e);

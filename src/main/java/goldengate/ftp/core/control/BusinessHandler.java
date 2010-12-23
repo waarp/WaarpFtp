@@ -282,7 +282,8 @@ public abstract class BusinessHandler {
     /**
      * This method is called for every received message after the execution of
      * the command but before the final reply to the client. If an exception is
-     * raised, the reply is immediate.
+     * raised, the reply is immediate. This is the last call before finishing
+     * the command.
      *
      * @exception CommandAbstractException
      */
@@ -292,21 +293,16 @@ public abstract class BusinessHandler {
      * Run when a FTP exception is catch (the channel is not necessary closed
      * after). This must set a correct answer and a correct code of reply. If
      * the code of reply is 421, then the channel will be closed after this
-     * call.
+     * call. This is the last call before finishing the command.
      *
      * @param e
      */
     public abstract void afterRunCommandKo(CommandAbstractException e);
 
     /**
-     * Run when a transfer is finished (eventually in error)
-     *
-     * @param transfer
-     */
-    public abstract void afterTransferDone(FtpTransfer transfer);
-
-    /**
-     * Run when a transfer is finished (eventually in error) but before answering
+     * Run when a transfer is finished (eventually in error) but before answering.
+     * Note that this is called only for a Transfer Request (or LIST) but
+     * called before afterRunCommandXX is called (Ok or Ko).
      *
      * @param transfer
      * @exception CommandAbstractException

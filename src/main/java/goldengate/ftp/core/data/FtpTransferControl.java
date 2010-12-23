@@ -93,6 +93,10 @@ public class FtpTransferControl {
      * Is the current Command Finished (or previously current command)
      */
     private volatile boolean isExecutingCommandFinished = true;
+    /**
+     * Waiter for the Command finishing
+     */
+    private volatile GgFuture commandFinishing = null;
 
     /**
      * Current command executed
@@ -106,7 +110,7 @@ public class FtpTransferControl {
 
     /**
      * Blocking step for the Executor in order to wait for the end of the
-     * command.
+     * command (internal wait, not to be used outside).
      */
     private volatile GgFuture endOfCommand = null;
 
@@ -339,6 +343,10 @@ public class FtpTransferControl {
         endOfCommand = new GgFuture(true);
         executorService.execute(new FtpTransferExecutor(session,
                 executingCommand));
+        try {
+            commandFinishing.await();
+        } catch (InterruptedException e) {
+        }
     }
 
     /**
@@ -351,10 +359,12 @@ public class FtpTransferControl {
      */
     public void setNewFtpTransfer(FtpCommandCode command, FtpFile file) {
         isExecutingCommandFinished = false;
+        commandFinishing = new GgFuture(true);
         // logger.debug("setNewCommand: {}", command);
         setDataNetworkHandlerReady();
         executingCommand = new FtpTransfer(command, file);
         runExecutor();
+        commandFinishing = null;
     }
 
     /**
@@ -370,10 +380,12 @@ public class FtpTransferControl {
     public void setNewFtpTransfer(FtpCommandCode command, List<String> list,
             String path) {
         isExecutingCommandFinished = false;
+        commandFinishing = new GgFuture(true);
         // logger.debug("setNewCommand: {}", command);
         setDataNetworkHandlerReady();
         executingCommand = new FtpTransfer(command, list, path);
         runExecutor();
+        commandFinishing = null;
     }
 
     /**
@@ -443,6 +455,9 @@ public class FtpTransferControl {
         if (isExecutingCommandFinished) {
             // already done
             logger.warn("Check: already Finished");
+            if (commandFinishing != null) {
+                commandFinishing.cancel();
+            }
             throw new FtpNoTransferException("No transfer running");
         }
         if (!isDataNetworkHandlerReady) {
@@ -540,14 +555,14 @@ public class FtpTransferControl {
                 }
             }
         }
-        if (write) {
+        /*if (false) {//write) {
             session.getNetworkHandler().writeIntermediateAnswer();
         }
         if (current != null) {
             if (!FtpCommandCode.isListLikeCommand(current.getCommand())) {
                 session.getBusinessHandler().afterTransferDone(current);
             }
-        }
+        }*/
         finalizeExecution();
     }
 
@@ -597,14 +612,15 @@ public class FtpTransferControl {
                 }
             }
         }
-        if (write) {
+        /*//if (write) {
+        if (false) {
             session.getNetworkHandler().writeIntermediateAnswer();
         }
         if (current != null) {
             if (!FtpCommandCode.isListLikeCommand(current.getCommand())) {
                 session.getBusinessHandler().afterTransferDone(current);
             }
-        }
+        }*/
         finalizeExecution();
     }
 
@@ -667,6 +683,9 @@ public class FtpTransferControl {
     private void finalizeExecution() {
         // logger.debug("Finalize execution");
         isExecutingCommandFinished = true;
+        if (commandFinishing != null) {
+            commandFinishing.setSuccess();
+        }
         executingCommand = null;
     }
 
