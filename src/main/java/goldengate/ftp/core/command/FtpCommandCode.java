@@ -1157,6 +1157,14 @@ public enum FtpCommandCode {
     public static boolean isRetrLikeCommand(FtpCommandCode command) {
         return command == RETR;
     }
+    /**
+     * True if the command is a Retrieve or Store like operation
+     * @param command
+     * @return True if the command is a Retrieve or Store like operation
+     */
+    public static boolean isStorOrRetrLikeCommand(FtpCommandCode command) {
+        return isRetrLikeCommand(command)||isStoreLikeCommand(command);
+    }
 
     /**
      * True if the command is a List like operation (LIST, NLST, MLSD, MLST,

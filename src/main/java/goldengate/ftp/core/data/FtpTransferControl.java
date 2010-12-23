@@ -29,6 +29,7 @@ import goldengate.common.logging.GgInternalLogger;
 import goldengate.common.logging.GgInternalLoggerFactory;
 import goldengate.ftp.core.command.FtpCommandCode;
 import goldengate.ftp.core.command.service.ABOR;
+import goldengate.ftp.core.config.FtpInternalConfiguration;
 import goldengate.ftp.core.control.NetworkHandler;
 import goldengate.ftp.core.data.handler.DataNetworkHandler;
 import goldengate.ftp.core.exception.FtpNoConnectionException;
@@ -229,7 +230,8 @@ public class FtpTransferControl {
                 logger
                         .error("Connection already open but should not since in Stream mode");
                 setTransferAbortedFromInternal(false);
-                return false;
+                // WAS XXX return False;
+                throw new Reply425Exception("Connection already open but should not since in Stream mode");
             }
         }
         // Need to open connection
@@ -271,15 +273,19 @@ public class FtpTransferControl {
             session.getConfiguration().setNewFtpSession(inetAddress,
                     inetSocketAddress, session);
             // Set the session for the future dataChannel
-            ChannelFuture future = clientBootstrap.connect(dataAsyncConn
-                    .getRemoteAddress(), dataAsyncConn.getLocalAddress());
+            String mylog = session.toString();
+            logger.debug("DataConn for: "+session.getCurrentCommand().getCommand()+" to "+inetSocketAddress.toString());
+            ChannelFuture future = clientBootstrap.connect(inetSocketAddress, 
+                    dataAsyncConn.getLocalAddress());
             try {
                 future.await();
             } catch (InterruptedException e1) {
             }
             if (!future.isSuccess()) {
                 logger.warn("Connection abort in active mode from future while session: "+
-                        session.toString(),
+                        session.toString()+
+                        "\nTrying connect to: "+inetSocketAddress.toString()+
+                        "\nWas: "+mylog,
                         future.getCause());
                 // Cannot open connection
                 session.getConfiguration().delFtpSession(inetAddress,
@@ -537,12 +543,12 @@ public class FtpTransferControl {
         if (write) {
             session.getNetworkHandler().writeIntermediateAnswer();
         }
-        finalizeExecution();
         if (current != null) {
             if (!FtpCommandCode.isListLikeCommand(current.getCommand())) {
                 session.getBusinessHandler().afterTransferDone(current);
             }
         }
+        finalizeExecution();
     }
 
     /**
@@ -583,17 +589,23 @@ public class FtpTransferControl {
                 } catch (CommandAbstractException e) {
                     session.setReplyCode(e);
                 }
+            } else {
+                // Special wait to prevent fast LIST following by STOR or RETR command
+                try {
+                    Thread.sleep(FtpInternalConfiguration.RETRYINMS);
+                } catch (InterruptedException e) {
+                }
             }
         }
         if (write) {
             session.getNetworkHandler().writeIntermediateAnswer();
         }
-        finalizeExecution();
         if (current != null) {
             if (!FtpCommandCode.isListLikeCommand(current.getCommand())) {
                 session.getBusinessHandler().afterTransferDone(current);
             }
         }
+        finalizeExecution();
     }
 
     /**

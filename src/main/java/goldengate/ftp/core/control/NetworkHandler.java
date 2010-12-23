@@ -273,8 +273,6 @@ public class NetworkHandler extends SimpleChannelHandler {
             String message = (String) e.getMessage();
             AbstractCommand command = FtpCommandCode.getFromLine(
                     getFtpSession(), message);
-            // Default message
-            session.setReplyCode(ReplyCode.REPLY_200_COMMAND_OKAY, null);
             logger.info("RECVMSG: {} CMD: {}", message, command.getCommand());
             // First check if the command is an ABORT, QUIT or STAT
             if (!FtpCommandCode.isSpecialCommand(command.getCode())) {
@@ -284,7 +282,8 @@ public class NetworkHandler extends SimpleChannelHandler {
                 boolean notFinished = true;
                 for (int i = 0; i < FtpInternalConfiguration.RETRYNB * 100; i ++) {
                     if (session.getDataConn().getFtpTransferControl()
-                            .isFtpTransferExecuting()) {
+                            .isFtpTransferExecuting() ||
+                            (!session.isCurrentCommandFinished())) {
                         try {
                             Thread.sleep(FtpInternalConfiguration.RETRYINMS);
                         } catch (InterruptedException e1) {
@@ -303,6 +302,8 @@ public class NetworkHandler extends SimpleChannelHandler {
                     return;
                 }
             }
+            // Default message
+            session.setReplyCode(ReplyCode.REPLY_200_COMMAND_OKAY, null);
             if (session.getCurrentCommand().isNextCommandValid(command)) {
                 session.setNextCommand(command);
                 messageRunAnswer();
@@ -330,6 +331,7 @@ public class NetworkHandler extends SimpleChannelHandler {
             return true;
         }
         writeIntermediateAnswer();
+        session.setCurrentCommandFinished();
         return false;
     }
 

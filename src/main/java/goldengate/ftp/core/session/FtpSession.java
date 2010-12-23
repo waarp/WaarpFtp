@@ -82,7 +82,11 @@ public class FtpSession implements SessionInterface {
      * Current Command
      */
     private AbstractCommand currentCommand = null;
-
+    /**
+     * Is the current command finished
+     */
+    private volatile boolean isCurrentCommandFinished = true;
+    
     /**
      * Associated Reply Code
      */
@@ -188,6 +192,7 @@ public class FtpSession implements SessionInterface {
     public void setNextCommand(CommandInterface command) {
         previousCommand = currentCommand;
         currentCommand = (AbstractCommand) command;
+        isCurrentCommandFinished = false;
     }
 
     /**
@@ -211,8 +216,21 @@ public class FtpSession implements SessionInterface {
      */
     public void setPreviousAsCurrentCommand() {
         currentCommand = previousCommand;
+        isCurrentCommandFinished = true;
     }
-
+    /**
+     * 
+     * @return True if the Current Command is already Finished (ready to accept a new one)
+     */
+    public boolean isCurrentCommandFinished() {
+        return isCurrentCommandFinished;
+    }
+    /**
+     * Set the Current Command as finished
+     */
+    public void setCurrentCommandFinished() {
+        this.isCurrentCommandFinished = true;
+    }
     /**
      * @return the answer
      */
