@@ -5,6 +5,10 @@
 		<author email="fredbregier@free.fr">Frederic Bregier</author>
 	</properties>
 	<body>
+		<release version="1.0.8" date="2010-12-25" description="New Production Release">
+			<action dev="Frederic Bregier" type="fix">Various bug fixes among intermediate message on Transfers</action>
+			<action dev="Frederic Bregier" type="fix">Use new Netty</action>
+		</release>
 		<release version="1.0.7" date="2009-11-19" description="New Production Release">
 			<action dev="Frederic Bregier" type="add">Add SERVER_ADDRESS support</action>
 			<action dev="Frederic Bregier" type="fix">Use new Netty</action>
