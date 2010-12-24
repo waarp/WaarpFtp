@@ -201,7 +201,9 @@ public class FtpTransferControl {
      * Set the closed Channel (from channelClosed of {@link DataNetworkHandler})
      */
     public void setClosedDataChannel() {
-        closedDataChannel.setSuccess();
+        if (closedDataChannel != null) {
+            closedDataChannel.setSuccess();
+        }
     }
 
     /**
@@ -626,7 +628,9 @@ public class FtpTransferControl {
         if (write) {
             session.getNetworkHandler().writeIntermediateAnswer();
         }
-        endOfCommand.cancel();
+        if (endOfCommand != null) {
+            endOfCommand.cancel();
+        }
     }
 
     /**
@@ -647,9 +651,11 @@ public class FtpTransferControl {
      * @throws InterruptedException
      */
     public void waitForEndOfTransfer() throws InterruptedException {
-        endOfCommand.await();
-        if (endOfCommand.isFailed()) {
-            throw new InterruptedException("Transfer aborted");
+        if (endOfCommand != null) {
+            endOfCommand.await();
+            if (endOfCommand.isFailed()) {
+                throw new InterruptedException("Transfer aborted");
+            }
         }
         // logger.debug("waitEndOfCommand over");
     }
@@ -677,10 +683,12 @@ public class FtpTransferControl {
         if (isDataNetworkHandlerReady) {
             isDataNetworkHandlerReady = false;
             Channels.close(dataChannel);
-            try {
-                closedDataChannel.await(session.getConfiguration().TIMEOUTCON,
-                        TimeUnit.MILLISECONDS);
-            } catch (InterruptedException e) {
+            if (closedDataChannel != null) {
+                 try {
+                    closedDataChannel.await(session.getConfiguration().TIMEOUTCON,
+                            TimeUnit.MILLISECONDS);
+                } catch (InterruptedException e) {
+                }
             }
             // logger.debug("waitForClosedDataChannel over");
             dataChannel = null;
