@@ -24,6 +24,7 @@ import goldengate.ftp.core.command.internal.ConnectionCommand;
 import goldengate.ftp.core.command.internal.IncorrectCommand;
 import goldengate.ftp.core.command.internal.UnimplementedCommand;
 import goldengate.ftp.core.command.internal.UnknownCommand;
+import goldengate.ftp.core.file.FtpFile;
 import goldengate.ftp.core.session.FtpSession;
 
 /**
