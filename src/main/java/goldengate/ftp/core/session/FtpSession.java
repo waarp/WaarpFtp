@@ -165,7 +165,17 @@ public class FtpSession implements SessionInterface {
         ftpDir = businessHandler.getBusinessNewDir();
         restart = businessHandler.getBusinessNewRestart();
     }
-
+    /**
+     * Special initialization (FtpExec with Https session)
+     * @param auth
+     * @param dir
+     * @param restart
+     */
+    public void setSpecialInit(FtpAuth auth, FtpDir dir, Restart restart) {
+        this.ftpAuth = auth;
+        this.ftpDir = dir;
+        this.restart = restart;
+    }
     /**
      * @return the Control channel
      */
