@@ -36,7 +36,6 @@ import sun.misc.SignalHandler;
  * @author Frederic Bregier
  *
  */
-@SuppressWarnings("restriction")
 public final class FtpSignalHandler implements SignalHandler {
     /**
      * Set if the program is in shutdown
