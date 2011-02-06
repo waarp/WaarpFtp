@@ -212,7 +212,7 @@ public class NetworkHandler extends SimpleChannelHandler {
                             "Connection (example: timeout) impossible since {} with Channel {}",
                             e2.getMessage(), e.getChannel());
         } else if (e1 instanceof ClosedChannelException) {
-            logger.info("Connection closed before end");
+            logger.debug("Connection closed before end");
         } else if (e1 instanceof CommandAbstractException) {
             // FTP Exception: not close if not necessary
             CommandAbstractException e2 = (CommandAbstractException) e1;
@@ -274,7 +274,7 @@ public class NetworkHandler extends SimpleChannelHandler {
             String message = (String) e.getMessage();
             AbstractCommand command = FtpCommandCode.getFromLine(
                     getFtpSession(), message);
-            logger.info("RECVMSG: {} CMD: {}", message, command.getCommand());
+            logger.debug("RECVMSG: {} CMD: {}", message, command.getCommand());
             // First check if the command is an ABORT, QUIT or STAT
             if (!FtpCommandCode.isSpecialCommand(command.getCode())) {
                 // Now check if a transfer is on its way: illegal to have at
@@ -353,7 +353,7 @@ public class NetworkHandler extends SimpleChannelHandler {
         try {
             businessHandler.beforeRunCommand();
             AbstractCommand command = session.getCurrentCommand();
-            logger.info("Run {}", command.getCommand());
+            logger.debug("Run {}", command.getCommand());
             command.exec();
             businessHandler.afterRunCommandOk();
         } catch (CommandAbstractException e) {

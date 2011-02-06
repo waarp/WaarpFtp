@@ -425,7 +425,7 @@ public class FtpInternalConfiguration {
         try {
             BindAddress bindAddress = hashBindPassiveDataConn.get(address);
             if (bindAddress == null) {
-                logger.info("Bind really to {}", address);
+                logger.debug("Bind really to {}", address);
                 Channel parentChannel = null;
                 try {
                     parentChannel = passiveBootstrap.bind(address);
@@ -440,7 +440,7 @@ public class FtpInternalConfiguration {
                 hashBindPassiveDataConn.put(address, bindAddress);
             }
             bindAddress.nbBind++;
-            logger.info("Bind number to {} is {}", address, bindAddress.nbBind);
+            logger.debug("Bind number to {} is {}", address, bindAddress.nbBind);
         } finally {
             configuration.bindUnlock();
         }
@@ -460,7 +460,7 @@ public class FtpInternalConfiguration {
             BindAddress bindAddress = hashBindPassiveDataConn.get(address);
             if (bindAddress != null) {
                 bindAddress.nbBind--;
-                logger.info("Bind number to {} left is {}", address, bindAddress.nbBind);
+                logger.debug("Bind number to {} left is {}", address, bindAddress.nbBind);
                 if (bindAddress.nbBind == 0) {
                     Channels.close(bindAddress.parent);
                     hashBindPassiveDataConn.remove(address);

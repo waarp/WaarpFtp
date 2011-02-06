@@ -273,7 +273,7 @@ public class DataNetworkHandler extends SimpleChannelHandler {
             logger.warn("Connection (example: timeout) impossible since {}", e2
                     .getMessage());
         } else if (e1 instanceof ClosedChannelException) {
-            logger.info("Connection closed before end");
+            logger.debug("Connection closed before end");
         } else if (e1 instanceof InvalidArgumentException) {
             InvalidArgumentException e2 = (InvalidArgumentException) e1;
             logger.warn("Bad configuration in Codec in {}", e2.getMessage());
@@ -302,7 +302,7 @@ public class DataNetworkHandler extends SimpleChannelHandler {
             logger.warn("Connection aborted since {}", e2.getMessage());
         } else if (e1 instanceof NotYetConnectedException) {
             NotYetConnectedException e2 = (NotYetConnectedException) e1;
-            logger.info("Ignore this exception {}", e2.getMessage());
+            logger.debug("Ignore this exception {}", e2.getMessage());
             return;
         } else if (e1 instanceof BindException) {
             BindException e2 = (BindException) e1;

@@ -93,20 +93,20 @@ public class SimpleAuth {
      */
     public boolean isAccountValid(String account) {
         if (accounts == null) {
-            logger.info("No account needed");
+            logger.debug("No account needed");
             return true;
         }
         if (account == null) {
-            logger.info("No account given");
+            logger.debug("No account given");
             return false;
         }
         for (String acct: accounts) {
             if (acct.equals(account)) {
-                logger.info("Account found");
+                logger.debug("Account found");
                 return true;
             }
         }
-        logger.info("No account found");
+        logger.debug("No account found");
         return false;
     }
 

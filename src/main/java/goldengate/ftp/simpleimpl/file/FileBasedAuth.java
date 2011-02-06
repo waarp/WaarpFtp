@@ -147,7 +147,7 @@ public class FileBasedAuth extends FilesystemBasedFtpAuth {
         if (currentAuth.isAccountValid(account)) {
             // logger.debug("Account: {}", account);
             setIsIdentified(true);
-            logger.warn("User {} is authentified with account {}", user,
+            logger.info("User {} is authentified with account {}", user,
                     account);
             return new NextCommandReply(FtpCommandCode.NOOP,
                     ReplyCode.REPLY_230_USER_LOGGED_IN, null);

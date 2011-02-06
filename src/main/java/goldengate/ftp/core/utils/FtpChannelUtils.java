@@ -400,7 +400,7 @@ public class FtpChannelUtils implements Runnable {
         timerTask.configuration = configuration;
         timer.schedule(timerTask, configuration.TIMEOUTCON/2);
         configuration.releaseResources();
-        logger.warn("Exit Shutdown Data");
+        logger.info("Exit Shutdown Data");
         terminateDataChannels(configuration);
         logger.warn("Exit end of Data Shutdown");
         stopLogger();
@@ -424,7 +424,7 @@ public class FtpChannelUtils implements Runnable {
      */
     public static void addCommandChannel(Channel channel,
             FtpConfiguration configuration) {
-        // logger.info("Add Command Channel {}", channel);
+        // logger.debug("Add Command Channel {}", channel);
         configuration.getFtpInternalConfiguration().getCommandChannelGroup()
                 .add(channel);
     }
@@ -437,7 +437,7 @@ public class FtpChannelUtils implements Runnable {
      */
     public static void addDataChannel(Channel channel,
             FtpConfiguration configuration) {
-        // logger.info("Add Data Channel {}", channel);
+        // logger.debug("Add Data Channel {}", channel);
         configuration.getFtpInternalConfiguration().getDataChannelGroup().add(
                 channel);
     }
