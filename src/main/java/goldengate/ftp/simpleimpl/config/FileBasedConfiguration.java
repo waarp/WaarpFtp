@@ -425,4 +425,12 @@ public class FileBasedConfiguration extends FtpConfiguration {
     private void setRangePort(CircularIntValue rangePort) {
         RANGE_PORT = rangePort;
     }
+
+    /* (non-Javadoc)
+     * @see goldengate.ftp.core.config.FtpConfiguration#inShutdownProcess()
+     */
+    @Override
+    public void inShutdownProcess() {
+        // nothing to do        
+    }
 }

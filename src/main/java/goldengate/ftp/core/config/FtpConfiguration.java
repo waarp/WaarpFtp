@@ -553,4 +553,8 @@ public abstract class FtpConfiguration {
     public void releaseResources() {
         
     }
+    /**
+     * Shutdown process is on going
+     */
+    public abstract void inShutdownProcess();
 }

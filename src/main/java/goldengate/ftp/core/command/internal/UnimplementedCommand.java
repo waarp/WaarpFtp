@@ -21,6 +21,7 @@
 package goldengate.ftp.core.command.internal;
 
 import goldengate.common.command.ReplyCode;
+import goldengate.common.command.exception.Reply502Exception;
 import goldengate.common.logging.GgInternalLogger;
 import goldengate.common.logging.GgInternalLoggerFactory;
 import goldengate.ftp.core.command.AbstractCommand;
@@ -43,12 +44,13 @@ public abstract class UnimplementedCommand extends AbstractCommand {
      *
      * @see goldengate.ftp.core.command.AbstractCommand#exec()
      */
-    public void exec() {
+    public void exec() throws Reply502Exception {
         getSession().setReplyCode(
                 ReplyCode.REPLY_502_COMMAND_NOT_IMPLEMENTED,
                 "Unimplemented Command: " + getCommand() + " with argument: " +
                         getArg());
         logger.warn(getSession().getAnswer());
         invalidCurrentCommand();
+        throw new Reply502Exception(getSession().getReplyCode().getMesg());
     }
 }

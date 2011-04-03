@@ -21,6 +21,7 @@
 package goldengate.ftp.core.command.internal;
 
 import goldengate.common.command.ReplyCode;
+import goldengate.common.command.exception.Reply503Exception;
 import goldengate.common.logging.GgInternalLogger;
 import goldengate.common.logging.GgInternalLoggerFactory;
 import goldengate.ftp.core.command.AbstractCommand;
@@ -45,7 +46,7 @@ public class IncorrectCommand extends AbstractCommand {
      *
      * @see goldengate.ftp.core.command.AbstractCommand#exec()
      */
-    public void exec() {
+    public void exec() throws Reply503Exception {
         getSession().setReplyCode(
                 ReplyCode.REPLY_503_BAD_SEQUENCE_OF_COMMANDS,
                 "Bas sequence of commands: " + getCommand() + " following " +
@@ -58,5 +59,6 @@ public class IncorrectCommand extends AbstractCommand {
         } else {
             invalidCurrentCommand();
         }
+        throw new Reply503Exception(getSession().getReplyCode().getMesg());
     }
 }

@@ -389,6 +389,7 @@ public class FtpChannelUtils implements Runnable {
         configuration.isShutdown = true;
         long delay = configuration.TIMEOUTCON;
         logger.warn("Exit: Give a delay of " + delay + " ms");
+        configuration.inShutdownProcess();
         try {
             Thread.sleep(delay);
         } catch (InterruptedException e) {

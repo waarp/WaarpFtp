@@ -21,6 +21,7 @@
 package goldengate.ftp.core.command.internal;
 
 import goldengate.common.command.ReplyCode;
+import goldengate.common.command.exception.Reply500Exception;
 import goldengate.common.logging.GgInternalLogger;
 import goldengate.common.logging.GgInternalLoggerFactory;
 import goldengate.ftp.core.command.AbstractCommand;
@@ -43,12 +44,13 @@ public class UnknownCommand extends AbstractCommand {
      *
      * @see goldengate.ftp.core.command.AbstractCommand#exec()
      */
-    public void exec() {
+    public void exec() throws Reply500Exception {
         getSession().setReplyCode(
                 ReplyCode.REPLY_500_SYNTAX_ERROR_COMMAND_UNRECOGNIZED,
                 "Unknown Command: " + getCommand() + " with argument: " +
                         getArg());
         logger.warn(getSession().getAnswer());
         invalidCurrentCommand();
+        throw new Reply500Exception(getSession().getReplyCode().getMesg());
     }
 }

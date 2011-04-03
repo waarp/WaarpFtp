@@ -22,6 +22,7 @@ package goldengate.ftp.core.control;
 
 import goldengate.common.command.ReplyCode;
 import goldengate.common.command.exception.CommandAbstractException;
+import goldengate.common.command.exception.Reply503Exception;
 import goldengate.common.logging.GgInternalLogger;
 import goldengate.common.logging.GgInternalLoggerFactory;
 import goldengate.ftp.core.command.AbstractCommand;
@@ -299,6 +300,8 @@ public class NetworkHandler extends SimpleChannelHandler {
                     session.setReplyCode(
                             ReplyCode.REPLY_503_BAD_SEQUENCE_OF_COMMANDS,
                             "Previous transfer command is not finished yet");
+                    businessHandler.afterRunCommandKo(
+                            new Reply503Exception(session.getReplyCode().getMesg()));
                     writeIntermediateAnswer();
                     return;
                 }
@@ -350,6 +353,7 @@ public class NetworkHandler extends SimpleChannelHandler {
      * Execute one command and write the following answer
      */
     private void messageRunAnswer() {
+        boolean error = false;
         try {
             businessHandler.beforeRunCommand();
             AbstractCommand command = session.getCurrentCommand();
@@ -357,10 +361,11 @@ public class NetworkHandler extends SimpleChannelHandler {
             command.exec();
             businessHandler.afterRunCommandOk();
         } catch (CommandAbstractException e) {
+            error = true;
             session.setReplyCode(e);
             businessHandler.afterRunCommandKo(e);
         }
-        if (session.getCurrentCommand().getCode() != FtpCommandCode.INTERNALSHUTDOWN) {
+        if (error || session.getCurrentCommand().getCode() != FtpCommandCode.INTERNALSHUTDOWN) {
             writeFinalAnswer();
         }
     }
