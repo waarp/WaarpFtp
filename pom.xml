@@ -3,7 +3,7 @@
   <groupId>GoldenGate</groupId>
   <artifactId>GoldenGateFtp</artifactId>
   <name>GoldenGateFtp</name>
-  <version>1.0.9</version>
+  <version>1.0.10</version>
   <packaging>pom</packaging>
   <description>
 	  The GoldenGate FTP project is a proposal of a new fresh FTP server implementation,
@@ -112,22 +112,19 @@
   <dependency>
       <groupId>ch.qos.logback</groupId>
       <artifactId>logback-access</artifactId>
-      <version>0.9.28</version>
-      <scope>compile</scope>
+      <version>0.9.29</version>
       <optional>true</optional>
     </dependency>
     <dependency>
       <groupId>ch.qos.logback</groupId>
       <artifactId>logback-classic</artifactId>
-      <version>0.9.28</version>
-      <scope>compile</scope>
+      <version>0.9.29</version>
       <optional>true</optional>
     </dependency>
     <dependency>
       <groupId>ch.qos.logback</groupId>
       <artifactId>logback-core</artifactId>
-      <version>0.9.28</version>
-      <scope>compile</scope>
+      <version>0.9.29</version>
       <optional>true</optional>
     </dependency>
     <dependency>
@@ -179,12 +176,6 @@
       <optional>true</optional>
     </dependency>
     <dependency>
-    	<groupId>NettyExtension</groupId>
-    	<artifactId>NettyExtension</artifactId>
-    	<version>1.1.7</version>
-    	<scope>compile</scope>
-    </dependency>
-    <dependency>
       <groupId>GoldenGate</groupId>
       <artifactId>GoldenGateDigest</artifactId>
       <version>1.0.2</version>
@@ -193,8 +184,15 @@
     <dependency>
       <groupId>GoldenGate</groupId>
       <artifactId>GoldenGateCommon</artifactId>
-      <version>1.1.2</version>
+      <version>1.1.4</version>
       <scope>compile</scope>
+    </dependency>
+    <dependency>
+    	<groupId>NettyExtension</groupId>
+    	<artifactId>NettyExtension</artifactId>
+    	<version>1.1.8</version>
+    	<type>jar</type>
+    	<scope>compile</scope>
     </dependency>
   </dependencies>
   <properties>
