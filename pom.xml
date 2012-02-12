@@ -3,7 +3,7 @@
   <groupId>GoldenGate</groupId>
   <artifactId>GoldenGateFtp</artifactId>
   <name>GoldenGateFtp</name>
-  <version>1.0.10</version>
+  <version>1.0.11</version>
   <packaging>pom</packaging>
   <description>
 	  The GoldenGate FTP project is a proposal of a new fresh FTP server implementation,
@@ -22,54 +22,16 @@
   </description>
   <url>http://openr66.free.fr/GoldenGateFTP</url>
   <inceptionYear>2009</inceptionYear>
+  <parent>
+    <groupId>GoldenGate</groupId>
+    <artifactId>persistence-deps</artifactId>
+    <version>1.0</version>
+  </parent>
   <scm>
   	<connection>scm:svn:http://goldengate.svn.sourceforge.net/svnroot/goldengate/GoldenGateFtp/trunk</connection>
   	<developerConnection>scm:svn:https://goldengate.svn.sourceforge.net/svnroot/goldengate/GoldenGateFtp/trunk</developerConnection>
   	<url>http://goldengate.svn.sourceforge.net/svnroot/goldengate/GoldenGateFtp/trunk</url>
   </scm>
-  <organization>
-  	<name>Frederic Bregier</name>
-  	<url>http://frederic.bregier.free.fr</url>
-  </organization>
-  <developers>
-  	<developer>
-  		<name>Frederic Bregier</name>
-  		<id>openlsd</id>
-  		<roles>
-  			<role>Project Manager</role>
-  			<role>Architect</role>
-		</roles>
-  		<email>fredbregier at free.fr</email>
-  	</developer>
-  	<developer>
-  		<name>Frederic Bregier</name>
-  		<id>fredbregier</id>
-  		<roles>
-  			<role>Developer</role>
-		</roles>
-  		<email>fredbregier at free.fr</email>
-  	</developer>
-  </developers>
-  <issueManagement>
-  	<system>Sourceforge</system>
-  	<url>http://sourceforge.net/tracker/?group_id=254228/</url>
-  </issueManagement>
-  <mailingLists>
-  	<mailingList>
-  		<name>GoldenGate Devel mailing list (Prefered)</name>
-  		<subscribe>https://lists.sourceforge.net/lists/listinfo/goldengate-devel</subscribe>
-  		<post>goldengate-devel@lists.sourceforge.net</post>
-  		<archive>http://sourceforge.net/mailarchive/forum.php?forum_name=goldengate-devel</archive>
-  	</mailingList>
-  	<mailingList>
-  		<name>GoldenGate Help Forum</name>
-  		<archive>http://sourceforge.net/forum/forum.php?forum_id=921630</archive>
-  	</mailingList>
-  	<mailingList>
-  		<name>GoldenGate Open Discussion Forum</name>
-  		<archive>http://sourceforge.net/forum/forum.php?forum_id=921629</archive>
-  	</mailingList>
-  </mailingLists>
   <licenses>
   	<license>
   		<name>GPL 3.0</name>
@@ -88,32 +50,24 @@
   			<enabled>false</enabled>
   		</snapshots>
   	</repository>
-  	<repository>
-  		<id>jboss org</id>
-  		<name>Jboss org</name>
-  		<url>http://repository.jboss.org/nexus/content/groups/public</url>
-  		<snapshots>
-  			<enabled>false</enabled>
-  		</snapshots>
-  	</repository>
   </repositories>
   <dependencies>
   <dependency>
       <groupId>ch.qos.logback</groupId>
       <artifactId>logback-access</artifactId>
-      <version>0.9.29</version>
+      <version>1.0.0</version>
       <optional>true</optional>
     </dependency>
     <dependency>
       <groupId>ch.qos.logback</groupId>
       <artifactId>logback-classic</artifactId>
-      <version>0.9.29</version>
+      <version>1.0.0</version>
       <optional>true</optional>
     </dependency>
     <dependency>
       <groupId>ch.qos.logback</groupId>
       <artifactId>logback-core</artifactId>
-      <version>0.9.29</version>
+      <version>1.0.0</version>
       <optional>true</optional>
     </dependency>
     <dependency>
@@ -161,25 +115,25 @@
     <dependency>
     	<groupId>commons-io</groupId>
     	<artifactId>commons-io</artifactId>
-    	<version>2.0.1</version>
+    	<version>2.1</version>
       <optional>true</optional>
     </dependency>
     <dependency>
       <groupId>GoldenGate</groupId>
       <artifactId>GoldenGateDigest</artifactId>
-      <version>1.0.2</version>
+      <version>1.0.4</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>GoldenGate</groupId>
       <artifactId>GoldenGateCommon</artifactId>
-      <version>1.1.4</version>
+      <version>1.1.7</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
     	<groupId>NettyExtension</groupId>
     	<artifactId>NettyExtension</artifactId>
-    	<version>1.1.8</version>
+    	<version>1.1.10</version>
     	<type>jar</type>
     	<scope>compile</scope>
     </dependency>
@@ -197,46 +151,8 @@
   <build>
     <plugins>
       <plugin>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <version>2.0.2</version>
-        <configuration>
-          <encoding>UTF-8</encoding>
-          <source>1.6</source>
-          <target>1.6</target>
-          <optimize>true</optimize>
-          <showDeprecations>true</showDeprecations>
-        </configuration>
-      </plugin>
-      <plugin>
-        <artifactId>maven-surefire-plugin</artifactId>
-        <version>2.4.3</version>
-        <configuration>
-          <forkMode>never</forkMode>
-          <excludes>
-            <exclude>**/Abstract*</exclude>
-            <exclude>**/TestUtil*</exclude>
-          </excludes>
-        </configuration>
-      </plugin>
-      <plugin>
-        <artifactId>maven-source-plugin</artifactId>
-        <version>2.0.4</version>
-        <executions>
-          <execution>
-            <id>attach-source</id>
-            <phase>package</phase>
-            <goals>
-              <goal>jar</goal>
-            </goals>
-            <configuration>
-              <attach>true</attach>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
         <artifactId>maven-antrun-plugin</artifactId>
-        <version>1.3</version>
+        <version>1.7</version>
         <executions>
           <execution>
             <id>write-version</id>
@@ -328,86 +244,15 @@
             </configuration>
           </execution>
         </executions>
-        <dependencies>
-          <dependency>
-            <groupId>org.apache.ant</groupId>
-            <artifactId>ant</artifactId>
-            <version>1.7.1</version>
-          </dependency>
-          <dependency>
-            <groupId>org.apache.ant</groupId>
-            <artifactId>ant-launcher</artifactId>
-            <version>1.7.1</version>
-          </dependency>
-          <dependency>
-            <groupId>ant-contrib</groupId>
-            <artifactId>ant-contrib</artifactId>
-            <version>1.0b2</version>
-            <exclusions>
-              <exclusion>
-                <groupId>ant</groupId>
-                <artifactId>ant</artifactId>
-              </exclusion>
-            </exclusions>
-          </dependency>
-        </dependencies>
-      </plugin>
-      <plugin>
-        <artifactId>maven-assembly-plugin</artifactId>
-        <version>2.2-beta-3</version>
-        <executions>
-          <execution>
-            <id>generate-distribution</id>
-            <phase>package</phase>
-            <goals>
-              <goal>single</goal>
-            </goals>
-          </execution>
-        </executions>
-        <configuration>
-          <descriptors>
-            <descriptor>${basedir}/src/assembly/default.xml</descriptor>
-          </descriptors>
-          <attach>${attach-distribution}</attach>
-          <appendAssemblyId>true</appendAssemblyId>
-          <tarLongFileMode>gnu</tarLongFileMode>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-eclipse-plugin</artifactId>
-        <version>2.6</version>
-        <configuration>
-          <downloadSources>true</downloadSources>
-          <addVersionToProjectName>true</addVersionToProjectName>
-        </configuration>
       </plugin>
     </plugins>
   </build>
-  <profiles>
-    <profile>
-      <id>release</id>
-      <build>
-        <plugins>
-          <plugin>
-            <inherited>true</inherited>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-deploy-plugin</artifactId>
-            <version>2.4</version>
-            <configuration>
-              <updateReleaseInfo>true</updateReleaseInfo>
-            </configuration>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-  </profiles>
   <reporting>
   	<plugins>
 	  <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
-        <version>2.5</version>
+        <version>2.8.1</version>
 
         <reportSets>
          <reportSet>
@@ -456,77 +301,6 @@
           </reports>
          </reportSet>
         </reportSets>
-      </plugin>
-      <plugin>
-      	<groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-jxr-plugin</artifactId>
-        <version>2.1</version>
-        <configuration>
-          <aggregate>true</aggregate>
-          <inputEncoding>UTF-8</inputEncoding>
-          <outputEncoding>UTF-8</outputEncoding>
-          <linkJavadoc>true</linkJavadoc>
-          <destDir>${project.build.directory}/xref</destDir>
-          <javadocDir>${project.build.directory}/site/api</javadocDir>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-project-info-reports-plugin</artifactId>
-        <reportSets>
-         <reportSet>
-          <reports>
-           <report>index</report>
-           <report>summary</report>
-           <report>dependencies</report>
-           <report>mailing-list</report>
-           <report>issue-tracking</report>
-           <report>dependency-convergence</report>
-           <report>dependency-management</report>
-           <report>project-team</report>
-           <report>scm</report>
-           <report>license</report>
-          </reports>
-         </reportSet>
-        </reportSets>
-        <configuration>
-        </configuration>
-      </plugin>
-      <plugin>
-      	<groupId>org.apache.maven.plugins</groupId>
-      	<artifactId>maven-pmd-plugin</artifactId>
-      	<configuration>
-      		<targetJdk>1.6</targetJdk>
-      		<rulesets>
-      			<ruleset>/rulesets/basic.xml</ruleset>
-      			<ruleset>/rulesets/design.xml</ruleset>
-      		</rulesets>
-      		<format>xml</format>
-      		<linkXref>true</linkXref>
-      		<sourceEncoding>utf-8</sourceEncoding>
-      		<minimumTokens>100</minimumTokens>
-      	</configuration>
-      </plugin>
-      <plugin>
-      	<groupId>org.apache.maven.plugins</groupId>
-      	<artifactId>maven-changes-plugin</artifactId>
-      </plugin>
-      <plugin>
-      	<groupId>org.apache.maven.plugins</groupId>
-      	<artifactId>maven-changelog-plugin</artifactId>
-      </plugin>
-      <plugin>
-      	<groupId>org.codehaus.mojo</groupId>
-      	<artifactId>taglist-maven-plugin</artifactId>
-      	<configuration>
-      		<encoding>utf-8</encoding>
-      		<tags>
-      			<tag>XXX</tag>
-      			<tag>TODO</tag>
-      			<tag>FIXME</tag>
-      			<tag>@deprecated</tag>
-      		</tags>
-      	</configuration>
       </plugin>
 	</plugins>
   </reporting>

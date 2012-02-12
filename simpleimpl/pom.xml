@@ -3,7 +3,7 @@
   <parent>
 	  <groupId>GoldenGate</groupId>
 	  <artifactId>GoldenGateFtp</artifactId>
-	  <version>1.0.10</version>
+	  <version>1.0.11</version>
 	  <relativePath>../pom.xml</relativePath>
   </parent>
   <name>GoldenGateFtp-SimpleServer</name>
@@ -16,13 +16,13 @@
     <dependency>
       <groupId>GoldenGate</groupId>
       <artifactId>GoldenGateFtp-Core</artifactId>
-      <version>1.0.10</version>
+      <version>1.0.11</version>
       <optional>false</optional>
     </dependency>
     <dependency>
       <groupId>GoldenGate</groupId>
       <artifactId>GoldenGateFtp-Filesystem</artifactId>
-      <version>1.0.10</version>
+      <version>1.0.11</version>
       <optional>false</optional>
     </dependency>
   </dependencies>
@@ -52,6 +52,7 @@
       <plugin>
       	<groupId>org.apache.maven.plugins</groupId>
       	<artifactId>maven-site-plugin</artifactId>
+      	<version>3.0</version>
       	<configuration>
       		<generateReports>false</generateReports>
       	</configuration>

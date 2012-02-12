@@ -3,7 +3,7 @@
   <parent>
 	  <groupId>GoldenGate</groupId>
 	  <artifactId>GoldenGateFtp</artifactId>
-	  <version>1.0.10</version>
+	  <version>1.0.11</version>
 	  <relativePath>../pom.xml</relativePath>
   </parent>
   <name>GoldenGateFtp-Core</name>
@@ -40,6 +40,7 @@
       <plugin>
       	<groupId>org.apache.maven.plugins</groupId>
       	<artifactId>maven-site-plugin</artifactId>
+      	<version>3.0</version>
       	<configuration>
       		<generateReports>false</generateReports>
       	</configuration>
