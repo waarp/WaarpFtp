@@ -5,6 +5,9 @@
 		<author email="fredbregier@free.fr">Frederic Bregier</author>
 	</properties>
 	<body>
+		<release version="1.0.12" date="2012-03-01" description="Fix release">
+			<action dev="Frederic Bregier" type="fix">Small fix on Best practices</action>
+		</release>
 		<release version="1.0.11" date="2012-02-12" description="Fix release">
 			<action dev="Frederic Bregier" type="fix">Update Dependencies</action>
 		</release>

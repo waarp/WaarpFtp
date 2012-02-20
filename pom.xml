@@ -3,7 +3,7 @@
   <groupId>GoldenGate</groupId>
   <artifactId>GoldenGateFtp</artifactId>
   <name>GoldenGateFtp</name>
-  <version>1.0.11</version>
+  <version>1.0.12</version>
   <packaging>pom</packaging>
   <description>
 	  The GoldenGate FTP project is a proposal of a new fresh FTP server implementation,
@@ -127,13 +127,13 @@
     <dependency>
       <groupId>GoldenGate</groupId>
       <artifactId>GoldenGateCommon</artifactId>
-      <version>1.1.7</version>
+      <version>1.1.9</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
     	<groupId>NettyExtension</groupId>
     	<artifactId>NettyExtension</artifactId>
-    	<version>1.1.10</version>
+    	<version>1.1.11</version>
     	<type>jar</type>
     	<scope>compile</scope>
     </dependency>
