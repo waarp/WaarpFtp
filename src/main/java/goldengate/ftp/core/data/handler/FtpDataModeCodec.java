@@ -25,6 +25,7 @@ import goldengate.common.file.DataBlock;
 import goldengate.common.future.GgFuture;
 import goldengate.ftp.core.command.FtpArgumentCode.TransferMode;
 import goldengate.ftp.core.command.FtpArgumentCode.TransferStructure;
+import goldengate.ftp.core.data.handler.FtpSeekAheadData.SeekAheadNoBackArrayException;
 
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
@@ -175,6 +176,107 @@ public class FtpDataModeCodec extends FrameDecoder implements
         codecLocked.setSuccess();
     }
 
+    protected Object decodeRecordStandard(ChannelBuffer buf, int length) {
+        ChannelBuffer newbuf = ChannelBuffers.dynamicBuffer(length);
+        if (lastbyte == 0xFF) {
+            int nextbyte = buf.readByte();
+            if (nextbyte == 0xFF) {
+                newbuf.writeByte((byte) (lastbyte & 0xFF));
+            } else {
+                if (nextbyte == 1) {
+                    dataBlock.setEOR(true);
+                } else if (nextbyte == 2) {
+                    dataBlock.setEOF(true);
+                } else if (nextbyte == 3) {
+                    dataBlock.setEOR(true);
+                    dataBlock.setEOF(true);
+                }
+                lastbyte = 0;
+            }
+        }
+        try {
+            while (true) {
+                lastbyte = buf.readByte();
+                if (lastbyte == 0xFF) {
+                    int nextbyte = buf.readByte();
+                    if (nextbyte == 0xFF) {
+                        newbuf.writeByte((byte) (lastbyte & 0xFF));
+                    } else {
+                        if (nextbyte == 1) {
+                            dataBlock.setEOR(true);
+                        } else if (nextbyte == 2) {
+                            dataBlock.setEOF(true);
+                        } else if (nextbyte == 3) {
+                            dataBlock.setEOR(true);
+                            dataBlock.setEOF(true);
+                        }
+                    }
+                } else {
+                    newbuf.writeByte((byte) (lastbyte & 0xFF));
+                }
+                lastbyte = 0;
+            }
+        } catch (IndexOutOfBoundsException e) {
+            // End of read
+        }
+        dataBlock.setBlock(newbuf);
+        return dataBlock;
+    }
+
+    protected Object decodeRecord(ChannelBuffer buf, int length) {
+        FtpSeekAheadData sad = null;
+        try {
+            sad = new FtpSeekAheadData(buf);
+        } catch (SeekAheadNoBackArrayException e1) {
+            return decodeRecordStandard(buf, length);
+        }
+        ChannelBuffer newbuf = ChannelBuffers.dynamicBuffer(length);
+        if (lastbyte == 0xFF) {
+            int nextbyte = sad.bytes[sad.pos++];
+            if (nextbyte == 0xFF) {
+                newbuf.writeByte((byte) (lastbyte & 0xFF));
+            } else {
+                if (nextbyte == 1) {
+                    dataBlock.setEOR(true);
+                } else if (nextbyte == 2) {
+                    dataBlock.setEOF(true);
+                } else if (nextbyte == 3) {
+                    dataBlock.setEOR(true);
+                    dataBlock.setEOF(true);
+                }
+                lastbyte = 0;
+            }
+        }
+        try {
+            while (sad.pos < sad.limit) {
+                lastbyte = sad.bytes[sad.pos++];
+                if (lastbyte == 0xFF) {
+                    int nextbyte = sad.bytes[sad.pos++];
+                    if (nextbyte == 0xFF) {
+                        newbuf.writeByte((byte) (lastbyte & 0xFF));
+                    } else {
+                        if (nextbyte == 1) {
+                            dataBlock.setEOR(true);
+                        } else if (nextbyte == 2) {
+                            dataBlock.setEOF(true);
+                        } else if (nextbyte == 3) {
+                            dataBlock.setEOR(true);
+                            dataBlock.setEOF(true);
+                        }
+                    }
+                } else {
+                    newbuf.writeByte((byte) (lastbyte & 0xFF));
+                }
+                lastbyte = 0;
+            }
+        } catch (IndexOutOfBoundsException e) {
+            // End of read
+        }
+        sad.setReadPosition(0);
+        dataBlock.setBlock(newbuf);
+        return dataBlock;        
+    }
+    
     /*
      * (non-Javadoc)
      *
@@ -199,50 +301,7 @@ public class FtpDataModeCodec extends FrameDecoder implements
             int length = buf.readableBytes();
             // Except if RECORD Structure!
             if (structure == TransferStructure.RECORD) {
-                ChannelBuffer newbuf = ChannelBuffers.dynamicBuffer(length);
-                if (lastbyte == 0xFF) {
-                    int nextbyte = buf.readByte();
-                    if (nextbyte == 0xFF) {
-                        newbuf.writeByte((byte) (lastbyte & 0xFF));
-                    } else {
-                        if (nextbyte == 1) {
-                            dataBlock.setEOR(true);
-                        } else if (nextbyte == 2) {
-                            dataBlock.setEOF(true);
-                        } else if (nextbyte == 3) {
-                            dataBlock.setEOR(true);
-                            dataBlock.setEOF(true);
-                        }
-                        lastbyte = 0;
-                    }
-                }
-                try {
-                    while (true) {
-                        lastbyte = buf.readByte();
-                        if (lastbyte == 0xFF) {
-                            int nextbyte = buf.readByte();
-                            if (nextbyte == 0xFF) {
-                                newbuf.writeByte((byte) (lastbyte & 0xFF));
-                            } else {
-                                if (nextbyte == 1) {
-                                    dataBlock.setEOR(true);
-                                } else if (nextbyte == 2) {
-                                    dataBlock.setEOF(true);
-                                } else if (nextbyte == 3) {
-                                    dataBlock.setEOR(true);
-                                    dataBlock.setEOF(true);
-                                }
-                            }
-                        } else {
-                            newbuf.writeByte((byte) (lastbyte & 0xFF));
-                        }
-                        lastbyte = 0;
-                    }
-                } catch (IndexOutOfBoundsException e) {
-                    // End of read
-                }
-                dataBlock.setBlock(newbuf);
-                return dataBlock;
+                return decodeRecord(buf, length);
             }
 
             dataBlock.setBlock(buf.readBytes(length));
@@ -302,6 +361,72 @@ public class FtpDataModeCodec extends FrameDecoder implements
         throw new InvalidArgumentException("Mode unimplemented: " + mode.name());
     }
 
+    protected ChannelBuffer encodeRecordStandard(DataBlock msg, ChannelBuffer buffer) {
+        ChannelBuffer newbuf = ChannelBuffers.dynamicBuffer(msg
+                .getByteCount());
+        int newbyte = 0;
+        try {
+            while (true) {
+                newbyte = buffer.readByte();
+                if (newbyte == 0xFF) {
+                    newbuf.writeByte((byte) (newbyte & 0xFF));
+                }
+                newbuf.writeByte((byte) (newbyte & 0xFF));
+            }
+        } catch (IndexOutOfBoundsException e) {
+            // end of read
+        }
+        int value = 0;
+        if (msg.isEOF()) {
+            value += 2;
+        }
+        if (msg.isEOR()) {
+            value += 1;
+        }
+        if (value > 0) {
+            newbuf.writeByte((byte) 0xFF);
+            newbuf.writeByte((byte) (value & 0xFF));
+        }
+        msg.clear();
+        return newbuf;
+    }
+
+    protected ChannelBuffer encodeRecord(DataBlock msg, ChannelBuffer buffer) {
+        FtpSeekAheadData sad = null;
+        try {
+            sad = new FtpSeekAheadData(buffer);
+        } catch (SeekAheadNoBackArrayException e1) {
+            return encodeRecordStandard(msg, buffer);
+        }
+        ChannelBuffer newbuf = ChannelBuffers.dynamicBuffer(msg
+                .getByteCount());
+        int newbyte = 0;
+        try {
+            while (sad.pos < sad.limit) {
+                newbyte = sad.bytes[sad.pos++];
+                if (newbyte == 0xFF) {
+                    newbuf.writeByte((byte) (newbyte & 0xFF));
+                }
+                newbuf.writeByte((byte) (newbyte & 0xFF));
+            }
+        } catch (IndexOutOfBoundsException e) {
+            // end of read
+        }
+        int value = 0;
+        if (msg.isEOF()) {
+            value += 2;
+        }
+        if (msg.isEOR()) {
+            value += 1;
+        }
+        if (value > 0) {
+            newbuf.writeByte((byte) 0xFF);
+            newbuf.writeByte((byte) (value & 0xFF));
+        }
+        msg.clear();
+        sad.setReadPosition(0);
+        return newbuf;        
+    }
     /**
      * Encode a DataBlock in the correct format for Mode
      *
@@ -318,33 +443,7 @@ public class FtpDataModeCodec extends FrameDecoder implements
         if (mode == TransferMode.STREAM) {
             // If record structure, special attention
             if (structure == TransferStructure.RECORD) {
-                ChannelBuffer newbuf = ChannelBuffers.dynamicBuffer(msg
-                        .getByteCount());
-                int newbyte = 0;
-                try {
-                    while (true) {
-                        newbyte = buffer.readByte();
-                        if (newbyte == 0xFF) {
-                            newbuf.writeByte((byte) (newbyte & 0xFF));
-                        }
-                        newbuf.writeByte((byte) (newbyte & 0xFF));
-                    }
-                } catch (IndexOutOfBoundsException e) {
-                    // end of read
-                }
-                int value = 0;
-                if (msg.isEOF()) {
-                    value += 2;
-                }
-                if (msg.isEOR()) {
-                    value += 1;
-                }
-                if (value > 0) {
-                    newbuf.writeByte((byte) 0xFF);
-                    newbuf.writeByte((byte) (value & 0xFF));
-                }
-                msg.clear();
-                return newbuf;
+                return encodeRecord(msg, buffer);
             }
             msg.clear();
             return buffer;
