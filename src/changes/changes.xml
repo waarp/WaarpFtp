@@ -5,6 +5,10 @@
 		<author email="fredbregier@free.fr">Frederic Bregier</author>
 	</properties>
 	<body>
+		<release version="1.0.13" date="2012-05-01" description="Fix release">
+			<action dev="Frederic Bregier" type="fix">Improvement on decoder/encoder using SeekAhead</action>
+			<action dev="Frederic Bregier" type="fix">Update Dependencies</action>
+		</release>
 		<release version="1.0.12" date="2012-03-01" description="Fix release">
 			<action dev="Frederic Bregier" type="fix">Small fix on Best practices</action>
 		</release>
