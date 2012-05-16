@@ -286,7 +286,7 @@ public class FtpInternalConfiguration {
                 execPassiveDataBoss, execPassiveDataWorker,
                 configuration.SERVER_THREAD);
         dataActiveChannelFactory = new NioClientSocketChannelFactory(
-                execActiveDataBoss, execActiveDataWorker, 4);
+                execActiveDataBoss, execActiveDataWorker, configuration.CLIENT_THREAD);
 
         // Passive Data Connections
         passiveBootstrap = new ServerBootstrap(dataPassiveChannelFactory);
