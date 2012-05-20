@@ -268,7 +268,7 @@ public class NetworkHandler extends SimpleChannelHandler {
             // First wait for the initialization to be fully done
             while (!session.isReady()) {
                 try {
-                    Thread.sleep(5);
+                    Thread.sleep(10);
                 } catch (InterruptedException e1) {
                 }
             }

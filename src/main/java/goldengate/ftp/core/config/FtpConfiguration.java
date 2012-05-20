@@ -128,7 +128,7 @@ public abstract class FtpConfiguration {
     /**
      * Nb of milliseconds after connection is in timeout
      */
-    public int TIMEOUTCON = 30000;
+    public long TIMEOUTCON = 30000;
 
     /**
      * Size by default of block size for receive/sending files. Should be a

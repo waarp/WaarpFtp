@@ -6,6 +6,7 @@
 	</properties>
 	<body>
 		<release version="1.0.13" date="2012-05-01" description="Fix release">
+			<action dev="Frederic Bregier" type="fix">Fix Sleep issue and Traffic Handler</action>
 			<action dev="Frederic Bregier" type="fix">Improvement on decoder/encoder using SeekAhead</action>
 			<action dev="Frederic Bregier" type="fix">Update Dependencies</action>
 		</release>

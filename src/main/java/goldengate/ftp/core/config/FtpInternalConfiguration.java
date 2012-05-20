@@ -53,6 +53,7 @@ import org.jboss.netty.handler.execution.OrderedMemoryAwareThreadPoolExecutor;
 import org.jboss.netty.handler.traffic.ChannelTrafficShapingHandler;
 import org.jboss.netty.handler.traffic.GlobalTrafficShapingHandler;
 import org.jboss.netty.logging.InternalLoggerFactory;
+import org.jboss.netty.util.HashedWheelTimer;
 import org.jboss.netty.util.ObjectSizeEstimator;
 
 /**
@@ -203,11 +204,11 @@ public class FtpInternalConfiguration {
     private ServerBootstrap passiveBootstrap = null;
 
     /**
-     * ExecutorService for TrafficCounter
+     * Timer for TrafficCounter
      */
-    private final ExecutorService execTrafficCounter = Executors
-            .newCachedThreadPool();
-
+    private org.jboss.netty.util.Timer timerTrafficCounter = 
+        new HashedWheelTimer(20, TimeUnit.MILLISECONDS, 1024);
+    
     /**
      * Global TrafficCounter (set from global configuration)
      */
@@ -337,7 +338,7 @@ public class FtpInternalConfiguration {
         // Factory for TrafficShapingHandler
         objectSizeEstimator = new DataBlockSizeEstimator();
         globalTrafficShapingHandler = new GlobalTrafficShapingHandler(
-                objectSizeEstimator, execTrafficCounter, configuration
+                objectSizeEstimator, timerTrafficCounter, configuration
                         .getServerGlobalWriteLimit(), configuration
                         .getServerGlobalReadLimit(), configuration
                         .getDelayLimit());
@@ -567,7 +568,7 @@ public class FtpInternalConfiguration {
             return null;
         }
         return new ChannelTrafficShapingHandler(objectSizeEstimator,
-                execTrafficCounter, configuration.getServerChannelWriteLimit(),
+                timerTrafficCounter, configuration.getServerChannelWriteLimit(),
                 configuration.getServerChannelReadLimit(), configuration
                         .getDelayLimit());
     }
