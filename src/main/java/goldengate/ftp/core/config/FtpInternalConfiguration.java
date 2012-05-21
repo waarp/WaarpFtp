@@ -346,12 +346,14 @@ public class FtpInternalConfiguration {
                 configuration.CLIENT_THREAD,
                 configuration.maxGlobalMemory / 40,
                 configuration.maxGlobalMemory / 4, 500,
-                TimeUnit.MILLISECONDS, new FtpThreadFactory("CommandExecutor_"));
+                TimeUnit.MILLISECONDS, objectSizeEstimator,
+                new FtpThreadFactory("CommandExecutor_"));
         pipelineDataExecutor = new OrderedMemoryAwareThreadPoolExecutor(
                 configuration.CLIENT_THREAD,
                 configuration.maxGlobalMemory / 10,
                 configuration.maxGlobalMemory, 500,
-                TimeUnit.MILLISECONDS, new FtpThreadFactory("DataExecutor_"));
+                TimeUnit.MILLISECONDS, objectSizeEstimator,
+                new FtpThreadFactory("DataExecutor_"));
     }
     /**
      * 
