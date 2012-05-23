@@ -264,7 +264,7 @@ public class FtpInternalConfiguration {
      */
     public FtpInternalConfiguration(FtpConfiguration configuration) {
         this.configuration = configuration;
-        ISUNIX = !System.getProperty("os.name").toLowerCase().startsWith("windows");
+        ISUNIX = !System.getProperty("os.name").toLowerCase().startsWith("win");
     }
 
     /**

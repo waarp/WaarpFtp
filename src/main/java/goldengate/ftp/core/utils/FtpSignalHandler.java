@@ -122,7 +122,7 @@ public final class FtpSignalHandler implements SignalHandler {
         // Not on WINDOWS
         if (FtpInternalConfiguration.ISUNIX == null) {
             FtpInternalConfiguration.ISUNIX =
-                !System.getProperty("os.name").toLowerCase().startsWith("windows");
+                !System.getProperty("os.name").toLowerCase().startsWith("win");
         }
         if (FtpInternalConfiguration.ISUNIX) {
             String vendor = SystemPropertyUtil.get("java.vm.vendor");
