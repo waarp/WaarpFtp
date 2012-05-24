@@ -551,7 +551,7 @@ public abstract class FtpConfiguration {
      * To use if any external resources are to be released when shutting down
      */
     public void releaseResources() {
-        
+        internalConfiguration.releaseResources();
     }
     /**
      * Shutdown process is on going
