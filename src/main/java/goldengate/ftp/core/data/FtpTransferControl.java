@@ -236,7 +236,6 @@ public class FtpTransferControl {
                 logger
                         .error("Connection already open but should not since in Stream mode");
                 setTransferAbortedFromInternal(false);
-                // WAS XXX return False;
                 throw new Reply425Exception("Connection already open but should not since in Stream mode");
             }
         }
