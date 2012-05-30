@@ -25,7 +25,7 @@
   <parent>
     <groupId>GoldenGate</groupId>
     <artifactId>persistence-deps</artifactId>
-    <version>1.0</version>
+    <version>1.1</version>
   </parent>
   <scm>
   	<connection>scm:svn:http://goldengate.svn.sourceforge.net/svnroot/goldengate/GoldenGateFtp/trunk</connection>
