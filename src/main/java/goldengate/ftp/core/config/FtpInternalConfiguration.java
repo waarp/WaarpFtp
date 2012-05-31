@@ -192,7 +192,7 @@ public class FtpInternalConfiguration {
      * Timer for TrafficCounter
      */
     private Timer timerTrafficCounter = 
-        new HashedWheelTimer(new GgThreadFactory("TimerTrafficFtp"), 20, TimeUnit.MILLISECONDS, 1024);
+        new HashedWheelTimer(new GgThreadFactory("TimerTrafficFtp"), 10, TimeUnit.MILLISECONDS, 1024);
     
     /**
      * Global TrafficCounter (set from global configuration)
