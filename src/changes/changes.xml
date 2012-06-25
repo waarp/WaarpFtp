@@ -5,8 +5,9 @@
 		<author email="fredbregier@free.fr">Frederic Bregier</author>
 	</properties>
 	<body>
-		<release version="1.0.13" date="2012-05-01" description="Fix release">
+		<release version="1.0.13" date="2012-06-25" description="Last release">
 			<action dev="Frederic Bregier" type="fix">Fix Sleep issue and Traffic Handler</action>
+			<action dev="Frederic Bregier" type="fix">Improve stability when huge level of connections occurs</action>
 			<action dev="Frederic Bregier" type="fix">Improvement on decoder/encoder using SeekAhead</action>
 			<action dev="Frederic Bregier" type="fix">Update Dependencies</action>
 		</release>
