@@ -1,0 +1,15 @@
+
+# /
+/target
+/.settings
+/.project
+
+# /core/
+/core/target
+
+# /filesystem/
+/filesystem/target
+
+# /simpleimpl/
+/simpleimpl/target
+[?1034h
