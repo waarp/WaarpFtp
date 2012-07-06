@@ -1,12 +1,11 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <groupId>GoldenGate</groupId>
-  <artifactId>GoldenGateFtp</artifactId>
-  <name>GoldenGateFtp</name>
-  <version>1.0.13</version>
+  <artifactId>WaarpFtp</artifactId>
+  <name>WaarpFtp</name>
+  <version>1.1.0</version>
   <packaging>pom</packaging>
   <description>
-	  The GoldenGate FTP project is a proposal of a new fresh FTP server implementation,
+	  The Waarp FTP project is a proposal of a new fresh FTP server implementation,
 	  fully in Java according to the following RFC: RFC 959, RFC 775, RFC 2389, RFC 2428, RFC 3659.
 	  It includes also extra commands like XCRC, XMD5, XSHA1, INTERNALSHUTDOWN. It is based mainly
 	  on the NETTY framework (NIO great framework support) and is tend to be really efficient, both
@@ -20,17 +19,21 @@
 	  action on commands (not ony transfer), changing the underlying representation of files and
 	  directories (for instance with database entries), using any particular authentication mechanism.
   </description>
-  <url>http://openr66.free.fr/GoldenGateFTP</url>
+  <url>http://waarp.github.com/WaarpDigest</url>
   <inceptionYear>2009</inceptionYear>
   <parent>
-    <groupId>GoldenGate</groupId>
+    <groupId>Waarp</groupId>
     <artifactId>persistence-deps</artifactId>
-    <version>1.1</version>
+    <version>1.2</version>
   </parent>
+  <issueManagement>
+	<system>GitHub</system>
+  	<url>https://github.com/waarp/WaarpDigest/issues/</url>
+  </issueManagement>
   <scm>
-  	<connection>scm:svn:http://goldengate.svn.sourceforge.net/svnroot/goldengate/GoldenGateFtp/trunk</connection>
-  	<developerConnection>scm:svn:https://goldengate.svn.sourceforge.net/svnroot/goldengate/GoldenGateFtp/trunk</developerConnection>
-  	<url>http://goldengate.svn.sourceforge.net/svnroot/goldengate/GoldenGateFtp/trunk</url>
+  	<connection>scm:git:git://github.com/waarp/WaarpDigest.git</connection>
+  	<developerConnection>scm:git:git@github.com:YourID/WaarpDigest.git</developerConnection>
+  	<url>https://github.com/waarp/WaarpDigest</url>
   </scm>
   <licenses>
   	<license>
@@ -40,9 +43,9 @@
   </licenses>
   <repositories>
   	<repository>
-  		<id>goldengate.releases</id>
-  		<name>GoldenGate releases</name>
-  		<url>http://openr66.free.fr/maven2</url>
+  		<id>waarp.releases</id>
+  		<name>Waarp releases</name>
+  		<url>http://waarp.github.com/Waarp/maven2</url>
   		<releases>
   			<enabled>true</enabled>
   		</releases>
@@ -51,6 +54,13 @@
   		</snapshots>
   	</repository>
   </repositories>
+  
+  <modules>
+  	<module>core</module>
+  	<module>filesystem</module>
+  	<module>simpleimpl</module>
+  </modules>
+  
   <dependencies>
   <dependency>
       <groupId>ch.qos.logback</groupId>
@@ -76,9 +86,9 @@
     	<version>2.3</version>
     </dependency>
     <dependency>
-      <groupId>GoldenGate</groupId>
-      <artifactId>GoldenGateCommon</artifactId>
-      <version>1.1.11</version>
+      <groupId>Waarp</groupId>
+      <artifactId>WaarpCommon</artifactId>
+      <version>1.2.1</version>
     </dependency>
   </dependencies>
   <properties>
@@ -86,11 +96,6 @@
   	<attach-distribution>false</attach-distribution>
     <filtermodule>**</filtermodule>
   </properties>
-  <modules>
-  	<module>core</module>
-  	<module>filesystem</module>
-  	<module>simpleimpl</module>
-  </modules>
   <build>
     <plugins>
       <plugin>
@@ -111,7 +116,7 @@
                 <echo message="${project.artifactId}" />
                 <taskdef resource="net/sf/antcontrib/antlib.xml" />
                 <if>
-                <equals arg1="${project.artifactId}" arg2="GoldenGateFtp"/>
+                <equals arg1="${project.artifactId}" arg2="WaarpFtp"/>
                 <then>
                 	<mkdir dir="${project.build.directory}/site"/>
                 	<mkdir dir="${project.build.directory}/site/core"/>
@@ -224,12 +229,12 @@
 	          <windowtitle>${project.name} ${project.version} API Reference</windowtitle>
 	          <additionalparam>
 	            -link http://java.sun.com/javase/6/docs/api/
-	            -link http://www.jboss.org/file-access/default/members/netty/freezone/api/3.1/index.html
+	            -link http://static.netty.io/3.5/api/
 	            -link http://www.slf4j.org/apidocs/
 
-				-group "GoldenGate FTP Main Core package" "goldengate.ftp.core*"
-				-group "GoldenGate FTP Filesystem Implementation package" "goldengate.ftp.filesystembased*"
-				-group "GoldenGate Simple FTP Server package" "goldengate.ftp.simpleimpl*"
+				-group "Waarp FTP Main Core package" "org.waarp.ftp.core*"
+				-group "Waarp FTP Filesystem Implementation package" "org.waarp.ftp.filesystembased*"
+				-group "Waarp Simple FTP Server package" "org.waarp.ftp.simpleimpl*"
 
 	            -sourceclasspath ${basedir}/core/target/classes
 	            -sourceclasspath ${basedir}/filesystem/target/classes
@@ -237,7 +242,7 @@
 	          </additionalparam>
 	          <encoding>UTF-8</encoding>
 	          <locale>en_US</locale>
-	          <excludePackageNames>${project.groupId}.example*:${project.groupId}.util.internal*</excludePackageNames>
+	          <excludePackageNames>${project.groupId}.test*:${project.groupId}.example*:${project.groupId}.util.internal*</excludePackageNames>
           </configuration>
           <reports>
            <report>aggregate</report>

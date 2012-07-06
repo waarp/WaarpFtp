@@ -1,4 +1,4 @@
-The GoldenGate Project - Copyright (C) 2009, Frederic Bregier, and individual
+The Waarp Project - Copyright (C) 2009, Frederic Bregier, and individual
 contributors, and is licensed under the GNU GPL V (General Public License)
 as published by the Free Software Foundation; either version 3.0 of the License,
 or (at your option) any later version.
@@ -9,4 +9,7 @@ sent to Frederic Bregier <fredbregier at free.fr>.
 SVN Login(s)            Name
 -------------------------------------------------------------------------------
 openlsd                 Frederic Bregier
+waarp1					Frederic Bregier
+fredericBregier			Frederic Bregier
+openr66					Frederic Bregier
 -------------------------------------------------------------------------------

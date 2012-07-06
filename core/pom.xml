@@ -1,13 +1,13 @@
 <project>
   <modelVersion>4.0.0</modelVersion>
   <parent>
-	  <groupId>GoldenGate</groupId>
-	  <artifactId>GoldenGateFtp</artifactId>
-	  <version>1.0.13</version>
+	  <groupId>Waarp</groupId>
+	  <artifactId>WaarpFtp</artifactId>
+	  <version>1.1.0</version>
 	  <relativePath>../pom.xml</relativePath>
   </parent>
-  <name>GoldenGateFtp-Core</name>
-  <artifactId>GoldenGateFtp-Core</artifactId>
+  <name>WaarpFtp-Core</name>
+  <artifactId>WaarpFtp-Core</artifactId>
   <properties>
     <filtermodule>core</filtermodule>
     <filterexclude>zzz</filterexclude>

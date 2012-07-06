@@ -1,28 +1,28 @@
 <project>
   <modelVersion>4.0.0</modelVersion>
   <parent>
-	  <groupId>GoldenGate</groupId>
-	  <artifactId>GoldenGateFtp</artifactId>
-	  <version>1.0.13</version>
+	  <groupId>Waarp</groupId>
+	  <artifactId>WaarpFtp</artifactId>
+	  <version>1.1.0</version>
 	  <relativePath>../pom.xml</relativePath>
   </parent>
-  <name>GoldenGateFtp-SimpleServer</name>
-  <artifactId>GoldenGateFtp-Simpleimpl</artifactId>
+  <name>WaarpFtp-SimpleServer</name>
+  <artifactId>WaarpFtp-Simpleimpl</artifactId>
   <properties>
     <filtermodule>ftp/simpleimpl</filtermodule>
     <filterexclude>zzz</filterexclude>
   </properties>
   <dependencies>
     <dependency>
-      <groupId>GoldenGate</groupId>
-      <artifactId>GoldenGateFtp-Core</artifactId>
-      <version>1.0.13</version>
+      <groupId>Waarp</groupId>
+      <artifactId>WaarpFtp-Core</artifactId>
+      <version>1.1.0</version>
       <optional>false</optional>
     </dependency>
     <dependency>
-      <groupId>GoldenGate</groupId>
-      <artifactId>GoldenGateFtp-Filesystem</artifactId>
-      <version>1.0.13</version>
+      <groupId>Waarp</groupId>
+      <artifactId>WaarpFtp-Filesystem</artifactId>
+      <version>1.1.0</version>
       <optional>false</optional>
     </dependency>
   </dependencies>

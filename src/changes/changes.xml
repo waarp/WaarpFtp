@@ -1,10 +1,13 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <document>
 	<properties>
-		<title>GoldenGate Ftp</title>
-		<author email="fredbregier@free.fr">Frederic Bregier</author>
+		<title>Waarp Ftp</title>
+		<author email="waarp1 at free.fr">Frederic Bregier</author>
 	</properties>
 	<body>
+		<release version="1.1.0" date="2012-07-06" description="First Waarp Release">
+			<action dev="Frederic Bregier" type="fix">Fix hierarchy</action>
+		</release>
 		<release version="1.0.13" date="2012-06-25" description="Last release">
 			<action dev="Frederic Bregier" type="fix">Fix Sleep issue and Traffic Handler</action>
 			<action dev="Frederic Bregier" type="fix">Improve stability when huge level of connections occurs</action>

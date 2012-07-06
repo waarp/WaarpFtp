@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<project name="GoldenGate Ftp Server">
+<project name="Waarp Ftp Server">
   <skin>
   	<groupId>org.apache.maven/skins</groupId>
   	<artifactId>maven-default-skin</artifactId>
@@ -7,19 +7,17 @@
   </skin>
   <publishDate/><version/>
   <bannerLeft>
-    <name>GoldenGate Project</name>
-    <src>images/goldengatesmall.jpg</src>
-    <href>http://openr66.free.fr/</href>
+    <name>Waarp Project</name>
+    <src>images/waarp.jpg</src>
+    <href>http://www.waarp.it</href>
   </bannerLeft>
   <body>
     <links>
-    	<item name="GoldenGate" href="http://openr66.free.fr/"/>
+    	<item name="Waarp" href="http://www.waarp.it/"/>
     </links>
-  	<menu name="GoldenGate Ftp">
-  		<item name="Overview of GoldenGate FTP Server" href="index.html"/>
-  		<item name="Configuration of GoldenGate Ftp Server" href="configuration.html"/>
-  		<item name="Main page of GoldenGate FTP Server" href="../GoldenGateFTP.html"/>
-  		<item name="GoldenGate Main Project" href="../"/>
+  	<menu name="Waarp Ftp">
+  		<item name="Overview of Waarp FTP Server" href="index.html"/>
+  		<item name="Configuration of Waarp Ftp Server" href="configuration.html"/>
   	</menu>
     <menu ref="reports"/>
   </body>

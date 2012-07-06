@@ -1,12 +1,12 @@
-GoldenGate FTP Server
+Waarp FTP Server
 
-  The GoldenGate FTP project is a proposal of a new fresh FTP server implementation,
+  The Waarp FTP project is a proposal of a new fresh FTP server implementation,
   fully in Java according to the following RFC: RFC 959, RFC 775, RFC 2389, RFC 2428, RFC 3659.
   It includes also extra commands like XCRC, XMD5, XSHA1, INTERNALSHUTDOWN.
 
 Dependency
 
-  It is based mainly on the NETTY framework (NIO great framework support at {{http://www.jboss.org/netty}}
+  It is based mainly on the NETTY framework (NIO great framework support at {{http://netty.io}}
   and is tend to be really efficient, both in term of memory, threads and network bandwidth.
 
 Specificities
@@ -23,10 +23,10 @@ Specificities
   action on commands (not only transfer), changing the underlying representation of files and
   directories (for instance with database entries), using any particular authentication mechanism.
 
-[images/goldengatesmall.jpg] GoldenGate Main Project Logo
+[images/waarp.jpg] Waarp Main Project Logo
 
-  See global GoldenGate project at {{http://openr66.free.fr/}}and particular GoldenGate FTP project at
-  {{http://openr66.free.fr/GoldenGateFTP.html}}
+  See global Waarp project at {{http://waarp.github.com/Waarp/}}and particular Waarp FTP project at
+  {{http://github.com/WaarpFtp/}}
 
 Benchmarks
 
@@ -38,9 +38,9 @@ Benchmarks
   All tests were done using the IBM JDK 1.6.
 
   The first benchmark is about only Control Connection. It computes how many connections by
-  second GoldenGateFtp server can allow, starting from 1 virtual user up to 1000 virtual users.
+  second WaarpFtp server can allow, starting from 1 virtual user up to 1000 virtual users.
 
-  The result is on a single 2-Xeon server, the GoldenGateFtp Server allows up to almost 500
+  The result is on a single 2-Xeon server, the WaarpFtp Server allows up to almost 500
   connections/second.
 
 [images/connections.png] Connections Benchmark
@@ -51,7 +51,7 @@ Benchmarks
   up to 1000 users. We test both passive (client connect to the server for the data connection)
   and active (server connects to the client for the data connection) modes.
 
-  The result is on a single 2-Xeon server, the GoldenGateFtp Server allows up to 1400 RETRieve
+  The result is on a single 2-Xeon server, the WaarpFtp Server allows up to 1400 RETRieve
   by second in active mode and up to 900 RETRieve by second in passive mode with 100 virtual
   users. The difference is mainly due to the need in passive mode to made a special
   synchronization since the data connection will be initiated by the client on a port defined on
@@ -105,7 +105,7 @@ Benchmarks
   transfers in both ways we get the higher performance, we start from this set and increase
   the file size from 1024 bytes up to 1 024 000 bytes. The bandwitdh this time are in Mbits.
 
-  The result is on a single 2-Xeon server, the GoldenGateFtp Server allows to use up to 90% of
+  The result is on a single 2-Xeon server, the WaarpFtp Server allows to use up to 90% of
   the available bandwidth (here 0.9 Gb were used on a 1 Gb local network for RETRieve operations).
   Note that obviously the number of transfer/second is going down when the file size is going up.
   At 1024 bytes, we reached up to 1400 transfers/s.
@@ -115,5 +115,5 @@ Benchmarks
   Again we can see the difference between Passive and Active protocol, and the disk write
   contention effect on STORe operations (around 100 Mbits at most on write).
 
-  Finally, a benchmark on the subproject GoldenGateFtpExec gives up to 105 transfers and execution
+  Finally, a benchmark on the subproject WaarpGatewayFtp gives up to 105 transfers and execution
   by second.
