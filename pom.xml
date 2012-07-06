@@ -19,7 +19,7 @@
 	  action on commands (not ony transfer), changing the underlying representation of files and
 	  directories (for instance with database entries), using any particular authentication mechanism.
   </description>
-  <url>http://waarp.github.com/WaarpDigest</url>
+  <url>http://waarp.github.com/WaarpFtp</url>
   <inceptionYear>2009</inceptionYear>
   <parent>
     <groupId>Waarp</groupId>
@@ -28,12 +28,12 @@
   </parent>
   <issueManagement>
 	<system>GitHub</system>
-  	<url>https://github.com/waarp/WaarpDigest/issues/</url>
+  	<url>https://github.com/waarp/WaarpFtp/issues/</url>
   </issueManagement>
   <scm>
-  	<connection>scm:git:git://github.com/waarp/WaarpDigest.git</connection>
-  	<developerConnection>scm:git:git@github.com:YourID/WaarpDigest.git</developerConnection>
-  	<url>https://github.com/waarp/WaarpDigest</url>
+  	<connection>scm:git:git://github.com/waarp/WaarpFtp.git</connection>
+  	<developerConnection>scm:git:git@github.com:YourID/WaarpFtp.git</developerConnection>
+  	<url>https://github.com/waarp/WaarpFtp</url>
   </scm>
   <licenses>
   	<license>
