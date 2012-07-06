@@ -24,7 +24,7 @@
   <parent>
     <groupId>Waarp</groupId>
     <artifactId>persistence-deps</artifactId>
-    <version>1.2</version>
+    <version>1.3</version>
   </parent>
   <issueManagement>
 	<system>GitHub</system>
@@ -45,7 +45,7 @@
   	<repository>
   		<id>waarp.releases</id>
   		<name>Waarp releases</name>
-  		<url>http://waarp.github.com/Waarp/maven2</url>
+  		<url>https://raw.github.com/waarp/WaarpMaven2/master/maven2</url>
   		<releases>
   			<enabled>true</enabled>
   		</releases>
