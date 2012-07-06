@@ -1,8 +1,8 @@
-GoldenGateFtp and GoldenGateFtp-Simpleimpl Configuration
+WaarpFtp and WaarpFtp-Simpleimpl Configuration
 
-*How to configure GoldenGate Ftp using default implementation
+*How to configure Waarp Ftp using default implementation
 
-  In the zip distribution <GoldenGateFtp-X.Y.Z-dist.zip> (available at sourceforge for download),
+  In the zip distribution <WaarpFtp-X.Y.Z-dist.zip> (available at Github for download),
   you will find an extra directory named: <src/main/config> where two examples files are:
   <config.xml> and <authent.xml>.
   Those two files are related to the simple implementation of the Ftp Server.
@@ -23,10 +23,10 @@ GoldenGateFtp and GoldenGateFtp-Simpleimpl Configuration
 
   These two files are for the simple implementation (which is a simple FtpServer without any
   special actions), and using a simple authentication mechanism (from authent.xml). The simple
-  Ftp Server is included in the <GoldenGateFtp-Simpleimpl-X.Y.Z.jar> .
+  Ftp Server is included in the <WaarpFtp-Simpleimpl-X.Y.Z.jar> .
 
   If you want to implement something different, here are the files you may want to re write.
-  They can all be found in the <simpleimpl> sub project at <goldengate.ftp.simpleimpl> package.
+  They can all be found in the <simpleimpl> sub project at <org.waarp.ftp.simpleimpl> package.
 
   * the server startup itself : <SimpleGatewayFtpServer>
 
@@ -42,7 +42,7 @@ GoldenGateFtp and GoldenGateFtp-Simpleimpl Configuration
   * the virtual Directory, File implementation : <file.FileBasedDir>, <file.FileBasedFile>
 
     For instance, if you want to implement File and Directory as content in a database,
-    you will have to not use the <GoldenGateFtp-Filesystem-X.Y.Z.jar> package an to implement
+    you will have to not use the <WaarpFtp-Filesystem-X.Y.Z.jar> package an to implement
     your own File and Directory representation.
 
     If you are OK with real file and directory, then nothing has to be done.
@@ -50,7 +50,7 @@ GoldenGateFtp and GoldenGateFtp-Simpleimpl Configuration
   * the authentication system : <file.FileBasedAuth> and its associated <file.SimpleAuth>
 
     For instance, if you want to inherit authentication from a LDAP, you will have to
-    implement your own extension of <goldengate.ftp.filesystembased.FilesystemBasedFtpAuth>
+    implement your own extension of <org.waarp.ftp.filesystembased.FilesystemBasedFtpAuth>
     instead of this simple one.
 
   * then you have two classes that implements business actions on pre and post actions on transfer:
@@ -63,17 +63,17 @@ GoldenGateFtp and GoldenGateFtp-Simpleimpl Configuration
 
     By default, this classes does nothing except logging.
 
-*How to run GoldenGate Ftp using default implementation
+*How to run Waarp Ftp using default implementation
 
   It can be started like:
 
-  java ... classpath and jvm settings ... <goldengate.ftp.simpleimpl.SimpleGatewayFtpServer> <src/main/config/config.xml>
+  java ... classpath and jvm settings ... <org.waarp.ftp.simpleimpl.SimpleGatewayFtpServer> <src/main/config/config.xml>
 
   Note that in the classpath you need :
 
   *External jars:
 
-    *{{{http://www.jboss.org/netty/index.html}Netty}}
+    *{{{http://netty.io/}Netty}}
 
     *{{{http://commons.apache.org/io/}Apache-Common-IO}}
 
@@ -85,26 +85,26 @@ GoldenGateFtp and GoldenGateFtp-Simpleimpl Configuration
 
     *{{{http://logback.qos.ch/}Logback}}
 
-  *Goldengate jars:
+  *Waarp jars:
 
     *<NettyExtension>
 
-    *<GoldenGateDigest>
+    *<WaarpDigest>
 
-    *<GoldenGateCommon>
+    *<WaarpCommon>
 
-    *<GoldenGateFtp-Core> of course
+    *<WaarpFtp-Core> of course
 
-    *<GoldenGateFtp-Filesystem> probably, except if you want to implement virtual Directory
+    *<WaarpFtp-Filesystem> probably, except if you want to implement virtual Directory
      and File in something different than true directories and files
 
-    *<GoldengateFtp-Simpleimpl> if you are ok with the default implementation
+    *<WaarpFtp-Simpleimpl> if you are ok with the default implementation
 
   []
 
   Some of them can be replaced if you change the implementation (Common IO is optional,
   Dom4J and Jaxen are only used if XML configuration file is used, SLF4J and Logback could be
-  replaced with other logger framework, see the <goldengate.common.logging> from <GoldenGateCommon>
+  replaced with other logger framework, see the <Waarp.common.logging> from <WaarpCommon>
   where JDK is also supported, others can easily be supported).
 
   To shutdown the service, either you do a CTRL-C or better if Unix (but not IBM JDK)

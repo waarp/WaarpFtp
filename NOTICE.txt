@@ -1,14 +1,14 @@
 
-                            The GoldenGate Project
+                            The Waarp Project
                             =================
 
-Please visit the GoldenGate web site for more information:
+Please visit the Waarp web site for more information:
 
-  * http://openr66.free.fr/
+  * http://waarp.github.com/Waarp/
 
     Copyright (C) 2006 Frederic Bregier, and individual contributors
     by the @author tags.  See the COPYRIGHT.txt in the distribution for a
-    full listing of individual contributors. 
+    full listing of individual contributors.
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -32,9 +32,9 @@ This product depends on 'NETTY', an asynchronous event-driven
 network application framework, which can be obtained at:
 
   * LICENSE:
-    * license/LICENSE.netty.txt (LGPL 2.1)
+    * license/LICENSE.netty.txt (Apache license)
   * HOMEPAGE:
-    * http://www.jboss.org/netty/
+    * http://netty.io/
 
 This product contains a modified version of the 'Fast MD5', 
 a fast implementation of RSA's MD5 hash generator, 

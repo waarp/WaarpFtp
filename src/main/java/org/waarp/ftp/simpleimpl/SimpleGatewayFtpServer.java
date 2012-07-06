@@ -1,0 +1,80 @@
+/**
+ * This file is part of Waarp Project.
+ * 
+ * Copyright 2009, Frederic Bregier, and individual contributors by the @author tags. See the
+ * COPYRIGHT.txt in the distribution for a full listing of individual contributors.
+ * 
+ * All Waarp Project is free software: you can redistribute it and/or modify it under the terms of
+ * the GNU General Public License as published by the Free Software Foundation, either version 3 of
+ * the License, or (at your option) any later version.
+ * 
+ * Waarp is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even
+ * the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General
+ * Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License along with Waarp . If not, see
+ * <http://www.gnu.org/licenses/>.
+ */
+package org.waarp.ftp.simpleimpl;
+
+import org.jboss.netty.logging.InternalLoggerFactory;
+import org.waarp.common.file.filesystembased.FilesystemBasedDirImpl;
+import org.waarp.common.file.filesystembased.FilesystemBasedFileParameterImpl;
+import org.waarp.common.file.filesystembased.specific.FilesystemBasedDirJdk5;
+import org.waarp.common.file.filesystembased.specific.FilesystemBasedDirJdk6;
+import org.waarp.common.logging.WaarpInternalLogger;
+import org.waarp.common.logging.WaarpInternalLoggerFactory;
+import org.waarp.common.logging.WaarpSlf4JLoggerFactory;
+import org.waarp.ftp.core.config.FtpConfiguration;
+import org.waarp.ftp.simpleimpl.config.FileBasedConfiguration;
+import org.waarp.ftp.simpleimpl.control.SimpleBusinessHandler;
+import org.waarp.ftp.simpleimpl.data.FileSystemBasedDataBusinessHandler;
+
+/**
+ * Example of FTP Server using simple authentication (XML FileInterface based), and standard
+ * Directory and FileInterface implementation (Filesystem based).
+ * 
+ * @author Frederic Bregier
+ * 
+ */
+public class SimpleGatewayFtpServer {
+	/**
+	 * Internal Logger
+	 */
+	private static WaarpInternalLogger logger = null;
+
+	/**
+	 * Take a simple XML file as configuration.
+	 * 
+	 * @param args
+	 */
+	public static void main(String[] args) {
+		if (args.length != 1) {
+			System.err.println("Usage: " +
+					SimpleGatewayFtpServer.class.getName() + " <config-file>");
+			return;
+		}
+		InternalLoggerFactory.setDefaultFactory(new WaarpSlf4JLoggerFactory(null));
+		logger = WaarpInternalLoggerFactory
+				.getLogger(SimpleGatewayFtpServer.class);
+		String config = args[0];
+		FileBasedConfiguration configuration = new FileBasedConfiguration(
+				SimpleGatewayFtpServer.class, SimpleBusinessHandler.class,
+				FileSystemBasedDataBusinessHandler.class,
+				new FilesystemBasedFileParameterImpl());
+		if (!configuration.setConfigurationFromXml(config)) {
+			System.err.println("Bad configuration");
+			return;
+		}
+		// Init according JDK
+		if (FtpConfiguration.USEJDK6) {
+			FilesystemBasedDirImpl.initJdkDependent(new FilesystemBasedDirJdk6());
+		} else {
+			FilesystemBasedDirImpl.initJdkDependent(new FilesystemBasedDirJdk5());
+		}
+		// Start server.
+		configuration.serverStartup();
+		logger.warn("FTP started");
+	}
+
+}
