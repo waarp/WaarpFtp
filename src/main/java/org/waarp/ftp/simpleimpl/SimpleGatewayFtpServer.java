@@ -18,14 +18,10 @@
 package org.waarp.ftp.simpleimpl;
 
 import org.jboss.netty.logging.InternalLoggerFactory;
-import org.waarp.common.file.filesystembased.FilesystemBasedDirImpl;
 import org.waarp.common.file.filesystembased.FilesystemBasedFileParameterImpl;
-import org.waarp.common.file.filesystembased.specific.FilesystemBasedDirJdk5;
-import org.waarp.common.file.filesystembased.specific.FilesystemBasedDirJdk6;
 import org.waarp.common.logging.WaarpInternalLogger;
 import org.waarp.common.logging.WaarpInternalLoggerFactory;
 import org.waarp.common.logging.WaarpSlf4JLoggerFactory;
-import org.waarp.ftp.core.config.FtpConfiguration;
 import org.waarp.ftp.simpleimpl.config.FileBasedConfiguration;
 import org.waarp.ftp.simpleimpl.control.SimpleBusinessHandler;
 import org.waarp.ftp.simpleimpl.data.FileSystemBasedDataBusinessHandler;
@@ -65,12 +61,6 @@ public class SimpleGatewayFtpServer {
 		if (!configuration.setConfigurationFromXml(config)) {
 			System.err.println("Bad configuration");
 			return;
-		}
-		// Init according JDK
-		if (FtpConfiguration.USEJDK6) {
-			FilesystemBasedDirImpl.initJdkDependent(new FilesystemBasedDirJdk6());
-		} else {
-			FilesystemBasedDirImpl.initJdkDependent(new FilesystemBasedDirJdk5());
 		}
 		// Start server.
 		configuration.serverStartup();

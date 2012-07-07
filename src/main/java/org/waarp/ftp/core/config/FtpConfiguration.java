@@ -38,10 +38,6 @@ import org.waarp.ftp.core.session.FtpSession;
  * 
  */
 public abstract class FtpConfiguration {
-	/**
-	 * True if use of JDK6 or upper, False if JDK5.
-	 */
-	public static final boolean USEJDK6 = true;
 	// FTP Configuration: Externals
 	/**
 	 * Default session limit 64Mbit, so up to 8 full simultaneous clients
