@@ -47,7 +47,9 @@ import org.waarp.common.logging.WaarpInternalLogger;
 import org.waarp.common.logging.WaarpInternalLoggerFactory;
 import org.waarp.common.utility.WaarpThreadFactory;
 import org.waarp.ftp.core.control.FtpPipelineFactory;
+import org.waarp.ftp.core.control.ftps.FtpsPipelineFactory;
 import org.waarp.ftp.core.data.handler.FtpDataPipelineFactory;
+import org.waarp.ftp.core.data.handler.ftps.FtpsDataPipelineFactory;
 import org.waarp.ftp.core.session.FtpSession;
 import org.waarp.ftp.core.session.FtpSessionReference;
 import org.waarp.ftp.core.utils.FtpChannelUtils;
@@ -198,6 +200,10 @@ public class FtpInternalConfiguration {
 	 * ObjectSizeEstimator
 	 */
 	private ObjectSizeEstimator objectSizeEstimator = null;
+	/**
+	 * Does the FTP will be SSL native based (990 989 port)
+	 */
+	private boolean usingNativeSsl = false;
 
 	/**
 	 * 
@@ -271,8 +277,13 @@ public class FtpInternalConfiguration {
 
 		// Passive Data Connections
 		passiveBootstrap = new ServerBootstrap(dataPassiveChannelFactory);
-		passiveBootstrap.setPipelineFactory(new FtpDataPipelineFactory(
-				configuration.dataBusinessHandler, configuration, false));
+		if (usingNativeSsl) {
+			passiveBootstrap.setPipelineFactory(new FtpsDataPipelineFactory(
+				configuration.dataBusinessHandler, configuration, false, execPassiveDataWorker));
+		} else {
+			passiveBootstrap.setPipelineFactory(new FtpDataPipelineFactory(
+					configuration.dataBusinessHandler, configuration, false));
+		}
 		passiveBootstrap.setOption("connectTimeoutMillis",
 				configuration.TIMEOUTCON);
 		passiveBootstrap.setOption("reuseAddress", true);
@@ -284,8 +295,13 @@ public class FtpInternalConfiguration {
 		passiveBootstrap.setOption("child.reuseAddress", true);
 		// Active Data Connections
 		activeBootstrap = new ClientBootstrap(dataActiveChannelFactory);
-		activeBootstrap.setPipelineFactory(new FtpDataPipelineFactory(
-				configuration.dataBusinessHandler, configuration, true));
+		if (usingNativeSsl) {
+			activeBootstrap.setPipelineFactory(new FtpsDataPipelineFactory(
+				configuration.dataBusinessHandler, configuration, true, execActiveDataWorker));
+		} else {
+			activeBootstrap.setPipelineFactory(new FtpDataPipelineFactory(
+					configuration.dataBusinessHandler, configuration, true));
+		}
 		activeBootstrap.setOption("connectTimeoutMillis",
 				configuration.TIMEOUTCON);
 		activeBootstrap.setOption("reuseAddress", true);
@@ -297,8 +313,13 @@ public class FtpInternalConfiguration {
 		activeBootstrap.setOption("child.reuseAddress", true);
 		// Main Command server
 		serverBootstrap = new ServerBootstrap(getCommandChannelFactory());
-		serverBootstrap.setPipelineFactory(new FtpPipelineFactory(
-				configuration.businessHandler, configuration));
+		if (usingNativeSsl) {
+			serverBootstrap.setPipelineFactory(new FtpsPipelineFactory(
+				configuration.businessHandler, configuration, execWorker));
+		} else {
+			serverBootstrap.setPipelineFactory(new FtpPipelineFactory(
+					configuration.businessHandler, configuration));
+		}
 		serverBootstrap.setOption("child.tcpNoDelay", true);
 		serverBootstrap.setOption("child.keepAlive", true);
 		serverBootstrap.setOption("child.reuseAddress", true);
