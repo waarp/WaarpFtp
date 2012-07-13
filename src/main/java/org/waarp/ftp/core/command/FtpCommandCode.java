@@ -986,7 +986,54 @@ public enum FtpCommandCode {
 	LIMITBANDWIDTH(
 			org.waarp.ftp.core.command.internal.LIMITBANDWIDTH.class,
 			null);
+	/**
+	 * Security Association Setup
+		AUTH TLS (Control) or AUTH SSL (Control and Data)
+            234*
+            502, 504, 534*, 431*
+            500, 501, 421
+            
+            AUTH TLS -> 234 -> USER or (PROT P then USER) -> 2xy
+            
+        CCC (Control SSL Off)
+        	200
+        	500, 533*, 534*
+	    
+	    Data protection negotiation commands
+	    PROT P (Data) Prot C (Data SSL Off)
+            200
+            504, 536*, 503, 534*, 431*
+            500, 501, 421, 530
+            
+        232 User logged in, authorized by security data exchange.
+        234 Security data exchange complete.
+        431 Need some unavailable resource to process security.
+        533 Command protection level denied for policy reasons.
+        534 Request denied for policy reasons.
+        535 Failed security check (hash, sequence, etc).
+        536 Requested PROT level not supported by mechanism.
+        
+        Security-Enhanced login commands (only new replies listed)
+        USER
+            232
+            336
+        
+        Data channel commands (only new replies listed)
+         STOR
+            534, 535
+         STOU
+            534, 535
+         RETR
+            534, 535
+         LIST
+            534, 535
+         NLST
+            534, 535
+         APPE
+            534, 535
 
+        
+	*/
 	/**
 	 * The Class that implements this command
 	 */
