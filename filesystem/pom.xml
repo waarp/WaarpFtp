@@ -3,7 +3,7 @@
   <parent>
 	  <groupId>Waarp</groupId>
 	  <artifactId>WaarpFtp</artifactId>
-	  <version>1.1.1</version>
+	  <version>1.1.2-beta</version>
 	  <relativePath>../pom.xml</relativePath>
   </parent>
   <name>WaarpFtp-Filesystem</name>
@@ -16,7 +16,7 @@
     <dependency>
       <groupId>Waarp</groupId>
       <artifactId>WaarpFtp-Core</artifactId>
-      <version>1.1.1</version>
+      <version>1.1.2-beta</version>
     </dependency>
   </dependencies>
 
