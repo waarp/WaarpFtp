@@ -98,6 +98,9 @@ public abstract class AbstractCommand implements CommandInterface {
 		if (FtpCommandCode.isSpecialCommand(newCommand.getCode())) {
 			return true;
 		}
+		if (code == null) {
+			return false;
+		}
 		if (extraNextCommand != null) {
 			if (extraNextCommand.command == newClass) {
 				return true;

@@ -115,6 +115,15 @@ public abstract class BusinessHandler {
 	 */
 	public abstract String getFeatMessage();
 
+	protected String getSslFeatMessage() {
+		StringBuilder builder = new StringBuilder();
+		builder.append("AUTH TLS\n");
+		builder.append("AUTH SSL\n");
+		builder.append("CCC\n");
+		builder.append("PROT P\n");
+		builder.append("PROT C");
+		return builder.toString();
+	}
 	/**
 	 * 
 	 * @return the string to return to the client for the FEAT command without surrounding by

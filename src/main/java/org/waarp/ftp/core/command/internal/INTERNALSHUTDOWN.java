@@ -19,10 +19,10 @@ package org.waarp.ftp.core.command.internal;
 
 import org.jboss.netty.channel.ChannelFuture;
 import org.jboss.netty.channel.ChannelFutureListener;
-import org.jboss.netty.channel.Channels;
 import org.waarp.common.command.ReplyCode;
 import org.waarp.common.command.exception.Reply500Exception;
 import org.waarp.common.command.exception.Reply501Exception;
+import org.waarp.common.crypto.ssl.WaarpSslUtility;
 import org.waarp.common.logging.WaarpInternalLogger;
 import org.waarp.common.logging.WaarpInternalLoggerFactory;
 import org.waarp.ftp.core.command.AbstractCommand;
@@ -62,7 +62,7 @@ public class INTERNALSHUTDOWN extends AbstractCommand {
 		 * .jboss.netty.channel.ChannelFuture)
 		 */
 		public void operationComplete(ChannelFuture arg0) throws Exception {
-			Channels.close(arg0.getChannel());
+			WaarpSslUtility.closingSslChannel(arg0.getChannel());
 			FtpChannelUtils.teminateServer(configuration);
 
 		}

@@ -29,7 +29,6 @@ import org.jboss.netty.bootstrap.ServerBootstrap;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelException;
 import org.jboss.netty.channel.ChannelFactory;
-import org.jboss.netty.channel.Channels;
 import org.jboss.netty.channel.group.ChannelGroup;
 import org.jboss.netty.channel.group.DefaultChannelGroup;
 import org.jboss.netty.channel.socket.nio.NioClientSocketChannelFactory;
@@ -42,6 +41,7 @@ import org.jboss.netty.util.HashedWheelTimer;
 import org.jboss.netty.util.ObjectSizeEstimator;
 import org.jboss.netty.util.Timer;
 import org.waarp.common.command.exception.Reply425Exception;
+import org.waarp.common.crypto.ssl.WaarpSslUtility;
 import org.waarp.common.file.DataBlockSizeEstimator;
 import org.waarp.common.logging.WaarpInternalLogger;
 import org.waarp.common.logging.WaarpInternalLoggerFactory;
@@ -175,12 +175,12 @@ public class FtpInternalConfiguration {
 	private volatile OrderedMemoryAwareThreadPoolExecutor pipelineDataExecutor = null;
 
 	/**
-	 * ServerBootStrap for Active connections
+	 * ClientBootStrap for Active connections
 	 */
 	private ClientBootstrap activeBootstrap = null;
 
 	/**
-	 * ClientBootStrap for Passive connections
+	 * ServerBootStrap for Passive connections
 	 */
 	private ServerBootstrap passiveBootstrap = null;
 
@@ -200,11 +200,25 @@ public class FtpInternalConfiguration {
 	 * ObjectSizeEstimator
 	 */
 	private ObjectSizeEstimator objectSizeEstimator = null;
+	
 	/**
 	 * Does the FTP will be SSL native based (990 989 port)
 	 */
 	private boolean usingNativeSsl = false;
 
+	/**
+	 * Does the FTP accept AUTH and PROT
+	 */
+	private boolean acceptAuthProt = false;
+	/**
+	 * ClientBootStrap for Active Ssl connections
+	 */
+	private ClientBootstrap activeSslBootstrap = null;
+
+	/**
+	 * ServerBootStrap for Passive Ssl connections
+	 */
+	private ServerBootstrap passiveSslBootstrap = null;	
 	/**
 	 * 
 	 * @author Frederic Bregier org.waarp.ftp.core.config BindAddress
@@ -293,6 +307,21 @@ public class FtpInternalConfiguration {
 		passiveBootstrap.setOption("child.tcpNoDelay", true);
 		passiveBootstrap.setOption("child.keepAlive", true);
 		passiveBootstrap.setOption("child.reuseAddress", true);
+		if (acceptAuthProt) {
+			passiveSslBootstrap = new ServerBootstrap(dataPassiveChannelFactory);
+			passiveSslBootstrap.setPipelineFactory(new FtpsDataPipelineFactory(
+					configuration.dataBusinessHandler, configuration, false, execPassiveDataWorker));				
+			passiveSslBootstrap.setOption("connectTimeoutMillis",
+					configuration.TIMEOUTCON);
+			passiveSslBootstrap.setOption("reuseAddress", true);
+			passiveSslBootstrap.setOption("tcpNoDelay", true);
+			passiveSslBootstrap.setOption("child.connectTimeoutMillis",
+					configuration.TIMEOUTCON);
+			passiveSslBootstrap.setOption("child.tcpNoDelay", true);
+			passiveSslBootstrap.setOption("child.keepAlive", true);
+			passiveSslBootstrap.setOption("child.reuseAddress", true);
+		}
+		
 		// Active Data Connections
 		activeBootstrap = new ClientBootstrap(dataActiveChannelFactory);
 		if (usingNativeSsl) {
@@ -311,6 +340,21 @@ public class FtpInternalConfiguration {
 		activeBootstrap.setOption("child.tcpNoDelay", true);
 		activeBootstrap.setOption("child.keepAlive", true);
 		activeBootstrap.setOption("child.reuseAddress", true);
+		if (acceptAuthProt) {
+			activeSslBootstrap = new ClientBootstrap(dataActiveChannelFactory);
+			activeSslBootstrap.setPipelineFactory(new FtpsDataPipelineFactory(
+					configuration.dataBusinessHandler, configuration, true, execActiveDataWorker));
+			activeSslBootstrap.setOption("connectTimeoutMillis",
+					configuration.TIMEOUTCON);
+			activeSslBootstrap.setOption("reuseAddress", true);
+			activeSslBootstrap.setOption("tcpNoDelay", true);
+			activeSslBootstrap.setOption("child.connectTimeoutMillis",
+					configuration.TIMEOUTCON);
+			activeSslBootstrap.setOption("child.tcpNoDelay", true);
+			activeSslBootstrap.setOption("child.keepAlive", true);
+			activeSslBootstrap.setOption("child.reuseAddress", true);
+		}
+
 		// Main Command server
 		serverBootstrap = new ServerBootstrap(getCommandChannelFactory());
 		if (usingNativeSsl) {
@@ -425,10 +469,11 @@ public class FtpInternalConfiguration {
 	 * Try to add a Passive Channel listening to the specified local address
 	 * 
 	 * @param address
+	 * @param ssl
 	 * @throws Reply425Exception
 	 *             in case the channel cannot be opened
 	 */
-	public void bindPassive(InetSocketAddress address) throws Reply425Exception {
+	public void bindPassive(InetSocketAddress address, boolean ssl) throws Reply425Exception {
 		configuration.bindLock();
 		try {
 			BindAddress bindAddress = hashBindPassiveDataConn.get(address);
@@ -436,7 +481,11 @@ public class FtpInternalConfiguration {
 				logger.debug("Bind really to {}", address);
 				Channel parentChannel = null;
 				try {
-					parentChannel = passiveBootstrap.bind(address);
+					if (ssl) {
+						parentChannel = passiveSslBootstrap.bind(address);
+					} else {
+						parentChannel = passiveBootstrap.bind(address);
+					}
 				} catch (ChannelException e) {
 					logger.warn("Cannot open passive connection {}", e
 							.getMessage());
@@ -469,7 +518,7 @@ public class FtpInternalConfiguration {
 				bindAddress.nbBind--;
 				logger.debug("Bind number to {} left is {}", address, bindAddress.nbBind);
 				if (bindAddress.nbBind == 0) {
-					Channels.close(bindAddress.parent);
+					WaarpSslUtility.closingSslChannel(bindAddress.parent);
 					hashBindPassiveDataConn.remove(address);
 				}
 			} else {
@@ -507,11 +556,15 @@ public class FtpInternalConfiguration {
 	}
 
 	/**
-	 * 
+	 * @param ssl
 	 * @return the ActiveBootstrap
 	 */
-	public ClientBootstrap getActiveBootstrap() {
-		return activeBootstrap;
+	public ClientBootstrap getActiveBootstrap(boolean ssl) {
+		if (ssl) {
+			return activeSslBootstrap;
+		} else {
+			return activeBootstrap;
+		}
 	}
 
 	/**
@@ -591,4 +644,30 @@ public class FtpInternalConfiguration {
 		passiveBootstrap.releaseExternalResources();
 		serverBootstrap.releaseExternalResources();
 	}
+
+	public boolean isAcceptAuthProt() {
+		return acceptAuthProt;
+	}
+
+	/**
+	 * @return the usingNativeSsl
+	 */
+	public boolean isUsingNativeSsl() {
+		return usingNativeSsl;
+	}
+
+	/**
+	 * @param usingNativeSsl the usingNativeSsl to set
+	 */
+	public void setUsingNativeSsl(boolean usingNativeSsl) {
+		this.usingNativeSsl = usingNativeSsl;
+	}
+
+	/**
+	 * @param acceptAuthProt the acceptAuthProt to set
+	 */
+	public void setAcceptAuthProt(boolean acceptAuthProt) {
+		this.acceptAuthProt = acceptAuthProt;
+	}
+	
 }

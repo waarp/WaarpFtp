@@ -25,22 +25,27 @@ import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelException;
 import org.jboss.netty.channel.ChannelFuture;
 import org.jboss.netty.channel.ChannelFutureListener;
+import org.jboss.netty.channel.ChannelHandler;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.ChannelStateEvent;
 import org.jboss.netty.channel.Channels;
 import org.jboss.netty.channel.ExceptionEvent;
 import org.jboss.netty.channel.MessageEvent;
 import org.jboss.netty.channel.SimpleChannelHandler;
+import org.jboss.netty.handler.ssl.SslHandler;
 import org.waarp.common.command.ReplyCode;
 import org.waarp.common.command.exception.CommandAbstractException;
 import org.waarp.common.command.exception.Reply503Exception;
+import org.waarp.common.crypto.ssl.WaarpSslUtility;
 import org.waarp.common.logging.WaarpInternalLogger;
 import org.waarp.common.logging.WaarpInternalLoggerFactory;
 import org.waarp.ftp.core.command.AbstractCommand;
 import org.waarp.ftp.core.command.FtpCommandCode;
+import org.waarp.ftp.core.command.access.USER;
 import org.waarp.ftp.core.command.internal.ConnectionCommand;
 import org.waarp.ftp.core.command.internal.IncorrectCommand;
 import org.waarp.ftp.core.config.FtpInternalConfiguration;
+import org.waarp.ftp.core.control.ftps.FtpsPipelineFactory;
 import org.waarp.ftp.core.data.FtpTransferControl;
 import org.waarp.ftp.core.session.FtpSession;
 import org.waarp.ftp.core.utils.FtpChannelUtils;
@@ -302,10 +307,22 @@ public class NetworkHandler extends SimpleChannelHandler {
 			}
 			// Default message
 			session.setReplyCode(ReplyCode.REPLY_200_COMMAND_OKAY, null);
+			// Special check for SSL AUTH/PBSZ/PROT/USER/PASS/ACCT
+			if (FtpCommandCode.isSslOrAuthCommand(command.getCode())) {
+				session.setNextCommand(command);
+				messageRunAnswer();
+				return;
+			}
 			if (session.getCurrentCommand().isNextCommandValid(command)) {
 				session.setNextCommand(command);
 				messageRunAnswer();
 			} else {
+				if (! session.getAuth().isIdentified()) {
+					session.setReplyCode(ReplyCode.REPLY_530_NOT_LOGGED_IN, null);
+					session.setNextCommand(new USER());
+					writeFinalAnswer();
+					return;
+				}
 				command = new IncorrectCommand();
 				command.setArgs(getFtpSession(), message, null,
 						FtpCommandCode.IncorrectSequence);
@@ -325,7 +342,15 @@ public class NetworkHandler extends SimpleChannelHandler {
 				||
 				session.getReplyCode() == ReplyCode.REPLY_221_CLOSING_CONTROL_CONNECTION) {
 			session.getDataConn().getFtpTransferControl().clear();
-			writeIntermediateAnswer().addListener(ChannelFutureListener.CLOSE);
+			if (session.isSsl()) {
+				writeIntermediateAnswer().addListener(new ChannelFutureListener() {
+					public void operationComplete(ChannelFuture future) throws Exception {
+						WaarpSslUtility.closingSslChannel(future.getChannel());
+					}
+				});
+			} else {
+				writeIntermediateAnswer().addListener(ChannelFutureListener.CLOSE);
+			}
 			return true;
 		}
 		writeIntermediateAnswer();
@@ -343,10 +368,21 @@ public class NetworkHandler extends SimpleChannelHandler {
 	}
 
 	/**
+	 * To be extended to inform of an error to SNMP support
+	 * @param error1
+	 * @param error2
+	 */
+	protected void callForSnmp(String error1, String error2) {
+		// ignore
+	}
+	
+	/**
 	 * Execute one command and write the following answer
 	 */
 	private void messageRunAnswer() {
 		boolean error = false;
+		logger.debug("Code: "+session.getCurrentCommand().getCode()+
+				" ["+FtpCommandCode.AUTH+":"+FtpCommandCode.CCC+"]");
 		try {
 			businessHandler.beforeRunCommand();
 			AbstractCommand command = session.getCurrentCommand();
@@ -354,12 +390,67 @@ public class NetworkHandler extends SimpleChannelHandler {
 			command.exec();
 			businessHandler.afterRunCommandOk();
 		} catch (CommandAbstractException e) {
+			logger.debug("Command in error", e);
 			error = true;
 			session.setReplyCode(e);
 			businessHandler.afterRunCommandKo(e);
 		}
+		logger.debug("Code: "+session.getCurrentCommand().getCode()+
+				" ["+FtpCommandCode.AUTH+":"+FtpCommandCode.CCC+"]");
 		if (error || session.getCurrentCommand().getCode() != FtpCommandCode.INTERNALSHUTDOWN) {
-			writeFinalAnswer();
+			if (session.getCurrentCommand().getCode() == FtpCommandCode.AUTH ||
+					session.getCurrentCommand().getCode() == FtpCommandCode.CCC) {
+				controlChannel.setReadable(false);
+				ChannelFuture future = writeIntermediateAnswer();
+				session.setCurrentCommandFinished();
+				try {
+					future.await();
+				} catch (InterruptedException e) {
+				}
+			} else {
+				writeFinalAnswer();
+			}
+		}
+		if (! error) {
+			if (session.getCurrentCommand().getCode() == FtpCommandCode.AUTH) {
+				logger.debug("SSL to be added to pipeline");
+				ChannelHandler sslHandler = controlChannel.getPipeline().getFirst();
+				if (sslHandler instanceof SslHandler) {
+					logger.debug("Already got a SslHandler");
+				} else {
+					// add the SSL support
+					sslHandler =
+							FtpsPipelineFactory.waarpSslContextFactory.initPipelineFactory(true,
+									FtpsPipelineFactory.waarpSslContextFactory.needClientAuthentication(),
+							false, 
+							getFtpSession().getConfiguration().getFtpInternalConfiguration().getWorker());
+					controlChannel.getPipeline().addFirst("SSL", sslHandler);
+				}
+				controlChannel.setReadable(true);
+				ChannelFuture handshakeFuture;
+				handshakeFuture = ((SslHandler) sslHandler).handshake();
+				handshakeFuture.addListener(new ChannelFutureListener() {
+					public void operationComplete(ChannelFuture future)
+							throws Exception {
+						logger.debug("Handshake: " + future.isSuccess(), future.getCause());
+						if (!future.isSuccess()) {
+							String error2 = future.getCause() != null ?
+									future.getCause().getMessage() : "During Handshake";
+							callForSnmp("SSL Connection Error", error2);
+							future.getChannel().close();
+						} else {
+							session.setSsl(true);
+						}
+					}
+				});
+			} else if (session.getCurrentCommand().getCode() == FtpCommandCode.CCC) {
+				logger.debug("SSL to be removed from pipeline");
+				// remove the SSL support
+				WaarpSslUtility.removingSslHandler(controlChannel);
+			}
+		}
+		if (! controlChannel.isReadable()) {
+			controlChannel.setReadable(true);
 		}
 	}
 }

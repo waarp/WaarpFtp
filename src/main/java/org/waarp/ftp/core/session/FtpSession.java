@@ -18,6 +18,8 @@
 package org.waarp.ftp.core.session;
 
 import java.io.File;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
 
 import org.jboss.netty.channel.Channel;
 import org.waarp.common.command.CommandInterface;
@@ -28,6 +30,8 @@ import org.waarp.common.file.FileParameterInterface;
 import org.waarp.common.file.Restart;
 import org.waarp.common.file.SessionInterface;
 import org.waarp.ftp.core.command.AbstractCommand;
+import org.waarp.ftp.core.command.FtpArgumentCode;
+import org.waarp.ftp.core.command.FtpArgumentCode.TransferSubType;
 import org.waarp.ftp.core.command.internal.ConnectionCommand;
 import org.waarp.ftp.core.config.FtpConfiguration;
 import org.waarp.ftp.core.control.BusinessHandler;
@@ -102,6 +106,15 @@ public class FtpSession implements SessionInterface {
 	 * Is the control ready to accept command
 	 */
 	private volatile boolean isReady = false;
+	
+	/**
+	 * Is the current session using SSL on Control
+	 */
+	private boolean isSsl = false;
+	/**
+	 * WIll all data be using SSL
+	 */
+	private boolean isDataSsl = false;
 
 	/**
 	 * Constructor
@@ -387,6 +400,29 @@ public class FtpSession implements SessionInterface {
 		setNextCommand(connectioncommand);
 		getAuth().clear();
 		getDataConn().clear();
+		getDataConn().getFtpTransferControl().resetWaitForOpenedDataChannel();
+	}
+	/**
+	 * Reinitialize all connection parameters, including authentification
+	 */
+	public void rein() {
+		// reset to default
+		if (getDataConn().isPassiveMode()) {
+			// Previous mode was Passive so remove the current configuration
+			InetSocketAddress local = getDataConn()
+					.getLocalAddress();
+			InetAddress remote = getDataConn()
+					.getRemoteAddress().getAddress();
+			getConfiguration().delFtpSession(remote, local);
+		}
+		getDataConn().setMode(
+				FtpArgumentCode.TransferMode.STREAM);
+		getDataConn().setStructure(
+				FtpArgumentCode.TransferStructure.FILE);
+		getDataConn().setType(
+				FtpArgumentCode.TransferType.ASCII);
+		getDataConn().setSubType(TransferSubType.NONPRINT);
+		reinitFtpAuth();
 	}
 
 	/**
@@ -408,4 +444,21 @@ public class FtpSession implements SessionInterface {
 	public String getUniqueExtension() {
 		return configuration.getUniqueExtension();
 	}
+
+	public boolean isSsl() {
+		return isSsl;
+	}
+
+	public void setSsl(boolean isSsl) {
+		this.isSsl = isSsl;
+	}
+
+	public boolean isDataSsl() {
+		return isDataSsl;
+	}
+
+	public void setDataSsl(boolean isDataSsl) {
+		this.isDataSsl = isDataSsl;
+	}
+	
 }

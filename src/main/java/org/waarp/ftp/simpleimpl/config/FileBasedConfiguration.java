@@ -28,21 +28,15 @@ import org.dom4j.DocumentException;
 import org.dom4j.Node;
 import org.dom4j.io.SAXReader;
 import org.jboss.netty.handler.traffic.AbstractTrafficShapingHandler;
-import org.waarp.common.crypto.ssl.WaarpSecureKeyStore;
-import org.waarp.common.crypto.ssl.WaarpSslContextFactory;
 import org.waarp.common.digest.FilesystemBasedDigest;
-import org.waarp.common.exception.CryptoException;
 import org.waarp.common.file.FileParameterInterface;
 import org.waarp.common.file.filesystembased.FilesystemBasedDirImpl;
 import org.waarp.common.file.filesystembased.FilesystemBasedFileParameterImpl;
 import org.waarp.common.file.filesystembased.specific.FilesystemBasedDirJdkAbstract;
 import org.waarp.common.logging.WaarpInternalLogger;
 import org.waarp.common.logging.WaarpInternalLoggerFactory;
-import org.waarp.common.xml.XmlHash;
-import org.waarp.common.xml.XmlValue;
 import org.waarp.ftp.core.config.FtpConfiguration;
 import org.waarp.ftp.core.control.BusinessHandler;
-import org.waarp.ftp.core.control.ftps.FtpsPipelineFactory;
 import org.waarp.ftp.core.data.handler.DataBusinessHandler;
 import org.waarp.ftp.simpleimpl.file.SimpleAuth;
 
@@ -373,125 +367,6 @@ public class FileBasedConfiguration extends FtpConfiguration {
 		document = null;
 		return true;
 	}
-	
-	/**
-	 * SERVER SSL STOREKEY PATH
-	 */
-	private static final String XML_PATH_KEYPATH = "keypath";
-
-	/**
-	 * SERVER SSL KEY PASS
-	 */
-	private static final String XML_PATH_KEYPASS = "keypass";
-
-	/**
-	 * SERVER SSL STOREKEY PASS
-	 */
-	private static final String XML_PATH_KEYSTOREPASS = "keystorepass";
-
-	/**
-	 * SERVER SSL TRUSTSTOREKEY PATH
-	 */
-	private static final String XML_PATH_TRUSTKEYPATH = "trustkeypath";
-
-	/**
-	 * SERVER SSL TRUSTSTOREKEY PASS
-	 */
-	private static final String XML_PATH_TRUSTKEYSTOREPASS = "trustkeystorepass";
-
-	/**
-	 * SERVER SSL Use TrustStore for Client Authentication
-	 */
-	private static final String XML_USECLIENT_AUTHENT = "trustuseclientauthenticate";
-
-	protected boolean loadSsl(XmlHash hashConfig) {
-		// StoreKey for Server
-		XmlValue value = hashConfig.get(XML_PATH_KEYPATH);
-		if (value == null || (value.isEmpty())) {
-			logger.info("Unable to find Key Path");
-			try {
-				FtpsPipelineFactory.WaarpSecureKeyStore =
-						new WaarpSecureKeyStore("secret", "secret");
-			} catch (CryptoException e) {
-				logger.error("Bad SecureKeyStore construction");
-				return false;
-			}
-		} else {
-			String keypath = value.getString();
-			if ((keypath == null) || (keypath.length() == 0)) {
-				logger.error("Bad Key Path");
-				return false;
-			}
-			value = hashConfig.get(XML_PATH_KEYSTOREPASS);
-			if (value == null || (value.isEmpty())) {
-				logger.error("Unable to find KeyStore Passwd");
-				return false;
-			}
-			String keystorepass = value.getString();
-			if ((keystorepass == null) || (keystorepass.length() == 0)) {
-				logger.error("Bad KeyStore Passwd");
-				return false;
-			}
-			value = hashConfig.get(XML_PATH_KEYPASS);
-			if (value == null || (value.isEmpty())) {
-				logger.error("Unable to find Key Passwd");
-				return false;
-			}
-			String keypass = value.getString();
-			if ((keypass == null) || (keypass.length() == 0)) {
-				logger.error("Bad Key Passwd");
-				return false;
-			}
-			try {
-				FtpsPipelineFactory.WaarpSecureKeyStore =
-						new WaarpSecureKeyStore(keypath, keystorepass,
-								keypass);
-			} catch (CryptoException e) {
-				logger.error("Bad SecureKeyStore construction");
-				return false;
-			}
-
-		}
-		// TrustedKey for OpenR66 server
-		value = hashConfig.get(XML_PATH_TRUSTKEYPATH);
-		if (value == null || (value.isEmpty())) {
-			logger.info("Unable to find TRUST Key Path");
-			FtpsPipelineFactory.WaarpSecureKeyStore.initEmptyTrustStore();
-		} else {
-			String keypath = value.getString();
-			if ((keypath == null) || (keypath.length() == 0)) {
-				logger.error("Bad TRUST Key Path");
-				return false;
-			}
-			value = hashConfig.get(XML_PATH_TRUSTKEYSTOREPASS);
-			if (value == null || (value.isEmpty())) {
-				logger.error("Unable to find TRUST KeyStore Passwd");
-				return false;
-			}
-			String keystorepass = value.getString();
-			if ((keystorepass == null) || (keystorepass.length() == 0)) {
-				logger.error("Bad TRUST KeyStore Passwd");
-				return false;
-			}
-			boolean useClientAuthent = false;
-			value = hashConfig.get(XML_USECLIENT_AUTHENT);
-			if (value != null && (!value.isEmpty())) {
-				useClientAuthent = value.getBoolean();
-			}
-			try {
-				FtpsPipelineFactory.WaarpSecureKeyStore.initTrustStore(keypath,
-						keystorepass, useClientAuthent);
-			} catch (CryptoException e) {
-				logger.error("Bad TrustKeyStore construction");
-				return false;
-			}
-		}
-		FtpsPipelineFactory.waarpSslContextFactory =
-				new WaarpSslContextFactory(
-						FtpsPipelineFactory.WaarpSecureKeyStore);
-		return true;
-	}
-
 
 	/**
 	 * @param user

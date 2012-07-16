@@ -20,19 +20,15 @@
  */
 package org.waarp.ftp.core.data.handler.ftps;
 
-import java.util.concurrent.ConcurrentHashMap;
-
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelFuture;
 import org.jboss.netty.channel.ChannelFutureListener;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.ChannelStateEvent;
 import org.jboss.netty.handler.ssl.SslHandler;
-import org.waarp.common.future.WaarpFuture;
 import org.waarp.common.logging.WaarpInternalLogger;
 import org.waarp.common.logging.WaarpInternalLoggerFactory;
 import org.waarp.ftp.core.config.FtpConfiguration;
-import org.waarp.ftp.core.config.FtpInternalConfiguration;
 import org.waarp.ftp.core.data.handler.DataBusinessHandler;
 import org.waarp.ftp.core.data.handler.DataNetworkHandler;
 
@@ -46,10 +42,6 @@ public class SslDataNetworkHandler extends DataNetworkHandler {
 	 */
 	private static final WaarpInternalLogger logger = WaarpInternalLoggerFactory
 			.getLogger(SslDataNetworkHandler.class);
-	/**
-	 * Waiter for SSL handshake is finished
-	 */
-	private static final ConcurrentHashMap<Integer, WaarpFuture> waitForSsl = new ConcurrentHashMap<Integer, WaarpFuture>();
 
 	/**
 	 * @param configuration
@@ -67,10 +59,6 @@ public class SslDataNetworkHandler extends DataNetworkHandler {
 		public void operationComplete(
 				ChannelFuture future) {
 			logger.debug("SSL remover");
-			waitForSsl
-					.remove(future
-							.getChannel()
-							.getId());
 		}
 	};
 
@@ -80,61 +68,7 @@ public class SslDataNetworkHandler extends DataNetworkHandler {
 	 * @param channel
 	 */
 	private static void addSslConnectedChannel(Channel channel) {
-		WaarpFuture futureSSL = new WaarpFuture(true);
-		waitForSsl.put(channel.getId(), futureSSL);
 		channel.getCloseFuture().addListener(remover);
-	}
-
-	/**
-	 * Set the future of SSL handshake to status
-	 * 
-	 * @param channel
-	 * @param status
-	 */
-	private static void setStatusSslConnectedChannel(Channel channel, boolean status) {
-		WaarpFuture futureSSL = waitForSsl.get(channel.getId());
-		if (futureSSL != null) {
-			if (status) {
-				futureSSL.setSuccess();
-			} else {
-				futureSSL.cancel();
-			}
-		}
-	}
-
-	/**
-	 * 
-	 * @param channel
-	 * @return True if the SSL handshake is over and OK, else False
-	 */
-	public boolean isSslConnectedChannel(Channel channel) {
-		WaarpFuture futureSSL = waitForSsl.get(channel.getId());
-		if (futureSSL == null) {
-			for (int i = 0; i < FtpInternalConfiguration.RETRYNB; i++) {
-				futureSSL = waitForSsl.get(channel.getId());
-				if (futureSSL != null)
-					break;
-				try {
-					Thread.sleep(FtpInternalConfiguration.RETRYINMS);
-				} catch (InterruptedException e) {
-				}
-			}
-		}
-		if (futureSSL == null) {
-			logger.debug("No wait For SSL found");
-			return false;
-		} else {
-			try {
-				futureSSL.await(getFtpSession().getConfiguration().TIMEOUTCON);
-			} catch (InterruptedException e) {
-			}
-			if (futureSSL.isDone()) {
-				logger.debug("Wait For SSL: " + futureSSL.isSuccess());
-				return futureSSL.isSuccess();
-			}
-			logger.error("Out of time for wait For SSL");
-			return false;
-		}
 	}
 
 	@Override
@@ -145,7 +79,7 @@ public class SslDataNetworkHandler extends DataNetworkHandler {
 		addSslConnectedChannel(channel);
 		super.channelOpen(ctx, e);
 	}
-
+	
 	/**
 	 * To be extended to inform of an error to SNMP support
 	 * @param error1
@@ -159,31 +93,39 @@ public class SslDataNetworkHandler extends DataNetworkHandler {
 	public void channelConnected(ChannelHandlerContext ctx, ChannelStateEvent e) {
 		// Get the SslHandler in the current pipeline.
 		// We added it in NetworkSslServerPipelineFactory.
+		logger.debug("SSL to be found");
 		final SslHandler sslHandler = ctx.getPipeline().get(SslHandler.class);
 		if (sslHandler != null) {
 			// Get the SslHandler and begin handshake ASAP.
-			// Get notified when SSL handshake is done.
-			ChannelFuture handshakeFuture;
-			handshakeFuture = sslHandler.handshake();
+			logger.debug("SSL found but need handshake");
+			ChannelFuture handshakeFuture = sslHandler.handshake();
 			handshakeFuture.addListener(new ChannelFutureListener() {
 				public void operationComplete(ChannelFuture future)
 						throws Exception {
-					logger.debug("Handshake: " + future.isSuccess(), future.getCause());
-					if (future.isSuccess()) {
-						setStatusSslConnectedChannel(future.getChannel(), true);
-					} else {
+					logger.debug("Handshake: " + future.isSuccess() + (!future.isSuccess() ? ":"+future.getCause().getMessage():""));
+					if (!future.isSuccess()) {
 						String error2 = future.getCause() != null ?
 								future.getCause().getMessage() : "During Handshake";
 						callForSnmp("SSL Connection Error", error2);
-						setStatusSslConnectedChannel(future.getChannel(), false);
 						future.getChannel().close();
 					}
 				}
 			});
+			// XXX FIXME note: if we wait for handshake, ftp client blocks !
+			logger.debug("SSL found");
 		} else {
 			logger.error("SSL Not found");
+			// Cannot continue
+			setSession(e.getChannel());
+			if (session != null) {
+				session.getDataConn().getFtpTransferControl().setOpenedDataChannel(
+					null, this);
+			}
+			return;
 		}
+		logger.debug("Now continue with normal task");
 		super.channelConnected(ctx, e);
+		logger.debug("End of initialization of SSL and data channel");
 	}
 
 }

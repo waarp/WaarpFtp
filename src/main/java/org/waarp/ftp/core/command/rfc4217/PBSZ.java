@@ -15,28 +15,45 @@
  * You should have received a copy of the GNU General Public License along with Waarp . If not, see
  * <http://www.gnu.org/licenses/>.
  */
-package org.waarp.ftp.core.command.access;
-
+package org.waarp.ftp.core.command.rfc4217;
 
 import org.waarp.common.command.ReplyCode;
 import org.waarp.common.command.exception.CommandAbstractException;
+import org.waarp.common.command.exception.Reply501Exception;
+import org.waarp.common.command.exception.Reply503Exception;
+import org.waarp.common.command.exception.Reply534Exception;
 import org.waarp.ftp.core.command.AbstractCommand;
 import org.waarp.ftp.core.command.FtpCommandCode;
 
 /**
- * REIN command
+ * PBSZ command accepting only 0 as parameter
  * 
  * @author Frederic Bregier
  * 
  */
-public class REIN extends AbstractCommand {
+public class PBSZ extends AbstractCommand {
 
 	@Override
 	public void exec() throws CommandAbstractException {
-		// reset to default
-		getSession().rein();
-		setExtraNextCommand(FtpCommandCode.USER);
-		getSession().setReplyCode(ReplyCode.REPLY_220_SERVICE_READY,
+		if (! getSession().getConfiguration().getFtpInternalConfiguration().isAcceptAuthProt()) {
+			throw new Reply534Exception("PBSZ not supported");
+		}
+		if (!getSession().isSsl()) {
+			// Not SSL
+			throw new Reply503Exception("Session not using SSL / TLS");
+		}
+		// First Check if any argument
+		if (!hasArg()) {
+			// Error since argument is needed
+			throw new Reply501Exception("Missing Parameter: 0");
+		}
+		String[] types = getArgs();
+		if (! types[0].equalsIgnoreCase("0")) {
+			// Only 0 allowed
+			throw new Reply501Exception("Unknown Parameter: "+types[0]);
+		}
+		setExtraNextCommand(FtpCommandCode.PROT);
+		getSession().setReplyCode(ReplyCode.REPLY_200_COMMAND_OKAY,
 				null);
 	}
 	

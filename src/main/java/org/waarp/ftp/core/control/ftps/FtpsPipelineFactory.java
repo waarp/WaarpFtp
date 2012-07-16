@@ -94,7 +94,7 @@ public class FtpsPipelineFactory implements ChannelPipelineFactory {
 		pipeline.addLast("ssl",
 				waarpSslContextFactory.initPipelineFactory(true,
 						waarpSslContextFactory.needClientAuthentication(),
-						true, executorService));
+						false, executorService));
 
 		// Add the text line codec combination first,
 		pipeline.addLast("framer", new DelimiterBasedFrameDecoder(8192,
