@@ -93,14 +93,14 @@ public class FtpsDataPipelineFactory implements ChannelPipelineFactory {
 	 */
 	public ChannelPipeline getPipeline() throws Exception {
 		ChannelPipeline pipeline = Channels.pipeline();
-		// Server: no renegotiation still, but possible clientAuthent
-		SslHandler sslHandler = 
-				FtpsPipelineFactory.waarpSslContextFactory.initPipelineFactory(true,
-						FtpsPipelineFactory.waarpSslContextFactory.needClientAuthentication(),
-						true, executorService);
-		//sslHandler.setIssueHandshake(true);
-		pipeline.addLast("ssl", sslHandler);
-				
+		if (configuration.getFtpInternalConfiguration().isUsingNativeSsl()) {
+			// Server: no renegotiation still, but possible clientAuthent
+			SslHandler sslHandler = 
+					FtpsPipelineFactory.waarpSslContextFactory.initPipelineFactory(true,
+							FtpsPipelineFactory.waarpSslContextFactory.needClientAuthentication(),
+							false, executorService);
+			pipeline.addLast("ssl", sslHandler);
+		}
 		// Add default codec but they will change by the channelConnected
 		pipeline.addFirst(FtpDataPipelineFactory.CODEC_MODE, new FtpDataModeCodec(TransferMode.STREAM,
 				TransferStructure.FILE));

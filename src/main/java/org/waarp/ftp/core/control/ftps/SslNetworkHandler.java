@@ -109,20 +109,6 @@ public class SslNetworkHandler extends NetworkHandler {
 				handshakeFuture.getChannel().close();
 				return;
 			}
-			/*
-			handshakeFuture.addListener(new ChannelFutureListener() {
-				public void operationComplete(ChannelFuture future)
-						throws Exception {
-					logger.debug("Handshake: " + future.isSuccess(), future.getCause());
-					if (!future.isSuccess()) {
-						String error2 = future.getCause() != null ?
-								future.getCause().getMessage() : "During Handshake";
-						callForSnmp("SSL Connection Error", error2);
-						future.getChannel().close();
-					}
-				}
-			});
-			*/
 		} else {
 			logger.error("SSL Not found");
 		}

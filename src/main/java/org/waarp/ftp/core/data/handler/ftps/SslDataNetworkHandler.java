@@ -25,12 +25,15 @@ import org.jboss.netty.channel.ChannelFuture;
 import org.jboss.netty.channel.ChannelFutureListener;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.ChannelStateEvent;
+import org.jboss.netty.channel.Channels;
 import org.jboss.netty.handler.ssl.SslHandler;
 import org.waarp.common.logging.WaarpInternalLogger;
 import org.waarp.common.logging.WaarpInternalLoggerFactory;
 import org.waarp.ftp.core.config.FtpConfiguration;
+import org.waarp.ftp.core.control.ftps.FtpsPipelineFactory;
 import org.waarp.ftp.core.data.handler.DataBusinessHandler;
 import org.waarp.ftp.core.data.handler.DataNetworkHandler;
+import org.waarp.ftp.core.utils.FtpChannelUtils;
 
 /**
  * @author "Frederic Bregier"
@@ -78,6 +81,7 @@ public class SslDataNetworkHandler extends DataNetworkHandler {
 		logger.debug("Add channel to ssl");
 		addSslConnectedChannel(channel);
 		super.channelOpen(ctx, e);
+		channel.setReadable(false);
 	}
 	
 	/**
@@ -92,25 +96,39 @@ public class SslDataNetworkHandler extends DataNetworkHandler {
 	@Override
 	public void channelConnected(ChannelHandlerContext ctx, ChannelStateEvent e) {
 		// Get the SslHandler in the current pipeline.
-		// We added it in NetworkSslServerPipelineFactory.
+		Channel channel = e.getChannel();
+		if (session == null) {
+			setSession(channel);
+		}
+		if (session == null) {
+			logger.error("Cannot find session for SSL");
+			Channels.close(channel);
+			return;
+		}
+		if (configuration.getFtpInternalConfiguration().isAcceptAuthProt()) {
+			// Server: no renegotiation still, but possible clientAuthent
+			SslHandler sslHandler = 
+					FtpsPipelineFactory.waarpSslContextFactory.initPipelineFactory(true,
+							FtpsPipelineFactory.waarpSslContextFactory.needClientAuthentication(),
+							false, FtpChannelUtils.getRemoteInetSocketAddress(session.getControlChannel()).getAddress().getHostAddress(),
+							FtpChannelUtils.getRemoteInetSocketAddress(session.getControlChannel()).getPort(),
+							configuration.getFtpInternalConfiguration().getWorker());
+			channel.getPipeline().addFirst("ssl", sslHandler);
+		}
+		channel.setReadable(true);
 		logger.debug("SSL to be found");
 		final SslHandler sslHandler = ctx.getPipeline().get(SslHandler.class);
 		if (sslHandler != null) {
 			// Get the SslHandler and begin handshake ASAP.
 			logger.debug("SSL found but need handshake");
 			ChannelFuture handshakeFuture = sslHandler.handshake();
-			handshakeFuture.addListener(new ChannelFutureListener() {
-				public void operationComplete(ChannelFuture future)
-						throws Exception {
-					logger.debug("Handshake: " + future.isSuccess() + (!future.isSuccess() ? ":"+future.getCause().getMessage():""));
-					if (!future.isSuccess()) {
-						String error2 = future.getCause() != null ?
-								future.getCause().getMessage() : "During Handshake";
-						callForSnmp("SSL Connection Error", error2);
-						future.getChannel().close();
-					}
+			if (configuration.getFtpInternalConfiguration().isAcceptAuthProt()) {
+				try {
+					handshakeFuture.await();
+				} catch (InterruptedException e1) {
 				}
-			});
+			}
+
 			// XXX FIXME note: if we wait for handshake, ftp client blocks !
 			logger.debug("SSL found");
 		} else {

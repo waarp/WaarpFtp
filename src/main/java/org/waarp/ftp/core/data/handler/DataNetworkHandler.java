@@ -73,7 +73,7 @@ public class DataNetworkHandler extends SimpleChannelHandler {
 	/**
 	 * Configuration
 	 */
-	private final FtpConfiguration configuration;
+	protected final FtpConfiguration configuration;
 
 	/**
 	 * Is this Data Connection an Active or Passive one
@@ -314,7 +314,7 @@ public class DataNetworkHandler extends SimpleChannelHandler {
 			ConnectException e2 = (ConnectException) e1;
 			logger.warn("Timeout occurs {}", e2.getMessage());
 		} else {
-			logger.warn("Unexpected exception from downstream: {}", e1.getMessage());
+			logger.warn("Unexpected exception from downstream: {}", e1.getMessage(), e1);
 		}
 		if (dataBusinessHandler != null) {
 			dataBusinessHandler.exceptionLocalCaught(e);

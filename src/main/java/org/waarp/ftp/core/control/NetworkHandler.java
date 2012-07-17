@@ -245,8 +245,8 @@ public class NetworkHandler extends SimpleChannelHandler {
 			logger.warn("Connection aborted since {} with Channel {}", e2
 					.getMessage(), e.getChannel());
 		} else {
-			logger.warn("Unexpected exception from downstream" +
-					" Ref Channel: {}" + e.getChannel().toString(), e1.getMessage());
+			logger.warn("Unexpected exception from downstream Ref Channel: " + 
+					e.getChannel().toString() +" Exception: "+e1.getMessage(), e1);
 		}
 		session.setExitErrorCode("Internal error: disconnect");
 		businessHandler.exceptionLocalCaught(e);
