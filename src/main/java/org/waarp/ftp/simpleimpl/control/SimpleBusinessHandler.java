@@ -46,7 +46,7 @@ public class SimpleBusinessHandler extends BusinessHandler {
 	 */
 	private static final WaarpInternalLogger logger = WaarpInternalLoggerFactory
 			.getLogger(SimpleBusinessHandler.class);
-
+	
 	@Override
 	public void afterRunCommandKo(CommandAbstractException e) {
 		// TODO Auto-generated method stub
@@ -113,7 +113,7 @@ public class SimpleBusinessHandler extends BusinessHandler {
 	@Override
 	public String getHelpMessage(String arg) {
 		return "This FTP server is only intend as a Gateway.\n"
-				+ "This FTP server refers to RFC 959, 775, 2389, 2428, 3659 and supports XCRC, XMD5 and XSHA1 commands.\n"
+				+ "This FTP server refers to RFC 959, 775, 2389, 2428, 3659, 4217 and supports XCRC, XMD5 and XSHA1 commands.\n"
 				+ "XCRC, XMD5 and XSHA1 take a simple filename as argument and return \"250 digest-value is the digest of filename\".";
 	}
 
@@ -122,6 +122,10 @@ public class SimpleBusinessHandler extends BusinessHandler {
 		StringBuilder builder = new StringBuilder("Extensions supported:");
 		builder.append('\n');
 		builder.append(getDefaultFeatMessage());
+		if (getFtpSession().getConfiguration().getFtpInternalConfiguration().isAcceptAuthProt()) {
+			builder.append('\n');
+			builder.append(getSslFeatMessage());
+		}
 		builder.append("\nEnd");
 		return builder.toString();
 	}

@@ -52,8 +52,8 @@ public class FtpSeekAheadData {
 		}
 		this.buffer = buffer;
 		this.bytes = buffer.array();
-		this.pos = this.readerIndex = buffer.readerIndex();
-		this.limit = buffer.writerIndex();
+		this.pos = this.readerIndex = buffer.arrayOffset() + buffer.readerIndex();
+        this.limit = buffer.arrayOffset() + buffer.writerIndex();
 	}
 
 	/**

@@ -150,9 +150,6 @@ public enum FtpCommandCode {
 	 * himself immediately after the control connection is opened. A USER command may be expected to
 	 * follow.<br>
 	 * <br>
-	 * As for now, this command will not be implemented, so returns 502.<br>
-	 * <br>
-	 * Should called QUIT.<br>
 	 * 
 	 * 120<br>
 	 * 220<br>
@@ -160,8 +157,8 @@ public enum FtpCommandCode {
 	 * 421<br>
 	 * 500, 502<br>
 	 */
-	// XXX 502
-	REIN(org.waarp.ftp.core.command.access.REIN.class, null),
+	REIN(org.waarp.ftp.core.command.access.REIN.class, null,
+			org.waarp.ftp.core.command.access.USER.class),
 	/**
 	 * This command terminates a USER and if file transfer is not in progress, the server closes the
 	 * control connection. If file transfer is in progress, the connection will remain open for
@@ -985,7 +982,67 @@ public enum FtpCommandCode {
 	 */
 	LIMITBANDWIDTH(
 			org.waarp.ftp.core.command.internal.LIMITBANDWIDTH.class,
-			null);
+			null),
+
+			// XXX RFC 4217 on SSL/TLS support through commands
+	/**
+	 * After an AUTH => equivalent to REIN so no more authenticated, USER is mandatory, 
+	 * except if PROT is used in between.<br>
+	 * So the order will be:<br>
+	 * whatever until authenticated -> AUTH xxx -> USER or [PBSZ 0] / PROT xxx / USER<br>
+	 * <br>
+	 * Security-Enhanced login commands (only new replies listed)<br>
+	 * USER<br>
+	 * 232<br>
+	 * 336<br>
+	 * <br>
+	 * Data channel commands (only new replies listed)<br>
+	 * STOR<br>
+	 * 534, 535<br>
+	 * STOU<br>
+	 * 534, 535<br>
+	 * RETR<br>
+	 * 534, 535<br>
+	 * LIST<br>
+	 * 534, 535<br>
+	 * NLST<br>
+	 * 534, 535<br>
+	 * APPE<br>
+	 * 534, 535
+	 */
+	/**
+	 * Security Association Setup AUTH TLS (Control) or AUTH SSL (Control and Data)<br>
+	 * 234*<br>
+	 * 502, 504, 534*, 431* 500, 501, 421<br>
+	 * <br>
+	 * AUTH TLS -> 234 -> USER or ([PBSZ 0] PROT P then USER) -> 2xy
+	 */
+	AUTH(org.waarp.ftp.core.command.rfc4217.AUTH.class, null, 
+			org.waarp.ftp.core.command.rfc4217.PROT.class,
+			org.waarp.ftp.core.command.rfc4217.PBSZ.class,
+			org.waarp.ftp.core.command.access.USER.class),
+	/**
+	 * Security Association Setup<br>
+	 * CCC (Control SSL Off)<br>
+	 * 200<br>
+	 * 500, 533*, 534*
+	 */
+	CCC(org.waarp.ftp.core.command.rfc4217.CCC.class, null),
+	/**
+	 * Data protection negotiation commands<br>
+	 * PROT P (Data)<br>
+	 * PROT C (Data SSL Off)<br>
+	 * 200<br>
+	 * 504, 536*, 503, 534*, 431* 500, 501, 421, 530
+	 */
+	PROT(org.waarp.ftp.core.command.rfc4217.PROT.class, null),
+	/**
+	 * Data protection negotiation commands<br>
+	 * PBSZ 0<br>
+	 * 200<br>
+	 * 503, 500, 501, 421, 530
+	 */
+	PBSZ(org.waarp.ftp.core.command.rfc4217.PBSZ.class, null);
 
 	/**
 	 * The Class that implements this command
@@ -1109,6 +1166,16 @@ public enum FtpCommandCode {
 	public static boolean isSpecialCommand(FtpCommandCode command) {
 		return command == QUIT || command == ABOR || command == NOOP ||
 				command == STAT;
+	}
+	
+	/**
+	 * True if the command is Ssl related (AUTH, PBSZ, PROT, USER, PASS, ACCT)
+	 * @param command
+	 * @return True if the command is Ssl related (AUTH, PBSZ, PROT, USER, PASS, ACCT)
+	 */
+	public static boolean isSslOrAuthCommand(FtpCommandCode command) {
+		return command == AUTH || command == PBSZ || command == PROT
+				|| command == AUTH || command == PASS || command == ACCT;
 	}
 
 	/**

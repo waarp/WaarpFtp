@@ -518,8 +518,11 @@ public class FtpDataModeCodec extends FrameDecoder implements
 	private void writeRequested(ChannelHandlerContext ctx, MessageEvent evt)
 			throws Exception {
 		if (!(evt.getMessage() instanceof DataBlock)) {
-			throw new InvalidArgumentException("Incorrect write object: " +
-					evt.getMessage().getClass().getName());
+			Channels.write(ctx, evt.getFuture(), evt.getMessage());
+			return;
+			// since SSL in beginning will send a handshake => take care
+			/*throw new InvalidArgumentException("Incorrect write object: " +
+					evt.getMessage().getClass().getName());*/
 		}
 		// First test if the connection is fully ready (block might be
 		// transfered

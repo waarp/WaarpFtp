@@ -5,6 +5,15 @@
 		<author email="waarp1 at free.fr">Frederic Bregier</author>
 	</properties>
 	<body>
+		<release version="1.1.2" date="2012-07-21" description="Fix and FTPS Release">
+			<action dev="Frederic Bregier" type="fix">Fix SeekAheadData as in Netty</action>
+			<action dev="Frederic Bregier" type="add">Add FTPS implicit and explicit support</action>
+			<action dev="Frederic Bregier" type="add">Add AUTH, CCC, PBSZ, PROT commands</action>
+			<action dev="Frederic Bregier" type="fix">Fix REIN support</action>
+		</release>
+		<release version="1.1.1" date="2012-07-07" description="Fix release">
+			<action dev="Frederic Bregier" type="fix">Fix dependency</action>
+		</release>
 		<release version="1.1.0" date="2012-07-06" description="First Waarp Release">
 			<action dev="Frederic Bregier" type="fix">Fix hierarchy</action>
 		</release>

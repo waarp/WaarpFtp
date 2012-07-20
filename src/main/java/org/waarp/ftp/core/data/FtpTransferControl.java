@@ -19,7 +19,9 @@ package org.waarp.ftp.core.data;
 
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -27,10 +29,10 @@ import java.util.concurrent.TimeUnit;
 import org.jboss.netty.bootstrap.ClientBootstrap;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelFuture;
-import org.jboss.netty.channel.Channels;
 import org.waarp.common.command.ReplyCode;
 import org.waarp.common.command.exception.CommandAbstractException;
 import org.waarp.common.command.exception.Reply425Exception;
+import org.waarp.common.crypto.ssl.WaarpSslUtility;
 import org.waarp.common.future.WaarpChannelFuture;
 import org.waarp.common.future.WaarpFuture;
 import org.waarp.common.logging.WaarpInternalLogger;
@@ -158,6 +160,7 @@ public class FtpTransferControl {
 	 */
 	public void setOpenedDataChannel(Channel channel,
 			DataNetworkHandler dataNetworkHandler) {
+		logger.debug("SetOpenedDataChannel: "+(channel != null ? channel.getRemoteAddress() : "no channel"));
 		if (channel != null) {
 			session.getDataConn().setDataNetworkHandler(dataNetworkHandler);
 			waitForOpenedDataChannel.setChannel(channel);
@@ -189,6 +192,13 @@ public class FtpTransferControl {
 		}
 		waitForOpenedDataChannel = new WaarpChannelFuture(true);
 		return channel;
+	}
+	
+	/**
+	 * Allow to reset the waitForOpenedDataChannel
+	 */
+	public void resetWaitForOpenedDataChannel() {
+		waitForOpenedDataChannel = new WaarpChannelFuture(true);
 	}
 
 	/**
@@ -270,7 +280,7 @@ public class FtpTransferControl {
 			}
 			// logger.debug("Active mode standby");
 			ClientBootstrap clientBootstrap = session.getConfiguration()
-					.getFtpInternalConfiguration().getActiveBootstrap();
+					.getFtpInternalConfiguration().getActiveBootstrap(session.isDataSsl());
 			session.getConfiguration().setNewFtpSession(inetAddress,
 					inetSocketAddress, session);
 			// Set the session for the future dataChannel
@@ -339,8 +349,18 @@ public class FtpTransferControl {
 			executorService = Executors.newSingleThreadExecutor();
 		}
 		endOfCommand = new WaarpFuture(true);
+		final ArrayList<Callable<Object>> tasks = new ArrayList<Callable<Object>>(1);
+		tasks.add(Executors.callable(new FtpTransferExecutor(session,
+				executingCommand)));
+		try {
+			executorService.invokeAll(tasks);
+		} catch (InterruptedException e1) {
+		}
+		// XXX TRY FIX TO IMPROVE
+		/*
 		executorService.execute(new FtpTransferExecutor(session,
 				executingCommand));
+		*/
 		try {
 			commandFinishing.await();
 		} catch (InterruptedException e) {
@@ -675,7 +695,7 @@ public class FtpTransferControl {
 		// logger.debug("End Data connection");
 		if (isDataNetworkHandlerReady) {
 			isDataNetworkHandlerReady = false;
-			Channels.close(dataChannel);
+			WaarpSslUtility.closingSslChannel(dataChannel);
 			if (closedDataChannel != null) {
 				try {
 					closedDataChannel.await(session.getConfiguration().TIMEOUTCON,

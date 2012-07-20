@@ -36,6 +36,7 @@ import org.jboss.netty.channel.Channels;
 import org.jboss.netty.channel.ExceptionEvent;
 import org.jboss.netty.channel.MessageEvent;
 import org.jboss.netty.channel.SimpleChannelHandler;
+import org.waarp.common.crypto.ssl.WaarpSslUtility;
 import org.waarp.common.exception.FileTransferException;
 import org.waarp.common.exception.InvalidArgumentException;
 import org.waarp.common.file.DataBlock;
@@ -72,7 +73,7 @@ public class DataNetworkHandler extends SimpleChannelHandler {
 	/**
 	 * Configuration
 	 */
-	private final FtpConfiguration configuration;
+	protected final FtpConfiguration configuration;
 
 	/**
 	 * Is this Data Connection an Active or Passive one
@@ -82,7 +83,7 @@ public class DataNetworkHandler extends SimpleChannelHandler {
 	/**
 	 * Internal store for the SessionInterface
 	 */
-	private FtpSession session = null;
+	protected FtpSession session = null;
 
 	/**
 	 * The associated Channel
@@ -170,15 +171,7 @@ public class DataNetworkHandler extends SimpleChannelHandler {
 		super.channelClosed(ctx, e);
 	}
 
-	/**
-	 * Initialize the Handler.
-	 * 
-	 * @see org.jboss.netty.channel.SimpleChannelHandler#channelConnected(org.jboss.netty.channel.ChannelHandlerContext,
-	 *      org.jboss.netty.channel.ChannelStateEvent)
-	 */
-	@Override
-	public void channelConnected(ChannelHandlerContext ctx, ChannelStateEvent e) {
-		Channel channel = e.getChannel();
+	protected void setSession(Channel channel) {
 		// First get the ftpSession from inetaddresses
 		for (int i = 0; i < FtpInternalConfiguration.RETRYNB; i++) {
 			session = configuration.getFtpSession(channel, isActive);
@@ -196,15 +189,32 @@ public class DataNetworkHandler extends SimpleChannelHandler {
 		if (session == null) {
 			// Not found !!!
 			logger.error("Session not found!");
-			Channels.close(channel);
+			WaarpSslUtility.closingSslChannel(channel);
 			// Problem: control connection could not be directly informed!!!
 			// Only timeout will occur
+			return;
+		}
+	}
+	/**
+	 * Initialize the Handler.
+	 * 
+	 * @see org.jboss.netty.channel.SimpleChannelHandler#channelConnected(org.jboss.netty.channel.ChannelHandlerContext,
+	 *      org.jboss.netty.channel.ChannelStateEvent)
+	 */
+	@Override
+	public void channelConnected(ChannelHandlerContext ctx, ChannelStateEvent e) {
+		Channel channel = e.getChannel();
+		if (session == null) {
+			setSession(channel);
+		}
+		if (session == null) {
 			return;
 		}
 		channelPipeline = ctx.getPipeline();
 		dataChannel = channel;
 		dataBusinessHandler.setFtpSession(getFtpSession());
 		FtpChannelUtils.addDataChannel(channel, session.getConfiguration());
+		logger.debug("DataChannel connected");
 		if (isStillAlive()) {
 			setCorrectCodec();
 			session.getDataConn().getFtpTransferControl().setOpenedDataChannel(
@@ -304,7 +314,7 @@ public class DataNetworkHandler extends SimpleChannelHandler {
 			ConnectException e2 = (ConnectException) e1;
 			logger.warn("Timeout occurs {}", e2.getMessage());
 		} else {
-			logger.warn("Unexpected exception from downstream: {}", e1.getMessage());
+			logger.warn("Unexpected exception from downstream: {}", e1.getMessage(), e1);
 		}
 		if (dataBusinessHandler != null) {
 			dataBusinessHandler.exceptionLocalCaught(e);
