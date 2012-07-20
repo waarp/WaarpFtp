@@ -21,8 +21,8 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 
 import org.jboss.netty.channel.Channel;
-import org.jboss.netty.channel.Channels;
 import org.waarp.common.command.exception.Reply425Exception;
+import org.waarp.common.crypto.ssl.WaarpSslUtility;
 import org.waarp.ftp.core.command.FtpArgumentCode;
 import org.waarp.ftp.core.command.FtpArgumentCode.TransferMode;
 import org.waarp.ftp.core.command.FtpArgumentCode.TransferStructure;
@@ -351,7 +351,7 @@ public class FtpDataAsyncConn {
 			isBind = false;
 			InetSocketAddress local = getLocalAddress();
 			if (dataChannel != null && dataChannel.isConnected()) {
-				Channels.close(dataChannel);
+				WaarpSslUtility.closingSslChannel(dataChannel);
 			}
 			session.getConfiguration().getFtpInternalConfiguration()
 					.unbindPassive(local);
@@ -375,7 +375,7 @@ public class FtpDataAsyncConn {
 		if (passiveMode) {
 			// Connection is enable but the client will do the real connection
 			session.getConfiguration().getFtpInternalConfiguration()
-					.bindPassive(getLocalAddress());
+					.bindPassive(getLocalAddress(), session.isDataSsl());
 			isBind = true;
 			return true;
 		}

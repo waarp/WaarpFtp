@@ -25,11 +25,11 @@ import java.util.Timer;
 
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelFactory;
-import org.jboss.netty.channel.Channels;
 import org.jboss.netty.channel.group.ChannelGroupFuture;
 import org.jboss.netty.channel.group.ChannelGroupFutureListener;
 import org.jboss.netty.handler.execution.OrderedMemoryAwareThreadPoolExecutor;
 import org.slf4j.LoggerFactory;
+import org.waarp.common.crypto.ssl.WaarpSslUtility;
 import org.waarp.common.logging.WaarpInternalLogger;
 import org.waarp.common.logging.WaarpInternalLoggerFactory;
 import org.waarp.common.logging.WaarpSlf4JLoggerFactory;
@@ -365,7 +365,7 @@ public class FtpChannelUtils implements Runnable {
 					// Normal channel
 					result++;
 				} else {
-					Channels.close(channel);
+					WaarpSslUtility.closingSslChannel(channel);
 				}
 			} else {
 				// Parent channel

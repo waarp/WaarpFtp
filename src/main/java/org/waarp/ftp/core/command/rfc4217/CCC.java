@@ -15,28 +15,34 @@
  * You should have received a copy of the GNU General Public License along with Waarp . If not, see
  * <http://www.gnu.org/licenses/>.
  */
-package org.waarp.ftp.core.command.access;
+package org.waarp.ftp.core.command.rfc4217;
 
 import org.waarp.common.command.ReplyCode;
+import org.waarp.common.command.exception.CommandAbstractException;
+import org.waarp.common.command.exception.Reply500Exception;
+import org.waarp.common.command.exception.Reply534Exception;
 import org.waarp.ftp.core.command.AbstractCommand;
 
 /**
- * QUIT command
+ * CCC command
  * 
  * @author Frederic Bregier
  * 
  */
-public class QUIT extends AbstractCommand {
+public class CCC extends AbstractCommand {
 
-	/*
-	 * (non-Javadoc)
-	 * @see org.waarp.ftp.core.command.AbstractCommand#exec()
-	 */
-	public void exec() {
-		getSession().rein();
-		getSession().setNextCommand(this);
-		getSession().setReplyCode(
-				ReplyCode.REPLY_221_CLOSING_CONTROL_CONNECTION, null);
+	@Override
+	public void exec() throws CommandAbstractException {
+		if (! getSession().getConfiguration().getFtpInternalConfiguration().isAcceptAuthProt()) {
+			throw new Reply534Exception("CCC not supported");
+		}
+		if (! getSession().isSsl()) {
+			// Not SSL
+			throw new Reply500Exception("Session already not using SSL / TLS");
+		}
+		getSession().setSsl(false);
+		getSession().setReplyCode(ReplyCode.REPLY_200_COMMAND_OKAY,
+				null);
 	}
-
+	
 }
