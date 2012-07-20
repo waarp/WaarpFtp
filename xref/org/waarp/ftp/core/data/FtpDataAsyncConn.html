@@ -31,8 +31,8 @@
 <a class="jxr_linenumber" name="21" href="#21">21</a>  <strong class="jxr_keyword">import</strong> java.net.InetSocketAddress;
 <a class="jxr_linenumber" name="22" href="#22">22</a>  
 <a class="jxr_linenumber" name="23" href="#23">23</a>  <strong class="jxr_keyword">import</strong> org.jboss.netty.channel.Channel;
-<a class="jxr_linenumber" name="24" href="#24">24</a>  <strong class="jxr_keyword">import</strong> org.jboss.netty.channel.Channels;
-<a class="jxr_linenumber" name="25" href="#25">25</a>  <strong class="jxr_keyword">import</strong> org.waarp.common.command.exception.Reply425Exception;
+<a class="jxr_linenumber" name="24" href="#24">24</a>  <strong class="jxr_keyword">import</strong> org.waarp.common.command.exception.Reply425Exception;
+<a class="jxr_linenumber" name="25" href="#25">25</a>  <strong class="jxr_keyword">import</strong> org.waarp.common.crypto.ssl.WaarpSslUtility;
 <a class="jxr_linenumber" name="26" href="#26">26</a>  <strong class="jxr_keyword">import</strong> org.waarp.ftp.core.command.FtpArgumentCode;
 <a class="jxr_linenumber" name="27" href="#27">27</a>  <strong class="jxr_keyword">import</strong> org.waarp.ftp.core.command.FtpArgumentCode.TransferMode;
 <a class="jxr_linenumber" name="28" href="#28">28</a>  <strong class="jxr_keyword">import</strong> org.waarp.ftp.core.command.FtpArgumentCode.TransferStructure;
@@ -361,7 +361,7 @@
 <a class="jxr_linenumber" name="351" href="#351">351</a> 			isBind = false;
 <a class="jxr_linenumber" name="352" href="#352">352</a> 			InetSocketAddress local = getLocalAddress();
 <a class="jxr_linenumber" name="353" href="#353">353</a> 			<strong class="jxr_keyword">if</strong> (dataChannel != <strong class="jxr_keyword">null</strong> &amp;&amp; dataChannel.isConnected()) {
-<a class="jxr_linenumber" name="354" href="#354">354</a> 				Channels.close(dataChannel);
+<a class="jxr_linenumber" name="354" href="#354">354</a> 				WaarpSslUtility.closingSslChannel(dataChannel);
 <a class="jxr_linenumber" name="355" href="#355">355</a> 			}
 <a class="jxr_linenumber" name="356" href="#356">356</a> 			session.getConfiguration().getFtpInternalConfiguration()
 <a class="jxr_linenumber" name="357" href="#357">357</a> 					.unbindPassive(local);
@@ -385,7 +385,7 @@
 <a class="jxr_linenumber" name="375" href="#375">375</a> 		<strong class="jxr_keyword">if</strong> (passiveMode) {
 <a class="jxr_linenumber" name="376" href="#376">376</a> 			<em class="jxr_comment">// Connection is enable but the client will do the real connection</em>
 <a class="jxr_linenumber" name="377" href="#377">377</a> 			session.getConfiguration().getFtpInternalConfiguration()
-<a class="jxr_linenumber" name="378" href="#378">378</a> 					.bindPassive(getLocalAddress());
+<a class="jxr_linenumber" name="378" href="#378">378</a> 					.bindPassive(getLocalAddress(), session.isDataSsl());
 <a class="jxr_linenumber" name="379" href="#379">379</a> 			isBind = <strong class="jxr_keyword">true</strong>;
 <a class="jxr_linenumber" name="380" href="#380">380</a> 			<strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">true</strong>;
 <a class="jxr_linenumber" name="381" href="#381">381</a> 		}

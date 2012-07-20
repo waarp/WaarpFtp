@@ -35,11 +35,11 @@
 <a class="jxr_linenumber" name="25" href="#25">25</a>  
 <a class="jxr_linenumber" name="26" href="#26">26</a>  <strong class="jxr_keyword">import</strong> org.jboss.netty.channel.Channel;
 <a class="jxr_linenumber" name="27" href="#27">27</a>  <strong class="jxr_keyword">import</strong> org.jboss.netty.channel.ChannelFactory;
-<a class="jxr_linenumber" name="28" href="#28">28</a>  <strong class="jxr_keyword">import</strong> org.jboss.netty.channel.Channels;
-<a class="jxr_linenumber" name="29" href="#29">29</a>  <strong class="jxr_keyword">import</strong> org.jboss.netty.channel.group.ChannelGroupFuture;
-<a class="jxr_linenumber" name="30" href="#30">30</a>  <strong class="jxr_keyword">import</strong> org.jboss.netty.channel.group.ChannelGroupFutureListener;
-<a class="jxr_linenumber" name="31" href="#31">31</a>  <strong class="jxr_keyword">import</strong> org.jboss.netty.handler.execution.OrderedMemoryAwareThreadPoolExecutor;
-<a class="jxr_linenumber" name="32" href="#32">32</a>  <strong class="jxr_keyword">import</strong> org.slf4j.LoggerFactory;
+<a class="jxr_linenumber" name="28" href="#28">28</a>  <strong class="jxr_keyword">import</strong> org.jboss.netty.channel.group.ChannelGroupFuture;
+<a class="jxr_linenumber" name="29" href="#29">29</a>  <strong class="jxr_keyword">import</strong> org.jboss.netty.channel.group.ChannelGroupFutureListener;
+<a class="jxr_linenumber" name="30" href="#30">30</a>  <strong class="jxr_keyword">import</strong> org.jboss.netty.handler.execution.OrderedMemoryAwareThreadPoolExecutor;
+<a class="jxr_linenumber" name="31" href="#31">31</a>  <strong class="jxr_keyword">import</strong> org.slf4j.LoggerFactory;
+<a class="jxr_linenumber" name="32" href="#32">32</a>  <strong class="jxr_keyword">import</strong> org.waarp.common.crypto.ssl.WaarpSslUtility;
 <a class="jxr_linenumber" name="33" href="#33">33</a>  <strong class="jxr_keyword">import</strong> org.waarp.common.logging.WaarpInternalLogger;
 <a class="jxr_linenumber" name="34" href="#34">34</a>  <strong class="jxr_keyword">import</strong> org.waarp.common.logging.WaarpInternalLoggerFactory;
 <a class="jxr_linenumber" name="35" href="#35">35</a>  <strong class="jxr_keyword">import</strong> org.waarp.common.logging.WaarpSlf4JLoggerFactory;
@@ -375,7 +375,7 @@
 <a class="jxr_linenumber" name="365" href="#365">365</a> 					<em class="jxr_comment">// Normal channel</em>
 <a class="jxr_linenumber" name="366" href="#366">366</a> 					result++;
 <a class="jxr_linenumber" name="367" href="#367">367</a> 				} <strong class="jxr_keyword">else</strong> {
-<a class="jxr_linenumber" name="368" href="#368">368</a> 					Channels.close(channel);
+<a class="jxr_linenumber" name="368" href="#368">368</a> 					WaarpSslUtility.closingSslChannel(channel);
 <a class="jxr_linenumber" name="369" href="#369">369</a> 				}
 <a class="jxr_linenumber" name="370" href="#370">370</a> 			} <strong class="jxr_keyword">else</strong> {
 <a class="jxr_linenumber" name="371" href="#371">371</a> 				<em class="jxr_comment">// Parent channel</em>
