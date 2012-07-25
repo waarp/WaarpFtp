@@ -39,6 +39,7 @@ import org.waarp.common.logging.WaarpInternalLogger;
 import org.waarp.common.logging.WaarpInternalLoggerFactory;
 import org.waarp.ftp.core.command.FtpCommandCode;
 import org.waarp.ftp.core.command.service.ABOR;
+import org.waarp.ftp.core.config.FtpConfiguration;
 import org.waarp.ftp.core.config.FtpInternalConfiguration;
 import org.waarp.ftp.core.control.NetworkHandler;
 import org.waarp.ftp.core.data.handler.DataNetworkHandler;
@@ -359,8 +360,8 @@ public class FtpTransferControl {
 		// XXX TRY FIX TO IMPROVE
 		/*
 		executorService.execute(new FtpTransferExecutor(session,
-				executingCommand));
-		*/
+			executingCommand));
+			*/
 		try {
 			commandFinishing.await();
 		} catch (InterruptedException e) {
@@ -698,7 +699,7 @@ public class FtpTransferControl {
 			WaarpSslUtility.closingSslChannel(dataChannel);
 			if (closedDataChannel != null) {
 				try {
-					closedDataChannel.await(session.getConfiguration().TIMEOUTCON,
+					closedDataChannel.await(FtpConfiguration.DATATIMEOUTCON,
 							TimeUnit.MILLISECONDS);
 				} catch (InterruptedException e) {
 				}

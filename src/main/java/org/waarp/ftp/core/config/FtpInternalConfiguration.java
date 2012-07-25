@@ -293,7 +293,7 @@ public class FtpInternalConfiguration {
 		passiveBootstrap = new ServerBootstrap(dataPassiveChannelFactory);
 		if (usingNativeSsl) {
 			passiveBootstrap.setPipelineFactory(new FtpsDataPipelineFactory(
-				configuration.dataBusinessHandler, configuration, false, execPassiveDataWorker));
+				configuration.dataBusinessHandler, configuration, false));
 		} else {
 			passiveBootstrap.setPipelineFactory(new FtpDataPipelineFactory(
 					configuration.dataBusinessHandler, configuration, false));
@@ -310,7 +310,7 @@ public class FtpInternalConfiguration {
 		if (acceptAuthProt) {
 			passiveSslBootstrap = new ServerBootstrap(dataPassiveChannelFactory);
 			passiveSslBootstrap.setPipelineFactory(new FtpsDataPipelineFactory(
-					configuration.dataBusinessHandler, configuration, false, execPassiveDataWorker));				
+					configuration.dataBusinessHandler, configuration, false));				
 			passiveSslBootstrap.setOption("connectTimeoutMillis",
 					configuration.TIMEOUTCON);
 			passiveSslBootstrap.setOption("reuseAddress", true);
@@ -320,13 +320,15 @@ public class FtpInternalConfiguration {
 			passiveSslBootstrap.setOption("child.tcpNoDelay", true);
 			passiveSslBootstrap.setOption("child.keepAlive", true);
 			passiveSslBootstrap.setOption("child.reuseAddress", true);
+		} else {
+			passiveSslBootstrap = passiveBootstrap;
 		}
 		
 		// Active Data Connections
 		activeBootstrap = new ClientBootstrap(dataActiveChannelFactory);
 		if (usingNativeSsl) {
 			activeBootstrap.setPipelineFactory(new FtpsDataPipelineFactory(
-				configuration.dataBusinessHandler, configuration, true, execActiveDataWorker));
+				configuration.dataBusinessHandler, configuration, true));
 		} else {
 			activeBootstrap.setPipelineFactory(new FtpDataPipelineFactory(
 					configuration.dataBusinessHandler, configuration, true));
@@ -343,7 +345,7 @@ public class FtpInternalConfiguration {
 		if (acceptAuthProt) {
 			activeSslBootstrap = new ClientBootstrap(dataActiveChannelFactory);
 			activeSslBootstrap.setPipelineFactory(new FtpsDataPipelineFactory(
-					configuration.dataBusinessHandler, configuration, true, execActiveDataWorker));
+					configuration.dataBusinessHandler, configuration, true));
 			activeSslBootstrap.setOption("connectTimeoutMillis",
 					configuration.TIMEOUTCON);
 			activeSslBootstrap.setOption("reuseAddress", true);
@@ -353,6 +355,8 @@ public class FtpInternalConfiguration {
 			activeSslBootstrap.setOption("child.tcpNoDelay", true);
 			activeSslBootstrap.setOption("child.keepAlive", true);
 			activeSslBootstrap.setOption("child.reuseAddress", true);
+		} else {
+			activeSslBootstrap = activeBootstrap;
 		}
 
 		// Main Command server
@@ -633,6 +637,7 @@ public class FtpInternalConfiguration {
 	}
 
 	public void releaseResources() {
+		WaarpSslUtility.forceCloseAllSslChannels();
 		execBoss.shutdown();
 		execWorker.shutdown();
 		execPassiveDataBoss.shutdown();

@@ -31,6 +31,7 @@ import org.waarp.common.file.DataBlock;
 import org.waarp.common.future.WaarpFuture;
 import org.waarp.ftp.core.command.FtpArgumentCode.TransferMode;
 import org.waarp.ftp.core.command.FtpArgumentCode.TransferStructure;
+import org.waarp.ftp.core.config.FtpConfiguration;
 import org.waarp.ftp.core.data.handler.FtpSeekAheadData.SeekAheadNoBackArrayException;
 
 /**
@@ -248,7 +249,9 @@ public class FtpDataModeCodec extends FrameDecoder implements
 		// transfered
 		// by client before connection is ready)
 		if (!isReady) {
-			codecLocked.await();
+			if (!codecLocked.await(FtpConfiguration.DATATIMEOUTCON)) {
+				throw new InvalidArgumentException("Codec not unlocked while should be");
+			}
 			isReady = true;
 		}
 		// If STREAM Mode, no task to do, just next filter
@@ -518,17 +521,17 @@ public class FtpDataModeCodec extends FrameDecoder implements
 	private void writeRequested(ChannelHandlerContext ctx, MessageEvent evt)
 			throws Exception {
 		if (!(evt.getMessage() instanceof DataBlock)) {
-			Channels.write(ctx, evt.getFuture(), evt.getMessage());
-			return;
 			// since SSL in beginning will send a handshake => take care
-			/*throw new InvalidArgumentException("Incorrect write object: " +
-					evt.getMessage().getClass().getName());*/
+			throw new InvalidArgumentException("Incorrect write object: " +
+					evt.getMessage().getClass().getName());
 		}
 		// First test if the connection is fully ready (block might be
 		// transfered
 		// by client before connection is ready)
 		if (!isReady) {
-			codecLocked.await();
+			if (!codecLocked.await(FtpConfiguration.DATATIMEOUTCON)) {
+				throw new InvalidArgumentException("Codec not unlocked while should be");
+			}
 			isReady = true;
 		}
 		DataBlock newDataBlock = (DataBlock) evt.getMessage();

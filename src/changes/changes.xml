@@ -5,7 +5,11 @@
 		<author email="waarp1 at free.fr">Frederic Bregier</author>
 	</properties>
 	<body>
-		<release version="1.1.2" date="2012-07-21" description="Fix and FTPS Release">
+		<release version="1.1.3" date="2012-07-25" description="Fix release">
+			<action dev="Frederic Bregier" type="fix">Ssl Fix</action>
+			<action dev="Frederic Bregier" type="fix">Upgrade jar dependencies</action>
+		</release>
+	    <release version="1.1.2" date="2012-07-21" description="Fix and FTPS Release">
 			<action dev="Frederic Bregier" type="fix">Fix SeekAheadData as in Netty</action>
 			<action dev="Frederic Bregier" type="add">Add FTPS implicit and explicit support</action>
 			<action dev="Frederic Bregier" type="add">Add AUTH, CCC, PBSZ, PROT commands</action>
