@@ -251,7 +251,7 @@ public class DataNetworkHandler extends SimpleChannelHandler {
 	 */
 	public void unlockModeCodec() {
 		FtpDataModeCodec modeCodec = (FtpDataModeCodec) channelPipeline
-				.get("MODE");
+				.get(FtpDataPipelineFactory.CODEC_MODE);
 		modeCodec.setCodecReady();
 	}
 

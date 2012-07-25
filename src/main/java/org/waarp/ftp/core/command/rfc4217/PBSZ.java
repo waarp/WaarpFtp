@@ -21,7 +21,6 @@ import org.waarp.common.command.ReplyCode;
 import org.waarp.common.command.exception.CommandAbstractException;
 import org.waarp.common.command.exception.Reply501Exception;
 import org.waarp.common.command.exception.Reply503Exception;
-import org.waarp.common.command.exception.Reply534Exception;
 import org.waarp.ftp.core.command.AbstractCommand;
 import org.waarp.ftp.core.command.FtpCommandCode;
 
@@ -35,9 +34,6 @@ public class PBSZ extends AbstractCommand {
 
 	@Override
 	public void exec() throws CommandAbstractException {
-		if (! getSession().getConfiguration().getFtpInternalConfiguration().isAcceptAuthProt()) {
-			throw new Reply534Exception("PBSZ not supported");
-		}
 		if (!getSession().isSsl()) {
 			// Not SSL
 			throw new Reply503Exception("Session not using SSL / TLS");
