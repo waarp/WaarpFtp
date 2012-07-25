@@ -261,7 +261,7 @@
 <a class="jxr_linenumber" name="251" href="#251">251</a> <em class="jxr_javadoccomment">	 */</em>
 <a class="jxr_linenumber" name="252" href="#252">252</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> unlockModeCodec() {
 <a class="jxr_linenumber" name="253" href="#253">253</a> 		FtpDataModeCodec modeCodec = (FtpDataModeCodec) channelPipeline
-<a class="jxr_linenumber" name="254" href="#254">254</a> 				.get(<span class="jxr_string">"MODE"</span>);
+<a class="jxr_linenumber" name="254" href="#254">254</a> 				.get(FtpDataPipelineFactory.CODEC_MODE);
 <a class="jxr_linenumber" name="255" href="#255">255</a> 		modeCodec.setCodecReady();
 <a class="jxr_linenumber" name="256" href="#256">256</a> 	}
 <a class="jxr_linenumber" name="257" href="#257">257</a> 
