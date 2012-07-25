@@ -29,6 +29,7 @@ import org.jboss.netty.channel.ChannelPipelineFactory;
 import org.jboss.netty.channel.Channels;
 import org.jboss.netty.handler.codec.frame.DelimiterBasedFrameDecoder;
 import org.jboss.netty.handler.execution.ExecutionHandler;
+import org.jboss.netty.handler.ssl.SslHandler;
 import org.waarp.common.command.ReplyCode;
 import org.waarp.common.crypto.ssl.WaarpSecureKeyStore;
 import org.waarp.common.crypto.ssl.WaarpSslContextFactory;
@@ -91,10 +92,11 @@ public class FtpsPipelineFactory implements ChannelPipelineFactory {
 	public ChannelPipeline getPipeline() throws Exception {
 		ChannelPipeline pipeline = Channels.pipeline();
 		// Server: no renegotiation still, but possible clientAuthent
-		pipeline.addLast("ssl",
-				waarpSslContextFactory.initPipelineFactory(true,
-						waarpSslContextFactory.needClientAuthentication(),
-						false, executorService));
+		SslHandler handler = waarpSslContextFactory.initPipelineFactory(true,
+				waarpSslContextFactory.needClientAuthentication(),
+				false, executorService);
+		// NO since we need to inform through SNMP: handler.setIssueHandshake(true);
+		pipeline.addLast("ssl", handler);
 
 		// Add the text line codec combination first,
 		pipeline.addLast("framer", new DelimiterBasedFrameDecoder(8192,

@@ -21,11 +21,9 @@
 package org.waarp.ftp.core.control.ftps;
 
 import org.jboss.netty.channel.Channel;
-import org.jboss.netty.channel.ChannelFuture;
-import org.jboss.netty.channel.ChannelFutureListener;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.ChannelStateEvent;
-import org.jboss.netty.handler.ssl.SslHandler;
+import org.waarp.common.crypto.ssl.WaarpSslUtility;
 import org.waarp.common.logging.WaarpInternalLogger;
 import org.waarp.common.logging.WaarpInternalLoggerFactory;
 import org.waarp.ftp.core.control.NetworkHandler;
@@ -49,32 +47,13 @@ public class SslNetworkHandler extends NetworkHandler {
 		super(session);
 	}
 
-	/**
-	 * Remover from SSL HashMap
-	 */
-	private static final ChannelFutureListener remover = new ChannelFutureListener() {
-		public void operationComplete(
-				ChannelFuture future) {
-			logger.debug("SSL finishing: "+future.getChannel().getId());
-		}
-	};
-
-	/**
-	 * Add the Channel as SSL handshake is over
-	 * 
-	 * @param channel
-	 */
-	private static void addSslConnectedChannel(Channel channel) {
-		channel.getCloseFuture().addListener(remover);
-	}
-
 
 	@Override
 	public void channelOpen(ChannelHandlerContext ctx, ChannelStateEvent e)
 			throws Exception {
 		Channel channel = e.getChannel();
 		logger.debug("Add channel to ssl " +channel.getId());
-		addSslConnectedChannel(channel);
+		WaarpSslUtility.addSslOpenedChannel(channel);
 		super.channelOpen(ctx, e);
 	}
 
@@ -91,27 +70,10 @@ public class SslNetworkHandler extends NetworkHandler {
 	public void channelConnected(ChannelHandlerContext ctx, ChannelStateEvent e) {
 		// Get the SslHandler in the current pipeline.
 		// We added it in NetworkSslServerPipelineFactory.
-		final SslHandler sslHandler = ctx.getPipeline().get(SslHandler.class);
-		if (sslHandler != null) {
-			// Get the SslHandler and begin handshake ASAP.
-			// Get notified when SSL handshake is done.
-			ChannelFuture handshakeFuture;
-			handshakeFuture = sslHandler.handshake();
-			try {
-				handshakeFuture.await();
-			} catch (InterruptedException e1) {
-			}
-			logger.debug("Handshake: " + handshakeFuture.isSuccess(), handshakeFuture.getCause());
-			if (!handshakeFuture.isSuccess()) {
-				String error2 = handshakeFuture.getCause() != null ?
-						handshakeFuture.getCause().getMessage() : "During Handshake";
-				callForSnmp("SSL Connection Error", error2);
-				handshakeFuture.getChannel().close();
-				return;
-			}
-		} else {
-			logger.error("SSL Not found");
+		if (! WaarpSslUtility.runHandshake(e.getChannel())) {
+			callForSnmp("SSL Connection Error", "During Ssl Handshake");
 		}
+		getFtpSession().setSsl(true);
 		super.channelConnected(ctx, e);
 	}
 

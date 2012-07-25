@@ -121,6 +121,11 @@ public abstract class FtpConfiguration {
 	public long TIMEOUTCON = 30000;
 
 	/**
+	 * Nb of milliseconds after pending data transfer is in timeout
+	 */
+	public static long DATATIMEOUTCON = 5000;
+
+	/**
 	 * Size by default of block size for receive/sending files. Should be a multiple of 8192
 	 * (maximum = 64K due to block limitation to 2 bytes)
 	 */

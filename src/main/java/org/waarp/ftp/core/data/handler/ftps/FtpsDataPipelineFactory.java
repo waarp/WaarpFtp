@@ -20,20 +20,16 @@
  */
 package org.waarp.ftp.core.data.handler.ftps;
 
-import java.util.concurrent.ExecutorService;
-
 import org.jboss.netty.channel.ChannelPipeline;
 import org.jboss.netty.channel.ChannelPipelineFactory;
 import org.jboss.netty.channel.Channels;
 import org.jboss.netty.handler.execution.ExecutionHandler;
-import org.jboss.netty.handler.ssl.SslHandler;
 import org.jboss.netty.handler.traffic.ChannelTrafficShapingHandler;
 import org.waarp.ftp.core.command.FtpArgumentCode.TransferMode;
 import org.waarp.ftp.core.command.FtpArgumentCode.TransferStructure;
 import org.waarp.ftp.core.command.FtpArgumentCode.TransferSubType;
 import org.waarp.ftp.core.command.FtpArgumentCode.TransferType;
 import org.waarp.ftp.core.config.FtpConfiguration;
-import org.waarp.ftp.core.control.ftps.FtpsPipelineFactory;
 import org.waarp.ftp.core.data.handler.DataBusinessHandler;
 import org.waarp.ftp.core.data.handler.FtpDataModeCodec;
 import org.waarp.ftp.core.data.handler.FtpDataPipelineFactory;
@@ -66,8 +62,6 @@ public class FtpsDataPipelineFactory implements ChannelPipelineFactory {
 	 * Is this factory for Active mode
 	 */
 	private final boolean isActive;
-	
-	private final ExecutorService executorService;
 
 	/**
 	 * Constructor which Initializes some data
@@ -79,11 +73,10 @@ public class FtpsDataPipelineFactory implements ChannelPipelineFactory {
 	 */
 	public FtpsDataPipelineFactory(
 			Class<? extends DataBusinessHandler> dataBusinessHandler,
-			FtpConfiguration configuration, boolean active, ExecutorService executor) {
+			FtpConfiguration configuration, boolean active) {
 		this.dataBusinessHandler = dataBusinessHandler;
 		this.configuration = configuration;
 		isActive = active;
-		this.executorService = executor;
 	}
 
 	/**
@@ -93,16 +86,9 @@ public class FtpsDataPipelineFactory implements ChannelPipelineFactory {
 	 */
 	public ChannelPipeline getPipeline() throws Exception {
 		ChannelPipeline pipeline = Channels.pipeline();
-		if (configuration.getFtpInternalConfiguration().isUsingNativeSsl()) {
-			// Server: no renegotiation still, but possible clientAuthent
-			SslHandler sslHandler = 
-					FtpsPipelineFactory.waarpSslContextFactory.initPipelineFactory(true,
-							FtpsPipelineFactory.waarpSslContextFactory.needClientAuthentication(),
-							false, executorService);
-			pipeline.addLast("ssl", sslHandler);
-		}
+		// SSL will be added in final handler in channelConnected
 		// Add default codec but they will change by the channelConnected
-		pipeline.addFirst(FtpDataPipelineFactory.CODEC_MODE, new FtpDataModeCodec(TransferMode.STREAM,
+		pipeline.addLast(FtpDataPipelineFactory.CODEC_MODE, new FtpDataModeCodec(TransferMode.STREAM,
 				TransferStructure.FILE));
 		pipeline
 				.addLast(FtpDataPipelineFactory.CODEC_LIMIT, configuration

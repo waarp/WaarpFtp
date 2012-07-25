@@ -342,15 +342,7 @@ public class NetworkHandler extends SimpleChannelHandler {
 				||
 				session.getReplyCode() == ReplyCode.REPLY_221_CLOSING_CONTROL_CONNECTION) {
 			session.getDataConn().getFtpTransferControl().clear();
-			if (session.isSsl()) {
-				writeIntermediateAnswer().addListener(new ChannelFutureListener() {
-					public void operationComplete(ChannelFuture future) throws Exception {
-						WaarpSslUtility.closingSslChannel(future.getChannel());
-					}
-				});
-			} else {
-				writeIntermediateAnswer().addListener(ChannelFutureListener.CLOSE);
-			}
+			writeIntermediateAnswer().addListener(WaarpSslUtility.SSLCLOSE);
 			return true;
 		}
 		writeIntermediateAnswer();

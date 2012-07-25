@@ -22,7 +22,6 @@ import org.waarp.common.command.exception.CommandAbstractException;
 import org.waarp.common.command.exception.Reply501Exception;
 import org.waarp.common.command.exception.Reply503Exception;
 import org.waarp.common.command.exception.Reply504Exception;
-import org.waarp.common.command.exception.Reply534Exception;
 import org.waarp.ftp.core.command.AbstractCommand;
 import org.waarp.ftp.core.command.FtpCommandCode;
 
@@ -36,9 +35,6 @@ public class PROT extends AbstractCommand {
 
 	@Override
 	public void exec() throws CommandAbstractException {
-		if (! getSession().getConfiguration().getFtpInternalConfiguration().isAcceptAuthProt()) {
-			throw new Reply534Exception("PROT not supported");
-		}
 		if (! getSession().isSsl()) {
 			// Not in SSL
 			throw new Reply503Exception("Session not using SSL / TLS");
@@ -50,7 +46,7 @@ public class PROT extends AbstractCommand {
 		}
 		String[] types = getArgs();
 		if (types[0].equalsIgnoreCase("P")) {
-			if (getSession().isDataSsl()) {
+			if (getSession().isDataSsl() && getSession().getConfiguration().getFtpInternalConfiguration().isAcceptAuthProt()) {
 				// Already SSL
 				throw new Reply503Exception("Data already using SSL / TLS");
 			}
@@ -58,7 +54,7 @@ public class PROT extends AbstractCommand {
 			getSession().setDataSsl(true);
 			getSession().setReplyCode(ReplyCode.REPLY_200_COMMAND_OKAY,
 					null);
-		} else if (types[0].equalsIgnoreCase("C")) {
+		} else if (types[0].equalsIgnoreCase("C") && ! getSession().getConfiguration().getFtpInternalConfiguration().isAcceptAuthProt()) {
 			if (!getSession().isDataSsl()) {
 				// Not in SSL
 				throw new Reply503Exception("Data already not using SSL / TLS");
@@ -66,6 +62,8 @@ public class PROT extends AbstractCommand {
 			getSession().setDataSsl(false);
 			getSession().setReplyCode(ReplyCode.REPLY_200_COMMAND_OKAY,
 					null);
+		} else if (! getSession().getConfiguration().getFtpInternalConfiguration().isAcceptAuthProt()) {
+			throw new Reply503Exception("Data is using SSL / TLS and cannot be removed due to Implicit mode");
 		} else {
 			throw new Reply504Exception("Unknown Parameter: "+types[0]);
 		}
