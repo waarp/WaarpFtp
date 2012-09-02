@@ -19,7 +19,7 @@ package org.waarp.ftp.core.utils;
 
 import java.util.Timer;
 
-import org.jboss.netty.util.internal.SystemPropertyUtil;
+import org.waarp.common.utility.DetectionUtils;
 import org.waarp.ftp.core.config.FtpConfiguration;
 import org.waarp.ftp.core.config.FtpInternalConfiguration;
 
@@ -123,12 +123,10 @@ public final class FtpSignalHandler implements SignalHandler {
 		// Not on WINDOWS
 		if (FtpInternalConfiguration.ISUNIX == null) {
 			FtpInternalConfiguration.ISUNIX =
-					!System.getProperty("os.name").toLowerCase().startsWith("win");
+					! DetectionUtils.isWindows();
 		}
 		if (FtpInternalConfiguration.ISUNIX) {
-			String vendor = SystemPropertyUtil.get("java.vm.vendor");
-			vendor = vendor.toLowerCase();
-			if (vendor.indexOf("ibm") >= 0) {
+			if (DetectionUtils.isUnixIBM()) {
 				diagSignal = new Signal("USR1");
 				diagHandler = new FtpSignalHandler(configuration);
 				diagHandler.oldHandler = Signal.handle(diagSignal, diagHandler);
