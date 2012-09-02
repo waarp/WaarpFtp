@@ -45,6 +45,7 @@ import org.waarp.common.crypto.ssl.WaarpSslUtility;
 import org.waarp.common.file.DataBlockSizeEstimator;
 import org.waarp.common.logging.WaarpInternalLogger;
 import org.waarp.common.logging.WaarpInternalLoggerFactory;
+import org.waarp.common.utility.DetectionUtils;
 import org.waarp.common.utility.WaarpThreadFactory;
 import org.waarp.ftp.core.control.FtpPipelineFactory;
 import org.waarp.ftp.core.control.ftps.FtpsPipelineFactory;
@@ -264,7 +265,7 @@ public class FtpInternalConfiguration {
 	 */
 	public FtpInternalConfiguration(FtpConfiguration configuration) {
 		this.configuration = configuration;
-		ISUNIX = !System.getProperty("os.name").toLowerCase().startsWith("win");
+		ISUNIX = ! DetectionUtils.isWindows();
 	}
 
 	/**
