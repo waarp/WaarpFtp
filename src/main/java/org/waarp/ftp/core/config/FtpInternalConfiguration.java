@@ -54,7 +54,7 @@ import org.waarp.ftp.core.data.handler.ftps.FtpsDataPipelineFactory;
 import org.waarp.ftp.core.session.FtpSession;
 import org.waarp.ftp.core.session.FtpSessionReference;
 import org.waarp.ftp.core.utils.FtpChannelUtils;
-import org.waarp.ftp.core.utils.FtpSignalHandler;
+import org.waarp.ftp.core.utils.FtpShutdownHook;
 
 /**
  * Internal configuration of the FTP server, related to Netty
@@ -257,6 +257,7 @@ public class FtpInternalConfiguration {
 	 * Global Configuration
 	 */
 	private final FtpConfiguration configuration;
+	
 
 	/**
 	 * Constructor
@@ -266,6 +267,8 @@ public class FtpInternalConfiguration {
 	public FtpInternalConfiguration(FtpConfiguration configuration) {
 		this.configuration = configuration;
 		ISUNIX = ! DetectionUtils.isWindows();
+		configuration.shutdownConfiguration.timeout = configuration.TIMEOUTCON;
+		new FtpShutdownHook(configuration.shutdownConfiguration, configuration);
 	}
 
 	/**
@@ -383,8 +386,9 @@ public class FtpInternalConfiguration {
 				.bind(new InetSocketAddress(configuration.getServerPort())),
 				configuration);
 
-		// Init signal handler
-		FtpSignalHandler.initSignalHandler(configuration);
+		// Init Shutdown Hool handler
+		configuration.shutdownConfiguration.timeout = configuration.TIMEOUTCON;
+		FtpShutdownHook.addShutdownHook();
 		// Factory for TrafficShapingHandler
 		objectSizeEstimator = new DataBlockSizeEstimator();
 		globalTrafficShapingHandler = new GlobalTrafficShapingHandler(
