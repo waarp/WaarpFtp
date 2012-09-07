@@ -26,6 +26,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import org.jboss.netty.channel.Channel;
 import org.waarp.common.file.FileParameterInterface;
+import org.waarp.common.utility.WaarpShutdownHook.ShutdownConfiguration;
 import org.waarp.ftp.core.control.BusinessHandler;
 import org.waarp.ftp.core.data.handler.DataBusinessHandler;
 import org.waarp.ftp.core.exception.FtpUnknownFieldException;
@@ -170,6 +171,12 @@ public abstract class FtpConfiguration {
 	 * General Configuration Object
 	 */
 	private final HashMap<String, Object> properties = new HashMap<String, Object>();
+
+	/**
+	 * Use by ShutdownHook
+	 */
+	public final ShutdownConfiguration shutdownConfiguration = new ShutdownConfiguration();
+
 
 	/**
 	 * Simple constructor

@@ -79,6 +79,7 @@ public class FtpTimerTask extends TimerTask {
 				logger.info("Exit Shutdown Command");
 				FtpChannelUtils.terminateCommandChannels(configuration);
 				logger.info("Exit end of Command Shutdown");
+				//FtpChannelUtils.stopLogger();
 				break;
 			default:
 				logger.info("Type unknown in TimerTask");

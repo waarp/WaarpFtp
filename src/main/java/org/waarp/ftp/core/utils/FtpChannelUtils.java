@@ -380,7 +380,7 @@ public class FtpChannelUtils implements Runnable {
 	 * 
 	 * @param configuration
 	 */
-	private static void exit(FtpConfiguration configuration) {
+	protected static void exit(FtpConfiguration configuration) {
 		configuration.isShutdown = true;
 		long delay = configuration.TIMEOUTCON;
 		logger.warn("Exit: Give a delay of " + delay + " ms");
@@ -389,17 +389,16 @@ public class FtpChannelUtils implements Runnable {
 			Thread.sleep(delay);
 		} catch (InterruptedException e) {
 		}
-		configuration.getFtpInternalConfiguration()
-				.getGlobalTrafficShapingHandler().releaseExternalResources();
 		Timer timer = new Timer(true);
 		FtpTimerTask timerTask = new FtpTimerTask(FtpTimerTask.TIMER_CONTROL);
 		timerTask.configuration = configuration;
-		timer.schedule(timerTask, configuration.TIMEOUTCON / 2);
+		timer.schedule(timerTask, configuration.TIMEOUTCON / 4);
+		configuration.getFtpInternalConfiguration()
+				.getGlobalTrafficShapingHandler().releaseExternalResources();
 		configuration.releaseResources();
 		logger.info("Exit Shutdown Data");
 		terminateDataChannels(configuration);
 		logger.warn("Exit end of Data Shutdown");
-		stopLogger();
 	}
 
 	/**
@@ -408,7 +407,8 @@ public class FtpChannelUtils implements Runnable {
 	 * @param configuration
 	 */
 	public static void teminateServer(FtpConfiguration configuration) {
-		FtpSignalHandler.terminate(true, configuration);
+		((FtpShutdownHook) FtpShutdownHook.shutdownHook).configuration = configuration;
+		FtpShutdownHook.terminate(false);
 	}
 
 	/**

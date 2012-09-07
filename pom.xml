@@ -83,7 +83,7 @@
     <dependency>
       <groupId>Waarp</groupId>
       <artifactId>WaarpCommon</artifactId>
-      <version>1.2.6</version>
+      <version>1.2.7</version>
     </dependency>
   </dependencies>
   <properties>
