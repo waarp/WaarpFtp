@@ -48,8 +48,12 @@ public class FilesystemBasedFtpRestart extends FilesystemBasedRestartImpl {
 				dataConn.getMode() == TransferMode.STREAM &&
 				dataConn.getType() != TransferType.LENGTH) {
 			long newposition = 0;
+			String []args = marker.split(" ");
 			try {
-				newposition = Long.parseLong(marker);
+				newposition = Long.parseLong(args[0]);
+				if (args.length > 1) {
+					limit = Integer.parseInt(args[1]);
+				}
 			} catch (NumberFormatException e) {
 				throw new Reply502Exception(
 						"Marker must be length in byte as a position");
