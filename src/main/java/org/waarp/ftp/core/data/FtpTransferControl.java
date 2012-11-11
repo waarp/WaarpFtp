@@ -596,8 +596,8 @@ public class FtpTransferControl {
 		if (session.getDataConn().isStreamFile()) {
 			endDataConnection();
 		}
-		session.setReplyCode(ReplyCode.REPLY_250_REQUESTED_FILE_ACTION_OKAY,
-				"Transfer correctly finished for " +
+		session.setReplyCode(ReplyCode.REPLY_226_CLOSING_DATA_CONNECTION,
+				"Transfer complete for " +
 						(current == null ? "Unknown command" : current
 								.toString()));
 		if (current != null) {

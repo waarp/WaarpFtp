@@ -43,7 +43,7 @@ public class MLST extends AbstractCommand {
 		}
 		String message = getSession().getDir().fileFull(path, false);
 		getSession().setReplyCode(
-				ReplyCode.REPLY_250_REQUESTED_FILE_ACTION_OKAY, message);
+				ReplyCode.REPLY_226_CLOSING_DATA_CONNECTION, message);
 	}
 
 }
