@@ -187,7 +187,7 @@ public abstract class BusinessHandler {
 		builder.append('\n');
 		builder.append(FtpCommandCode.REST.name());
 		builder.append(" STREAM\n");
-		builder.append("UTF8");
+		//builder.append("UTF8");
 		return builder.toString();
 	}
 

@@ -29,6 +29,9 @@ import org.waarp.ftp.core.session.FtpSession;
  * 
  */
 public class NOOP extends AbstractCommand {
+	public NOOP() {
+		super();
+	}
 	/**
 	 * Constructor for empty NOOP
 	 * 
