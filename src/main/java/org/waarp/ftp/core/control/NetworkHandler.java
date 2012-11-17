@@ -213,6 +213,11 @@ public class NetworkHandler extends SimpleChannelHandler {
 							e2.getMessage(), e.getChannel());
 		} else if (e1 instanceof ClosedChannelException) {
 			logger.debug("Connection closed before end");
+			session.setExitErrorCode("Internal error: disconnect");
+			if (channel.isConnected()) {
+				writeFinalAnswer();
+			}
+			return;
 		} else if (e1 instanceof CommandAbstractException) {
 			// FTP Exception: not close if not necessary
 			CommandAbstractException e2 = (CommandAbstractException) e1;
@@ -274,7 +279,7 @@ public class NetworkHandler extends SimpleChannelHandler {
 			String message = (String) e.getMessage();
 			AbstractCommand command = FtpCommandCode.getFromLine(
 					getFtpSession(), message);
-			logger.debug("RECVMSG: {} CMD: {}", message, command.getCommand());
+			logger.debug("RECVMSG: {} CMD: {} "+command.getCode(), message, command.getCommand());
 			// First check if the command is an ABORT, QUIT or STAT
 			if (!FtpCommandCode.isSpecialCommand(command.getCode())) {
 				// Now check if a transfer is on its way: illegal to have at
@@ -314,6 +319,8 @@ public class NetworkHandler extends SimpleChannelHandler {
 				return;
 			}
 			if (session.getCurrentCommand().isNextCommandValid(command)) {
+				logger.debug("Previous: "+session.getCurrentCommand().getCode()+
+						" Next: "+command.getCode());
 				session.setNextCommand(command);
 				messageRunAnswer();
 			} else {
@@ -356,6 +363,7 @@ public class NetworkHandler extends SimpleChannelHandler {
 	 * @return the ChannelFuture associated with the write
 	 */
 	public ChannelFuture writeIntermediateAnswer() {
+		logger.debug("Answer: "+session.getAnswer());
 		return Channels.write(controlChannel, session.getAnswer());
 	}
 
@@ -373,8 +381,7 @@ public class NetworkHandler extends SimpleChannelHandler {
 	 */
 	private void messageRunAnswer() {
 		boolean error = false;
-		logger.debug("Code: "+session.getCurrentCommand().getCode()+
-				" ["+FtpCommandCode.AUTH+":"+FtpCommandCode.CCC+"]");
+		logger.debug("Code: "+session.getCurrentCommand().getCode());
 		try {
 			businessHandler.beforeRunCommand();
 			AbstractCommand command = session.getCurrentCommand();
@@ -388,7 +395,7 @@ public class NetworkHandler extends SimpleChannelHandler {
 			businessHandler.afterRunCommandKo(e);
 		}
 		logger.debug("Code: "+session.getCurrentCommand().getCode()+
-				" ["+FtpCommandCode.AUTH+":"+FtpCommandCode.CCC+"]");
+				" ["+session.getReplyCode()+"]");
 		if (error || session.getCurrentCommand().getCode() != FtpCommandCode.INTERNALSHUTDOWN) {
 			if (session.getCurrentCommand().getCode() == FtpCommandCode.AUTH ||
 					session.getCurrentCommand().getCode() == FtpCommandCode.CCC) {

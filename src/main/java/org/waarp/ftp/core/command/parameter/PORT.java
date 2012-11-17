@@ -22,6 +22,8 @@ import java.net.InetSocketAddress;
 
 import org.waarp.common.command.ReplyCode;
 import org.waarp.common.command.exception.Reply501Exception;
+import org.waarp.common.logging.WaarpInternalLogger;
+import org.waarp.common.logging.WaarpInternalLoggerFactory;
 import org.waarp.ftp.core.command.AbstractCommand;
 import org.waarp.ftp.core.utils.FtpChannelUtils;
 
@@ -32,7 +34,12 @@ import org.waarp.ftp.core.utils.FtpChannelUtils;
  * 
  */
 public class PORT extends AbstractCommand {
-
+	/**
+	 * Internal Logger
+	 */
+	private static final WaarpInternalLogger logger = WaarpInternalLoggerFactory
+			.getLogger(PORT.class);
+	
 	/*
 	 * (non-Javadoc)
 	 * @see org.waarp.ftp.core.command.AbstractCommand#exec()
@@ -62,6 +69,7 @@ public class PORT extends AbstractCommand {
 				.getRemoteAddress().getAddress();
 		if (!remoteAddress.equals(trueRemoteAddress)) {
 			// ERROR
+			logger.warn("Given Inet Address {} mismatchs actual client Address {}", remoteAddress, trueRemoteAddress);
 			throw new Reply501Exception(
 					"Given Inet Address mismatchs actual client Address");
 		}
