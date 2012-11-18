@@ -606,8 +606,8 @@
 <a class="jxr_linenumber" name="596" href="#596">596</a> 		<strong class="jxr_keyword">if</strong> (session.getDataConn().isStreamFile()) {
 <a class="jxr_linenumber" name="597" href="#597">597</a> 			endDataConnection();
 <a class="jxr_linenumber" name="598" href="#598">598</a> 		}
-<a class="jxr_linenumber" name="599" href="#599">599</a> 		session.setReplyCode(ReplyCode.REPLY_250_REQUESTED_FILE_ACTION_OKAY,
-<a class="jxr_linenumber" name="600" href="#600">600</a> 				<span class="jxr_string">"Transfer correctly finished for "</span> +
+<a class="jxr_linenumber" name="599" href="#599">599</a> 		session.setReplyCode(ReplyCode.REPLY_226_CLOSING_DATA_CONNECTION,
+<a class="jxr_linenumber" name="600" href="#600">600</a> 				<span class="jxr_string">"Transfer complete for "</span> +
 <a class="jxr_linenumber" name="601" href="#601">601</a> 						(current == <strong class="jxr_keyword">null</strong> ? <span class="jxr_string">"Unknown command"</span> : current
 <a class="jxr_linenumber" name="602" href="#602">602</a> 								.toString()));
 <a class="jxr_linenumber" name="603" href="#603">603</a> 		<strong class="jxr_keyword">if</strong> (current != <strong class="jxr_keyword">null</strong>) {
