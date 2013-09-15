@@ -19,15 +19,16 @@ Packages
  * [![View on GitHub](http://waarp.github.com/Waarp/res/waarp/octocaticon.png "View on GitHub")](https://www.github.com/waarp/WaarpExec) [Waarp Exec](http://waarp.github.com/WaarpExec)
  * [![View on GitHub](http://waarp.github.com/Waarp/res/waarp/octocaticon.png "View on GitHub")](https://www.github.com/waarp/WaarpSnmp) [Waarp Snmp](http://waarp.github.com/WaarpSnmp)
  * [![View on GitHub](http://waarp.github.com/Waarp/res/waarp/octocaticon.png "View on GitHub")](https://www.github.com/waarp/WaarpXmlEditor) [Waarp XmlEditor](http://waarp.github.com/WaarpXmlEditor)
- * [![View on GitHub](http://waarp.github.com/Waarp/res/waarp/octocaticon.png "View on GitHub")](https://www.github.com/waarp/WaarpPassword) [Waarp Password](http://waarp.github.com/WaarpPassword)
+ * [![View on GitHub](http://waarp.github.com/Waarp/res/waarp/octocaticon.png "View on GitHub")](https://www.github.com/waarp/WaarpPassword) [Waarp Password Gui](http://waarp.github.com/WaarpPassword)
  * [![View on GitHub](http://waarp.github.com/Waarp/res/waarp/octocaticon.png "View on GitHub")](https://www.github.com/waarp/WaarpR66) [Waarp R66](http://waarp.github.com/WaarpR66)
+ * [![View on GitHub](http://waarp.github.com/Waarp/res/waarp/octocaticon.png "View on GitHub")](https://www.github.com/waarp/WaarpProxyR66) [Waarp Proxy R66](http://waarp.github.com/WaarpProxyR66)
  * [![View on GitHub](http://waarp.github.com/Waarp/res/waarp/octocaticon.png "View on GitHub")](https://www.github.com/waarp/WaarpR66Gui) [Waarp R66 Client GUI](http://waarp.github.com/WaarpR66Gui)
  * [![View on GitHub](http://waarp.github.com/Waarp/res/waarp/octocaticon.png "View on GitHub")](https://www.github.com/waarp/WaarpFtp) [Waarp FTP](http://waarp.github.com/WaarpFtp)
+ * [![View on GitHub](http://waarp.github.com/Waarp/res/waarp/octocaticon.png "View on GitHub")](https://www.github.com/waarp/WaarpGatewayKernel) [Waarp Gateway Kernel (R66 linked)](http://waarp.github.com/WaarpGatewayKernel)
  * [![View on GitHub](http://waarp.github.com/Waarp/res/waarp/octocaticon.png "View on GitHub")](https://www.github.com/waarp/WaarpGatewayFtp) [Waarp Gateway FTP (R66 linked)](http://waarp.github.com/WaarpGatewayFtp)
- * [![View on GitHub](http://waarp.github.com/Waarp/res/waarp/octocaticon.png "View on GitHub")](https://www.github.com/waarp/WaarpGatewayKernel) [Waarp Gateway Kernel used by Waarp Gateway various implementations](http://waarp.github.com/WaarpGatewayKernel)
- * [![View on GitHub](http://waarp.github.com/Waarp/res/waarp/octocaticon.png "View on GitHub")](https://www.github.com/waarp/WaarpFtpClient) [Waarp FTP Client for Waarp R66 and Waarp Gateway](http://waarp.github.com/WaarpFtpClient)
- * [![View on GitHub](http://waarp.github.com/Waarp/res/waarp/octocaticon.png "View on GitHub")](https://www.github.com/waarp/WaarpProxyR66) [Waarp Proxy/Reverse Proxy for R66 protocol](http://waarp.github.com/WaarpProxyR66)
- * [![View on GitHub](http://waarp.github.com/Waarp/res/waarp/octocaticon.png "View on GitHub")](https://www.github.com/waarp/WaarpThrift) [Waarp Thrift interface for R66](http://waarp.github.com/WaarpThrift)
+ * [![View on GitHub](http://waarp.github.com/Waarp/res/waarp/octocaticon.png "View on GitHub")](https://www.github.com/waarp/WaarpThrift) [Waarp Thrift (R66 linked)](http://waarp.github.com/WaarpThrift)
+ * [![View on GitHub](http://waarp.github.com/Waarp/res/waarp/octocaticon.png "View on GitHub")](https://www.github.com/waarp/WaarpFtpClient) [Waarp FTP Client (Gateway and R66 linked)](http://waarp.github.com/WaarpFtpClient)
+ * [![View on GitHub](http://waarp.github.com/Waarp/res/waarp/octocaticon.png "View on GitHub")](https://www.github.com/waarp/WaarpAdministrator) [Waarp WaarpAdministrator (R66 linked)](http://waarp.github.com/WaarpAdministrator)
  
 Support
 -------
