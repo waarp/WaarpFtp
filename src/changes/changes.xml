@@ -5,7 +5,15 @@
 		<author email="waarp1 at free.fr">Frederic Bregier</author>
 	</properties>
 	<body>
-		<release version="1.1.4" date="2012-09-08" description="Fix release">
+		<release version="1.1.6" date="2013-09-15" description="Fix release">
+			<action dev="Frederic Bregier" type="fix">Upgrade jar dependencies</action>
+		</release>
+	    <release version="1.1.5" date="2012-11-17" description="Fix release">
+			<action dev="Frederic Bregier" type="fix">Fix NOOP</action>
+			<action dev="Frederic Bregier" type="fix">Fix correct code for Transfer</action>
+			<action dev="Frederic Bregier" type="fix">Upgrade jar dependencies</action>
+		</release>
+	    <release version="1.1.4" date="2012-09-08" description="Fix release">
 			<action dev="Frederic Bregier" type="fix">Fix DetectionUtils and System Property</action>
 			<action dev="Frederic Bregier" type="add">Add support for extended RESTart with limit added (offset size) to allow a frame of a file to be transmitted</action>
 			<action dev="Frederic Bregier" type="fix">Upgrade jar dependencies</action>
