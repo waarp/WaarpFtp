@@ -33,6 +33,7 @@ import org.jboss.netty.handler.ssl.SslHandler;
 import org.waarp.common.command.ReplyCode;
 import org.waarp.common.crypto.ssl.WaarpSecureKeyStore;
 import org.waarp.common.crypto.ssl.WaarpSslContextFactory;
+import org.waarp.common.utility.WaarpStringUtils;
 import org.waarp.ftp.core.config.FtpConfiguration;
 import org.waarp.ftp.core.control.BusinessHandler;
 import org.waarp.ftp.core.control.FtpControlStringDecoder;
@@ -48,16 +49,16 @@ public class FtpsPipelineFactory implements ChannelPipelineFactory {
 	 * CRLF, CRNUL, LF delimiters
 	 */
 	private static final ChannelBuffer[] delimiter = new ChannelBuffer[] {
-			ChannelBuffers.wrappedBuffer(ReplyCode.CRLF.getBytes()),
-			ChannelBuffers.wrappedBuffer(ReplyCode.CRNUL.getBytes()),
-			ChannelBuffers.wrappedBuffer(ReplyCode.LF.getBytes()) };
+			ChannelBuffers.wrappedBuffer(ReplyCode.CRLF.getBytes(WaarpStringUtils.UTF8)),
+			ChannelBuffers.wrappedBuffer(ReplyCode.CRNUL.getBytes(WaarpStringUtils.UTF8)),
+			ChannelBuffers.wrappedBuffer(ReplyCode.LF.getBytes(WaarpStringUtils.UTF8)) };
 
 	private static final FtpControlStringDecoder ftpControlStringDecoder = new FtpControlStringDecoder();
 
 	private static final FtpControlStringEncoder ftpControlStringEncoder = new FtpControlStringEncoder();
 
 	public static WaarpSslContextFactory waarpSslContextFactory;
-	public static WaarpSecureKeyStore WaarpSecureKeyStore;
+	public static WaarpSecureKeyStore waarpSecureKeyStore;
 	private final ExecutorService executorService;
 
 	/**

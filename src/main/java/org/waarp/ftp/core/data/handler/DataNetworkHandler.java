@@ -42,6 +42,7 @@ import org.waarp.common.exception.InvalidArgumentException;
 import org.waarp.common.file.DataBlock;
 import org.waarp.common.logging.WaarpInternalLogger;
 import org.waarp.common.logging.WaarpInternalLoggerFactory;
+import org.waarp.common.utility.WaarpStringUtils;
 import org.waarp.ftp.core.config.FtpConfiguration;
 import org.waarp.ftp.core.config.FtpInternalConfiguration;
 import org.waarp.ftp.core.control.NetworkHandler;
@@ -388,7 +389,7 @@ public class DataNetworkHandler extends SimpleChannelHandler {
 	public boolean writeMessage(String message) {
 		DataBlock dataBlock = new DataBlock();
 		dataBlock.setEOF(true);
-		ChannelBuffer buffer = ChannelBuffers.wrappedBuffer(message.getBytes());
+		ChannelBuffer buffer = ChannelBuffers.wrappedBuffer(message.getBytes(WaarpStringUtils.UTF8));
 		dataBlock.setBlock(buffer);
 		ChannelFuture future;
 		try {

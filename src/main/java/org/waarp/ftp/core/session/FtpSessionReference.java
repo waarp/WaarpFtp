@@ -49,7 +49,7 @@ public class FtpSessionReference {
 	 * @author Frederic Bregier
 	 * 
 	 */
-	public class P2PAddress {
+	public static class P2PAddress {
 		/**
 		 * Remote Inet Address (no port)
 		 */

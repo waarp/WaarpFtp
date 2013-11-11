@@ -110,7 +110,7 @@ public class FileBasedSslConfiguration {
 		if (value == null || (value.isEmpty())) {
 			logger.info("Unable to find Key Path");
 			try {
-				FtpsPipelineFactory.WaarpSecureKeyStore =
+				FtpsPipelineFactory.waarpSecureKeyStore =
 						new WaarpSecureKeyStore("secret", "secret");
 			} catch (CryptoException e) {
 				logger.error("Bad SecureKeyStore construction");
@@ -143,7 +143,7 @@ public class FileBasedSslConfiguration {
 				return false;
 			}
 			try {
-				FtpsPipelineFactory.WaarpSecureKeyStore =
+				FtpsPipelineFactory.waarpSecureKeyStore =
 						new WaarpSecureKeyStore(keypath, keystorepass,
 								keypass);
 			} catch (CryptoException e) {
@@ -156,7 +156,7 @@ public class FileBasedSslConfiguration {
 		value = hashConfig.get(XML_PATH_TRUSTKEYPATH);
 		if (value == null || (value.isEmpty())) {
 			logger.info("Unable to find TRUST Key Path");
-			FtpsPipelineFactory.WaarpSecureKeyStore.initEmptyTrustStore();
+			FtpsPipelineFactory.waarpSecureKeyStore.initEmptyTrustStore();
 		} else {
 			String keypath = value.getString();
 			if ((keypath == null) || (keypath.length() == 0)) {
@@ -179,7 +179,7 @@ public class FileBasedSslConfiguration {
 				useClientAuthent = value.getBoolean();
 			}
 			try {
-				FtpsPipelineFactory.WaarpSecureKeyStore.initTrustStore(keypath,
+				FtpsPipelineFactory.waarpSecureKeyStore.initTrustStore(keypath,
 						keystorepass, useClientAuthent);
 			} catch (CryptoException e) {
 				logger.error("Bad TrustKeyStore construction");
@@ -188,7 +188,7 @@ public class FileBasedSslConfiguration {
 		}
 		FtpsPipelineFactory.waarpSslContextFactory =
 				new WaarpSslContextFactory(
-						FtpsPipelineFactory.WaarpSecureKeyStore);
+						FtpsPipelineFactory.waarpSecureKeyStore);
 		return true;
 	}
 

@@ -17,6 +17,8 @@
  */
 package org.waarp.ftp.simpleimpl.config;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 /**
  * Circular Value used by passive connections to find the next valid port to propose to the client.
  * 
@@ -37,7 +39,7 @@ public class CircularIntValue {
 	/**
 	 * Current Value
 	 */
-	private Integer current;
+	private AtomicInteger current;
 
 	/**
 	 * Create a circular range of values
@@ -48,7 +50,7 @@ public class CircularIntValue {
 	public CircularIntValue(int min, int max) {
 		this.min = min;
 		this.max = max;
-		current = new Integer(this.min - 1);
+		current = new AtomicInteger(this.min - 1);
 	}
 
 	/**
@@ -58,12 +60,10 @@ public class CircularIntValue {
 	 */
 	public int getNext() {
 		synchronized (current) {
-			if (current >= max) {
-				current = min;
-			} else {
-				current++;
+			if (!current.compareAndSet(max, min)) {
+				current.incrementAndGet();
 			}
-			return current;
+			return current.get();
 		}
 	}
 }
