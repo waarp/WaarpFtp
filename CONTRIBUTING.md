@@ -14,6 +14,7 @@ How to proceed
 3. Make yours changes, test them, add some documentation.
 4. Commit your changes and push to your fork
 5. Submit a pull request.
+6. Sign the ICLA (Individual Contributor License Agreement) from here https://docs.google.com/forms/d/1TrCtk69Wb8tkr9Cl701oQ0nCiesZbNqdskMGj1C0x4Q/viewform
 
 
 General guidelines
