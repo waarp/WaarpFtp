@@ -178,7 +178,7 @@ public class FtpChannelUtils implements Runnable {
 		if (isIPV4) {
 			// IPV4
 			address = new byte[4];
-			String[] elements = infos[1].split(".");
+			String[] elements = infos[1].split("\\.");
 			if (elements.length != 4) {
 				return null;
 			}

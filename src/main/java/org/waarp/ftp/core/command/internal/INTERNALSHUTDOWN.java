@@ -47,7 +47,7 @@ public class INTERNALSHUTDOWN extends AbstractCommand {
 	 * @author Frederic Bregier
 	 * 
 	 */
-	private class ShutdownChannelFutureListener implements
+	private static class ShutdownChannelFutureListener implements
 			ChannelFutureListener {
 
 		private final FtpConfiguration configuration;

@@ -25,6 +25,7 @@ import org.jboss.netty.channel.Channels;
 import org.jboss.netty.handler.codec.frame.DelimiterBasedFrameDecoder;
 import org.jboss.netty.handler.execution.ExecutionHandler;
 import org.waarp.common.command.ReplyCode;
+import org.waarp.common.utility.WaarpStringUtils;
 import org.waarp.ftp.core.config.FtpConfiguration;
 import org.waarp.ftp.core.session.FtpSession;
 
@@ -39,9 +40,9 @@ public class FtpPipelineFactory implements ChannelPipelineFactory {
 	 * CRLF, CRNUL, LF delimiters
 	 */
 	private static final ChannelBuffer[] delimiter = new ChannelBuffer[] {
-			ChannelBuffers.wrappedBuffer(ReplyCode.CRLF.getBytes()),
-			ChannelBuffers.wrappedBuffer(ReplyCode.CRNUL.getBytes()),
-			ChannelBuffers.wrappedBuffer(ReplyCode.LF.getBytes()) };
+			ChannelBuffers.wrappedBuffer(ReplyCode.CRLF.getBytes(WaarpStringUtils.UTF8)),
+			ChannelBuffers.wrappedBuffer(ReplyCode.CRNUL.getBytes(WaarpStringUtils.UTF8)),
+			ChannelBuffers.wrappedBuffer(ReplyCode.LF.getBytes(WaarpStringUtils.UTF8)) };
 
 	private static final FtpControlStringDecoder ftpControlStringDecoder = new FtpControlStringDecoder();
 

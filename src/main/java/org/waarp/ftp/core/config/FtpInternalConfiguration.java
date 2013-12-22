@@ -225,7 +225,7 @@ public class FtpInternalConfiguration {
 	 * @author Frederic Bregier org.waarp.ftp.core.config BindAddress
 	 * 
 	 */
-	public class BindAddress {
+	public static class BindAddress {
 		/**
 		 * Parent passive channel
 		 */
