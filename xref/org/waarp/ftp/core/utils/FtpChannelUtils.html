@@ -188,7 +188,7 @@
 <a class="jxr_linenumber" name="178" href="#178">178</a> 		<strong class="jxr_keyword">if</strong> (isIPV4) {
 <a class="jxr_linenumber" name="179" href="#179">179</a> 			<em class="jxr_comment">// IPV4</em>
 <a class="jxr_linenumber" name="180" href="#180">180</a> 			address = <strong class="jxr_keyword">new</strong> byte[4];
-<a class="jxr_linenumber" name="181" href="#181">181</a> 			String[] elements = infos[1].split(<span class="jxr_string">"."</span>);
+<a class="jxr_linenumber" name="181" href="#181">181</a> 			String[] elements = infos[1].split(<span class="jxr_string">"&#92;&#92;."</span>);
 <a class="jxr_linenumber" name="182" href="#182">182</a> 			<strong class="jxr_keyword">if</strong> (elements.length != 4) {
 <a class="jxr_linenumber" name="183" href="#183">183</a> 				<strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">null</strong>;
 <a class="jxr_linenumber" name="184" href="#184">184</a> 			}
