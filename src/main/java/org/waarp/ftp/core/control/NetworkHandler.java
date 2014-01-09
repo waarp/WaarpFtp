@@ -421,8 +421,7 @@ public class NetworkHandler extends SimpleChannelHandler {
 					sslHandler =
 							FtpsPipelineFactory.waarpSslContextFactory.initPipelineFactory(true,
 									FtpsPipelineFactory.waarpSslContextFactory.needClientAuthentication(),
-							false, 
-							getFtpSession().getConfiguration().getFtpInternalConfiguration().getWorker());
+							false);
 					controlChannel.getPipeline().addFirst("SSL", sslHandler);
 				}
 				controlChannel.setReadable(true);

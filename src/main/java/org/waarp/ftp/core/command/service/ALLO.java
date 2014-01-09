@@ -50,7 +50,7 @@ public class ALLO extends AbstractCommand {
 					args[0]);
 		}
 		long free = getSession().getDir().getFreeSpace();
-		if (free != -1 && free < size) {
+		if (free > 0 && free < size) {
 			throw new Reply452Exception("Not enough space left");
 		}
 		if (free == -1) {

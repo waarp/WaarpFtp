@@ -367,7 +367,7 @@ public class FtpInternalConfiguration {
 		serverBootstrap = new ServerBootstrap(getCommandChannelFactory());
 		if (usingNativeSsl) {
 			serverBootstrap.setPipelineFactory(new FtpsPipelineFactory(
-				configuration.businessHandler, configuration, execWorker));
+				configuration.businessHandler, configuration));
 		} else {
 			serverBootstrap.setPipelineFactory(new FtpPipelineFactory(
 					configuration.businessHandler, configuration));

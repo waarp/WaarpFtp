@@ -90,8 +90,7 @@ public class SslDataNetworkHandler extends DataNetworkHandler {
 				FtpsPipelineFactory.waarpSslContextFactory.initPipelineFactory(true,
 						FtpsPipelineFactory.waarpSslContextFactory.needClientAuthentication(),
 						false, FtpChannelUtils.getRemoteInetSocketAddress(session.getControlChannel()).getAddress().getHostAddress(),
-						FtpChannelUtils.getRemoteInetSocketAddress(session.getControlChannel()).getPort(),
-						configuration.getFtpInternalConfiguration().getWorker());
+						FtpChannelUtils.getRemoteInetSocketAddress(session.getControlChannel()).getPort());
 		channel.getPipeline().addFirst("ssl", sslHandler);
 		channel.setReadable(true);
 		// Get the SslHandler and begin handshake ASAP.
