@@ -90,7 +90,7 @@ public class FtpsPipelineFactory implements ChannelPipelineFactory {
 		// Server: no renegotiation still, but possible clientAuthent
 		SslHandler handler = waarpSslContextFactory.initPipelineFactory(true,
 				waarpSslContextFactory.needClientAuthentication(),
-				false);
+				true);
 		// NO since we need to inform through SNMP: handler.setIssueHandshake(true);
 		pipeline.addLast("ssl", handler);
 
