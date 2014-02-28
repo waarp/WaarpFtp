@@ -431,38 +431,37 @@
 <a class="jxr_linenumber" name="421" href="#421">421</a> 					sslHandler =
 <a class="jxr_linenumber" name="422" href="#422">422</a> 							FtpsPipelineFactory.waarpSslContextFactory.initPipelineFactory(<strong class="jxr_keyword">true</strong>,
 <a class="jxr_linenumber" name="423" href="#423">423</a> 									FtpsPipelineFactory.waarpSslContextFactory.needClientAuthentication(),
-<a class="jxr_linenumber" name="424" href="#424">424</a> 							false, 
-<a class="jxr_linenumber" name="425" href="#425">425</a> 							getFtpSession().getConfiguration().getFtpInternalConfiguration().getWorker());
-<a class="jxr_linenumber" name="426" href="#426">426</a> 					controlChannel.getPipeline().addFirst(<span class="jxr_string">"SSL"</span>, sslHandler);
-<a class="jxr_linenumber" name="427" href="#427">427</a> 				}
-<a class="jxr_linenumber" name="428" href="#428">428</a> 				controlChannel.setReadable(<strong class="jxr_keyword">true</strong>);
-<a class="jxr_linenumber" name="429" href="#429">429</a> 				ChannelFuture handshakeFuture;
-<a class="jxr_linenumber" name="430" href="#430">430</a> 				handshakeFuture = ((SslHandler) sslHandler).handshake();
-<a class="jxr_linenumber" name="431" href="#431">431</a> 				handshakeFuture.addListener(<strong class="jxr_keyword">new</strong> ChannelFutureListener() {
-<a class="jxr_linenumber" name="432" href="#432">432</a> 					<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> operationComplete(ChannelFuture future)
-<a class="jxr_linenumber" name="433" href="#433">433</a> 							<strong class="jxr_keyword">throws</strong> Exception {
-<a class="jxr_linenumber" name="434" href="#434">434</a> 						logger.debug(<span class="jxr_string">"Handshake: "</span> + future.isSuccess(), future.getCause());
-<a class="jxr_linenumber" name="435" href="#435">435</a> 						<strong class="jxr_keyword">if</strong> (!future.isSuccess()) {
-<a class="jxr_linenumber" name="436" href="#436">436</a> 							String error2 = future.getCause() != <strong class="jxr_keyword">null</strong> ?
-<a class="jxr_linenumber" name="437" href="#437">437</a> 									future.getCause().getMessage() : <span class="jxr_string">"During Handshake"</span>;
-<a class="jxr_linenumber" name="438" href="#438">438</a> 							callForSnmp(<span class="jxr_string">"SSL Connection Error"</span>, error2);
-<a class="jxr_linenumber" name="439" href="#439">439</a> 							future.getChannel().close();
-<a class="jxr_linenumber" name="440" href="#440">440</a> 						} <strong class="jxr_keyword">else</strong> {
-<a class="jxr_linenumber" name="441" href="#441">441</a> 							session.setSsl(<strong class="jxr_keyword">true</strong>);
-<a class="jxr_linenumber" name="442" href="#442">442</a> 						}
-<a class="jxr_linenumber" name="443" href="#443">443</a> 					}
-<a class="jxr_linenumber" name="444" href="#444">444</a> 				});
-<a class="jxr_linenumber" name="445" href="#445">445</a> 			} <strong class="jxr_keyword">else</strong> <strong class="jxr_keyword">if</strong> (session.getCurrentCommand().getCode() == FtpCommandCode.CCC) {
-<a class="jxr_linenumber" name="446" href="#446">446</a> 				logger.debug(<span class="jxr_string">"SSL to be removed from pipeline"</span>);
-<a class="jxr_linenumber" name="447" href="#447">447</a> 				<em class="jxr_comment">// remove the SSL support</em>
-<a class="jxr_linenumber" name="448" href="#448">448</a> 				WaarpSslUtility.removingSslHandler(controlChannel);
-<a class="jxr_linenumber" name="449" href="#449">449</a> 			}
-<a class="jxr_linenumber" name="450" href="#450">450</a> 		}
-<a class="jxr_linenumber" name="451" href="#451">451</a> 		<strong class="jxr_keyword">if</strong> (! controlChannel.isReadable()) {
-<a class="jxr_linenumber" name="452" href="#452">452</a> 			controlChannel.setReadable(<strong class="jxr_keyword">true</strong>);
-<a class="jxr_linenumber" name="453" href="#453">453</a> 		}
-<a class="jxr_linenumber" name="454" href="#454">454</a> 	}
-<a class="jxr_linenumber" name="455" href="#455">455</a> }
+<a class="jxr_linenumber" name="424" href="#424">424</a> 							false);
+<a class="jxr_linenumber" name="425" href="#425">425</a> 					controlChannel.getPipeline().addFirst(<span class="jxr_string">"SSL"</span>, sslHandler);
+<a class="jxr_linenumber" name="426" href="#426">426</a> 				}
+<a class="jxr_linenumber" name="427" href="#427">427</a> 				controlChannel.setReadable(<strong class="jxr_keyword">true</strong>);
+<a class="jxr_linenumber" name="428" href="#428">428</a> 				ChannelFuture handshakeFuture;
+<a class="jxr_linenumber" name="429" href="#429">429</a> 				handshakeFuture = ((SslHandler) sslHandler).handshake();
+<a class="jxr_linenumber" name="430" href="#430">430</a> 				handshakeFuture.addListener(<strong class="jxr_keyword">new</strong> ChannelFutureListener() {
+<a class="jxr_linenumber" name="431" href="#431">431</a> 					<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> operationComplete(ChannelFuture future)
+<a class="jxr_linenumber" name="432" href="#432">432</a> 							<strong class="jxr_keyword">throws</strong> Exception {
+<a class="jxr_linenumber" name="433" href="#433">433</a> 						logger.debug(<span class="jxr_string">"Handshake: "</span> + future.isSuccess(), future.getCause());
+<a class="jxr_linenumber" name="434" href="#434">434</a> 						<strong class="jxr_keyword">if</strong> (!future.isSuccess()) {
+<a class="jxr_linenumber" name="435" href="#435">435</a> 							String error2 = future.getCause() != <strong class="jxr_keyword">null</strong> ?
+<a class="jxr_linenumber" name="436" href="#436">436</a> 									future.getCause().getMessage() : <span class="jxr_string">"During Handshake"</span>;
+<a class="jxr_linenumber" name="437" href="#437">437</a> 							callForSnmp(<span class="jxr_string">"SSL Connection Error"</span>, error2);
+<a class="jxr_linenumber" name="438" href="#438">438</a> 							future.getChannel().close();
+<a class="jxr_linenumber" name="439" href="#439">439</a> 						} <strong class="jxr_keyword">else</strong> {
+<a class="jxr_linenumber" name="440" href="#440">440</a> 							session.setSsl(<strong class="jxr_keyword">true</strong>);
+<a class="jxr_linenumber" name="441" href="#441">441</a> 						}
+<a class="jxr_linenumber" name="442" href="#442">442</a> 					}
+<a class="jxr_linenumber" name="443" href="#443">443</a> 				});
+<a class="jxr_linenumber" name="444" href="#444">444</a> 			} <strong class="jxr_keyword">else</strong> <strong class="jxr_keyword">if</strong> (session.getCurrentCommand().getCode() == FtpCommandCode.CCC) {
+<a class="jxr_linenumber" name="445" href="#445">445</a> 				logger.debug(<span class="jxr_string">"SSL to be removed from pipeline"</span>);
+<a class="jxr_linenumber" name="446" href="#446">446</a> 				<em class="jxr_comment">// remove the SSL support</em>
+<a class="jxr_linenumber" name="447" href="#447">447</a> 				WaarpSslUtility.removingSslHandler(controlChannel);
+<a class="jxr_linenumber" name="448" href="#448">448</a> 			}
+<a class="jxr_linenumber" name="449" href="#449">449</a> 		}
+<a class="jxr_linenumber" name="450" href="#450">450</a> 		<strong class="jxr_keyword">if</strong> (! controlChannel.isReadable()) {
+<a class="jxr_linenumber" name="451" href="#451">451</a> 			controlChannel.setReadable(<strong class="jxr_keyword">true</strong>);
+<a class="jxr_linenumber" name="452" href="#452">452</a> 		}
+<a class="jxr_linenumber" name="453" href="#453">453</a> 	}
+<a class="jxr_linenumber" name="454" href="#454">454</a> }
 </pre>
 <hr/><div id="footer">This page was automatically generated by <a href="http://maven.apache.org/">Maven</a></div></body>
 </html>

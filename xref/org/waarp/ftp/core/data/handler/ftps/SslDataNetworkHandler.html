@@ -31,11 +31,11 @@
 <a class="jxr_linenumber" name="21" href="#21">21</a>  <strong class="jxr_keyword">package</strong> org.waarp.ftp.core.data.handler.ftps;
 <a class="jxr_linenumber" name="22" href="#22">22</a>  
 <a class="jxr_linenumber" name="23" href="#23">23</a>  <strong class="jxr_keyword">import</strong> org.jboss.netty.channel.Channel;
-<a class="jxr_linenumber" name="24" href="#24">24</a>  <strong class="jxr_keyword">import</strong> org.jboss.netty.channel.ChannelFuture;
-<a class="jxr_linenumber" name="25" href="#25">25</a>  <strong class="jxr_keyword">import</strong> org.jboss.netty.channel.ChannelHandlerContext;
-<a class="jxr_linenumber" name="26" href="#26">26</a>  <strong class="jxr_keyword">import</strong> org.jboss.netty.channel.ChannelStateEvent;
-<a class="jxr_linenumber" name="27" href="#27">27</a>  <strong class="jxr_keyword">import</strong> org.jboss.netty.channel.Channels;
-<a class="jxr_linenumber" name="28" href="#28">28</a>  <strong class="jxr_keyword">import</strong> org.jboss.netty.handler.ssl.SslHandler;
+<a class="jxr_linenumber" name="24" href="#24">24</a>  <strong class="jxr_keyword">import</strong> org.jboss.netty.channel.ChannelHandlerContext;
+<a class="jxr_linenumber" name="25" href="#25">25</a>  <strong class="jxr_keyword">import</strong> org.jboss.netty.channel.ChannelStateEvent;
+<a class="jxr_linenumber" name="26" href="#26">26</a>  <strong class="jxr_keyword">import</strong> org.jboss.netty.channel.Channels;
+<a class="jxr_linenumber" name="27" href="#27">27</a>  <strong class="jxr_keyword">import</strong> org.jboss.netty.handler.ssl.SslHandler;
+<a class="jxr_linenumber" name="28" href="#28">28</a>  <strong class="jxr_keyword">import</strong> org.waarp.common.crypto.ssl.WaarpSslUtility;
 <a class="jxr_linenumber" name="29" href="#29">29</a>  <strong class="jxr_keyword">import</strong> org.waarp.common.logging.WaarpInternalLogger;
 <a class="jxr_linenumber" name="30" href="#30">30</a>  <strong class="jxr_keyword">import</strong> org.waarp.common.logging.WaarpInternalLoggerFactory;
 <a class="jxr_linenumber" name="31" href="#31">31</a>  <strong class="jxr_keyword">import</strong> org.waarp.ftp.core.config.FtpConfiguration;
@@ -99,23 +99,33 @@
 <a class="jxr_linenumber" name="89" href="#89">89</a>  		SslHandler sslHandler = 
 <a class="jxr_linenumber" name="90" href="#90">90</a>  				FtpsPipelineFactory.waarpSslContextFactory.initPipelineFactory(<strong class="jxr_keyword">true</strong>,
 <a class="jxr_linenumber" name="91" href="#91">91</a>  						FtpsPipelineFactory.waarpSslContextFactory.needClientAuthentication(),
-<a class="jxr_linenumber" name="92" href="#92">92</a>  						false, FtpChannelUtils.getRemoteInetSocketAddress(session.getControlChannel()).getAddress().getHostAddress(),
-<a class="jxr_linenumber" name="93" href="#93">93</a>  						FtpChannelUtils.getRemoteInetSocketAddress(session.getControlChannel()).getPort(),
-<a class="jxr_linenumber" name="94" href="#94">94</a>  						configuration.getFtpInternalConfiguration().getWorker());
-<a class="jxr_linenumber" name="95" href="#95">95</a>  		channel.getPipeline().addFirst(<span class="jxr_string">"ssl"</span>, sslHandler);
-<a class="jxr_linenumber" name="96" href="#96">96</a>  		channel.setReadable(<strong class="jxr_keyword">true</strong>);
-<a class="jxr_linenumber" name="97" href="#97">97</a>  		<em class="jxr_comment">// Get the SslHandler and begin handshake ASAP.</em>
-<a class="jxr_linenumber" name="98" href="#98">98</a>  		logger.debug(<span class="jxr_string">"SSL found but need handshake"</span>);
-<a class="jxr_linenumber" name="99" href="#99">99</a>  		ChannelFuture handshakeFuture = sslHandler.handshake();
-<a class="jxr_linenumber" name="100" href="#100">100</a> 		<strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="101" href="#101">101</a> 			handshakeFuture.await();
-<a class="jxr_linenumber" name="102" href="#102">102</a> 		} <strong class="jxr_keyword">catch</strong> (InterruptedException e1) {
-<a class="jxr_linenumber" name="103" href="#103">103</a> 		}
-<a class="jxr_linenumber" name="104" href="#104">104</a> 		<strong class="jxr_keyword">super</strong>.channelConnected(ctx, e);
-<a class="jxr_linenumber" name="105" href="#105">105</a> 		logger.debug(<span class="jxr_string">"End of initialization of SSL and data channel"</span>);
-<a class="jxr_linenumber" name="106" href="#106">106</a> 	}
-<a class="jxr_linenumber" name="107" href="#107">107</a> 
-<a class="jxr_linenumber" name="108" href="#108">108</a> }
+<a class="jxr_linenumber" name="92" href="#92">92</a>  						<strong class="jxr_keyword">true</strong>, FtpChannelUtils.getRemoteInetSocketAddress(session.getControlChannel()).getAddress().getHostAddress(),
+<a class="jxr_linenumber" name="93" href="#93">93</a>  						FtpChannelUtils.getRemoteInetSocketAddress(session.getControlChannel()).getPort());
+<a class="jxr_linenumber" name="94" href="#94">94</a>  		channel.getPipeline().addFirst(<span class="jxr_string">"ssl"</span>, sslHandler);
+<a class="jxr_linenumber" name="95" href="#95">95</a>  		channel.setReadable(<strong class="jxr_keyword">true</strong>);
+<a class="jxr_linenumber" name="96" href="#96">96</a>  		<em class="jxr_comment">// Get the SslHandler and begin handshake ASAP.</em>
+<a class="jxr_linenumber" name="97" href="#97">97</a>  		logger.debug(<span class="jxr_string">"SSL found but need handshake"</span>);
+<a class="jxr_linenumber" name="98" href="#98">98</a>  		<strong class="jxr_keyword">if</strong> (sslHandler.isIssueHandshake()) {
+<a class="jxr_linenumber" name="99" href="#99">99</a>  			<em class="jxr_comment">// client side</em>
+<a class="jxr_linenumber" name="100" href="#100">100</a> 			WaarpSslUtility.setStatusSslConnectedChannel(ctx.getChannel(), <strong class="jxr_keyword">true</strong>);
+<a class="jxr_linenumber" name="101" href="#101">101</a> 		} <strong class="jxr_keyword">else</strong> {
+<a class="jxr_linenumber" name="102" href="#102">102</a> 			<em class="jxr_comment">// server side</em>
+<a class="jxr_linenumber" name="103" href="#103">103</a> 			<em class="jxr_comment">// Get the SslHandler and begin handshake ASAP.</em>
+<a class="jxr_linenumber" name="104" href="#104">104</a> 			<em class="jxr_comment">// Get notified when SSL handshake is done.</em>
+<a class="jxr_linenumber" name="105" href="#105">105</a> 			<strong class="jxr_keyword">if</strong> (! WaarpSslUtility.runHandshake(ctx.getChannel())) {
+<a class="jxr_linenumber" name="106" href="#106">106</a> 				callForSnmp(<span class="jxr_string">"SSL Connection Error"</span>, <span class="jxr_string">"During Ssl Handshake"</span>);
+<a class="jxr_linenumber" name="107" href="#107">107</a> 			}
+<a class="jxr_linenumber" name="108" href="#108">108</a> 		}
+<a class="jxr_linenumber" name="109" href="#109">109</a> 		<em class="jxr_comment">/*<em class="jxr_comment">ChannelFuture handshakeFuture = sslHandler.handshake();</em></em>
+<a class="jxr_linenumber" name="110" href="#110">110</a> <em class="jxr_comment">		try {</em>
+<a class="jxr_linenumber" name="111" href="#111">111</a> <em class="jxr_comment">			handshakeFuture.await();</em>
+<a class="jxr_linenumber" name="112" href="#112">112</a> <em class="jxr_comment">		} catch (InterruptedException e1) {</em>
+<a class="jxr_linenumber" name="113" href="#113">113</a> <em class="jxr_comment">		}*/</em>
+<a class="jxr_linenumber" name="114" href="#114">114</a> 		<strong class="jxr_keyword">super</strong>.channelConnected(ctx, e);
+<a class="jxr_linenumber" name="115" href="#115">115</a> 		logger.debug(<span class="jxr_string">"End of initialization of SSL and data channel"</span>);
+<a class="jxr_linenumber" name="116" href="#116">116</a> 	}
+<a class="jxr_linenumber" name="117" href="#117">117</a> 
+<a class="jxr_linenumber" name="118" href="#118">118</a> }
 </pre>
 <hr/><div id="footer">This page was automatically generated by <a href="http://maven.apache.org/">Maven</a></div></body>
 </html>

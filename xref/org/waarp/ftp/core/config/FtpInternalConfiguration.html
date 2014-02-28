@@ -129,7 +129,7 @@
 <a class="jxr_linenumber" name="119" href="#119">119</a> 	<em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="120" href="#120">120</a> <em class="jxr_javadoccomment">	 * ThreadPoolExecutor for command</em>
 <a class="jxr_linenumber" name="121" href="#121">121</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="122" href="#122">122</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">volatile</strong> OrderedMemoryAwareThreadPoolExecutor pipelineExecutor = <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="122" href="#122">122</a> 	<strong class="jxr_keyword">private</strong> OrderedMemoryAwareThreadPoolExecutor pipelineExecutor = <strong class="jxr_keyword">null</strong>;
 <a class="jxr_linenumber" name="123" href="#123">123</a> 
 <a class="jxr_linenumber" name="124" href="#124">124</a> 	<em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="125" href="#125">125</a> <em class="jxr_javadoccomment">	 * Bootstrap for Command server</em>
@@ -183,7 +183,7 @@
 <a class="jxr_linenumber" name="173" href="#173">173</a> 	<em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="174" href="#174">174</a> <em class="jxr_javadoccomment">	 * ThreadPoolExecutor for data</em>
 <a class="jxr_linenumber" name="175" href="#175">175</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="176" href="#176">176</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">volatile</strong> OrderedMemoryAwareThreadPoolExecutor pipelineDataExecutor = <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="176" href="#176">176</a> 	<strong class="jxr_keyword">private</strong> OrderedMemoryAwareThreadPoolExecutor pipelineDataExecutor = <strong class="jxr_keyword">null</strong>;
 <a class="jxr_linenumber" name="177" href="#177">177</a> 
 <a class="jxr_linenumber" name="178" href="#178">178</a> 	<em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="179" href="#179">179</a> <em class="jxr_javadoccomment">	 * ClientBootStrap for Active connections</em>
@@ -205,7 +205,7 @@
 <a class="jxr_linenumber" name="195" href="#195">195</a> 	<em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="196" href="#196">196</a> <em class="jxr_javadoccomment">	 * Global TrafficCounter (set from global configuration)</em>
 <a class="jxr_linenumber" name="197" href="#197">197</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="198" href="#198">198</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">volatile</strong> GlobalTrafficShapingHandler globalTrafficShapingHandler = <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="198" href="#198">198</a> 	<strong class="jxr_keyword">private</strong> GlobalTrafficShapingHandler globalTrafficShapingHandler = <strong class="jxr_keyword">null</strong>;
 <a class="jxr_linenumber" name="199" href="#199">199</a> 
 <a class="jxr_linenumber" name="200" href="#200">200</a> 	<em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="201" href="#201">201</a> <em class="jxr_javadoccomment">	 * ObjectSizeEstimator</em>
@@ -377,7 +377,7 @@
 <a class="jxr_linenumber" name="367" href="#367">367</a> 		serverBootstrap = <strong class="jxr_keyword">new</strong> ServerBootstrap(getCommandChannelFactory());
 <a class="jxr_linenumber" name="368" href="#368">368</a> 		<strong class="jxr_keyword">if</strong> (usingNativeSsl) {
 <a class="jxr_linenumber" name="369" href="#369">369</a> 			serverBootstrap.setPipelineFactory(<strong class="jxr_keyword">new</strong> <a href="../../../../../org/waarp/ftp/core/control/ftps/FtpsPipelineFactory.html">FtpsPipelineFactory</a>(
-<a class="jxr_linenumber" name="370" href="#370">370</a> 				configuration.businessHandler, configuration, execWorker));
+<a class="jxr_linenumber" name="370" href="#370">370</a> 				configuration.businessHandler, configuration));
 <a class="jxr_linenumber" name="371" href="#371">371</a> 		} <strong class="jxr_keyword">else</strong> {
 <a class="jxr_linenumber" name="372" href="#372">372</a> 			serverBootstrap.setPipelineFactory(<strong class="jxr_keyword">new</strong> <a href="../../../../../org/waarp/ftp/core/control/FtpPipelineFactory.html">FtpPipelineFactory</a>(
 <a class="jxr_linenumber" name="373" href="#373">373</a> 					configuration.businessHandler, configuration));
