@@ -20,8 +20,6 @@
  */
 package org.waarp.ftp.core.control.ftps;
 
-import java.util.concurrent.ExecutorService;
-
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
 import org.jboss.netty.channel.ChannelPipeline;
@@ -59,7 +57,6 @@ public class FtpsPipelineFactory implements ChannelPipelineFactory {
 
 	public static WaarpSslContextFactory waarpSslContextFactory;
 	public static WaarpSecureKeyStore waarpSecureKeyStore;
-	private final ExecutorService executorService;
 
 	/**
 	 * Business Handler Class if any (Target Mode only)
@@ -76,13 +73,11 @@ public class FtpsPipelineFactory implements ChannelPipelineFactory {
 	 * 
 	 * @param businessHandler
 	 * @param configuration
-	 * @param executor
 	 */
 	public FtpsPipelineFactory(Class<? extends BusinessHandler> businessHandler,
-			FtpConfiguration configuration, ExecutorService executor) {
+			FtpConfiguration configuration) {
 		this.businessHandler = businessHandler;
 		this.configuration = configuration;
-		this.executorService = executor;
 	}
 
 	/**
@@ -95,7 +90,7 @@ public class FtpsPipelineFactory implements ChannelPipelineFactory {
 		// Server: no renegotiation still, but possible clientAuthent
 		SslHandler handler = waarpSslContextFactory.initPipelineFactory(true,
 				waarpSslContextFactory.needClientAuthentication(),
-				false, executorService);
+				true);
 		// NO since we need to inform through SNMP: handler.setIssueHandshake(true);
 		pipeline.addLast("ssl", handler);
 

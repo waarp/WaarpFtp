@@ -119,7 +119,7 @@ public class FtpInternalConfiguration {
 	/**
 	 * ThreadPoolExecutor for command
 	 */
-	private volatile OrderedMemoryAwareThreadPoolExecutor pipelineExecutor = null;
+	private OrderedMemoryAwareThreadPoolExecutor pipelineExecutor = null;
 
 	/**
 	 * Bootstrap for Command server
@@ -173,7 +173,7 @@ public class FtpInternalConfiguration {
 	/**
 	 * ThreadPoolExecutor for data
 	 */
-	private volatile OrderedMemoryAwareThreadPoolExecutor pipelineDataExecutor = null;
+	private OrderedMemoryAwareThreadPoolExecutor pipelineDataExecutor = null;
 
 	/**
 	 * ClientBootStrap for Active connections
@@ -195,7 +195,7 @@ public class FtpInternalConfiguration {
 	/**
 	 * Global TrafficCounter (set from global configuration)
 	 */
-	private volatile GlobalTrafficShapingHandler globalTrafficShapingHandler = null;
+	private GlobalTrafficShapingHandler globalTrafficShapingHandler = null;
 
 	/**
 	 * ObjectSizeEstimator
@@ -367,7 +367,7 @@ public class FtpInternalConfiguration {
 		serverBootstrap = new ServerBootstrap(getCommandChannelFactory());
 		if (usingNativeSsl) {
 			serverBootstrap.setPipelineFactory(new FtpsPipelineFactory(
-				configuration.businessHandler, configuration, execWorker));
+				configuration.businessHandler, configuration));
 		} else {
 			serverBootstrap.setPipelineFactory(new FtpPipelineFactory(
 					configuration.businessHandler, configuration));

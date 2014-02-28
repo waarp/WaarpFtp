@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <artifactId>WaarpFtp</artifactId>
   <name>WaarpFtp</name>
-  <version>1.1.7</version>
+  <version>1.1.8</version>
   <packaging>pom</packaging>
   <description>
 	  The Waarp FTP project is a proposal of a new fresh FTP server implementation,
@@ -65,25 +65,25 @@
   <dependency>
       <groupId>ch.qos.logback</groupId>
       <artifactId>logback-access</artifactId>
-      <version>1.0.13</version>
+      <version>1.1.1</version>
       <optional>true</optional>
     </dependency>
     <dependency>
       <groupId>ch.qos.logback</groupId>
       <artifactId>logback-classic</artifactId>
-      <version>1.0.13</version>
+      <version>1.1.1</version>
       <optional>true</optional>
     </dependency>
     <dependency>
       <groupId>ch.qos.logback</groupId>
       <artifactId>logback-core</artifactId>
-      <version>1.0.13</version>
+      <version>1.1.1</version>
       <optional>true</optional>
     </dependency>
     <dependency>
       <groupId>Waarp</groupId>
       <artifactId>WaarpCommon</artifactId>
-      <version>1.2.20</version>
+      <version>1.2.22</version>
     </dependency>
   </dependencies>
   <properties>

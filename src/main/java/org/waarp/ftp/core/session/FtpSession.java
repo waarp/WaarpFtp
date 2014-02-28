@@ -261,7 +261,11 @@ public class FtpSession implements SessionInterface {
 	 */
 	public String getAnswer() {
 		if (answer == null) {
-			answer = replyCode.getMesg();
+			if (replyCode == null) {
+				answer = ReplyCode.REPLY_000_SPECIAL_NOSTATUS.getMesg();
+			} else {
+				answer = replyCode.getMesg();
+			}
 		}
 		return answer;
 	}

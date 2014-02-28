@@ -21,8 +21,10 @@
 package org.waarp.ftp.core.control.ftps;
 
 import org.jboss.netty.channel.Channel;
+import org.jboss.netty.channel.ChannelHandler;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.ChannelStateEvent;
+import org.jboss.netty.handler.ssl.SslHandler;
 import org.waarp.common.crypto.ssl.WaarpSslUtility;
 import org.waarp.common.logging.WaarpInternalLogger;
 import org.waarp.common.logging.WaarpInternalLoggerFactory;
@@ -70,8 +72,24 @@ public class SslNetworkHandler extends NetworkHandler {
 	public void channelConnected(ChannelHandlerContext ctx, ChannelStateEvent e) {
 		// Get the SslHandler in the current pipeline.
 		// We added it in NetworkSslServerPipelineFactory.
-		if (! WaarpSslUtility.runHandshake(e.getChannel())) {
-			callForSnmp("SSL Connection Error", "During Ssl Handshake");
+		// Get the SslHandler in the current pipeline.
+		// We added it in NetworkSslServerPipelineFactory.
+		final ChannelHandler handler = ctx.getPipeline().getFirst();
+		if (handler instanceof SslHandler) {
+			final SslHandler sslHandler = (SslHandler) handler;
+			if (sslHandler.isIssueHandshake()) {
+				// client side
+				WaarpSslUtility.setStatusSslConnectedChannel(ctx.getChannel(), true);
+			} else {
+				// server side
+				// Get the SslHandler and begin handshake ASAP.
+				// Get notified when SSL handshake is done.
+				if (! WaarpSslUtility.runHandshake(ctx.getChannel())) {
+					callForSnmp("SSL Connection Error", "During Ssl Handshake");
+				}
+			}				
+		} else {
+			logger.error("SSL Not found");
 		}
 		getFtpSession().setSsl(true);
 		super.channelConnected(ctx, e);
