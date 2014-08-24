@@ -22,35 +22,32 @@ import java.net.InetSocketAddress;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.ScheduledExecutorService;
 
-import org.jboss.netty.bootstrap.ClientBootstrap;
-import org.jboss.netty.bootstrap.ServerBootstrap;
-import org.jboss.netty.channel.Channel;
-import org.jboss.netty.channel.ChannelException;
-import org.jboss.netty.channel.ChannelFactory;
-import org.jboss.netty.channel.group.ChannelGroup;
-import org.jboss.netty.channel.group.DefaultChannelGroup;
-import org.jboss.netty.channel.socket.nio.NioClientSocketChannelFactory;
-import org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory;
-import org.jboss.netty.handler.execution.OrderedMemoryAwareThreadPoolExecutor;
-import org.jboss.netty.handler.traffic.ChannelTrafficShapingHandler;
-import org.jboss.netty.handler.traffic.GlobalTrafficShapingHandler;
-import org.jboss.netty.logging.InternalLoggerFactory;
-import org.jboss.netty.util.HashedWheelTimer;
-import org.jboss.netty.util.ObjectSizeEstimator;
-import org.jboss.netty.util.Timer;
+import io.netty.bootstrap.Bootstrap;
+import io.netty.bootstrap.ServerBootstrap;
+import io.netty.channel.Channel;
+import io.netty.channel.ChannelException;
+import io.netty.channel.EventLoopGroup;
+import io.netty.channel.group.ChannelGroup;
+import io.netty.channel.group.DefaultChannelGroup;
+import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.handler.traffic.ChannelTrafficShapingHandler;
+import io.netty.handler.traffic.GlobalTrafficShapingHandler;
+import io.netty.util.concurrent.EventExecutorGroup;
+
 import org.waarp.common.command.exception.Reply425Exception;
 import org.waarp.common.crypto.ssl.WaarpSslUtility;
-import org.waarp.common.file.DataBlockSizeEstimator;
-import org.waarp.common.logging.WaarpInternalLogger;
-import org.waarp.common.logging.WaarpInternalLoggerFactory;
+import org.waarp.common.logging.WaarpLogger;
+import org.waarp.common.logging.WaarpLoggerFactory;
 import org.waarp.common.utility.DetectionUtils;
+import org.waarp.common.utility.WaarpNettyUtil;
 import org.waarp.common.utility.WaarpThreadFactory;
-import org.waarp.ftp.core.control.FtpPipelineFactory;
-import org.waarp.ftp.core.control.ftps.FtpsPipelineFactory;
-import org.waarp.ftp.core.data.handler.FtpDataPipelineFactory;
-import org.waarp.ftp.core.data.handler.ftps.FtpsDataPipelineFactory;
+import org.waarp.ftp.core.control.FtpInitializer;
+import org.waarp.ftp.core.control.ftps.FtpsInitializer;
+import org.waarp.ftp.core.data.handler.FtpDataInitializer;
+import org.waarp.ftp.core.data.handler.ftps.FtpsDataInitializer;
+import org.waarp.ftp.core.exception.FtpNoConnectionException;
 import org.waarp.ftp.core.session.FtpSession;
 import org.waarp.ftp.core.session.FtpSessionReference;
 import org.waarp.ftp.core.utils.FtpChannelUtils;
@@ -67,8 +64,7 @@ public class FtpInternalConfiguration {
 	/**
 	 * Internal Logger
 	 */
-	private static final WaarpInternalLogger logger = WaarpInternalLoggerFactory
-			.getLogger(FtpInternalConfiguration.class);
+	private static final WaarpLogger logger = WaarpLoggerFactory.getLogger(FtpInternalConfiguration.class);
 
 	// Network Internals
 	/**
@@ -104,22 +100,12 @@ public class FtpInternalConfiguration {
 	/**
 	 * ExecutorService Boss
 	 */
-	private final ExecutorService execBoss = Executors.newCachedThreadPool();
+	private final EventLoopGroup execBoss;
 
 	/**
 	 * ExecutorService Worker
 	 */
-	private final ExecutorService execWorker = Executors.newCachedThreadPool();
-
-	/**
-	 * ChannelFactory for Command part
-	 */
-	private ChannelFactory commandChannelFactory = null;
-
-	/**
-	 * ThreadPoolExecutor for command
-	 */
-	private OrderedMemoryAwareThreadPoolExecutor pipelineExecutor = null;
+    private final EventLoopGroup execWorker;
 
 	/**
 	 * Bootstrap for Command server
@@ -134,36 +120,27 @@ public class FtpInternalConfiguration {
 	/**
 	 * ExecutorService Data Passive Boss
 	 */
-	private final ExecutorService execPassiveDataBoss = Executors
-			.newCachedThreadPool();
+	private final EventLoopGroup execPassiveDataBoss;
 
 	/**
 	 * ExecutorService Data Passive Worker
 	 */
-	private final ExecutorService execPassiveDataWorker = Executors
-			.newCachedThreadPool();
+    private final EventLoopGroup execPassiveDataWorker;
 
 	/**
-	 * ChannelFactory for Data Passive part
+	 * ExecutorService Command Event Loop
 	 */
-	private ChannelFactory dataPassiveChannelFactory = null;
+    private final EventLoopGroup execCommandEvent;
 
-	/**
-	 * ExecutorService Data Active Boss
-	 */
-	private final ExecutorService execActiveDataBoss = Executors
-			.newCachedThreadPool();
+    /**
+     * ExecutorService Data Event Loop
+     */
+    private final EventLoopGroup execDataEvent;
 
 	/**
 	 * ExecutorService Data Active Worker
 	 */
-	private final ExecutorService execActiveDataWorker = Executors
-			.newCachedThreadPool();
-
-	/**
-	 * ChannelFactory for Data Active part
-	 */
-	private ChannelFactory dataActiveChannelFactory = null;
+    private final EventLoopGroup execActiveDataWorker;
 
 	/**
 	 * FtpSession references used by Data Connection process
@@ -171,14 +148,9 @@ public class FtpInternalConfiguration {
 	private final FtpSessionReference ftpSessionReference = new FtpSessionReference();
 
 	/**
-	 * ThreadPoolExecutor for data
+	 * Bootstrap for Active connections
 	 */
-	private OrderedMemoryAwareThreadPoolExecutor pipelineDataExecutor = null;
-
-	/**
-	 * ClientBootStrap for Active connections
-	 */
-	private ClientBootstrap activeBootstrap = null;
+	private Bootstrap activeBootstrap = null;
 
 	/**
 	 * ServerBootStrap for Passive connections
@@ -186,21 +158,15 @@ public class FtpInternalConfiguration {
 	private ServerBootstrap passiveBootstrap = null;
 
 	/**
-	 * Timer for TrafficCounter
+	 * Scheduler for TrafficCounter
 	 */
-	private Timer timerTrafficCounter =
-			new HashedWheelTimer(new WaarpThreadFactory("TimerTrafficFtp"), 10,
-					TimeUnit.MILLISECONDS, 1024);
+	private ScheduledExecutorService executorService =
+	        Executors.newScheduledThreadPool(2, new WaarpThreadFactory("TimerTrafficFtp"));
 
 	/**
 	 * Global TrafficCounter (set from global configuration)
 	 */
 	private GlobalTrafficShapingHandler globalTrafficShapingHandler = null;
-
-	/**
-	 * ObjectSizeEstimator
-	 */
-	private ObjectSizeEstimator objectSizeEstimator = null;
 	
 	/**
 	 * Does the FTP will be SSL native based (990 989 port)
@@ -212,9 +178,9 @@ public class FtpInternalConfiguration {
 	 */
 	private boolean acceptAuthProt = false;
 	/**
-	 * ClientBootStrap for Active Ssl connections
+	 * Bootstrap for Active Ssl connections
 	 */
-	private ClientBootstrap activeSslBootstrap = null;
+	private Bootstrap activeSslBootstrap = null;
 
 	/**
 	 * ServerBootStrap for Passive Ssl connections
@@ -234,7 +200,7 @@ public class FtpInternalConfiguration {
 		/**
 		 * Number of binded Data connections
 		 */
-		public int nbBind = 0;
+		volatile public int nbBind = 0;
 
 		/**
 		 * Constructor
@@ -269,145 +235,93 @@ public class FtpInternalConfiguration {
 		ISUNIX = ! DetectionUtils.isWindows();
 		configuration.shutdownConfiguration.timeout = configuration.TIMEOUTCON;
 		new FtpShutdownHook(configuration.shutdownConfiguration, configuration);
+		execActiveDataWorker = new NioEventLoopGroup(configuration.CLIENT_THREAD);
+        execCommandEvent = new NioEventLoopGroup(configuration.CLIENT_THREAD);
+        execDataEvent = new NioEventLoopGroup(configuration.CLIENT_THREAD);
+        execBoss = new NioEventLoopGroup(configuration.SERVER_THREAD);
+        execWorker = new NioEventLoopGroup(configuration.SERVER_THREAD);
+        execPassiveDataBoss = new NioEventLoopGroup(configuration.SERVER_THREAD);
+        execPassiveDataWorker = new NioEventLoopGroup(configuration.SERVER_THREAD);
 	}
 
 	/**
 	 * Startup the server
+	 * @throws FtpNoConnectionException 
 	 * 
 	 */
-	public void serverStartup() {
-		InternalLoggerFactory.setDefaultFactory(InternalLoggerFactory
+	public void serverStartup() throws FtpNoConnectionException {
+		WaarpLoggerFactory.setDefaultFactory(WaarpLoggerFactory
 				.getDefaultFactory());
 		// Command
-		commandChannelGroup = new DefaultChannelGroup(configuration.fromClass
-				.getName());
-		commandChannelFactory = new NioServerSocketChannelFactory(execBoss,
-				execWorker, configuration.SERVER_THREAD);
+		commandChannelGroup = new DefaultChannelGroup(configuration.fromClass.getName(), execWorker.next());
 		// Data
-		dataChannelGroup = new DefaultChannelGroup(configuration.fromClass
-				.getName() +
-				".data");
-		dataPassiveChannelFactory = new NioServerSocketChannelFactory(
-				execPassiveDataBoss, execPassiveDataWorker,
-				configuration.SERVER_THREAD);
-		dataActiveChannelFactory = new NioClientSocketChannelFactory(
-				execActiveDataBoss, execActiveDataWorker, configuration.CLIENT_THREAD);
+		dataChannelGroup = new DefaultChannelGroup(configuration.fromClass.getName() + ".data", execWorker.next());
 
 		// Passive Data Connections
-		passiveBootstrap = new ServerBootstrap(dataPassiveChannelFactory);
+		passiveBootstrap = new ServerBootstrap();
+        WaarpNettyUtil.setServerBootstrap(passiveBootstrap, execPassiveDataBoss, execPassiveDataWorker, (int) configuration.TIMEOUTCON);
 		if (usingNativeSsl) {
-			passiveBootstrap.setPipelineFactory(new FtpsDataPipelineFactory(
+			passiveBootstrap.childHandler(new FtpsDataInitializer(
 				configuration.dataBusinessHandler, configuration, false));
 		} else {
-			passiveBootstrap.setPipelineFactory(new FtpDataPipelineFactory(
-					configuration.dataBusinessHandler, configuration, false));
+			passiveBootstrap.childHandler(new FtpDataInitializer(
+				configuration.dataBusinessHandler, configuration, false));
 		}
-		passiveBootstrap.setOption("connectTimeoutMillis",
-				configuration.TIMEOUTCON);
-		passiveBootstrap.setOption("reuseAddress", true);
-		passiveBootstrap.setOption("tcpNoDelay", true);
-		passiveBootstrap.setOption("child.connectTimeoutMillis",
-				configuration.TIMEOUTCON);
-		passiveBootstrap.setOption("child.tcpNoDelay", true);
-		passiveBootstrap.setOption("child.keepAlive", true);
-		passiveBootstrap.setOption("child.reuseAddress", true);
 		if (acceptAuthProt) {
-			passiveSslBootstrap = new ServerBootstrap(dataPassiveChannelFactory);
-			passiveSslBootstrap.setPipelineFactory(new FtpsDataPipelineFactory(
+			passiveSslBootstrap = new ServerBootstrap();
+			passiveSslBootstrap.childHandler(new FtpsDataInitializer(
 					configuration.dataBusinessHandler, configuration, false));				
-			passiveSslBootstrap.setOption("connectTimeoutMillis",
-					configuration.TIMEOUTCON);
-			passiveSslBootstrap.setOption("reuseAddress", true);
-			passiveSslBootstrap.setOption("tcpNoDelay", true);
-			passiveSslBootstrap.setOption("child.connectTimeoutMillis",
-					configuration.TIMEOUTCON);
-			passiveSslBootstrap.setOption("child.tcpNoDelay", true);
-			passiveSslBootstrap.setOption("child.keepAlive", true);
-			passiveSslBootstrap.setOption("child.reuseAddress", true);
+	        WaarpNettyUtil.setServerBootstrap(passiveSslBootstrap, execPassiveDataBoss, execPassiveDataWorker, (int) configuration.TIMEOUTCON);
 		} else {
 			passiveSslBootstrap = passiveBootstrap;
 		}
 		
 		// Active Data Connections
-		activeBootstrap = new ClientBootstrap(dataActiveChannelFactory);
+		activeBootstrap = new Bootstrap();
+        WaarpNettyUtil.setBootstrap(activeBootstrap, execActiveDataWorker, (int) configuration.TIMEOUTCON);
 		if (usingNativeSsl) {
-			activeBootstrap.setPipelineFactory(new FtpsDataPipelineFactory(
+			activeBootstrap.handler(new FtpsDataInitializer(
 				configuration.dataBusinessHandler, configuration, true));
 		} else {
-			activeBootstrap.setPipelineFactory(new FtpDataPipelineFactory(
+			activeBootstrap.handler(new FtpDataInitializer(
 					configuration.dataBusinessHandler, configuration, true));
 		}
-		activeBootstrap.setOption("connectTimeoutMillis",
-				configuration.TIMEOUTCON);
-		activeBootstrap.setOption("reuseAddress", true);
-		activeBootstrap.setOption("tcpNoDelay", true);
-		activeBootstrap.setOption("child.connectTimeoutMillis",
-				configuration.TIMEOUTCON);
-		activeBootstrap.setOption("child.tcpNoDelay", true);
-		activeBootstrap.setOption("child.keepAlive", true);
-		activeBootstrap.setOption("child.reuseAddress", true);
 		if (acceptAuthProt) {
-			activeSslBootstrap = new ClientBootstrap(dataActiveChannelFactory);
-			activeSslBootstrap.setPipelineFactory(new FtpsDataPipelineFactory(
+			activeSslBootstrap = new Bootstrap();
+			activeSslBootstrap.handler(new FtpsDataInitializer(
 					configuration.dataBusinessHandler, configuration, true));
-			activeSslBootstrap.setOption("connectTimeoutMillis",
-					configuration.TIMEOUTCON);
-			activeSslBootstrap.setOption("reuseAddress", true);
-			activeSslBootstrap.setOption("tcpNoDelay", true);
-			activeSslBootstrap.setOption("child.connectTimeoutMillis",
-					configuration.TIMEOUTCON);
-			activeSslBootstrap.setOption("child.tcpNoDelay", true);
-			activeSslBootstrap.setOption("child.keepAlive", true);
-			activeSslBootstrap.setOption("child.reuseAddress", true);
+	        WaarpNettyUtil.setBootstrap(activeSslBootstrap, execActiveDataWorker, (int) configuration.TIMEOUTCON);
 		} else {
 			activeSslBootstrap = activeBootstrap;
 		}
 
 		// Main Command server
-		serverBootstrap = new ServerBootstrap(getCommandChannelFactory());
+		serverBootstrap = new ServerBootstrap();
+        WaarpNettyUtil.setServerBootstrap(serverBootstrap, execBoss, execWorker, (int) configuration.TIMEOUTCON);
 		if (usingNativeSsl) {
-			serverBootstrap.setPipelineFactory(new FtpsPipelineFactory(
+			serverBootstrap.childHandler(new FtpsInitializer(
 				configuration.businessHandler, configuration));
 		} else {
-			serverBootstrap.setPipelineFactory(new FtpPipelineFactory(
-					configuration.businessHandler, configuration));
+			serverBootstrap.childHandler(new FtpInitializer(
+				configuration.businessHandler, configuration));
 		}
-		serverBootstrap.setOption("child.tcpNoDelay", true);
-		serverBootstrap.setOption("child.keepAlive", true);
-		serverBootstrap.setOption("child.reuseAddress", true);
-		serverBootstrap.setOption("child.connectTimeoutMillis",
-				configuration.TIMEOUTCON);
-		serverBootstrap.setOption("tcpNoDelay", true);
-		serverBootstrap.setOption("reuseAddress", true);
-		serverBootstrap.setOption("connectTimeoutMillis",
-				configuration.TIMEOUTCON);
 
-		FtpChannelUtils.addCommandChannel(serverBootstrap
-				.bind(new InetSocketAddress(configuration.getServerPort())),
-				configuration);
+		try {
+            FtpChannelUtils.addCommandChannel(serverBootstrap.bind(
+                    new InetSocketAddress(configuration.getServerPort())).sync().channel(),
+            		configuration);
+        } catch (InterruptedException e) {
+            throw new FtpNoConnectionException("Can't initiate the FTP server", e);
+        }
 
-		// Init Shutdown Hool handler
+		// Init Shutdown Hook handler
 		configuration.shutdownConfiguration.timeout = configuration.TIMEOUTCON;
 		FtpShutdownHook.addShutdownHook();
 		// Factory for TrafficShapingHandler
-		objectSizeEstimator = new DataBlockSizeEstimator();
-		globalTrafficShapingHandler = new GlobalTrafficShapingHandler(
-				objectSizeEstimator, timerTrafficCounter, configuration
-						.getServerGlobalWriteLimit(), configuration
-						.getServerGlobalReadLimit(), configuration
-						.getDelayLimit());
-		pipelineExecutor = new OrderedMemoryAwareThreadPoolExecutor(
-				configuration.CLIENT_THREAD,
-				configuration.maxGlobalMemory / 40,
-				configuration.maxGlobalMemory / 4, 1000,
-				TimeUnit.MILLISECONDS, objectSizeEstimator,
-				new WaarpThreadFactory("CommandExecutor"));
-		pipelineDataExecutor = new OrderedMemoryAwareThreadPoolExecutor(
-				configuration.CLIENT_THREAD,
-				configuration.maxGlobalMemory / 10,
-				configuration.maxGlobalMemory, 1000,
-				TimeUnit.MILLISECONDS, objectSizeEstimator,
-				new WaarpThreadFactory("DataExecutor"));
+		globalTrafficShapingHandler = new FtpGlobalTrafficShapingHandler(executorService, 
+		        configuration.getServerGlobalWriteLimit(), 
+		        configuration.getServerGlobalReadLimit(), 
+		        configuration.getDelayLimit());
 	}
 
 	/**
@@ -491,16 +405,21 @@ public class FtpInternalConfiguration {
 				Channel parentChannel = null;
 				try {
 					if (ssl) {
-						parentChannel = passiveSslBootstrap.bind(address);
+						parentChannel = passiveSslBootstrap.bind(address).await().sync().channel();
 					} else {
-						parentChannel = passiveBootstrap.bind(address);
+						parentChannel = passiveBootstrap.bind(address).await().sync().channel();
 					}
 				} catch (ChannelException e) {
 					logger.warn("Cannot open passive connection {}", e
 							.getMessage());
 					throw new Reply425Exception(
-							"Cannot open a Passive Connection ");
-				}
+							"Cannot open a Passive Connection");
+				} catch (InterruptedException e) {
+                    logger.warn("Cannot open passive connection {}", e
+                            .getMessage());
+                    throw new Reply425Exception(
+                            "Cannot open a Passive Connection");
+                }
 				bindAddress = new BindAddress(parentChannel);
 				FtpChannelUtils.addDataChannel(parentChannel, configuration);
 				hashBindPassiveDataConn.put(address, bindAddress);
@@ -547,40 +466,33 @@ public class FtpInternalConfiguration {
 	}
 
 	/**
-	 * Return the associated PipelineExecutor for Command Pipeline
+	 * Return the associated Executor for Command
 	 * 
-	 * @return the Command Pipeline Executor
+	 * @return the Command Executor
 	 */
-	public OrderedMemoryAwareThreadPoolExecutor getPipelineExecutor() {
-		return pipelineExecutor;
+	public EventExecutorGroup getExecutor() {
+		return execCommandEvent;
 	}
 
 	/**
-	 * Return the associated PipelineExecutor for Data Pipeline
+	 * Return the associated Executor for Data
 	 * 
-	 * @return the Data Pipeline Executor
+	 * @return the Data Executor
 	 */
-	public OrderedMemoryAwareThreadPoolExecutor getDataPipelineExecutor() {
-		return pipelineDataExecutor;
+	public EventExecutorGroup getDataExecutor() {
+		return execDataEvent;
 	}
 
 	/**
 	 * @param ssl
 	 * @return the ActiveBootstrap
 	 */
-	public ClientBootstrap getActiveBootstrap(boolean ssl) {
+	public Bootstrap getActiveBootstrap(boolean ssl) {
 		if (ssl) {
 			return activeSslBootstrap;
 		} else {
 			return activeBootstrap;
 		}
-	}
-
-	/**
-	 * @return the commandChannelFactory
-	 */
-	public ChannelFactory getCommandChannelFactory() {
-		return commandChannelFactory;
 	}
 
 	/**
@@ -591,31 +503,10 @@ public class FtpInternalConfiguration {
 	}
 
 	/**
-	 * @return the dataPassiveChannelFactory
-	 */
-	public ChannelFactory getDataPassiveChannelFactory() {
-		return dataPassiveChannelFactory;
-	}
-
-	/**
-	 * @return the dataActiveChannelFactory
-	 */
-	public ChannelFactory getDataActiveChannelFactory() {
-		return dataActiveChannelFactory;
-	}
-
-	/**
 	 * @return the dataChannelGroup
 	 */
 	public ChannelGroup getDataChannelGroup() {
 		return dataChannelGroup;
-	}
-
-	/**
-	 * @return the objectSizeEstimator
-	 */
-	public ObjectSizeEstimator getObjectSizeEstimator() {
-		return objectSizeEstimator;
 	}
 
 	/**
@@ -635,24 +526,22 @@ public class FtpInternalConfiguration {
 				configuration.getServerChannelReadLimit() == 0) {
 			return null;
 		}
-		return new ChannelTrafficShapingHandler(objectSizeEstimator,
-				timerTrafficCounter, configuration.getServerChannelWriteLimit(),
-				configuration.getServerChannelReadLimit(), configuration
-						.getDelayLimit());
+		return new FtpChannelTrafficShapingHandler(
+		        configuration.getServerChannelWriteLimit(),
+				configuration.getServerChannelReadLimit(), 
+				configuration.getDelayLimit());
 	}
 
 	public void releaseResources() {
 		WaarpSslUtility.forceCloseAllSslChannels();
-		execBoss.shutdown();
-		execWorker.shutdown();
-		execPassiveDataBoss.shutdown();
-		execPassiveDataWorker.shutdown();
-		execActiveDataBoss.shutdown();
-		execActiveDataWorker.shutdown();
-		timerTrafficCounter.stop();
-		activeBootstrap.releaseExternalResources();
-		passiveBootstrap.releaseExternalResources();
-		serverBootstrap.releaseExternalResources();
+		execBoss.shutdownGracefully();
+		execWorker.shutdownGracefully();
+		execPassiveDataBoss.shutdownGracefully();
+		execPassiveDataWorker.shutdownGracefully();
+		execActiveDataWorker.shutdownGracefully();
+		execDataEvent.shutdownGracefully();
+		execCommandEvent.shutdownGracefully();
+		executorService.shutdown();
 	}
 
 	public boolean isAcceptAuthProt() {

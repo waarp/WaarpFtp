@@ -17,11 +17,11 @@
  */
 package org.waarp.ftp.simpleimpl;
 
-import org.jboss.netty.logging.InternalLoggerFactory;
 import org.waarp.common.file.filesystembased.FilesystemBasedFileParameterImpl;
-import org.waarp.common.logging.WaarpInternalLogger;
-import org.waarp.common.logging.WaarpInternalLoggerFactory;
+import org.waarp.common.logging.WaarpLogger;
+import org.waarp.common.logging.WaarpLoggerFactory;
 import org.waarp.common.logging.WaarpSlf4JLoggerFactory;
+import org.waarp.ftp.core.exception.FtpNoConnectionException;
 import org.waarp.ftp.simpleimpl.config.FileBasedConfiguration;
 import org.waarp.ftp.simpleimpl.config.FileBasedSslConfiguration;
 import org.waarp.ftp.simpleimpl.control.SimpleBusinessHandler;
@@ -38,7 +38,7 @@ public class SimpleGatewaySslFtpServer {
 	/**
 	 * Internal Logger
 	 */
-	private static WaarpInternalLogger logger = null;
+	private static WaarpLogger logger = null;
 
 	/**
 	 * Take 2 simple XML files as configuration.
@@ -51,8 +51,8 @@ public class SimpleGatewaySslFtpServer {
 					SimpleGatewaySslFtpServer.class.getName() + " <config-file> <ssl-config-file> SSL|AUTH");
 			return;
 		}
-		InternalLoggerFactory.setDefaultFactory(new WaarpSlf4JLoggerFactory(null));
-		logger = WaarpInternalLoggerFactory
+		WaarpLoggerFactory.setDefaultFactory(new WaarpSlf4JLoggerFactory(null));
+		logger = WaarpLoggerFactory
 				.getLogger(SimpleGatewaySslFtpServer.class);
 		String config = args[0];
 		FileBasedConfiguration configuration = new FileBasedConfiguration(
@@ -81,8 +81,12 @@ public class SimpleGatewaySslFtpServer {
 			return;
 		}
 		// Start server.
-		configuration.serverStartup();
-		logger.warn("FTP started: Mode "+(configuration.getFtpInternalConfiguration().isUsingNativeSsl()?"SSL":"AUTH"));
+		try {
+            configuration.serverStartup();
+        } catch (FtpNoConnectionException e) {
+            logger.error("FTP not started: Mode "+(configuration.getFtpInternalConfiguration().isUsingNativeSsl()?"SSL":"AUTH"), e);
+        }
+		logger.info("FTP started: Mode "+(configuration.getFtpInternalConfiguration().isUsingNativeSsl()?"SSL":"AUTH"));
 	}
 
 }

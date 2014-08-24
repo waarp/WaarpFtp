@@ -17,10 +17,12 @@
  */
 package org.waarp.ftp.core.data.handler;
 
-import org.jboss.netty.channel.ChannelHandler.Sharable;
-import org.jboss.netty.channel.ChannelHandlerContext;
-import org.jboss.netty.channel.MessageEvent;
-import org.jboss.netty.channel.SimpleChannelHandler;
+import java.util.List;
+
+import io.netty.channel.ChannelHandler.Sharable;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.handler.codec.MessageToMessageCodec;
+
 import org.waarp.common.exception.InvalidArgumentException;
 import org.waarp.common.file.DataBlock;
 import org.waarp.ftp.core.command.FtpArgumentCode.TransferStructure;
@@ -37,7 +39,7 @@ import org.waarp.ftp.core.command.FtpArgumentCode.TransferStructure;
  * 
  */
 @Sharable
-public class FtpDataStructureCodec extends SimpleChannelHandler {
+public class FtpDataStructureCodec extends MessageToMessageCodec<DataBlock, DataBlock> {
 	/*
 	 * 3.1.2. DATA STRUCTURES In addition to different representation types, FTP allows the
 	 * structure of a file to be specified. Three file structures are defined in FTP:
@@ -122,26 +124,13 @@ public class FtpDataStructureCodec extends SimpleChannelHandler {
 		this.structure = structure;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * @see org.jboss.netty.channel.SimpleChannelHandler#writeRequested(org.jboss
-	 * .netty.channel.ChannelHandlerContext, org.jboss.netty.channel.MessageEvent)
-	 */
-	@Override
-	public void writeRequested(ChannelHandlerContext arg0, MessageEvent arg1)
-			throws Exception {
-		Object o = arg1.getMessage();
-		if (!(o instanceof DataBlock)) {
-			// Type unimplemented
-			throw new InvalidArgumentException("Wrong object received in " +
-					this.getClass().getName() + " codec " +
-					o.getClass().getName());
-		}
+    @Override
+    protected void encode(ChannelHandlerContext ctx, DataBlock msg, List<Object> out) throws Exception {
 		if (structure == TransferStructure.FILE) {
-			super.writeRequested(arg0, arg1);
+		    out.add(msg);
 			return;
 		} else if (structure == TransferStructure.RECORD) {
-			super.writeRequested(arg0, arg1);
+            out.add(msg);
 			return;
 		}
 		// Type unimplemented
@@ -149,26 +138,13 @@ public class FtpDataStructureCodec extends SimpleChannelHandler {
 				this.getClass().getName() + " codec " + structure.name());
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * @see org.jboss.netty.channel.SimpleChannelHandler#messageReceived(org.jboss
-	 * .netty.channel.ChannelHandlerContext, org.jboss.netty.channel.MessageEvent)
-	 */
-	@Override
-	public void messageReceived(ChannelHandlerContext arg0, MessageEvent arg1)
-			throws Exception {
-		Object o = arg1.getMessage();
-		if (!(o instanceof DataBlock)) {
-			// Type unimplemented
-			throw new InvalidArgumentException("Wrong object received in " +
-					this.getClass().getName() + " codec " +
-					o.getClass().getName());
-		}
+    @Override
+    protected void decode(ChannelHandlerContext ctx, DataBlock msg, List<Object> out) throws Exception {
 		if (structure == TransferStructure.FILE) {
-			super.messageReceived(arg0, arg1);
+            out.add(msg);
 			return;
 		} else if (structure == TransferStructure.RECORD) {
-			super.messageReceived(arg0, arg1);
+            out.add(msg);
 			return;
 		}
 		// Type unimplemented

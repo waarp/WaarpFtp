@@ -19,24 +19,22 @@ package org.waarp.ftp.core.data;
 
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-import org.jboss.netty.bootstrap.ClientBootstrap;
-import org.jboss.netty.channel.Channel;
-import org.jboss.netty.channel.ChannelFuture;
+import io.netty.bootstrap.Bootstrap;
+import io.netty.channel.Channel;
+import io.netty.channel.ChannelFuture;
 import org.waarp.common.command.ReplyCode;
 import org.waarp.common.command.exception.CommandAbstractException;
 import org.waarp.common.command.exception.Reply425Exception;
 import org.waarp.common.crypto.ssl.WaarpSslUtility;
 import org.waarp.common.future.WaarpChannelFuture;
 import org.waarp.common.future.WaarpFuture;
-import org.waarp.common.logging.WaarpInternalLogger;
-import org.waarp.common.logging.WaarpInternalLoggerFactory;
+import org.waarp.common.logging.WaarpLogger;
+import org.waarp.common.logging.WaarpLoggerFactory;
 import org.waarp.ftp.core.command.FtpCommandCode;
 import org.waarp.ftp.core.command.service.ABOR;
 import org.waarp.ftp.core.config.FtpConfiguration;
@@ -59,7 +57,7 @@ public class FtpTransferControl {
 	/**
 	 * Internal Logger
 	 */
-	private static final WaarpInternalLogger logger = WaarpInternalLoggerFactory
+	private static final WaarpLogger logger = WaarpLoggerFactory
 			.getLogger(FtpTransferControl.class);
 
 	/**
@@ -80,8 +78,7 @@ public class FtpTransferControl {
 	/**
 	 * Waiter for the dataChannel to be opened
 	 */
-	private volatile WaarpChannelFuture waitForOpenedDataChannel = new WaarpChannelFuture(
-			true);
+	private volatile WaarpChannelFuture waitForOpenedDataChannel = new WaarpChannelFuture(true);
 
 	/**
 	 * Waiter for the dataChannel to be closed
@@ -100,7 +97,7 @@ public class FtpTransferControl {
 	/**
 	 * Current command executed
 	 */
-	private FtpTransfer executingCommand = null;
+	private volatile FtpTransfer executingCommand = null;
 
 	/**
 	 * Thread pool for execution of transfer command
@@ -161,7 +158,7 @@ public class FtpTransferControl {
 	 */
 	public void setOpenedDataChannel(Channel channel,
 			DataNetworkHandler dataNetworkHandler) {
-		logger.debug("SetOpenedDataChannel: "+(channel != null ? channel.getRemoteAddress() : "no channel"));
+		logger.debug("SetOpenedDataChannel: "+(channel != null ? channel.remoteAddress() : "no channel"));
 		if (channel != null) {
 			session.getDataConn().setDataNetworkHandler(dataNetworkHandler);
 			waitForOpenedDataChannel.setChannel(channel);
@@ -184,7 +181,7 @@ public class FtpTransferControl {
 				session.getConfiguration().TIMEOUTCON + 1000,
 				TimeUnit.MILLISECONDS)) {
 			if (waitForOpenedDataChannel.isSuccess()) {
-				channel = waitForOpenedDataChannel.getChannel();
+				channel = waitForOpenedDataChannel.channel();
 			} else {
 				logger.warn("data connection is in error");
 			}
@@ -225,10 +222,10 @@ public class FtpTransferControl {
 		closedDataChannel = new WaarpFuture(true);
 		FtpDataAsyncConn dataAsyncConn = session.getDataConn();
 		if (!dataAsyncConn.isStreamFile()) {
-			// FIXME isConnected or isDNHReady ?
-			if (dataAsyncConn.isConnected()) {
+			// FIXME isActive or isDNHReady ?
+			if (dataAsyncConn.isActive()) {
 				// Already connected
-				// logger.debug("Connection already open");
+				logger.debug("Connection already open");
 				session.setReplyCode(
 						ReplyCode.REPLY_125_DATA_CONNECTION_ALREADY_OPEN,
 						dataAsyncConn.getType().name() +
@@ -237,7 +234,7 @@ public class FtpTransferControl {
 			}
 		} else {
 			// Stream, Data Connection should not be opened
-			if (dataAsyncConn.isConnected()) {
+			if (dataAsyncConn.isActive()) {
 				logger
 						.error("Connection already open but should not since in Stream mode");
 				setTransferAbortedFromInternal(false);
@@ -255,7 +252,7 @@ public class FtpTransferControl {
 						"No passive data connection prepared");
 			}
 			// Wait for the connection to be done by the client
-			// logger.debug("Passive mode standby");
+			logger.debug("Passive mode standby");
 			try {
 				dataChannel = waitForOpenedDataChannel();
 				dataAsyncConn.setNewOpenedDataChannel(dataChannel);
@@ -265,31 +262,25 @@ public class FtpTransferControl {
 				throw new Reply425Exception(
 						"Cannot open passive data connection");
 			}
-			// logger.debug("Passive mode connected");
+			logger.debug("Passive mode connected");
 		} else {
 			// Wait for the server to be connected to the client
-			InetAddress inetAddress = dataAsyncConn.getLocalAddress()
-					.getAddress();
-			InetSocketAddress inetSocketAddress = dataAsyncConn
-					.getRemoteAddress();
-			if (session.getConfiguration().getFtpInternalConfiguration()
-					.hasFtpSession(inetAddress, inetSocketAddress)) {
+			InetAddress inetAddress = dataAsyncConn.getLocalAddress().getAddress();
+			InetSocketAddress inetSocketAddress = dataAsyncConn.getRemoteAddress();
+			if (session.getConfiguration().getFtpInternalConfiguration().hasFtpSession(inetAddress, inetSocketAddress)) {
 				throw new Reply425Exception(
 						"Cannot open active data connection since remote address is already in use: "
 								+
 								inetSocketAddress);
 			}
-			// logger.debug("Active mode standby");
-			ClientBootstrap clientBootstrap = session.getConfiguration()
-					.getFtpInternalConfiguration().getActiveBootstrap(session.isDataSsl());
-			session.getConfiguration().setNewFtpSession(inetAddress,
-					inetSocketAddress, session);
+			logger.debug("Active mode standby");
+			Bootstrap bootstrap = session.getConfiguration().getFtpInternalConfiguration().getActiveBootstrap(session.isDataSsl());
+			session.getConfiguration().setNewFtpSession(inetAddress, inetSocketAddress, session);
 			// Set the session for the future dataChannel
 			String mylog = session.toString();
 			logger.debug("DataConn for: " + session.getCurrentCommand().getCommand() + " to "
 					+ inetSocketAddress.toString());
-			ChannelFuture future = clientBootstrap.connect(inetSocketAddress,
-					dataAsyncConn.getLocalAddress());
+			ChannelFuture future = bootstrap.connect(inetSocketAddress, dataAsyncConn.getLocalAddress());
 			try {
 				future.await();
 			} catch (InterruptedException e1) {
@@ -299,7 +290,7 @@ public class FtpTransferControl {
 						session.toString() +
 						"\nTrying connect to: " + inetSocketAddress.toString() +
 						"\nWas: " + mylog,
-						future.getCause());
+						future.cause());
 				// Cannot open connection
 				session.getConfiguration().delFtpSession(inetAddress,
 						inetSocketAddress);
@@ -350,18 +341,18 @@ public class FtpTransferControl {
 			executorService = Executors.newSingleThreadExecutor();
 		}
 		endOfCommand = new WaarpFuture(true);
+		/*
 		final ArrayList<Callable<Object>> tasks = new ArrayList<Callable<Object>>(1);
-		tasks.add(Executors.callable(new FtpTransferExecutor(session,
-				executingCommand)));
+		tasks.add(Executors.callable(new FtpTransferExecutor(session, executingCommand)));
 		try {
 			executorService.invokeAll(tasks);
 		} catch (InterruptedException e1) {
 		}
+		*/
 		// XXX TRY FIX TO IMPROVE
-		/*
+		
 		executorService.execute(new FtpTransferExecutor(session,
 			executingCommand));
-			*/
 		try {
 			commandFinishing.await();
 		} catch (InterruptedException e) {
@@ -400,7 +391,7 @@ public class FtpTransferControl {
 			String path) {
 		isExecutingCommandFinished = false;
 		commandFinishing = new WaarpFuture(true);
-		// logger.debug("setNewCommand: {}", command);
+		logger.debug("setNewCommand: {}", command);
 		setDataNetworkHandlerReady();
 		executingCommand = new FtpTransfer(command, list, path);
 		runExecutor();
@@ -485,16 +476,16 @@ public class FtpTransferControl {
 		}
 		isCheckAlreadyCalled = true;
 		FtpTransfer executedTransfer = getExecutingFtpTransfer();
-		// logger.debug("Check: command {}", executedTransfer.getCommand());
+		logger.debug("Check: command {}", executedTransfer.getCommand());
 		// DNH is ready and Transfer is running
 		if (FtpCommandCode.isListLikeCommand(executedTransfer.getCommand())) {
 			if (executedTransfer.getStatus()) {
 				// Special status for List Like command
-				// logger.debug("Check: List OK");
+				logger.debug("Check: List OK");
 				closeTransfer();
 				return false;
 			}
-			// logger.debug("Check: List Ko");
+			logger.debug("Check: List Ko");
 			abortTransfer();
 			return false;
 		} else if (FtpCommandCode.isRetrLikeCommand(executedTransfer
@@ -503,7 +494,7 @@ public class FtpTransferControl {
 			try {
 				file = executedTransfer.getFtpFile();
 			} catch (FtpNoFileException e) {
-				// logger.debug("Check: Retr no FtpFile for Retr");
+				logger.debug("Check: Retr no FtpFile for Retr");
 				abortTransfer();
 				return false;
 			}
@@ -639,7 +630,7 @@ public class FtpTransferControl {
 	 *            prepared
 	 */
 	public void setTransferAbortedFromInternal(boolean write) {
-		// logger.debug("Set transfer aborted internal {}", write);
+		logger.debug("Set transfer aborted internal {}", write);
 		abortTransfer();
 		if (write) {
 			session.getNetworkHandler().writeIntermediateAnswer();

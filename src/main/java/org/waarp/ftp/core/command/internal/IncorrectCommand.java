@@ -19,8 +19,8 @@ package org.waarp.ftp.core.command.internal;
 
 import org.waarp.common.command.ReplyCode;
 import org.waarp.common.command.exception.Reply503Exception;
-import org.waarp.common.logging.WaarpInternalLogger;
-import org.waarp.common.logging.WaarpInternalLoggerFactory;
+import org.waarp.common.logging.WaarpLogger;
+import org.waarp.common.logging.WaarpLoggerFactory;
 import org.waarp.ftp.core.command.AbstractCommand;
 import org.waarp.ftp.core.command.FtpCommandCode;
 import org.waarp.ftp.core.command.info.NOOP;
@@ -35,7 +35,7 @@ public class IncorrectCommand extends AbstractCommand {
 	/**
 	 * Internal Logger
 	 */
-	private static final WaarpInternalLogger logger = WaarpInternalLoggerFactory
+	private static final WaarpLogger logger = WaarpLoggerFactory
 			.getLogger(IncorrectCommand.class);
 
 	/*

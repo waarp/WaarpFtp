@@ -24,8 +24,8 @@ import org.waarp.common.command.ReplyCode;
 import org.waarp.common.command.exception.Reply421Exception;
 import org.waarp.common.command.exception.Reply502Exception;
 import org.waarp.common.command.exception.Reply530Exception;
-import org.waarp.common.logging.WaarpInternalLogger;
-import org.waarp.common.logging.WaarpInternalLoggerFactory;
+import org.waarp.common.logging.WaarpLogger;
+import org.waarp.common.logging.WaarpLoggerFactory;
 import org.waarp.ftp.core.command.FtpCommandCode;
 import org.waarp.ftp.core.file.FtpDir;
 import org.waarp.ftp.core.session.FtpSession;
@@ -43,7 +43,7 @@ public class FileBasedAuth extends FilesystemBasedFtpAuth {
 	/**
 	 * Internal Logger
 	 */
-	private static final WaarpInternalLogger logger = WaarpInternalLoggerFactory
+	private static final WaarpLogger logger = WaarpLoggerFactory
 			.getLogger(FileBasedAuth.class);
 
 	/**

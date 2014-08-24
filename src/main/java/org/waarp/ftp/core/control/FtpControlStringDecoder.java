@@ -19,9 +19,7 @@ package org.waarp.ftp.core.control;
 
 import java.nio.charset.Charset;
 
-import org.jboss.netty.channel.Channel;
-import org.jboss.netty.channel.ChannelHandlerContext;
-import org.jboss.netty.handler.codec.string.StringDecoder;
+import io.netty.handler.codec.string.StringDecoder;
 
 /**
  * Exactly same as StringDecoder from Netty
@@ -50,16 +48,5 @@ public class FtpControlStringDecoder extends StringDecoder {
 	 */
 	public FtpControlStringDecoder(Charset arg0) {
 		super(arg0);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see org.jboss.netty.handler.codec.string.StringDecoder#decode(org.jboss.netty
-	 * .channel.ChannelHandlerContext, org.jboss.netty.channel.Channel, java.lang.Object)
-	 */
-	@Override
-	protected Object decode(ChannelHandlerContext ctx, Channel channel,
-			Object msg) throws Exception {
-		return super.decode(ctx, channel, msg);
 	}
 }

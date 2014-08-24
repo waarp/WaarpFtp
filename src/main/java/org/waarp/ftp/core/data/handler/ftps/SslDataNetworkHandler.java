@@ -20,16 +20,15 @@
  */
 package org.waarp.ftp.core.data.handler.ftps;
 
-import org.jboss.netty.channel.Channel;
-import org.jboss.netty.channel.ChannelHandlerContext;
-import org.jboss.netty.channel.ChannelStateEvent;
-import org.jboss.netty.channel.Channels;
-import org.jboss.netty.handler.ssl.SslHandler;
+import io.netty.channel.Channel;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.handler.ssl.SslHandler;
+
 import org.waarp.common.crypto.ssl.WaarpSslUtility;
-import org.waarp.common.logging.WaarpInternalLogger;
-import org.waarp.common.logging.WaarpInternalLoggerFactory;
+import org.waarp.common.logging.WaarpLogger;
+import org.waarp.common.logging.WaarpLoggerFactory;
 import org.waarp.ftp.core.config.FtpConfiguration;
-import org.waarp.ftp.core.control.ftps.FtpsPipelineFactory;
+import org.waarp.ftp.core.control.ftps.FtpsInitializer;
 import org.waarp.ftp.core.data.handler.DataBusinessHandler;
 import org.waarp.ftp.core.data.handler.DataNetworkHandler;
 import org.waarp.ftp.core.utils.FtpChannelUtils;
@@ -42,7 +41,7 @@ public class SslDataNetworkHandler extends DataNetworkHandler {
 	/**
 	 * Internal Logger
 	 */
-	private static final WaarpInternalLogger logger = WaarpInternalLoggerFactory
+	private static final WaarpLogger logger = WaarpLoggerFactory
 			.getLogger(SslDataNetworkHandler.class);
 
 	/**
@@ -55,13 +54,12 @@ public class SslDataNetworkHandler extends DataNetworkHandler {
 		super(configuration, handler, active);
 	}
 
-	@Override
-	public void channelOpen(ChannelHandlerContext ctx, ChannelStateEvent e)
-			throws Exception {
-		Channel channel = e.getChannel();
+    @Override
+    public void channelRegistered(ChannelHandlerContext ctx) throws Exception {
+		Channel channel = ctx.channel();
 		logger.debug("Add channel to ssl");
-		super.channelOpen(ctx, e);
-		channel.setReadable(false);
+		super.channelRegistered(ctx);
+		channel.config().setAutoRead(false);
 	}
 	
 	/**
@@ -73,45 +71,33 @@ public class SslDataNetworkHandler extends DataNetworkHandler {
 		// ignore
 	}
 
-	@Override
-	public void channelConnected(ChannelHandlerContext ctx, ChannelStateEvent e) {
+    @Override
+    public void channelActive(ChannelHandlerContext ctx) throws Exception {
 		// Get the SslHandler in the current pipeline.
-		Channel channel = e.getChannel();
+		Channel channel = ctx.channel();
 		if (session == null) {
 			setSession(channel);
 		}
 		if (session == null) {
 			logger.error("Cannot find session for SSL");
-			Channels.close(channel);
+			channel.close();
 			return;
 		}
 		// Server: no renegotiation still, but possible clientAuthent
 		SslHandler sslHandler = 
-				FtpsPipelineFactory.waarpSslContextFactory.initPipelineFactory(true,
-						FtpsPipelineFactory.waarpSslContextFactory.needClientAuthentication(),
-						true, FtpChannelUtils.getRemoteInetSocketAddress(session.getControlChannel()).getAddress().getHostAddress(),
+				FtpsInitializer.waarpSslContextFactory.initInitializer(true,
+						FtpsInitializer.waarpSslContextFactory.needClientAuthentication(),
+						FtpChannelUtils.getRemoteInetSocketAddress(session.getControlChannel()).getAddress().getHostAddress(),
 						FtpChannelUtils.getRemoteInetSocketAddress(session.getControlChannel()).getPort());
-		channel.getPipeline().addFirst("ssl", sslHandler);
-		channel.setReadable(true);
+		channel.pipeline().addFirst("ssl", sslHandler);
+		WaarpSslUtility.addSslOpenedChannel(channel);
+		channel.config().setAutoRead(true);
 		// Get the SslHandler and begin handshake ASAP.
 		logger.debug("SSL found but need handshake");
-		if (sslHandler.isIssueHandshake()) {
-			// client side
-			WaarpSslUtility.setStatusSslConnectedChannel(ctx.getChannel(), true);
-		} else {
-			// server side
-			// Get the SslHandler and begin handshake ASAP.
-			// Get notified when SSL handshake is done.
-			if (! WaarpSslUtility.runHandshake(ctx.getChannel())) {
-				callForSnmp("SSL Connection Error", "During Ssl Handshake");
-			}
+		if (! WaarpSslUtility.waitForHandshake(ctx.channel())) {
+		    callForSnmp("SSL Connection Error", "During Ssl Handshake");
 		}
-		/*ChannelFuture handshakeFuture = sslHandler.handshake();
-		try {
-			handshakeFuture.await();
-		} catch (InterruptedException e1) {
-		}*/
-		super.channelConnected(ctx, e);
+        super.channelActive(ctx);
 		logger.debug("End of initialization of SSL and data channel");
 	}
 

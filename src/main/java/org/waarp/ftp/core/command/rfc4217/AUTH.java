@@ -23,8 +23,8 @@ import org.waarp.common.command.exception.Reply501Exception;
 import org.waarp.common.command.exception.Reply503Exception;
 import org.waarp.common.command.exception.Reply504Exception;
 import org.waarp.common.command.exception.Reply534Exception;
-import org.waarp.common.logging.WaarpInternalLogger;
-import org.waarp.common.logging.WaarpInternalLoggerFactory;
+import org.waarp.common.logging.WaarpLogger;
+import org.waarp.common.logging.WaarpLoggerFactory;
 import org.waarp.ftp.core.command.AbstractCommand;
 
 /**
@@ -44,7 +44,7 @@ public class AUTH extends AbstractCommand {
 	/**
 	 * Internal Logger
 	 */
-	private static final WaarpInternalLogger logger = WaarpInternalLoggerFactory
+	private static final WaarpLogger logger = WaarpLoggerFactory
 			.getLogger(AUTH.class);
 	
 	@Override

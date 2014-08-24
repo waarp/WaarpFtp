@@ -17,13 +17,14 @@
  */
 package org.waarp.ftp.core.control;
 
-import org.jboss.netty.buffer.ChannelBuffer;
-import org.jboss.netty.buffer.ChannelBuffers;
-import org.jboss.netty.channel.ChannelPipeline;
-import org.jboss.netty.channel.ChannelPipelineFactory;
-import org.jboss.netty.channel.Channels;
-import org.jboss.netty.handler.codec.frame.DelimiterBasedFrameDecoder;
-import org.jboss.netty.handler.execution.ExecutionHandler;
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
+import io.netty.channel.ChannelInitializer;
+import io.netty.channel.ChannelPipeline;
+import io.netty.channel.socket.SocketChannel;
+import io.netty.handler.codec.DelimiterBasedFrameDecoder;
+import io.netty.util.concurrent.EventExecutorGroup;
+
 import org.waarp.common.command.ReplyCode;
 import org.waarp.common.utility.WaarpStringUtils;
 import org.waarp.ftp.core.config.FtpConfiguration;
@@ -35,28 +36,28 @@ import org.waarp.ftp.core.session.FtpSession;
  * @author Frederic Bregier
  * 
  */
-public class FtpPipelineFactory implements ChannelPipelineFactory {
+public class FtpInitializer extends ChannelInitializer<SocketChannel> {
 	/**
 	 * CRLF, CRNUL, LF delimiters
 	 */
-	private static final ChannelBuffer[] delimiter = new ChannelBuffer[] {
-			ChannelBuffers.wrappedBuffer(ReplyCode.CRLF.getBytes(WaarpStringUtils.UTF8)),
-			ChannelBuffers.wrappedBuffer(ReplyCode.CRNUL.getBytes(WaarpStringUtils.UTF8)),
-			ChannelBuffers.wrappedBuffer(ReplyCode.LF.getBytes(WaarpStringUtils.UTF8)) };
+	protected static final ByteBuf[] delimiter = new ByteBuf[] {
+	    Unpooled.wrappedBuffer(ReplyCode.CRLF.getBytes(WaarpStringUtils.UTF8)),
+	    Unpooled.wrappedBuffer(ReplyCode.CRNUL.getBytes(WaarpStringUtils.UTF8)),
+	    Unpooled.wrappedBuffer(ReplyCode.LF.getBytes(WaarpStringUtils.UTF8)) };
 
-	private static final FtpControlStringDecoder ftpControlStringDecoder = new FtpControlStringDecoder();
+	protected static final FtpControlStringDecoder ftpControlStringDecoder = new FtpControlStringDecoder(WaarpStringUtils.UTF8);
 
-	private static final FtpControlStringEncoder ftpControlStringEncoder = new FtpControlStringEncoder();
+	protected static final FtpControlStringEncoder ftpControlStringEncoder = new FtpControlStringEncoder(WaarpStringUtils.UTF8);
 
 	/**
 	 * Business Handler Class if any (Target Mode only)
 	 */
-	private final Class<? extends BusinessHandler> businessHandler;
+	protected final Class<? extends BusinessHandler> businessHandler;
 
 	/**
 	 * Configuration
 	 */
-	private final FtpConfiguration configuration;
+	protected final FtpConfiguration configuration;
 
 	/**
 	 * Constructor which Initializes some data for Server only
@@ -64,7 +65,7 @@ public class FtpPipelineFactory implements ChannelPipelineFactory {
 	 * @param businessHandler
 	 * @param configuration
 	 */
-	public FtpPipelineFactory(Class<? extends BusinessHandler> businessHandler,
+	public FtpInitializer(Class<? extends BusinessHandler> businessHandler,
 			FtpConfiguration configuration) {
 		this.businessHandler = businessHandler;
 		this.configuration = configuration;
@@ -72,24 +73,21 @@ public class FtpPipelineFactory implements ChannelPipelineFactory {
 
 	/**
 	 * Create the pipeline with Handler, ObjectDecoder, ObjectEncoder.
-	 * 
-	 * @see org.jboss.netty.channel.ChannelPipelineFactory#getPipeline()
 	 */
-	public ChannelPipeline getPipeline() throws Exception {
-		ChannelPipeline pipeline = Channels.pipeline();
+	@Override
+    public void initChannel(SocketChannel ch) throws Exception {
+		ChannelPipeline pipeline = ch.pipeline();
 		// Add the text line codec combination first,
-		pipeline.addLast("framer", new DelimiterBasedFrameDecoder(8192,
-				delimiter));
+		pipeline.addLast("framer", new DelimiterBasedFrameDecoder(8192, delimiter));
 		pipeline.addLast("decoder", ftpControlStringDecoder);
 		pipeline.addLast("encoder", ftpControlStringEncoder);
 		// Threaded execution for business logic
-		pipeline.addLast("pipelineExecutor", new ExecutionHandler(configuration
-				.getFtpInternalConfiguration().getPipelineExecutor()));
+		
+		EventExecutorGroup executorGroup = configuration.getFtpInternalConfiguration().getExecutor();
 		// and then business logic. New one on every connection
 		BusinessHandler newbusiness = businessHandler.newInstance();
 		NetworkHandler newNetworkHandler = new NetworkHandler(new FtpSession(
 				configuration, newbusiness));
-		pipeline.addLast("handler", newNetworkHandler);
-		return pipeline;
+		pipeline.addLast(executorGroup, "handler", newNetworkHandler);
 	}
 }

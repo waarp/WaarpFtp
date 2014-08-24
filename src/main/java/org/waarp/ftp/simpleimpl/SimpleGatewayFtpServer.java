@@ -17,11 +17,11 @@
  */
 package org.waarp.ftp.simpleimpl;
 
-import org.jboss.netty.logging.InternalLoggerFactory;
 import org.waarp.common.file.filesystembased.FilesystemBasedFileParameterImpl;
-import org.waarp.common.logging.WaarpInternalLogger;
-import org.waarp.common.logging.WaarpInternalLoggerFactory;
+import org.waarp.common.logging.WaarpLogger;
+import org.waarp.common.logging.WaarpLoggerFactory;
 import org.waarp.common.logging.WaarpSlf4JLoggerFactory;
+import org.waarp.ftp.core.exception.FtpNoConnectionException;
 import org.waarp.ftp.simpleimpl.config.FileBasedConfiguration;
 import org.waarp.ftp.simpleimpl.control.SimpleBusinessHandler;
 import org.waarp.ftp.simpleimpl.data.FileSystemBasedDataBusinessHandler;
@@ -37,7 +37,7 @@ public class SimpleGatewayFtpServer {
 	/**
 	 * Internal Logger
 	 */
-	private static WaarpInternalLogger logger = null;
+	private static WaarpLogger logger = null;
 
 	/**
 	 * Take a simple XML file as configuration.
@@ -50,9 +50,8 @@ public class SimpleGatewayFtpServer {
 					SimpleGatewayFtpServer.class.getName() + " <config-file>");
 			return;
 		}
-		InternalLoggerFactory.setDefaultFactory(new WaarpSlf4JLoggerFactory(null));
-		logger = WaarpInternalLoggerFactory
-				.getLogger(SimpleGatewayFtpServer.class);
+		WaarpLoggerFactory.setDefaultFactory(new WaarpSlf4JLoggerFactory(null));
+		logger = WaarpLoggerFactory.getLogger(SimpleGatewayFtpServer.class);
 		String config = args[0];
 		FileBasedConfiguration configuration = new FileBasedConfiguration(
 				SimpleGatewayFtpServer.class, SimpleBusinessHandler.class,
@@ -63,8 +62,12 @@ public class SimpleGatewayFtpServer {
 			return;
 		}
 		// Start server.
-		configuration.serverStartup();
-		logger.warn("FTP started");
+		try {
+            configuration.serverStartup();
+        } catch (FtpNoConnectionException e) {
+            logger.error("FTP not started", e);
+        }
+		logger.info("FTP started");
 	}
 
 }

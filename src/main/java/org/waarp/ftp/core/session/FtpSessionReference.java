@@ -21,9 +21,9 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.jboss.netty.channel.Channel;
-import org.waarp.common.logging.WaarpInternalLogger;
-import org.waarp.common.logging.WaarpInternalLoggerFactory;
+import io.netty.channel.Channel;
+import org.waarp.common.logging.WaarpLogger;
+import org.waarp.common.logging.WaarpLoggerFactory;
 import org.waarp.ftp.core.utils.FtpChannelUtils;
 
 /**
@@ -40,7 +40,7 @@ public class FtpSessionReference {
 	/**
 	 * Internal Logger
 	 */
-	private static final WaarpInternalLogger logger = WaarpInternalLoggerFactory
+	private static final WaarpLogger logger = WaarpLoggerFactory
 			.getLogger(FtpSessionReference.class);
 
 	/**
@@ -67,7 +67,7 @@ public class FtpSessionReference {
 		 */
 		public P2PAddress(Channel channel) {
 			ipOnly = FtpChannelUtils.getRemoteInetAddress(channel);
-			fullIp = (InetSocketAddress) channel.getLocalAddress();
+			fullIp = (InetSocketAddress) channel.localAddress();
 		}
 
 		/**
@@ -160,11 +160,11 @@ public class FtpSessionReference {
 	public FtpSession getActiveFtpSession(Channel channel) {
 		// First check Active connection
 		P2PAddress pAddress = new P2PAddress(((InetSocketAddress) channel
-				.getLocalAddress()).getAddress(), (InetSocketAddress) channel
-				.getRemoteAddress());
+				.localAddress()).getAddress(), (InetSocketAddress) channel
+				.remoteAddress());
 		if (!pAddress.isValid()) {
 			logger.error("Couple invalid in getActiveFtpSession: " + channel +
-					channel.getLocalAddress() + channel.getRemoteAddress());
+					channel.localAddress() + channel.remoteAddress());
 			return null;
 		}
 		// logger.debug("Get: {} {}", pAddress.ipOnly, pAddress.fullIp);

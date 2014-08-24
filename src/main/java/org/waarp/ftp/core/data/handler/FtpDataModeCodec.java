@@ -17,15 +17,13 @@
  */
 package org.waarp.ftp.core.data.handler;
 
-import org.jboss.netty.buffer.ChannelBuffer;
-import org.jboss.netty.buffer.ChannelBuffers;
-import org.jboss.netty.channel.Channel;
-import org.jboss.netty.channel.ChannelDownstreamHandler;
-import org.jboss.netty.channel.ChannelEvent;
-import org.jboss.netty.channel.ChannelHandlerContext;
-import org.jboss.netty.channel.Channels;
-import org.jboss.netty.channel.MessageEvent;
-import org.jboss.netty.handler.codec.frame.FrameDecoder;
+import java.util.List;
+
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.ByteBufAllocator;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.handler.codec.ByteToMessageCodec;
+
 import org.waarp.common.exception.InvalidArgumentException;
 import org.waarp.common.file.DataBlock;
 import org.waarp.common.future.WaarpFuture;
@@ -36,15 +34,14 @@ import org.waarp.ftp.core.data.handler.FtpSeekAheadData.SeekAheadNoBackArrayExce
 
 /**
  * First CODEC :<br>
- * - encode : takes a {@link DataBlock} and transforms it to a ChannelBuffer<br>
- * - decode : takes a ChannelBuffer and transforms it to a {@link DataBlock}<br>
+ * - encode : takes a {@link DataBlock} and transforms it to a ByteBuf<br>
+ * - decode : takes a ByteBuf and transforms it to a {@link DataBlock}<br>
  * STREAM and BLOCK mode are implemented. COMPRESSED mode is not implemented.
  * 
  * @author Frederic Bregier
  * 
  */
-public class FtpDataModeCodec extends FrameDecoder implements
-		ChannelDownstreamHandler {
+public class FtpDataModeCodec extends ByteToMessageCodec<DataBlock> {
 	/*
 	 * 3.4.1. STREAM MODE The data is transmitted as a stream of bytes. There is no restriction on
 	 * the representation type used; record structures are allowed. In a record structured file EOR
@@ -135,8 +132,8 @@ public class FtpDataModeCodec extends FrameDecoder implements
 		codecLocked.setSuccess();
 	}
 
-	protected Object decodeRecordStandard(ChannelBuffer buf, int length) {
-		ChannelBuffer newbuf = ChannelBuffers.dynamicBuffer(length);
+	protected DataBlock decodeRecordStandard(ByteBuf buf, int length) {
+		ByteBuf newbuf = ByteBufAllocator.DEFAULT.buffer(length);
 		if (lastbyte == 0xFF) {
 			int nextbyte = buf.readByte();
 			if (nextbyte == 0xFF) {
@@ -182,14 +179,14 @@ public class FtpDataModeCodec extends FrameDecoder implements
 		return dataBlock;
 	}
 
-	protected Object decodeRecord(ChannelBuffer buf, int length) {
+	protected DataBlock decodeRecord(ByteBuf buf, int length) {
 		FtpSeekAheadData sad = null;
 		try {
 			sad = new FtpSeekAheadData(buf);
 		} catch (SeekAheadNoBackArrayException e1) {
 			return decodeRecordStandard(buf, length);
 		}
-		ChannelBuffer newbuf = ChannelBuffers.dynamicBuffer(length);
+		ByteBuf newbuf = ByteBufAllocator.DEFAULT.buffer(length);
 		if (lastbyte == 0xFF) {
 			int nextbyte = sad.bytes[sad.pos++];
 			if (nextbyte == 0xFF) {
@@ -236,15 +233,8 @@ public class FtpDataModeCodec extends FrameDecoder implements
 		return dataBlock;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * @see org.jboss.netty.handler.codec.frame.FrameDecoder#decode(org.jboss.netty
-	 * .channel.ChannelHandlerContext, org.jboss.netty.channel.Channel,
-	 * org.jboss.netty.buffer.ChannelBuffer)
-	 */
-	@Override
-	protected Object decode(ChannelHandlerContext ctx, Channel channel,
-			ChannelBuffer buf) throws Exception {
+    @Override
+    protected void decode(ChannelHandlerContext ctx, ByteBuf buf, List<Object> out) throws Exception {
 		// First test if the connection is fully ready (block might be
 		// transfered
 		// by client before connection is ready)
@@ -260,11 +250,13 @@ public class FtpDataModeCodec extends FrameDecoder implements
 			int length = buf.readableBytes();
 			// Except if RECORD Structure!
 			if (structure == TransferStructure.RECORD) {
-				return decodeRecord(buf, length);
+				out.add(decodeRecord(buf, length));
+				return;
 			}
 
 			dataBlock.setBlock(buf.readBytes(length));
-			return dataBlock;
+			out.add(dataBlock);
+			return;
 		} else if (mode == TransferMode.BLOCK) {
 			// Now we are in BLOCK Mode
 			// Make sure if the length field was received.
@@ -272,7 +264,7 @@ public class FtpDataModeCodec extends FrameDecoder implements
 				// The length field was not received yet - return null.
 				// This method will be invoked again when more packets are
 				// received and appended to the buffer.
-				return null;
+				return;
 			}
 
 			// The length field is in the buffer.
@@ -304,7 +296,7 @@ public class FtpDataModeCodec extends FrameDecoder implements
 				// next time.
 				buf.resetReaderIndex();
 
-				return null;
+				return;
 			}
 			if (dataBlock.getByteCount() > 0) {
 				// There's enough bytes in the buffer. Read it.
@@ -314,15 +306,15 @@ public class FtpDataModeCodec extends FrameDecoder implements
 			// Free the datablock for next frame
 			dataBlock = null;
 			// Successfully decoded a frame. Return the decoded frame.
-			return returnDataBlock;
+			out.add(returnDataBlock);
+			return;
 		}
 		// Type unimplemented
 		throw new InvalidArgumentException("Mode unimplemented: " + mode.name());
 	}
 
-	protected ChannelBuffer encodeRecordStandard(DataBlock msg, ChannelBuffer buffer) {
-		ChannelBuffer newbuf = ChannelBuffers.dynamicBuffer(msg
-				.getByteCount());
+	protected ByteBuf encodeRecordStandard(DataBlock msg, ByteBuf buffer) {
+		ByteBuf newbuf = ByteBufAllocator.DEFAULT.buffer(msg.getByteCount());
 		int newbyte = 0;
 		try {
 			while (true) {
@@ -350,15 +342,14 @@ public class FtpDataModeCodec extends FrameDecoder implements
 		return newbuf;
 	}
 
-	protected ChannelBuffer encodeRecord(DataBlock msg, ChannelBuffer buffer) {
+	protected ByteBuf encodeRecord(DataBlock msg, ByteBuf buffer) {
 		FtpSeekAheadData sad = null;
 		try {
 			sad = new FtpSeekAheadData(buffer);
 		} catch (SeekAheadNoBackArrayException e1) {
 			return encodeRecordStandard(msg, buffer);
 		}
-		ChannelBuffer newbuf = ChannelBuffers.dynamicBuffer(msg
-				.getByteCount());
+		ByteBuf newbuf = ByteBufAllocator.DEFAULT.buffer(msg.getByteCount());
 		int newbyte = 0;
 		try {
 			while (sad.pos < sad.limit) {
@@ -391,15 +382,15 @@ public class FtpDataModeCodec extends FrameDecoder implements
 	 * Encode a DataBlock in the correct format for Mode
 	 * 
 	 * @param msg
-	 * @return the ChannelBuffer or null when the last block is already done
+	 * @return the ByteBuf or null when the last block is already done
 	 * @throws InvalidArgumentException
 	 */
-	protected ChannelBuffer encode(DataBlock msg)
+	protected ByteBuf encode(DataBlock msg)
 			throws InvalidArgumentException {
 		if (msg.isCleared()) {
 			return null;
 		}
-		ChannelBuffer buffer = msg.getBlock();
+		ByteBuf buffer = msg.getBlock();
 		if (mode == TransferMode.STREAM) {
 			// If record structure, special attention
 			if (structure == TransferStructure.RECORD) {
@@ -409,8 +400,7 @@ public class FtpDataModeCodec extends FrameDecoder implements
 			return buffer;
 		} else if (mode == TransferMode.BLOCK) {
 			int length = msg.getByteCount();
-			ChannelBuffer newbuf = ChannelBuffers
-					.dynamicBuffer(length > 0xFFFF ? 0xFFFF + 3 : length + 3);
+			ByteBuf newbuf = ByteBufAllocator.DEFAULT.buffer(length > 0xFFFF ? 0xFFFF + 3 : length + 3);
 			byte[] header = new byte[3];
 			// Is there any data left
 			if (length == 0) {
@@ -499,32 +489,11 @@ public class FtpDataModeCodec extends FrameDecoder implements
 	 *            the structure to set
 	 */
 	public void setStructure(TransferStructure structure) {
-		this.structure = structure;
+	    this.structure = structure;
 	}
 
-	public void handleDownstream(ChannelHandlerContext ctx, ChannelEvent e)
-			throws Exception {
-		if (e instanceof MessageEvent) {
-			writeRequested(ctx, (MessageEvent) e);
-		} else {
-			ctx.sendDownstream(e);
-		}
-	}
-
-	/**
-	 * Coder part, taking a DataBlock and converting it to ChannelBuffer
-	 * 
-	 * @param ctx
-	 * @param evt
-	 * @throws Exception
-	 */
-	private void writeRequested(ChannelHandlerContext ctx, MessageEvent evt)
-			throws Exception {
-		if (!(evt.getMessage() instanceof DataBlock)) {
-			// since SSL in beginning will send a handshake => take care
-			throw new InvalidArgumentException("Incorrect write object: " +
-					evt.getMessage().getClass().getName());
-		}
+    @Override
+    protected void encode(ChannelHandlerContext ctx, DataBlock msg, ByteBuf out) throws Exception {
 		// First test if the connection is fully ready (block might be
 		// transfered
 		// by client before connection is ready)
@@ -534,12 +503,11 @@ public class FtpDataModeCodec extends FrameDecoder implements
 			}
 			isReady = true;
 		}
-		DataBlock newDataBlock = (DataBlock) evt.getMessage();
-		ChannelBuffer next = encode(newDataBlock);
+		ByteBuf next = encode(msg);
 		// Could be splitten in several block
 		while (next != null) {
-			Channels.write(ctx, evt.getFuture(), next);
-			next = encode(newDataBlock);
+		    out.writeBytes(next);
+			next = encode(msg);
 		}
 	}
 }

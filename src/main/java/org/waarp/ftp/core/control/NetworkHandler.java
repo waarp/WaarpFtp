@@ -21,31 +21,31 @@ import java.io.IOException;
 import java.net.ConnectException;
 import java.nio.channels.ClosedChannelException;
 
-import org.jboss.netty.channel.Channel;
-import org.jboss.netty.channel.ChannelException;
-import org.jboss.netty.channel.ChannelFuture;
-import org.jboss.netty.channel.ChannelFutureListener;
-import org.jboss.netty.channel.ChannelHandler;
-import org.jboss.netty.channel.ChannelHandlerContext;
-import org.jboss.netty.channel.ChannelStateEvent;
-import org.jboss.netty.channel.Channels;
-import org.jboss.netty.channel.ExceptionEvent;
-import org.jboss.netty.channel.MessageEvent;
-import org.jboss.netty.channel.SimpleChannelHandler;
-import org.jboss.netty.handler.ssl.SslHandler;
+import io.netty.channel.Channel;
+import io.netty.channel.ChannelException;
+import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelFutureListener;
+import io.netty.channel.ChannelHandler;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.SimpleChannelInboundHandler;
+import io.netty.handler.ssl.SslHandler;
+import io.netty.util.concurrent.Future;
+import io.netty.util.concurrent.GenericFutureListener;
+
 import org.waarp.common.command.ReplyCode;
 import org.waarp.common.command.exception.CommandAbstractException;
+import org.waarp.common.command.exception.Reply421Exception;
 import org.waarp.common.command.exception.Reply503Exception;
 import org.waarp.common.crypto.ssl.WaarpSslUtility;
-import org.waarp.common.logging.WaarpInternalLogger;
-import org.waarp.common.logging.WaarpInternalLoggerFactory;
+import org.waarp.common.logging.WaarpLogger;
+import org.waarp.common.logging.WaarpLoggerFactory;
 import org.waarp.ftp.core.command.AbstractCommand;
 import org.waarp.ftp.core.command.FtpCommandCode;
 import org.waarp.ftp.core.command.access.USER;
 import org.waarp.ftp.core.command.internal.ConnectionCommand;
 import org.waarp.ftp.core.command.internal.IncorrectCommand;
 import org.waarp.ftp.core.config.FtpInternalConfiguration;
-import org.waarp.ftp.core.control.ftps.FtpsPipelineFactory;
+import org.waarp.ftp.core.control.ftps.FtpsInitializer;
 import org.waarp.ftp.core.data.FtpTransferControl;
 import org.waarp.ftp.core.session.FtpSession;
 import org.waarp.ftp.core.utils.FtpChannelUtils;
@@ -57,12 +57,11 @@ import org.waarp.ftp.core.utils.FtpChannelUtils;
  * @author Frederic Bregier
  * 
  */
-public class NetworkHandler extends SimpleChannelHandler {
+public class NetworkHandler extends SimpleChannelInboundHandler<String> {
 	/**
 	 * Internal Logger
 	 */
-	private static final WaarpInternalLogger logger = WaarpInternalLoggerFactory
-			.getLogger(NetworkHandler.class);
+	private static final WaarpLogger logger = WaarpLoggerFactory.getLogger(NetworkHandler.class);
 
 	/**
 	 * Business Handler
@@ -113,18 +112,15 @@ public class NetworkHandler extends SimpleChannelHandler {
 		return controlChannel;
 	}
 
-	/**
+    /**
 	 * Run firstly executeChannelClosed.
 	 * 
-	 * @see org.jboss.netty.channel.SimpleChannelHandler#channelClosed(org.jboss.netty.channel.ChannelHandlerContext,
-	 *      org.jboss.netty.channel.ChannelStateEvent)
 	 */
-	@Override
-	public void channelClosed(ChannelHandlerContext ctx, ChannelStateEvent e)
-			throws Exception {
+    @Override
+    public void channelInactive(ChannelHandlerContext ctx) throws Exception {
 		if (session == null || session.getDataConn() == null ||
 				session.getDataConn().getFtpTransferControl() == null) {
-			super.channelClosed(ctx, e);
+			super.channelInactive(ctx);
 			return;
 		}
 		// Wait for any command running before closing (bad client sometimes
@@ -135,8 +131,7 @@ public class NetworkHandler extends SimpleChannelHandler {
 			Thread.sleep(10);
 			limit--;
 			if (limit <= 0) {
-				logger
-						.warn("Waiting for transfer finished but 1s is not enough");
+				logger.warn("Waiting for transfer finished but 1s is not enough");
 				break; // wait at most 1s
 			}
 		}
@@ -144,18 +139,16 @@ public class NetworkHandler extends SimpleChannelHandler {
 		// release file and other permanent objects
 		businessHandler.clear();
 		session.clear();
-		super.channelClosed(ctx, e);
+		super.channelInactive(ctx);
 	}
 
 	/**
-	 * Initialiaze the Handler.
+	 * Initialize the Handler.
 	 * 
-	 * @see org.jboss.netty.channel.SimpleChannelHandler#channelConnected(org.jboss.netty.channel.ChannelHandlerContext,
-	 *      org.jboss.netty.channel.ChannelStateEvent)
 	 */
-	@Override
-	public void channelConnected(ChannelHandlerContext ctx, ChannelStateEvent e) {
-		Channel channel = e.getChannel();
+    @Override
+    public void channelActive(ChannelHandlerContext ctx) throws Exception {
+		Channel channel = ctx.channel();
 		controlChannel = channel;
 		session.setControlConnected();
 		FtpChannelUtils.addCommandChannel(channel, session.getConfiguration());
@@ -171,7 +164,7 @@ public class NetworkHandler extends SimpleChannelHandler {
 		}
 	}
 
-	/**
+    /**
 	 * If the service is going to shutdown, it sends back a 421 message to the connection
 	 * 
 	 * @return True if the service is alive, else False if the system is going down
@@ -185,17 +178,15 @@ public class NetworkHandler extends SimpleChannelHandler {
 		return true;
 	}
 
-	/**
+    /**
 	 * Default exception task: close the current connection after calling exceptionLocalCaught and
 	 * writing if possible the current replyCode.
 	 * 
-	 * @see org.jboss.netty.channel.SimpleChannelHandler#exceptionCaught(org.jboss.netty.channel.ChannelHandlerContext,
-	 *      org.jboss.netty.channel.ExceptionEvent)
 	 */
-	@Override
-	public void exceptionCaught(ChannelHandlerContext ctx, ExceptionEvent e) {
-		Throwable e1 = e.getCause();
-		Channel channel = e.getChannel();
+    @Override
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+		Throwable e1 = cause;
+		Channel channel = ctx.channel();
 		if (session == null) {
 			// should not be
 			logger.warn("NO SESSION", e1);
@@ -204,17 +195,17 @@ public class NetworkHandler extends SimpleChannelHandler {
 		if (e1 instanceof ConnectException) {
 			ConnectException e2 = (ConnectException) e1;
 			logger.warn("Connection impossible since {} with Channel {}", e2
-					.getMessage(), e.getChannel());
+					.getMessage(), channel);
 		} else if (e1 instanceof ChannelException) {
 			ChannelException e2 = (ChannelException) e1;
 			logger
 					.warn(
 							"Connection (example: timeout) impossible since {} with Channel {}",
-							e2.getMessage(), e.getChannel());
+							e2.getMessage(), channel);
 		} else if (e1 instanceof ClosedChannelException) {
 			logger.debug("Connection closed before end");
 			session.setExitErrorCode("Internal error: disconnect");
-			if (channel.isConnected()) {
+			if (channel.isActive()) {
 				writeFinalAnswer();
 			}
 			return;
@@ -224,7 +215,7 @@ public class NetworkHandler extends SimpleChannelHandler {
 			logger.warn("Command Error Reply {}", e2.getMessage());
 			session.setReplyCode(e2);
 			businessHandler.afterRunCommandKo(e2);
-			if (channel.isConnected()) {
+			if (channel.isActive()) {
 				writeFinalAnswer();
 			}
 			return;
@@ -236,8 +227,8 @@ public class NetworkHandler extends SimpleChannelHandler {
 					session.setExitErrorCode("Internal error: disconnect");
 					if (businessHandler != null &&
 							session.getDataConn() != null) {
-						businessHandler.exceptionLocalCaught(e);
-						if (channel.isConnected()) {
+						businessHandler.exceptionLocalCaught(e1);
+						if (channel.isActive()) {
 							writeFinalAnswer();
 						}
 					}
@@ -248,14 +239,14 @@ public class NetworkHandler extends SimpleChannelHandler {
 		} else if (e1 instanceof IOException) {
 			IOException e2 = (IOException) e1;
 			logger.warn("Connection aborted since {} with Channel {}", e2
-					.getMessage(), e.getChannel());
+					.getMessage(), channel);
 		} else {
-			logger.warn("Unexpected exception from downstream Ref Channel: " + 
-					e.getChannel().toString() +" Exception: "+e1.getMessage(), e1);
+			logger.warn("Unexpected exception from Outband Ref Channel: " + 
+			        channel.toString() +" Exception: "+e1.getMessage(), e1);
 		}
 		session.setExitErrorCode("Internal error: disconnect");
-		businessHandler.exceptionLocalCaught(e);
-		if (channel.isConnected()) {
+		businessHandler.exceptionLocalCaught(e1);
+		if (channel.isActive()) {
 			writeFinalAnswer();
 		}
 	}
@@ -263,27 +254,24 @@ public class NetworkHandler extends SimpleChannelHandler {
 	/**
 	 * Simply call messageRun with the received message
 	 * 
-	 * @see org.jboss.netty.channel.SimpleChannelHandler#messageReceived(org.jboss.netty.channel.ChannelHandlerContext,
-	 *      org.jboss.netty.channel.MessageEvent)
 	 */
 	@Override
-	public void messageReceived(ChannelHandlerContext ctx, MessageEvent e) {
+	public void channelRead0(ChannelHandlerContext ctx, String e) {
 		if (isStillAlive()) {
 			// First wait for the initialization to be fully done
-			while (!session.isReady()) {
-				try {
-					Thread.sleep(10);
-				} catch (InterruptedException e1) {
-				}
-			}
-			String message = (String) e.getMessage();
-			AbstractCommand command = FtpCommandCode.getFromLine(
-					getFtpSession(), message);
+		    if (! session.isReady()) {
+		        session.setReplyCode(ReplyCode.REPLY_421_SERVICE_NOT_AVAILABLE_CLOSING_CONTROL_CONNECTION, null);
+                businessHandler.afterRunCommandKo(new Reply421Exception(session.getReplyCode().getMesg()));
+                writeIntermediateAnswer();
+                return;
+		    }
+			String message = e;
+			AbstractCommand command = FtpCommandCode.getFromLine(getFtpSession(), message);
 			logger.debug("RECVMSG: {} CMD: {} "+command.getCode(), message, command.getCommand());
 			// First check if the command is an ABORT, QUIT or STAT
 			if (!FtpCommandCode.isSpecialCommand(command.getCode())) {
 				// Now check if a transfer is on its way: illegal to have at
-				// same time two commands (except ABORT). Wait is at most 100
+				// same time two commands (except ABORT). Wait is at most 100x
 				// RETRYINMS=1s
 				boolean notFinished = true;
 				FtpTransferControl control = session.getDataConn().getFtpTransferControl();
@@ -364,7 +352,7 @@ public class NetworkHandler extends SimpleChannelHandler {
 	 */
 	public ChannelFuture writeIntermediateAnswer() {
 		logger.debug("Answer: "+session.getAnswer());
-		return Channels.write(controlChannel, session.getAnswer());
+		return controlChannel.writeAndFlush(session.getAnswer());
 	}
 
 	/**
@@ -379,7 +367,8 @@ public class NetworkHandler extends SimpleChannelHandler {
 	/**
 	 * Execute one command and write the following answer
 	 */
-	private void messageRunAnswer() {
+	@SuppressWarnings("unchecked")
+    private void messageRunAnswer() {
 		boolean error = false;
 		logger.debug("Code: "+session.getCurrentCommand().getCode());
 		try {
@@ -399,7 +388,7 @@ public class NetworkHandler extends SimpleChannelHandler {
 		if (error || session.getCurrentCommand().getCode() != FtpCommandCode.INTERNALSHUTDOWN) {
 			if (session.getCurrentCommand().getCode() == FtpCommandCode.AUTH ||
 					session.getCurrentCommand().getCode() == FtpCommandCode.CCC) {
-				controlChannel.setReadable(false);
+				controlChannel.config().setAutoRead(false);
 				ChannelFuture future = writeIntermediateAnswer();
 				session.setCurrentCommandFinished();
 				try {
@@ -413,33 +402,29 @@ public class NetworkHandler extends SimpleChannelHandler {
 		if (! error) {
 			if (session.getCurrentCommand().getCode() == FtpCommandCode.AUTH) {
 				logger.debug("SSL to be added to pipeline");
-				ChannelHandler sslHandler = controlChannel.getPipeline().getFirst();
+				ChannelHandler sslHandler = controlChannel.pipeline().first();
 				if (sslHandler instanceof SslHandler) {
 					logger.debug("Already got a SslHandler");
 				} else {
 					// add the SSL support
 					sslHandler =
-							FtpsPipelineFactory.waarpSslContextFactory.initPipelineFactory(true,
-									FtpsPipelineFactory.waarpSslContextFactory.needClientAuthentication(),
-							false);
-					controlChannel.getPipeline().addFirst("SSL", sslHandler);
+							FtpsInitializer.waarpSslContextFactory.initInitializer(true,
+									FtpsInitializer.waarpSslContextFactory.needClientAuthentication());
+					controlChannel.pipeline().addFirst("SSL", sslHandler);
 				}
-				controlChannel.setReadable(true);
-				ChannelFuture handshakeFuture;
-				handshakeFuture = ((SslHandler) sslHandler).handshake();
-				handshakeFuture.addListener(new ChannelFutureListener() {
-					public void operationComplete(ChannelFuture future)
-							throws Exception {
-						logger.debug("Handshake: " + future.isSuccess(), future.getCause());
-						if (!future.isSuccess()) {
-							String error2 = future.getCause() != null ?
-									future.getCause().getMessage() : "During Handshake";
-							callForSnmp("SSL Connection Error", error2);
-							future.getChannel().close();
-						} else {
-							session.setSsl(true);
-						}
-					}
+				controlChannel.config().setAutoRead(true);
+				((SslHandler) sslHandler).handshakeFuture().addListener((GenericFutureListener<? extends Future<? super Channel>>) new ChannelFutureListener() {
+                    public void operationComplete(ChannelFuture future) throws Exception {
+                        logger.debug("Handshake: " + future.isSuccess(), future.cause());
+                        if (!future.isSuccess()) {
+                            String error2 = future.cause() != null ?
+                                    future.cause().getMessage() : "During Handshake";
+                            callForSnmp("SSL Connection Error", error2);
+                            future.channel().close();
+                        } else {
+                            session.setSsl(true);
+                        }
+                    }
 				});
 			} else if (session.getCurrentCommand().getCode() == FtpCommandCode.CCC) {
 				logger.debug("SSL to be removed from pipeline");
@@ -447,8 +432,8 @@ public class NetworkHandler extends SimpleChannelHandler {
 				WaarpSslUtility.removingSslHandler(controlChannel);
 			}
 		}
-		if (! controlChannel.isReadable()) {
-			controlChannel.setReadable(true);
+		if (! controlChannel.config().isAutoRead()) {
+			controlChannel.config().setAutoRead(true);
 		}
 	}
 }

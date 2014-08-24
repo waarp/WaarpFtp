@@ -17,12 +17,11 @@
  */
 package org.waarp.ftp.simpleimpl.control;
 
-import org.jboss.netty.channel.Channel;
-import org.jboss.netty.channel.ExceptionEvent;
+import io.netty.channel.Channel;
 import org.waarp.common.command.exception.CommandAbstractException;
 import org.waarp.common.command.exception.Reply502Exception;
-import org.waarp.common.logging.WaarpInternalLogger;
-import org.waarp.common.logging.WaarpInternalLoggerFactory;
+import org.waarp.common.logging.WaarpLogger;
+import org.waarp.common.logging.WaarpLoggerFactory;
 import org.waarp.ftp.core.command.AbstractCommand;
 import org.waarp.ftp.core.command.FtpCommandCode;
 import org.waarp.ftp.core.command.service.MKD;
@@ -44,7 +43,7 @@ public class SimpleBusinessHandler extends BusinessHandler {
 	/**
 	 * Internal Logger
 	 */
-	private static final WaarpInternalLogger logger = WaarpInternalLoggerFactory
+	private static final WaarpLogger logger = WaarpLoggerFactory
 			.getLogger(SimpleBusinessHandler.class);
 	
 	@Override
@@ -76,10 +75,9 @@ public class SimpleBusinessHandler extends BusinessHandler {
 	}
 
 	@Override
-	public void exceptionLocalCaught(ExceptionEvent e) {
+	public void exceptionLocalCaught(Throwable e) {
 		// TODO Auto-generated method stub
-		logger.warn("GBBH: EXCEP: {} {}", getFtpSession(), e.getCause()
-				.getMessage());
+		logger.warn("GBBH: EXCEP: {} {}", getFtpSession(), e.getMessage());
 	}
 
 	@Override
@@ -142,24 +140,12 @@ public class SimpleBusinessHandler extends BusinessHandler {
 		throw new Reply502Exception("OPTS not implemented");
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * @see
-	 * org.waarp.ftp.core.control.BusinessHandler#getSpecializedSiteCommand(org.waarp.ftp.core.session
-	 * .FtpSession, java.lang.String)
-	 */
 	@Override
 	public AbstractCommand getSpecializedSiteCommand(FtpSession session,
 			String line) {
 		return null;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * @see
-	 * org.waarp.ftp.core.control.BusinessHandler#afterTransferDoneBeforeAnswer(org.waarp.ftp.core
-	 * .data.FtpTransfer)
-	 */
 	@Override
 	public void afterTransferDoneBeforeAnswer(FtpTransfer transfer)
 			throws CommandAbstractException {

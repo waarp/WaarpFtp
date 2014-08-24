@@ -19,16 +19,15 @@ package org.waarp.ftp.filesystembased;
 
 import java.util.concurrent.locks.ReentrantLock;
 
-import org.jboss.netty.channel.Channel;
-import org.jboss.netty.channel.ChannelFuture;
-import org.jboss.netty.channel.Channels;
+import io.netty.channel.Channel;
+import io.netty.channel.ChannelFuture;
 import org.waarp.common.command.exception.CommandAbstractException;
 import org.waarp.common.exception.FileEndOfTransferException;
 import org.waarp.common.exception.FileTransferException;
 import org.waarp.common.file.DataBlock;
 import org.waarp.common.file.filesystembased.FilesystemBasedFileImpl;
-import org.waarp.common.logging.WaarpInternalLogger;
-import org.waarp.common.logging.WaarpInternalLoggerFactory;
+import org.waarp.common.logging.WaarpLogger;
+import org.waarp.common.logging.WaarpLoggerFactory;
 import org.waarp.ftp.core.exception.FtpNoConnectionException;
 import org.waarp.ftp.core.file.FtpFile;
 import org.waarp.ftp.core.session.FtpSession;
@@ -43,7 +42,7 @@ public abstract class FilesystemBasedFtpFile extends FilesystemBasedFileImpl imp
 	/**
 	 * Internal Logger
 	 */
-	private static final WaarpInternalLogger logger = WaarpInternalLoggerFactory
+	private static final WaarpLogger logger = WaarpLoggerFactory
 			.getLogger(FilesystemBasedFtpFile.class);
 
 	/**
@@ -123,7 +122,7 @@ public abstract class FilesystemBasedFtpFile extends FilesystemBasedFileImpl imp
 			// While not last block
 			ChannelFuture future = null;
 			while (block != null && !block.isEOF()) {
-				future = Channels.write(channel, block);
+				future = channel.writeAndFlush(block);
 				// Test if channel is writable in order to prevent OOM
 				if (channel.isWritable()) {
 					try {
@@ -161,7 +160,7 @@ public abstract class FilesystemBasedFtpFile extends FilesystemBasedFileImpl imp
 			// Last block
 			closeFile();
 			if (block != null) {
-				future = Channels.write(channel, block);
+				future = channel.writeAndFlush(block);
 			}
 			// Wait for last write
 			if (future != null) {

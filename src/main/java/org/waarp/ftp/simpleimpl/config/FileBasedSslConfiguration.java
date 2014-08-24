@@ -23,15 +23,15 @@ import org.dom4j.io.SAXReader;
 import org.waarp.common.crypto.ssl.WaarpSecureKeyStore;
 import org.waarp.common.crypto.ssl.WaarpSslContextFactory;
 import org.waarp.common.exception.CryptoException;
-import org.waarp.common.logging.WaarpInternalLogger;
-import org.waarp.common.logging.WaarpInternalLoggerFactory;
+import org.waarp.common.logging.WaarpLogger;
+import org.waarp.common.logging.WaarpLoggerFactory;
 import org.waarp.common.xml.XmlDecl;
 import org.waarp.common.xml.XmlHash;
 import org.waarp.common.xml.XmlType;
 import org.waarp.common.xml.XmlUtil;
 import org.waarp.common.xml.XmlValue;
 import org.waarp.ftp.core.config.FtpConfiguration;
-import org.waarp.ftp.core.control.ftps.FtpsPipelineFactory;
+import org.waarp.ftp.core.control.ftps.FtpsInitializer;
 
 /**
  * FtpConfiguration based on a XML file
@@ -43,7 +43,7 @@ public class FileBasedSslConfiguration {
 	/**
 	 * Internal Logger
 	 */
-	private static final WaarpInternalLogger logger = WaarpInternalLoggerFactory
+	private static final WaarpLogger logger = WaarpLoggerFactory
 			.getLogger(FileBasedSslConfiguration.class);
 
 	/**
@@ -110,7 +110,7 @@ public class FileBasedSslConfiguration {
 		if (value == null || (value.isEmpty())) {
 			logger.info("Unable to find Key Path");
 			try {
-				FtpsPipelineFactory.waarpSecureKeyStore =
+				FtpsInitializer.waarpSecureKeyStore =
 						new WaarpSecureKeyStore("secret", "secret");
 			} catch (CryptoException e) {
 				logger.error("Bad SecureKeyStore construction");
@@ -143,7 +143,7 @@ public class FileBasedSslConfiguration {
 				return false;
 			}
 			try {
-				FtpsPipelineFactory.waarpSecureKeyStore =
+				FtpsInitializer.waarpSecureKeyStore =
 						new WaarpSecureKeyStore(keypath, keystorepass,
 								keypass);
 			} catch (CryptoException e) {
@@ -156,7 +156,7 @@ public class FileBasedSslConfiguration {
 		value = hashConfig.get(XML_PATH_TRUSTKEYPATH);
 		if (value == null || (value.isEmpty())) {
 			logger.info("Unable to find TRUST Key Path");
-			FtpsPipelineFactory.waarpSecureKeyStore.initEmptyTrustStore();
+			FtpsInitializer.waarpSecureKeyStore.initEmptyTrustStore();
 		} else {
 			String keypath = value.getString();
 			if ((keypath == null) || (keypath.length() == 0)) {
@@ -179,16 +179,16 @@ public class FileBasedSslConfiguration {
 				useClientAuthent = value.getBoolean();
 			}
 			try {
-				FtpsPipelineFactory.waarpSecureKeyStore.initTrustStore(keypath,
+				FtpsInitializer.waarpSecureKeyStore.initTrustStore(keypath,
 						keystorepass, useClientAuthent);
 			} catch (CryptoException e) {
 				logger.error("Bad TrustKeyStore construction");
 				return false;
 			}
 		}
-		FtpsPipelineFactory.waarpSslContextFactory =
+		FtpsInitializer.waarpSslContextFactory =
 				new WaarpSslContextFactory(
-						FtpsPipelineFactory.waarpSecureKeyStore);
+						FtpsInitializer.waarpSecureKeyStore);
 		return true;
 	}
 

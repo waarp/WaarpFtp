@@ -19,8 +19,8 @@ package org.waarp.ftp.core.utils;
 
 import java.util.TimerTask;
 
-import org.waarp.common.logging.WaarpInternalLogger;
-import org.waarp.common.logging.WaarpInternalLoggerFactory;
+import org.waarp.common.logging.WaarpLogger;
+import org.waarp.common.logging.WaarpLoggerFactory;
 import org.waarp.ftp.core.config.FtpConfiguration;
 
 /**
@@ -33,7 +33,7 @@ public class FtpTimerTask extends TimerTask {
 	/**
 	 * Internal Logger
 	 */
-	private static final WaarpInternalLogger logger = WaarpInternalLoggerFactory
+	private static final WaarpLogger logger = WaarpLoggerFactory
 			.getLogger(FtpTimerTask.class);
 
 	/**

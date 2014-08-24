@@ -17,7 +17,7 @@
  */
 package org.waarp.ftp.core.data.handler;
 
-import org.jboss.netty.buffer.ChannelBuffer;
+import io.netty.buffer.ByteBuf;
 
 /**
  * SeekAheadData Class used to optimize access to the incoming buffer
@@ -41,12 +41,12 @@ public class FtpSeekAheadData {
 
 	int limit;
 
-	ChannelBuffer buffer;
+	ByteBuf buffer;
 
 	/**
 	 * @param buffer
 	 */
-	FtpSeekAheadData(ChannelBuffer buffer) throws SeekAheadNoBackArrayException {
+	FtpSeekAheadData(ByteBuf buffer) throws SeekAheadNoBackArrayException {
 		if (!buffer.hasArray()) {
 			throw new SeekAheadNoBackArrayException();
 		}

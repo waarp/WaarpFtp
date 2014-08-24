@@ -20,7 +20,7 @@ package org.waarp.ftp.core.data;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 
-import org.jboss.netty.channel.Channel;
+import io.netty.channel.Channel;
 import org.waarp.common.command.exception.Reply425Exception;
 import org.waarp.common.crypto.ssl.WaarpSslUtility;
 import org.waarp.ftp.core.command.FtpArgumentCode;
@@ -120,12 +120,10 @@ public class FtpDataAsyncConn {
 	public FtpDataAsyncConn(FtpSession session) {
 		this.session = session;
 		dataChannel = null;
-		remoteAddress = FtpChannelUtils.getRemoteInetSocketAddress(this.session
-				.getControlChannel());
+		remoteAddress = FtpChannelUtils.getRemoteInetSocketAddress(this.session.getControlChannel());
 		remotePort = remoteAddress.getPort();
 		setDefaultLocalPort();
-		localAddress = new InetSocketAddress(FtpChannelUtils
-				.getLocalInetAddress(this.session.getControlChannel()),
+		localAddress = new InetSocketAddress(FtpChannelUtils.getLocalInetAddress(this.session.getControlChannel()),
 				localPort);
 		passiveMode = false;
 		isBind = false;
@@ -243,8 +241,8 @@ public class FtpDataAsyncConn {
 	 * 
 	 * @return True if the dataChannel is connected
 	 */
-	public boolean isConnected() {
-		return dataChannel != null && dataChannel.isConnected();
+	public boolean isActive() {
+		return dataChannel != null && dataChannel.isActive();
 	}
 
 	/**
@@ -350,7 +348,7 @@ public class FtpDataAsyncConn {
 		if (isBind && passiveMode) {
 			isBind = false;
 			InetSocketAddress local = getLocalAddress();
-			if (dataChannel != null && dataChannel.isConnected()) {
+			if (dataChannel != null && dataChannel.isActive()) {
 				WaarpSslUtility.closingSslChannel(dataChannel);
 			}
 			session.getConfiguration().getFtpInternalConfiguration()
@@ -432,7 +430,7 @@ public class FtpDataAsyncConn {
 	 */
 	public String getStatus() {
 		StringBuilder builder = new StringBuilder("Data connection: ");
-		builder.append((isConnected() ? "connected " : "not connected "));
+		builder.append((isActive() ? "connected " : "not connected "));
 		builder.append((isBind() ? "bind " : "not bind "));
 		builder.append((isPassiveMode() ? "passive mode" : "active mode"));
 		builder.append('\n');

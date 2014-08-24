@@ -17,14 +17,14 @@
  */
 package org.waarp.ftp.core.command.internal;
 
-import org.jboss.netty.channel.ChannelFuture;
-import org.jboss.netty.channel.ChannelFutureListener;
+import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelFutureListener;
 import org.waarp.common.command.ReplyCode;
 import org.waarp.common.command.exception.Reply500Exception;
 import org.waarp.common.command.exception.Reply501Exception;
 import org.waarp.common.crypto.ssl.WaarpSslUtility;
-import org.waarp.common.logging.WaarpInternalLogger;
-import org.waarp.common.logging.WaarpInternalLoggerFactory;
+import org.waarp.common.logging.WaarpLogger;
+import org.waarp.common.logging.WaarpLoggerFactory;
 import org.waarp.ftp.core.command.AbstractCommand;
 import org.waarp.ftp.core.config.FtpConfiguration;
 import org.waarp.ftp.core.utils.FtpChannelUtils;
@@ -39,7 +39,7 @@ public class INTERNALSHUTDOWN extends AbstractCommand {
 	/**
 	 * Internal Logger
 	 */
-	private static final WaarpInternalLogger logger = WaarpInternalLoggerFactory
+	private static final WaarpLogger logger = WaarpLoggerFactory
 			.getLogger(INTERNALSHUTDOWN.class);
 
 	/**
@@ -56,23 +56,13 @@ public class INTERNALSHUTDOWN extends AbstractCommand {
 			this.configuration = configuration;
 		}
 
-		/*
-		 * (non-Javadoc)
-		 * @see org.jboss.netty.channel.ChannelFutureListener#operationComplete(org
-		 * .jboss.netty.channel.ChannelFuture)
-		 */
 		public void operationComplete(ChannelFuture arg0) throws Exception {
-			WaarpSslUtility.closingSslChannel(arg0.getChannel());
+            WaarpSslUtility.closingSslChannel(arg0.channel());
 			FtpChannelUtils.teminateServer(configuration);
-
 		}
 
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * @see org.waarp.ftp.core.command.AbstractCommand#exec()
-	 */
 	public void exec() throws Reply501Exception, Reply500Exception {
 		if (!getSession().getAuth().isAdmin()) {
 			// not admin

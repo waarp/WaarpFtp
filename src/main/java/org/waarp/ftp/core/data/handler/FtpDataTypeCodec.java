@@ -18,14 +18,14 @@
 package org.waarp.ftp.core.data.handler;
 
 import java.nio.charset.Charset;
+import java.util.List;
 
-import org.jboss.netty.buffer.ChannelBuffer;
-import org.jboss.netty.buffer.ChannelBuffers;
-import org.jboss.netty.channel.ChannelHandler.Sharable;
-import org.jboss.netty.channel.ChannelHandlerContext;
-import org.jboss.netty.channel.Channels;
-import org.jboss.netty.channel.MessageEvent;
-import org.jboss.netty.channel.SimpleChannelHandler;
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
+import io.netty.channel.ChannelHandler.Sharable;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.handler.codec.MessageToMessageCodec;
+
 import org.waarp.common.exception.InvalidArgumentException;
 import org.waarp.common.file.DataBlock;
 import org.waarp.ftp.core.command.FtpArgumentCode.TransferSubType;
@@ -33,7 +33,7 @@ import org.waarp.ftp.core.command.FtpArgumentCode.TransferType;
 
 /**
  * Second CODEC :<br>
- * - encode/decode : takes a {@link DataBlock} and trsnforms it to a new {@link DataBlock} according
+ * - encode/decode : takes a {@link DataBlock} and transforms it to a new {@link DataBlock} according
  * to the types<br>
  * Force ASCII, EBCDIC or IMAGE (with NON PRINT). LOCAL and other subtypes are not implemented.
  * 
@@ -41,7 +41,7 @@ import org.waarp.ftp.core.command.FtpArgumentCode.TransferType;
  * 
  */
 @Sharable
-public class FtpDataTypeCodec extends SimpleChannelHandler {
+public class FtpDataTypeCodec extends MessageToMessageCodec<DataBlock, DataBlock> {
 	/*
 	 * 3.1.1. DATA TYPES Data representations are handled in FTP by a user specifying a
 	 * representation type. This type may implicitly (as in ASCII or EBCDIC) or explicitly (as in
@@ -184,25 +184,17 @@ public class FtpDataTypeCodec extends SimpleChannelHandler {
 		}
 	}
 
-	@Override
-	public void messageReceived(ChannelHandlerContext ctx, MessageEvent e)
-			throws Exception {
-		Object o = e.getMessage();
-		if (!(o instanceof DataBlock)) {
-			// Type unimplemented
-			throw new InvalidArgumentException("Wrong object received in " +
-					this.getClass().getName() + " codec " +
-					o.getClass().getName());
-		}
-		DataBlock dataBlock = (DataBlock) o;
+
+    @Override
+    protected void decode(ChannelHandlerContext ctx, DataBlock msg, List<Object> out) throws Exception {
 		// Is an ASCII or EBCDIC mode
 		if (type == TransferType.ASCII || type == TransferType.EBCDIC) {
-			ChannelBuffer buffer = dataBlock.getBlock();
-			dataBlock.setBlock(decode(buffer));
-			Channels.fireMessageReceived(ctx, dataBlock);
+			ByteBuf buffer = msg.getBlock();
+			msg.setBlock(decode(buffer));
+			out.add(msg);
 			return;
 		} else if (type == TransferType.IMAGE) {
-			super.messageReceived(ctx, e);
+		    out.add(msg);
 			return;
 		}
 		// Type unimplemented
@@ -212,40 +204,26 @@ public class FtpDataTypeCodec extends SimpleChannelHandler {
 
 	/**
 	 * 
-	 * @param channelBuffer
-	 * @return the ChannelBuffer
+	 * @param ByteBuf
+	 * @return the ByteBuf
 	 * @throws Exception
 	 */
-	protected ChannelBuffer decode(ChannelBuffer channelBuffer)
+	protected ByteBuf decode(ByteBuf ByteBuf)
 			throws Exception {
-		return ChannelBuffers.copiedBuffer(channelBuffer
+		return Unpooled.copiedBuffer(ByteBuf
 				.toString(type.charset), charsetName);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * @see org.jboss.netty.channel.SimpleChannelHandler#writeRequested(org.jboss
-	 * .netty.channel.ChannelHandlerContext, org.jboss.netty.channel.MessageEvent)
-	 */
-	@Override
-	public void writeRequested(ChannelHandlerContext ctx, MessageEvent evt)
-			throws Exception {
-		Object o = evt.getMessage();
-		if (!(o instanceof DataBlock)) {
-			// Type unimplemented
-			throw new InvalidArgumentException("Wrong object received in " +
-					this.getClass().getName() + " codec " +
-					o.getClass().getName());
-		}
-		DataBlock dataBlock = (DataBlock) o;
+    @Override
+    protected void encode(ChannelHandlerContext ctx, DataBlock msg, List<Object> out) throws Exception {
 		// Is an ASCII or EBCDIC mode
 		if (type == TransferType.ASCII || type == TransferType.EBCDIC) {
-			ChannelBuffer buffer = dataBlock.getBlock();
-			dataBlock.setBlock(encode(buffer));
-			Channels.write(ctx, evt.getFuture(), dataBlock);
+			ByteBuf buffer = msg.getBlock();
+			msg.setBlock(encode(buffer));
+			out.add(msg);
 			return;
 		} else if (type == TransferType.IMAGE) {
-			super.writeRequested(ctx, evt);
+		    out.add(msg);
 			return;
 		}
 		// Type unimplemented
@@ -255,13 +233,13 @@ public class FtpDataTypeCodec extends SimpleChannelHandler {
 
 	/**
 	 * 
-	 * @param channelBuffer
+	 * @param ByteBuf
 	 * @return the encoded buffer
 	 * @throws Exception
 	 */
-	protected ChannelBuffer encode(ChannelBuffer channelBuffer)
+	protected ByteBuf encode(ByteBuf ByteBuf)
 			throws Exception {
-		String chString = channelBuffer.toString(charsetName);
-		return ChannelBuffers.copiedBuffer(chString, type.charset);
+		String chString = ByteBuf.toString(charsetName);
+		return Unpooled.copiedBuffer(chString, type.charset);
 	}
 }

@@ -17,11 +17,12 @@
  */
 package org.waarp.ftp.core.data.handler;
 
-import org.jboss.netty.channel.ChannelPipeline;
-import org.jboss.netty.channel.ChannelPipelineFactory;
-import org.jboss.netty.channel.Channels;
-import org.jboss.netty.handler.execution.ExecutionHandler;
-import org.jboss.netty.handler.traffic.ChannelTrafficShapingHandler;
+import io.netty.channel.ChannelInitializer;
+import io.netty.channel.ChannelPipeline;
+import io.netty.channel.socket.SocketChannel;
+import io.netty.handler.traffic.ChannelTrafficShapingHandler;
+import io.netty.util.concurrent.EventExecutorGroup;
+
 import org.waarp.ftp.core.command.FtpArgumentCode.TransferMode;
 import org.waarp.ftp.core.command.FtpArgumentCode.TransferStructure;
 import org.waarp.ftp.core.command.FtpArgumentCode.TransferSubType;
@@ -34,7 +35,7 @@ import org.waarp.ftp.core.config.FtpConfiguration;
  * @author Frederic Bregier
  * 
  */
-public class FtpDataPipelineFactory implements ChannelPipelineFactory {
+public class FtpDataInitializer extends ChannelInitializer<SocketChannel> {
 	/**
 	 * Mode Codec
 	 */
@@ -65,26 +66,26 @@ public class FtpDataPipelineFactory implements ChannelPipelineFactory {
 	 */
 	public static final String HANDLER = "handler";
 
-	private static final FtpDataTypeCodec ftpDataTypeCodec = new FtpDataTypeCodec(
+	protected static final FtpDataTypeCodec ftpDataTypeCodec = new FtpDataTypeCodec(
 			TransferType.ASCII, TransferSubType.NONPRINT);
 
-	private static final FtpDataStructureCodec ftpDataStructureCodec = new FtpDataStructureCodec(
+	protected static final FtpDataStructureCodec ftpDataStructureCodec = new FtpDataStructureCodec(
 			TransferStructure.FILE);
 
 	/**
 	 * Business Handler Class
 	 */
-	private final Class<? extends DataBusinessHandler> dataBusinessHandler;
+	protected final Class<? extends DataBusinessHandler> dataBusinessHandler;
 
 	/**
 	 * Configuration
 	 */
-	private final FtpConfiguration configuration;
+	protected final FtpConfiguration configuration;
 
 	/**
 	 * Is this factory for Active mode
 	 */
-	private final boolean isActive;
+	protected final boolean isActive;
 
 	/**
 	 * Constructor which Initializes some data
@@ -93,7 +94,7 @@ public class FtpDataPipelineFactory implements ChannelPipelineFactory {
 	 * @param configuration
 	 * @param active
 	 */
-	public FtpDataPipelineFactory(
+	public FtpDataInitializer(
 			Class<? extends DataBusinessHandler> dataBusinessHandler,
 			FtpConfiguration configuration, boolean active) {
 		this.dataBusinessHandler = dataBusinessHandler;
@@ -104,10 +105,10 @@ public class FtpDataPipelineFactory implements ChannelPipelineFactory {
 	/**
 	 * Create the pipeline with Handler, ObjectDecoder, ObjectEncoder.
 	 * 
-	 * @see org.jboss.netty.channel.ChannelPipelineFactory#getPipeline()
 	 */
-	public ChannelPipeline getPipeline() throws Exception {
-		ChannelPipeline pipeline = Channels.pipeline();
+    @Override
+    public void initChannel(SocketChannel ch) throws Exception {
+		ChannelPipeline pipeline = ch.pipeline();
 		// Add default codec but they will change by the channelConnected
 		pipeline.addFirst(CODEC_MODE, new FtpDataModeCodec(TransferMode.STREAM,
 				TransferStructure.FILE));
@@ -125,13 +126,11 @@ public class FtpDataPipelineFactory implements ChannelPipelineFactory {
 		pipeline.addLast(CODEC_TYPE, ftpDataTypeCodec);
 		pipeline.addLast(CODEC_STRUCTURE, ftpDataStructureCodec);
 		// Threaded execution for business logic
-		pipeline.addLast(PIPELINE_EXECUTOR, new ExecutionHandler(configuration
-				.getFtpInternalConfiguration().getDataPipelineExecutor()));
+		EventExecutorGroup executorGroup = configuration.getFtpInternalConfiguration().getDataExecutor();
 		// and then business logic. New one on every connection
 		DataBusinessHandler newbusiness = dataBusinessHandler.newInstance();
 		DataNetworkHandler newNetworkHandler = new DataNetworkHandler(
 				configuration, newbusiness, isActive);
-		pipeline.addLast(HANDLER, newNetworkHandler);
-		return pipeline;
+		pipeline.addLast(executorGroup, HANDLER, newNetworkHandler);
 	}
 }

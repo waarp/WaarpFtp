@@ -20,14 +20,12 @@
  */
 package org.waarp.ftp.core.control.ftps;
 
-import org.jboss.netty.channel.Channel;
-import org.jboss.netty.channel.ChannelHandler;
-import org.jboss.netty.channel.ChannelHandlerContext;
-import org.jboss.netty.channel.ChannelStateEvent;
-import org.jboss.netty.handler.ssl.SslHandler;
+import io.netty.channel.Channel;
+import io.netty.channel.ChannelHandlerContext;
+
 import org.waarp.common.crypto.ssl.WaarpSslUtility;
-import org.waarp.common.logging.WaarpInternalLogger;
-import org.waarp.common.logging.WaarpInternalLoggerFactory;
+import org.waarp.common.logging.WaarpLogger;
+import org.waarp.common.logging.WaarpLoggerFactory;
 import org.waarp.ftp.core.control.NetworkHandler;
 import org.waarp.ftp.core.session.FtpSession;
 
@@ -39,7 +37,7 @@ public class SslNetworkHandler extends NetworkHandler {
 	/**
 	 * Internal Logger
 	 */
-	private static final WaarpInternalLogger logger = WaarpInternalLoggerFactory
+	private static final WaarpLogger logger = WaarpLoggerFactory
 			.getLogger(SslNetworkHandler.class);
 
 	/**
@@ -49,16 +47,14 @@ public class SslNetworkHandler extends NetworkHandler {
 		super(session);
 	}
 
-
-	@Override
-	public void channelOpen(ChannelHandlerContext ctx, ChannelStateEvent e)
-			throws Exception {
-		Channel channel = e.getChannel();
-		logger.debug("Add channel to ssl " +channel.getId());
-		WaarpSslUtility.addSslOpenedChannel(channel);
-		super.channelOpen(ctx, e);
-	}
-
+    @Override
+    public void channelRegistered(ChannelHandlerContext ctx) throws Exception {
+        Channel channel = ctx.channel();
+        logger.debug("Add channel to ssl " +channel.id());
+        WaarpSslUtility.addSslOpenedChannel(channel);
+        super.channelRegistered(ctx);
+    }
+    
 	/**
 	 * To be extended to inform of an error to SNMP support
 	 * @param error1
@@ -68,31 +64,15 @@ public class SslNetworkHandler extends NetworkHandler {
 		// ignore
 	}
 
-	@Override
-	public void channelConnected(ChannelHandlerContext ctx, ChannelStateEvent e) {
-		// Get the SslHandler in the current pipeline.
-		// We added it in NetworkSslServerPipelineFactory.
-		// Get the SslHandler in the current pipeline.
-		// We added it in NetworkSslServerPipelineFactory.
-		final ChannelHandler handler = ctx.getPipeline().getFirst();
-		if (handler instanceof SslHandler) {
-			final SslHandler sslHandler = (SslHandler) handler;
-			if (sslHandler.isIssueHandshake()) {
-				// client side
-				WaarpSslUtility.setStatusSslConnectedChannel(ctx.getChannel(), true);
-			} else {
-				// server side
-				// Get the SslHandler and begin handshake ASAP.
-				// Get notified when SSL handshake is done.
-				if (! WaarpSslUtility.runHandshake(ctx.getChannel())) {
-					callForSnmp("SSL Connection Error", "During Ssl Handshake");
-				}
-			}				
-		} else {
-			logger.error("SSL Not found");
-		}
-		getFtpSession().setSsl(true);
-		super.channelConnected(ctx, e);
+    @Override
+    public void channelActive(ChannelHandlerContext ctx) throws Exception {
+        if (! WaarpSslUtility.waitForHandshake(ctx.channel())) {
+            callForSnmp("SSL Connection Error", "During Ssl Handshake");
+            getFtpSession().setSsl(false);
+        } else {
+            getFtpSession().setSsl(true);
+        }
+		super.channelActive(ctx);
 	}
 
 }

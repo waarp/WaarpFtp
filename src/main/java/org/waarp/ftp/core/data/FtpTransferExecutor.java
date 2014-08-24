@@ -20,8 +20,8 @@ package org.waarp.ftp.core.data;
 import java.util.List;
 
 import org.waarp.common.command.ReplyCode;
-import org.waarp.common.logging.WaarpInternalLogger;
-import org.waarp.common.logging.WaarpInternalLoggerFactory;
+import org.waarp.common.logging.WaarpLogger;
+import org.waarp.common.logging.WaarpLoggerFactory;
 import org.waarp.ftp.core.command.FtpCommandCode;
 import org.waarp.ftp.core.exception.FtpNoConnectionException;
 import org.waarp.ftp.core.exception.FtpNoFileException;
@@ -37,7 +37,7 @@ public class FtpTransferExecutor implements Runnable {
 	/**
 	 * Internal Logger
 	 */
-	private static final WaarpInternalLogger logger = WaarpInternalLoggerFactory
+	private static final WaarpLogger logger = WaarpLoggerFactory
 			.getLogger(FtpTransferExecutor.class);
 
 	/**
@@ -114,8 +114,7 @@ public class FtpTransferExecutor implements Runnable {
 			String message = builder.toString();
 			boolean status = false;
 			try {
-				status = session.getDataConn().getDataNetworkHandler()
-						.writeMessage(message);
+				status = session.getDataConn().getDataNetworkHandler().writeMessage(message);
 			} catch (FtpNoConnectionException e) {
 				logger.error("No Connection but should not be!", e);
 			}

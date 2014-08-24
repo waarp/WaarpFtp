@@ -17,10 +17,9 @@
  */
 package org.waarp.ftp.simpleimpl.data;
 
-import org.jboss.netty.channel.Channel;
-import org.jboss.netty.channel.ExceptionEvent;
-import org.waarp.common.logging.WaarpInternalLogger;
-import org.waarp.common.logging.WaarpInternalLoggerFactory;
+import io.netty.channel.Channel;
+import org.waarp.common.logging.WaarpLogger;
+import org.waarp.common.logging.WaarpLoggerFactory;
 import org.waarp.ftp.core.data.handler.DataBusinessHandler;
 
 /**
@@ -33,43 +32,24 @@ public class FileSystemBasedDataBusinessHandler extends DataBusinessHandler {
 	/**
 	 * Internal Logger
 	 */
-	private static final WaarpInternalLogger logger = WaarpInternalLoggerFactory
+	private static final WaarpLogger logger = WaarpLoggerFactory
 			.getLogger(FileSystemBasedDataBusinessHandler.class);
 
-	/*
-	 * (non-Javadoc)
-	 * @see org.waarp.ftp.core.data.handler.DataBusinessHandler#cleanSession(goldengate
-	 * .ftp.core.session.FtpSession)
-	 */
 	@Override
 	protected void cleanSession() {
 		// logger.debug("FSDBH Clean session");
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * @see org.waarp.ftp.core.data.handler.DataBusinessHandler#exceptionLocalCaught
-	 * (org.jboss.netty.channel.ExceptionEvent)
-	 */
 	@Override
-	public void exceptionLocalCaught(ExceptionEvent e) {
-		logger.warn("FSDBH Execption", e.getCause());
+	public void exceptionLocalCaught(Throwable e) {
+		logger.warn("FSDBH Execption", e);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * @see org.waarp.ftp.core.data.handler.DataBusinessHandler#executeChannelClosed ()
-	 */
 	@Override
 	public void executeChannelClosed() {
 		// logger.debug("FSDBH Channel closed");
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * @see org.waarp.ftp.core.data.handler.DataBusinessHandler#executeChannelConnected
-	 * (org.jboss.netty.channel.Channel)
-	 */
 	@Override
 	public void executeChannelConnected(Channel channel) {
 		// logger.debug("FSDBH Channel connected {}", channel);

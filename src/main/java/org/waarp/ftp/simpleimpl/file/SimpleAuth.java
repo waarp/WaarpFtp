@@ -17,8 +17,8 @@
  */
 package org.waarp.ftp.simpleimpl.file;
 
-import org.waarp.common.logging.WaarpInternalLogger;
-import org.waarp.common.logging.WaarpInternalLoggerFactory;
+import org.waarp.common.logging.WaarpLogger;
+import org.waarp.common.logging.WaarpLoggerFactory;
 
 /**
  * Simple Authentication based on a previously load XML file. Not to be used in production!
@@ -30,7 +30,7 @@ public class SimpleAuth {
 	/**
 	 * Internal Logger
 	 */
-	private static final WaarpInternalLogger logger = WaarpInternalLoggerFactory
+	private static final WaarpLogger logger = WaarpLoggerFactory
 			.getLogger(SimpleAuth.class);
 
 	/**

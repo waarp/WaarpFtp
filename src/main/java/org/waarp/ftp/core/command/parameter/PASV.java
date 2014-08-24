@@ -23,8 +23,8 @@ import java.net.InetSocketAddress;
 import org.waarp.common.command.ReplyCode;
 import org.waarp.common.command.exception.Reply425Exception;
 import org.waarp.common.command.exception.Reply501Exception;
-import org.waarp.common.logging.WaarpInternalLogger;
-import org.waarp.common.logging.WaarpInternalLoggerFactory;
+import org.waarp.common.logging.WaarpLogger;
+import org.waarp.common.logging.WaarpLoggerFactory;
 import org.waarp.ftp.core.command.AbstractCommand;
 import org.waarp.ftp.core.config.FtpInternalConfiguration;
 import org.waarp.ftp.core.data.FtpDataAsyncConn;
@@ -40,7 +40,7 @@ public class PASV extends AbstractCommand {
 	/**
 	 * Internal Logger
 	 */
-	private static final WaarpInternalLogger logger = WaarpInternalLoggerFactory
+	private static final WaarpLogger logger = WaarpLoggerFactory
 			.getLogger(PASV.class);
 
 	/*

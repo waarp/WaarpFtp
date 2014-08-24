@@ -17,21 +17,20 @@
  */
 package org.waarp.ftp.core.utils;
 
+import java.net.Inet4Address;
+import java.net.Inet6Address;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
 import java.util.Iterator;
 import java.util.Timer;
 
-import org.jboss.netty.channel.Channel;
-import org.jboss.netty.channel.ChannelFactory;
-import org.jboss.netty.channel.group.ChannelGroupFuture;
-import org.jboss.netty.channel.group.ChannelGroupFutureListener;
-import org.jboss.netty.handler.execution.OrderedMemoryAwareThreadPoolExecutor;
+import io.netty.channel.Channel;
+
 import org.slf4j.LoggerFactory;
 import org.waarp.common.crypto.ssl.WaarpSslUtility;
-import org.waarp.common.logging.WaarpInternalLogger;
-import org.waarp.common.logging.WaarpInternalLoggerFactory;
+import org.waarp.common.logging.WaarpLogger;
+import org.waarp.common.logging.WaarpLoggerFactory;
 import org.waarp.common.logging.WaarpSlf4JLoggerFactory;
 import org.waarp.ftp.core.config.FtpConfiguration;
 
@@ -47,7 +46,7 @@ public class FtpChannelUtils implements Runnable {
 	/**
 	 * Internal Logger
 	 */
-	private static final WaarpInternalLogger logger = WaarpInternalLoggerFactory
+	private static final WaarpLogger logger = WaarpLoggerFactory
 			.getLogger(FtpChannelUtils.class);
 
 	/**
@@ -57,8 +56,7 @@ public class FtpChannelUtils implements Runnable {
 	 * @return the remote InetAddress
 	 */
 	public static InetAddress getRemoteInetAddress(Channel channel) {
-		InetSocketAddress socketAddress = (InetSocketAddress) channel
-				.getRemoteAddress();
+		InetSocketAddress socketAddress = (InetSocketAddress) channel.remoteAddress();
 		if (socketAddress == null) {
 			socketAddress = new InetSocketAddress(20);
 		}
@@ -72,8 +70,7 @@ public class FtpChannelUtils implements Runnable {
 	 * @return the local InetAddress
 	 */
 	public static InetAddress getLocalInetAddress(Channel channel) {
-		InetSocketAddress socketAddress = (InetSocketAddress) channel
-				.getLocalAddress();
+		InetSocketAddress socketAddress = (InetSocketAddress) channel.localAddress();
 		return socketAddress.getAddress();
 	}
 
@@ -84,7 +81,7 @@ public class FtpChannelUtils implements Runnable {
 	 * @return the remote InetSocketAddress
 	 */
 	public static InetSocketAddress getRemoteInetSocketAddress(Channel channel) {
-		return (InetSocketAddress) channel.getRemoteAddress();
+		return (InetSocketAddress) channel.remoteAddress();
 	}
 
 	/**
@@ -94,7 +91,7 @@ public class FtpChannelUtils implements Runnable {
 	 * @return the local InetSocketAddress
 	 */
 	public static InetSocketAddress getLocalInetSocketAddress(Channel channel) {
-		return (InetSocketAddress) channel.getLocalAddress();
+		return (InetSocketAddress) channel.localAddress();
 	}
 
 	/**
@@ -160,67 +157,51 @@ public class FtpChannelUtils implements Runnable {
 			return null;
 		}
 		String delim = arg.substring(0, 1);
-		String[] infos = arg.split(delim);
-		if (infos.length != 3) {
+		String[] infos = arg.split("\\"+delim);
+		if (infos.length != 3 && infos.length != 4) {
 			// bad format
+		    logger.error("Bad address format: "+infos.length);
 			return null;
 		}
+		int start = 0;
+		if (infos.length == 4) {
+		    start = 1;
+		}
 		boolean isIPV4 = true;
-		if (infos[0].equals("1")) {
+		if (infos[start].equals("1")) {
 			isIPV4 = true;
-		} else if (infos[0].equals("2")) {
+		} else if (infos[start].equals("2")) {
 			isIPV4 = false;
 		} else {
 			// not supported
+		    logger.error("Bad 1 or 2 format in address: "+infos[start]);
 			return null;
 		}
-		byte[] address = null;
+		start++;
+        InetAddress inetAddress;
 		if (isIPV4) {
-			// IPV4
-			address = new byte[4];
-			String[] elements = infos[1].split("\\.");
-			if (elements.length != 4) {
-				return null;
-			}
-			for (int i = 0; i < 4; i++) {
-				try {
-					address[i] = (byte) Integer.parseInt(elements[i]);
-				} catch (NumberFormatException e) {
-					return null;
-				}
-			}
+            // IPV4
+            try {
+                inetAddress = (Inet4Address) InetAddress.getByName(infos[start]);
+            } catch (UnknownHostException e) {
+                logger.error("Bad IPV4 format", e);
+                return null;
+            }
 		} else {
 			// IPV6
-			address = new byte[16];
-			int[] value = new int[8];
-			String[] elements = infos[1].split(":");
-			if (elements.length != 8) {
-				return null;
-			}
-			for (int i = 0, j = 0; i < 8; i++) {
-				if (elements[i] == null || elements[i].length() == 0) {
-					value[i] = 0;
-				} else {
-					try {
-						value[i] = Integer.parseInt(elements[i]);
-					} catch (NumberFormatException e) {
-						return null;
-					}
-				}
-				address[j++] = (byte) (value[i] >> 8);
-				address[j++] = (byte) (value[i] & 0xFF);
-			}
+            try {
+                inetAddress = (Inet6Address) InetAddress.getByName(infos[start]);
+            } catch (UnknownHostException e) {
+                logger.error("Bad IPV6 format", e);
+                return null;
+            }
 		}
+		start++;
 		int port = 0;
 		try {
-			port = Integer.parseInt(infos[2]);
+			port = Integer.parseInt(infos[start]);
 		} catch (NumberFormatException e) {
-			return null;
-		}
-		InetAddress inetAddress;
-		try {
-			inetAddress = InetAddress.getByAddress(address);
-		} catch (UnknownHostException e) {
+		    logger.error("Bad port number format: "+infos[start]);
 			return null;
 		}
 		return new InetSocketAddress(inetAddress, port);
@@ -252,53 +233,21 @@ public class FtpChannelUtils implements Runnable {
 	}
 
 	/**
-	 * Finalize resources attached to Control or Data handlers
-	 * 
-	 * @author Frederic Bregier
-	 * 
-	 */
-	private static class FtpChannelGroupFutureListener implements
-			ChannelGroupFutureListener {
-		OrderedMemoryAwareThreadPoolExecutor pool;
-
-		ChannelFactory channelFactory;
-
-		ChannelFactory channelFactory2;
-
-		public FtpChannelGroupFutureListener(
-				OrderedMemoryAwareThreadPoolExecutor pool,
-				ChannelFactory channelFactory, ChannelFactory channelFactory2) {
-			this.pool = pool;
-			this.channelFactory = channelFactory;
-			this.channelFactory2 = channelFactory2;
-		}
-
-		public void operationComplete(ChannelGroupFuture future)
-				throws Exception {
-			pool.shutdownNow();
-			channelFactory.releaseExternalResources();
-			if (channelFactory2 != null) {
-				channelFactory2.releaseExternalResources();
-			}
-		}
-	}
-
-	/**
 	 * Terminate all registered command channels
 	 * 
 	 * @param configuration
 	 * @return the number of previously registered command channels
 	 */
-	static int terminateCommandChannels(FtpConfiguration configuration) {
+	static int terminateCommandChannels(final FtpConfiguration configuration) {
 		int result = configuration.getFtpInternalConfiguration()
 				.getCommandChannelGroup().size();
 		configuration.getFtpInternalConfiguration().getCommandChannelGroup()
-				.close().addListener(
-						new FtpChannelGroupFutureListener(configuration
-								.getFtpInternalConfiguration()
-								.getPipelineExecutor(), configuration
-								.getFtpInternalConfiguration()
-								.getCommandChannelFactory(), null));
+				.close()/*.addListener(new ChannelGroupFutureListener() {
+                    @Override
+                    public void operationComplete(ChannelGroupFuture future) throws Exception {
+                        configuration.getFtpInternalConfiguration().getExecutor().shutdownGracefully().sync();
+                    }
+                })*/;
 		return result;
 	}
 
@@ -308,18 +257,16 @@ public class FtpChannelUtils implements Runnable {
 	 * @param configuration
 	 * @return the number of previously registered data channels
 	 */
-	private static int terminateDataChannels(FtpConfiguration configuration) {
+	private static int terminateDataChannels(final FtpConfiguration configuration) {
 		int result = configuration.getFtpInternalConfiguration()
 				.getDataChannelGroup().size();
 		configuration.getFtpInternalConfiguration().getDataChannelGroup()
-				.close().addListener(
-						new FtpChannelGroupFutureListener(configuration
-								.getFtpInternalConfiguration()
-								.getDataPipelineExecutor(), configuration
-								.getFtpInternalConfiguration()
-								.getDataPassiveChannelFactory(), configuration
-								.getFtpInternalConfiguration()
-								.getDataActiveChannelFactory()));
+                .close()/*.addListener(new ChannelGroupFutureListener() {
+                    @Override
+                    public void operationComplete(ChannelGroupFuture future) throws Exception {
+                        configuration.getFtpInternalConfiguration().getDataExecutor().shutdownGracefully().sync();
+                    }
+                })*/;
 		return result;
 	}
 
@@ -359,9 +306,9 @@ public class FtpChannelUtils implements Runnable {
 				.iterator();
 		while (iterator.hasNext()) {
 			channel = iterator.next();
-			if (channel.getParent() != null) {
+			if (channel.parent() != null) {
 				// Child Channel
-				if (channel.isConnected()) {
+				if (channel.isActive()) {
 					// Normal channel
 					result++;
 				} else {
@@ -394,7 +341,7 @@ public class FtpChannelUtils implements Runnable {
 		timerTask.configuration = configuration;
 		timer.schedule(timerTask, configuration.TIMEOUTCON / 4);
 		configuration.getFtpInternalConfiguration()
-				.getGlobalTrafficShapingHandler().releaseExternalResources();
+				.getGlobalTrafficShapingHandler().release();
 		configuration.releaseResources();
 		logger.info("Exit Shutdown Data");
 		terminateDataChannels(configuration);
@@ -452,7 +399,7 @@ public class FtpChannelUtils implements Runnable {
 	}
 
 	public static void stopLogger() {
-		if (WaarpInternalLoggerFactory.getDefaultFactory() instanceof WaarpSlf4JLoggerFactory) {
+		if (WaarpLoggerFactory.getDefaultFactory() instanceof WaarpSlf4JLoggerFactory) {
 			LoggerContext lc = (LoggerContext) LoggerFactory.getILoggerFactory();
 			lc.stop();
 		}

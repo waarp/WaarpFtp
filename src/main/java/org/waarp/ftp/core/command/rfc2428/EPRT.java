@@ -22,6 +22,8 @@ import java.net.InetSocketAddress;
 import org.waarp.common.command.ReplyCode;
 import org.waarp.common.command.exception.Reply501Exception;
 import org.waarp.common.command.exception.Reply522Exception;
+import org.waarp.common.logging.WaarpLogger;
+import org.waarp.common.logging.WaarpLoggerFactory;
 import org.waarp.ftp.core.command.AbstractCommand;
 import org.waarp.ftp.core.utils.FtpChannelUtils;
 
@@ -32,6 +34,7 @@ import org.waarp.ftp.core.utils.FtpChannelUtils;
  * 
  */
 public class EPRT extends AbstractCommand {
+    private static final WaarpLogger logger = WaarpLoggerFactory.getInstance(EPRT.class);
 
 	/*
 	 * (non-Javadoc)
@@ -40,8 +43,8 @@ public class EPRT extends AbstractCommand {
 	public void exec() throws Reply501Exception, Reply522Exception {
 		// First Check if any argument
 		if (!hasArg()) {
-			InetSocketAddress inetSocketAddress = getSession().getDataConn()
-					.getRemoteAddress();
+			InetSocketAddress inetSocketAddress = getSession().getDataConn().getRemoteAddress();
+			logger.debug("Active connect to "+inetSocketAddress);
 			getSession().getDataConn().setActive(inetSocketAddress);
 			getSession().setReplyCode(
 					ReplyCode.REPLY_200_COMMAND_OKAY,
@@ -52,14 +55,14 @@ public class EPRT extends AbstractCommand {
 		}
 		// Check if Inet Address is OK
 
-		InetSocketAddress inetSocketAddress = FtpChannelUtils
-				.get2428InetSocketAddress(getArg());
+		InetSocketAddress inetSocketAddress = FtpChannelUtils.get2428InetSocketAddress(getArg());
 		if (inetSocketAddress == null) {
 			// ERROR
-			throw new Reply522Exception(null);
+			throw new Reply522Exception("Can't get SocketAddress from "+getArg());
 		}
 		// No Check if the Client address is the same as given
 		// OK now try to initialize connection (not open)
+        logger.debug("Active connect to "+inetSocketAddress);
 		getSession().getDataConn().setActive(inetSocketAddress);
 		getSession()
 				.setReplyCode(

@@ -17,8 +17,7 @@
  */
 package org.waarp.ftp.core.control;
 
-import org.jboss.netty.channel.Channel;
-import org.jboss.netty.channel.ExceptionEvent;
+import io.netty.channel.Channel;
 import org.waarp.common.command.exception.CommandAbstractException;
 import org.waarp.common.file.Restart;
 import org.waarp.common.file.filesystembased.FilesystemBasedOptsMLSxImpl;
@@ -268,7 +267,7 @@ public abstract class BusinessHandler {
 	 * 
 	 * @param e
 	 */
-	public abstract void exceptionLocalCaught(ExceptionEvent e);
+	public abstract void exceptionLocalCaught(Throwable e);
 
 	/**
 	 * This method is called for every received message before the execution of the command. If an

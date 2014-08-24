@@ -20,6 +20,8 @@ package org.waarp.ftp.core.data;
 import java.util.List;
 
 import org.waarp.common.command.exception.CommandAbstractException;
+import org.waarp.common.logging.WaarpLogger;
+import org.waarp.common.logging.WaarpLoggerFactory;
 import org.waarp.ftp.core.command.FtpCommandCode;
 import org.waarp.ftp.core.exception.FtpNoFileException;
 import org.waarp.ftp.core.file.FtpFile;
@@ -31,6 +33,8 @@ import org.waarp.ftp.core.file.FtpFile;
  * 
  */
 public class FtpTransfer {
+    private static final WaarpLogger logger = WaarpLoggerFactory.getLogger(FtpTransfer.class);
+    
 	/**
 	 * The command to execute
 	 */
@@ -126,6 +130,9 @@ public class FtpTransfer {
 	 * @param status
 	 */
 	public void setStatus(boolean status) {
+	    if (!status) {
+	        logger.debug("Status false", new Exception("Trace only exception"));
+	    }
 		this.status = status;
 	}
 

@@ -24,24 +24,21 @@ import java.nio.channels.CancelledKeyException;
 import java.nio.channels.ClosedChannelException;
 import java.nio.channels.NotYetConnectedException;
 
-import org.jboss.netty.buffer.ChannelBuffer;
-import org.jboss.netty.buffer.ChannelBuffers;
-import org.jboss.netty.channel.Channel;
-import org.jboss.netty.channel.ChannelException;
-import org.jboss.netty.channel.ChannelFuture;
-import org.jboss.netty.channel.ChannelHandlerContext;
-import org.jboss.netty.channel.ChannelPipeline;
-import org.jboss.netty.channel.ChannelStateEvent;
-import org.jboss.netty.channel.Channels;
-import org.jboss.netty.channel.ExceptionEvent;
-import org.jboss.netty.channel.MessageEvent;
-import org.jboss.netty.channel.SimpleChannelHandler;
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
+import io.netty.channel.Channel;
+import io.netty.channel.ChannelException;
+import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.ChannelPipeline;
+import io.netty.channel.SimpleChannelInboundHandler;
+
 import org.waarp.common.crypto.ssl.WaarpSslUtility;
 import org.waarp.common.exception.FileTransferException;
 import org.waarp.common.exception.InvalidArgumentException;
 import org.waarp.common.file.DataBlock;
-import org.waarp.common.logging.WaarpInternalLogger;
-import org.waarp.common.logging.WaarpInternalLoggerFactory;
+import org.waarp.common.logging.WaarpLogger;
+import org.waarp.common.logging.WaarpLoggerFactory;
 import org.waarp.common.utility.WaarpStringUtils;
 import org.waarp.ftp.core.config.FtpConfiguration;
 import org.waarp.ftp.core.config.FtpInternalConfiguration;
@@ -59,11 +56,11 @@ import org.waarp.ftp.core.utils.FtpChannelUtils;
  * @author Frederic Bregier
  * 
  */
-public class DataNetworkHandler extends SimpleChannelHandler {
+public class DataNetworkHandler extends SimpleChannelInboundHandler<DataBlock> {
 	/**
 	 * Internal Logger
 	 */
-	private static final WaarpInternalLogger logger = WaarpInternalLoggerFactory
+	private static final WaarpLogger logger = WaarpLoggerFactory
 			.getLogger(DataNetworkHandler.class);
 
 	/**
@@ -148,12 +145,9 @@ public class DataNetworkHandler extends SimpleChannelHandler {
 	 * Run firstly executeChannelClosed.
 	 * 
 	 * @throws Exception
-	 * @see org.jboss.netty.channel.SimpleChannelHandler#channelClosed(org.jboss.netty.channel.ChannelHandlerContext,
-	 *      org.jboss.netty.channel.ChannelStateEvent)
 	 */
 	@Override
-	public void channelClosed(ChannelHandlerContext ctx, ChannelStateEvent e)
-			throws Exception {
+    public void channelInactive(ChannelHandlerContext ctx) throws Exception {
 		if (session != null) {
 			session.getDataConn().getFtpTransferControl().setPreEndOfTransfer();
 			session.getDataConn().unbindPassive();
@@ -169,7 +163,7 @@ public class DataNetworkHandler extends SimpleChannelHandler {
 			channelPipeline = null;
 			dataChannel = null;
 		}
-		super.channelClosed(ctx, e);
+		super.channelInactive(ctx);
 	}
 
 	protected void setSession(Channel channel) {
@@ -199,31 +193,28 @@ public class DataNetworkHandler extends SimpleChannelHandler {
 	/**
 	 * Initialize the Handler.
 	 * 
-	 * @see org.jboss.netty.channel.SimpleChannelHandler#channelConnected(org.jboss.netty.channel.ChannelHandlerContext,
-	 *      org.jboss.netty.channel.ChannelStateEvent)
 	 */
-	@Override
-	public void channelConnected(ChannelHandlerContext ctx, ChannelStateEvent e) {
-		Channel channel = e.getChannel();
+    @Override
+    public void channelActive(ChannelHandlerContext ctx) throws Exception {
+		Channel channel = ctx.channel();
 		if (session == null) {
 			setSession(channel);
 		}
 		if (session == null) {
 			return;
 		}
-		channelPipeline = ctx.getPipeline();
+		channelPipeline = ctx.pipeline();
 		dataChannel = channel;
 		dataBusinessHandler.setFtpSession(getFtpSession());
 		FtpChannelUtils.addDataChannel(channel, session.getConfiguration());
 		logger.debug("DataChannel connected");
 		if (isStillAlive()) {
 			setCorrectCodec();
-			session.getDataConn().getFtpTransferControl().setOpenedDataChannel(
-					channel, this);
+			session.getDataConn().getFtpTransferControl().setOpenedDataChannel(channel, this);
 		} else {
 			// Cannot continue
-			session.getDataConn().getFtpTransferControl().setOpenedDataChannel(
-					null, this);
+		    logger.debug("Connected but no more alive so will disconnect");
+			session.getDataConn().getFtpTransferControl().setOpenedDataChannel(null, this);
 			return;
 		}
 		isReady = true;
@@ -234,11 +225,11 @@ public class DataNetworkHandler extends SimpleChannelHandler {
 	 */
 	public void setCorrectCodec() {
 		FtpDataModeCodec modeCodec = (FtpDataModeCodec) channelPipeline
-				.get(FtpDataPipelineFactory.CODEC_MODE);
+				.get(FtpDataInitializer.CODEC_MODE);
 		FtpDataTypeCodec typeCodec = (FtpDataTypeCodec) channelPipeline
-				.get(FtpDataPipelineFactory.CODEC_TYPE);
+				.get(FtpDataInitializer.CODEC_TYPE);
 		FtpDataStructureCodec structureCodec = (FtpDataStructureCodec) channelPipeline
-				.get(FtpDataPipelineFactory.CODEC_STRUCTURE);
+				.get(FtpDataInitializer.CODEC_STRUCTURE);
 		modeCodec.setMode(session.getDataConn().getMode());
 		modeCodec.setStructure(session.getDataConn().getStructure());
 		typeCodec.setFullType(session.getDataConn().getType(), session
@@ -252,23 +243,23 @@ public class DataNetworkHandler extends SimpleChannelHandler {
 	 */
 	public void unlockModeCodec() {
 		FtpDataModeCodec modeCodec = (FtpDataModeCodec) channelPipeline
-				.get(FtpDataPipelineFactory.CODEC_MODE);
+				.get(FtpDataInitializer.CODEC_MODE);
 		modeCodec.setCodecReady();
 	}
 
 	/**
 	 * Default exception task: close the current connection after calling exceptionLocalCaught.
 	 * 
-	 * @see org.jboss.netty.channel.SimpleChannelHandler#exceptionCaught(org.jboss.netty.channel.ChannelHandlerContext,
-	 *      org.jboss.netty.channel.ExceptionEvent)
+	 * @see io.netty.channel.SimpleChannelHandler#exceptionCaught(io.netty.channel.ChannelHandlerContext,
+	 *      io.netty.channel.ExceptionEvent)
 	 */
 	@Override
-	public void exceptionCaught(ChannelHandlerContext ctx, ExceptionEvent e) {
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
 		if (session == null) {
-			logger.warn("Error without any session active {}", e.getCause());
+			logger.warn("Error without any session active {}", cause);
 			return;
 		}
-		Throwable e1 = e.getCause();
+		Throwable e1 = cause;
 		if (e1 instanceof ConnectException) {
 			ConnectException e2 = (ConnectException) e1;
 			logger.warn("Connection impossible since {}", e2.getMessage());
@@ -286,7 +277,7 @@ public class DataNetworkHandler extends SimpleChannelHandler {
 			logger.warn("Null pointer Exception", e2);
 			try {
 				if (dataBusinessHandler != null) {
-					dataBusinessHandler.exceptionLocalCaught(e);
+					dataBusinessHandler.exceptionLocalCaught(e1);
 					if (session.getDataConn() != null) {
 						session.getDataConn().getFtpTransferControl()
 								.setTransferAbortedFromInternal(true);
@@ -315,42 +306,33 @@ public class DataNetworkHandler extends SimpleChannelHandler {
 			ConnectException e2 = (ConnectException) e1;
 			logger.warn("Timeout occurs {}", e2.getMessage());
 		} else {
-			logger.warn("Unexpected exception from downstream: {}", e1.getMessage(), e1);
+			logger.warn("Unexpected exception from Outband: {}", e1.getMessage(), e1);
 		}
 		if (dataBusinessHandler != null) {
-			dataBusinessHandler.exceptionLocalCaught(e);
+			dataBusinessHandler.exceptionLocalCaught(e1);
 		}
 		session.getDataConn().getFtpTransferControl()
 				.setTransferAbortedFromInternal(true);
 	}
 
 	/**
-	 * To enable continues of Retrieve operation (prevent OOM)
+	 * To enable continues of Retrieve operation (write) (prevent OOM)
 	 * 
-	 * @see org.jboss.netty.channel.SimpleChannelHandler#channelInterestChanged(org.jboss.netty.channel.ChannelHandlerContext,
-	 *      org.jboss.netty.channel.ChannelStateEvent)
 	 */
-	@Override
-	public void channelInterestChanged(ChannelHandlerContext arg0,
-			ChannelStateEvent arg1) {
-		int op = arg1.getChannel().getInterestOps();
-		if (op == Channel.OP_NONE || op == Channel.OP_READ) {
-			if (isReady) {
-				session.getDataConn().getFtpTransferControl().runTrueRetrieve();
-			}
-		}
-	}
+    @Override
+    public void channelWritabilityChanged(ChannelHandlerContext ctx) throws Exception {
+        if (isReady && ctx.channel().isWritable()) {
+            session.getDataConn().getFtpTransferControl().runTrueRetrieve();
+        }
+    }
 
-	/**
+    /**
 	 * Act as needed according to the receive DataBlock message
 	 * 
-	 * @see org.jboss.netty.channel.SimpleChannelHandler#messageReceived(org.jboss.netty.channel.ChannelHandlerContext,
-	 *      org.jboss.netty.channel.MessageEvent)
 	 */
-	@Override
-	public void messageReceived(ChannelHandlerContext ctx, MessageEvent e) {
+    @Override
+    public void channelRead0(ChannelHandlerContext ctx, DataBlock dataBlock) {
 		if (isStillAlive()) {
-			DataBlock dataBlock = (DataBlock) e.getMessage();
 			try {
 				session.getDataConn().getFtpTransferControl()
 						.getExecutingFtpTransfer().getFtpFile().writeDataBlock(
@@ -389,14 +371,17 @@ public class DataNetworkHandler extends SimpleChannelHandler {
 	public boolean writeMessage(String message) {
 		DataBlock dataBlock = new DataBlock();
 		dataBlock.setEOF(true);
-		ChannelBuffer buffer = ChannelBuffers.wrappedBuffer(message.getBytes(WaarpStringUtils.UTF8));
+		ByteBuf buffer = Unpooled.wrappedBuffer(message.getBytes(WaarpStringUtils.UTF8));
 		dataBlock.setBlock(buffer);
 		ChannelFuture future;
+		logger.debug("Will write: "+buffer.toString(WaarpStringUtils.UTF8));
 		try {
-			future = Channels.write(dataChannel, dataBlock).await();
+			future = dataChannel.writeAndFlush(dataBlock).await();
 		} catch (InterruptedException e) {
+		    logger.debug("Interrupted", e);
 			return false;
 		}
+        logger.debug("Write result: "+future.isSuccess(), future.cause());
 		return future.isSuccess();
 	}
 

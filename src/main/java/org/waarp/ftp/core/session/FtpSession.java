@@ -21,7 +21,8 @@ import java.io.File;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 
-import org.jboss.netty.channel.Channel;
+import io.netty.channel.Channel;
+
 import org.waarp.common.command.CommandInterface;
 import org.waarp.common.command.ReplyCode;
 import org.waarp.common.command.exception.CommandAbstractException;
@@ -29,6 +30,7 @@ import org.waarp.common.command.exception.Reply425Exception;
 import org.waarp.common.file.FileParameterInterface;
 import org.waarp.common.file.Restart;
 import org.waarp.common.file.SessionInterface;
+import org.waarp.common.future.WaarpFuture;
 import org.waarp.ftp.core.command.AbstractCommand;
 import org.waarp.ftp.core.command.FtpArgumentCode;
 import org.waarp.ftp.core.command.FtpArgumentCode.TransferSubType;
@@ -105,7 +107,7 @@ public class FtpSession implements SessionInterface {
 	/**
 	 * Is the control ready to accept command
 	 */
-	private volatile boolean isReady = false;
+	private final WaarpFuture isReady = new WaarpFuture(true);
 	
 	/**
 	 * Is the current session using SSL on Control
@@ -125,7 +127,6 @@ public class FtpSession implements SessionInterface {
 	public FtpSession(FtpConfiguration configuration, BusinessHandler handler) {
 		this.configuration = configuration;
 		businessHandler = handler;
-		isReady = false;
 	}
 
 	/**
@@ -297,10 +298,8 @@ public class FtpSession implements SessionInterface {
 	 * @param answer
 	 */
 	public void setExitErrorCode(String answer) {
-		this
-				.setReplyCode(
-						ReplyCode.REPLY_421_SERVICE_NOT_AVAILABLE_CLOSING_CONTROL_CONNECTION,
-						answer);
+		this.setReplyCode(ReplyCode.REPLY_421_SERVICE_NOT_AVAILABLE_CLOSING_CONTROL_CONNECTION,
+                answer);
 	}
 
 	/**
@@ -333,14 +332,14 @@ public class FtpSession implements SessionInterface {
 		previousCommand = null;
 		replyCode = null;
 		answer = null;
-		isReady = false;
+		isReady.cancel();
 	}
 
 	/**
 	 * @return True if the Control is ready to accept command
 	 */
 	public boolean isReady() {
-		return isReady;
+		return isReady.awaitUninterruptibly().isSuccess();
 	}
 
 	/**
@@ -348,7 +347,11 @@ public class FtpSession implements SessionInterface {
 	 *            the isReady to set
 	 */
 	public void setReady(boolean isReady) {
-		this.isReady = isReady;
+	    if (isReady) {
+	        this.isReady.setSuccess();
+	    } else {
+	        this.isReady.cancel();
+	    }
 	}
 
 	@Override
@@ -413,18 +416,13 @@ public class FtpSession implements SessionInterface {
 		// reset to default
 		if (getDataConn().isPassiveMode()) {
 			// Previous mode was Passive so remove the current configuration
-			InetSocketAddress local = getDataConn()
-					.getLocalAddress();
-			InetAddress remote = getDataConn()
-					.getRemoteAddress().getAddress();
+			InetSocketAddress local = getDataConn().getLocalAddress();
+			InetAddress remote = getDataConn().getRemoteAddress().getAddress();
 			getConfiguration().delFtpSession(remote, local);
 		}
-		getDataConn().setMode(
-				FtpArgumentCode.TransferMode.STREAM);
-		getDataConn().setStructure(
-				FtpArgumentCode.TransferStructure.FILE);
-		getDataConn().setType(
-				FtpArgumentCode.TransferType.ASCII);
+		getDataConn().setMode(FtpArgumentCode.TransferMode.STREAM);
+		getDataConn().setStructure(FtpArgumentCode.TransferStructure.FILE);
+		getDataConn().setType(FtpArgumentCode.TransferType.ASCII);
 		getDataConn().setSubType(TransferSubType.NONPRINT);
 		reinitFtpAuth();
 	}

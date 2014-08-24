@@ -36,7 +36,7 @@ public class ABOR extends AbstractCommand {
 	 */
 	public void exec() throws CommandAbstractException {
 		// First check if the data connection is opened
-		if (getSession().getDataConn().isConnected()) {
+		if (getSession().getDataConn().isActive()) {
 			// Now check if the data connection is currently used
 			try {
 				getSession().getDataConn().getFtpTransferControl()

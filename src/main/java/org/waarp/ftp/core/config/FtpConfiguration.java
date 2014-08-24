@@ -24,11 +24,13 @@ import java.util.HashMap;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-import org.jboss.netty.channel.Channel;
+import io.netty.channel.Channel;
+
 import org.waarp.common.file.FileParameterInterface;
 import org.waarp.common.utility.WaarpShutdownHook.ShutdownConfiguration;
 import org.waarp.ftp.core.control.BusinessHandler;
 import org.waarp.ftp.core.data.handler.DataBusinessHandler;
+import org.waarp.ftp.core.exception.FtpNoConnectionException;
 import org.waarp.ftp.core.exception.FtpUnknownFieldException;
 import org.waarp.ftp.core.session.FtpSession;
 
@@ -88,8 +90,9 @@ public abstract class FtpConfiguration {
 	/**
 	 * Default number of threads in pool for Server. The default value is for client for Executor in
 	 * the Pipeline for Business logic. Server will change this value on startup if not set.
+	 * Default 0 means in proportion of real core number.
 	 */
-	public int SERVER_THREAD = 8;
+	public int SERVER_THREAD = 0;
 
 	/**
 	 * Default number of threads in pool for Client part.
@@ -420,9 +423,10 @@ public abstract class FtpConfiguration {
 
 	/**
 	 * Init internal configuration
+	 * @throws FtpNoConnectionException 
 	 * 
 	 */
-	public void serverStartup() {
+	public void serverStartup() throws FtpNoConnectionException {
 		internalConfiguration.serverStartup();
 	}
 

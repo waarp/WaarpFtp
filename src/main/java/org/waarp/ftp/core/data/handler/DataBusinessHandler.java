@@ -17,8 +17,7 @@
  */
 package org.waarp.ftp.core.data.handler;
 
-import org.jboss.netty.channel.Channel;
-import org.jboss.netty.channel.ExceptionEvent;
+import io.netty.channel.Channel;
 import org.waarp.ftp.core.session.FtpSession;
 
 /**
@@ -113,5 +112,5 @@ public abstract class DataBusinessHandler {
 	 * 
 	 * @param e
 	 */
-	public abstract void exceptionLocalCaught(ExceptionEvent e);
+	public abstract void exceptionLocalCaught(Throwable e);
 }
