@@ -367,7 +367,7 @@ public class DataNetworkHandler extends SimpleChannelInboundHandler<DataBlock> {
 						.setTransferAbortedFromInternal(true);
 				return;
 			} catch (FileTransferException e1) {
-			    logger.debug(e1);
+			    logger.debug("db : "+dataBlock.getBlock().toString(WaarpStringUtil.UTF8), e1);
 				session.getDataConn().getFtpTransferControl()
 						.setTransferAbortedFromInternal(true);
 			}
