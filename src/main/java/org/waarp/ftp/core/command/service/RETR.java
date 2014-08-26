@@ -21,6 +21,8 @@ import org.waarp.common.command.exception.CommandAbstractException;
 import org.waarp.common.command.exception.Reply450Exception;
 import org.waarp.common.command.exception.Reply501Exception;
 import org.waarp.common.command.exception.Reply550Exception;
+import org.waarp.common.logging.WaarpLogger;
+import org.waarp.common.logging.WaarpLoggerFactory;
 import org.waarp.ftp.core.command.AbstractCommand;
 import org.waarp.ftp.core.file.FtpFile;
 
@@ -31,7 +33,7 @@ import org.waarp.ftp.core.file.FtpFile;
  * 
  */
 public class RETR extends AbstractCommand {
-
+    private static final WaarpLogger logger = WaarpLoggerFactory.getInstance(RETR.class);
 	/*
 	 * (non-Javadoc)
 	 * @see org.waarp.ftp.core.command.AbstractCommand#exec()
@@ -50,9 +52,11 @@ public class RETR extends AbstractCommand {
 						.setNewFtpTransfer(getCode(), file);
 				return;
 			}
+			logger.debug("File not accessible: "+file);
 			// FtpFile does not exist
 			throw new Reply450Exception("Retrieve operation not allowed");
 		}
+        logger.debug("Filename not allowed: "+file);
 		// FtpFile name not allowed
 		throw new Reply550Exception("Filename not allowed");
 	}

@@ -69,6 +69,8 @@ public class SslNetworkHandler extends NetworkHandler {
         if (! WaarpSslUtility.waitForHandshake(ctx.channel())) {
             callForSnmp("SSL Connection Error", "During Ssl Handshake");
             getFtpSession().setSsl(false);
+            ctx.close();
+            return;
         } else {
             getFtpSession().setSsl(true);
         }

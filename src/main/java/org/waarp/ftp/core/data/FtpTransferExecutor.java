@@ -129,10 +129,13 @@ public class FtpTransferExecutor implements Runnable {
 				executeTransfer.getFtpFile().trueRetrieve();
 			} catch (FtpNoFileException e) {
 				// an error occurs
+			    logger.debug(e);
 				session.getDataConn().getFtpTransferControl()
 						.setEndOfTransfer();
 			}
+            logger.debug("wait for end of command");
 			waitForCommand();
+            logger.debug("RETR ending");
 			// RETR set end
 			try {
 				session.getDataConn().getFtpTransferControl()

@@ -157,8 +157,6 @@ public class DataNetworkHandler extends SimpleChannelInboundHandler<DataBlock> {
 				getDataBusinessHandler().clear();
 			} catch (FtpNoConnectionException e1) {
 			}
-			session.getDataConn().getFtpTransferControl()
-					.setClosedDataChannel();
 			dataBusinessHandler = null;
 			channelPipeline = null;
 			dataChannel = null;
@@ -207,7 +205,22 @@ public class DataNetworkHandler extends SimpleChannelInboundHandler<DataBlock> {
 		dataChannel = channel;
 		dataBusinessHandler.setFtpSession(getFtpSession());
 		FtpChannelUtils.addDataChannel(channel, session.getConfiguration());
-		logger.debug("DataChannel connected");
+		logger.debug("DataChannel connected: "+session.getReplyCode());
+		if (session.getReplyCode().getCode() >= 400) {
+		    // shall not be except if an error early occurs
+		    switch (session.getCurrentCommand().getCode()) {
+		        case RETR:
+		        case APPE:
+		        case STOR:
+		        case STOU:
+		            // close the data channel immediately
+		            logger.debug("DataChannel immediately closed since "+session.getCurrentCommand().getCode()+" is not ok at startup");
+		            ctx.close();
+		            return;
+                default:
+                    break;
+		    }
+		}
 		if (isStillAlive()) {
 			setCorrectCodec();
 			session.getDataConn().getFtpTransferControl().setOpenedDataChannel(channel, this);
@@ -344,14 +357,17 @@ public class DataNetworkHandler extends SimpleChannelInboundHandler<DataBlock> {
 				 * .setTransferAbortedFromInternal(true); return; }
 				 */
 			} catch (FtpNoFileException e1) {
+                logger.debug(e1);
 				session.getDataConn().getFtpTransferControl()
 						.setTransferAbortedFromInternal(true);
 				return;
 			} catch (FtpNoTransferException e1) {
+                logger.debug(e1);
 				session.getDataConn().getFtpTransferControl()
 						.setTransferAbortedFromInternal(true);
 				return;
 			} catch (FileTransferException e1) {
+			    logger.debug(e1);
 				session.getDataConn().getFtpTransferControl()
 						.setTransferAbortedFromInternal(true);
 			}

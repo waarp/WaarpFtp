@@ -112,8 +112,7 @@ public class FtpDataInitializer extends ChannelInitializer<SocketChannel> {
 		// Add default codec but they will change by the channelConnected
 		pipeline.addFirst(CODEC_MODE, new FtpDataModeCodec(TransferMode.STREAM,
 				TransferStructure.FILE));
-		pipeline
-				.addLast(CODEC_LIMIT, configuration
+		pipeline.addLast(CODEC_LIMIT, configuration
 						.getFtpInternalConfiguration()
 						.getGlobalTrafficShapingHandler());
 		ChannelTrafficShapingHandler limitChannel =

@@ -20,6 +20,7 @@ package org.waarp.ftp.core.control;
 import java.io.IOException;
 import java.net.ConnectException;
 import java.nio.channels.ClosedChannelException;
+import java.util.concurrent.RejectedExecutionException;
 
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelException;
@@ -47,6 +48,7 @@ import org.waarp.ftp.core.command.internal.IncorrectCommand;
 import org.waarp.ftp.core.config.FtpInternalConfiguration;
 import org.waarp.ftp.core.control.ftps.FtpsInitializer;
 import org.waarp.ftp.core.data.FtpTransferControl;
+import org.waarp.ftp.core.exception.FtpNoConnectionException;
 import org.waarp.ftp.core.session.FtpSession;
 import org.waarp.ftp.core.utils.FtpChannelUtils;
 
@@ -77,7 +79,11 @@ public class NetworkHandler extends SimpleChannelInboundHandler<String> {
 	 * The associated Channel
 	 */
 	private Channel controlChannel = null;
-
+	/**
+	 * ChannelHandlerContext that could be used whenever needed
+	 */
+	private volatile ChannelHandlerContext ctx;
+	
 	/**
 	 * Constructor from session
 	 * 
@@ -148,18 +154,19 @@ public class NetworkHandler extends SimpleChannelInboundHandler<String> {
 	 */
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
+        this.ctx = ctx;
 		Channel channel = ctx.channel();
 		controlChannel = channel;
 		session.setControlConnected();
 		FtpChannelUtils.addCommandChannel(channel, session.getConfiguration());
-		if (isStillAlive()) {
+		if (isStillAlive(ctx)) {
 			// Make the first execution ready
 			AbstractCommand command = new ConnectionCommand(getFtpSession());
 			session.setNextCommand(command);
 			// This command can change the next Command
 			businessHandler.executeChannelConnected(channel);
 			// Answer ready to continue from first command = Connection
-			messageRunAnswer();
+			messageRunAnswer(ctx);
 			getFtpSession().setReady(true);
 		}
 	}
@@ -169,10 +176,10 @@ public class NetworkHandler extends SimpleChannelInboundHandler<String> {
 	 * 
 	 * @return True if the service is alive, else False if the system is going down
 	 */
-	private boolean isStillAlive() {
+	private boolean isStillAlive(ChannelHandlerContext ctx) {
 		if (session.getConfiguration().isShutdown) {
 			session.setExitErrorCode("Service is going down: disconnect");
-			writeFinalAnswer();
+			writeFinalAnswer(ctx);
 			return false;
 		}
 		return true;
@@ -185,6 +192,7 @@ public class NetworkHandler extends SimpleChannelInboundHandler<String> {
 	 */
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+        this.ctx = ctx;
 		Throwable e1 = cause;
 		Channel channel = ctx.channel();
 		if (session == null) {
@@ -206,7 +214,7 @@ public class NetworkHandler extends SimpleChannelInboundHandler<String> {
 			logger.debug("Connection closed before end");
 			session.setExitErrorCode("Internal error: disconnect");
 			if (channel.isActive()) {
-				writeFinalAnswer();
+				writeFinalAnswer(ctx);
 			}
 			return;
 		} else if (e1 instanceof CommandAbstractException) {
@@ -216,7 +224,7 @@ public class NetworkHandler extends SimpleChannelInboundHandler<String> {
 			session.setReplyCode(e2);
 			businessHandler.afterRunCommandKo(e2);
 			if (channel.isActive()) {
-				writeFinalAnswer();
+				writeFinalAnswer(ctx);
 			}
 			return;
 		} else if (e1 instanceof NullPointerException) {
@@ -229,7 +237,7 @@ public class NetworkHandler extends SimpleChannelInboundHandler<String> {
 							session.getDataConn() != null) {
 						businessHandler.exceptionLocalCaught(e1);
 						if (channel.isActive()) {
-							writeFinalAnswer();
+							writeFinalAnswer(ctx);
 						}
 					}
 				}
@@ -240,6 +248,10 @@ public class NetworkHandler extends SimpleChannelInboundHandler<String> {
 			IOException e2 = (IOException) e1;
 			logger.warn("Connection aborted since {} with Channel {}", e2
 					.getMessage(), channel);
+			logger.warn(e1);
+		} else if (e1 instanceof RejectedExecutionException) {
+            logger.debug("Rejected execution (shutdown) from {}", channel);
+            return;
 		} else {
 			logger.warn("Unexpected exception from Outband Ref Channel: " + 
 			        channel.toString() +" Exception: "+e1.getMessage(), e1);
@@ -247,7 +259,7 @@ public class NetworkHandler extends SimpleChannelInboundHandler<String> {
 		session.setExitErrorCode("Internal error: disconnect");
 		businessHandler.exceptionLocalCaught(e1);
 		if (channel.isActive()) {
-			writeFinalAnswer();
+			writeFinalAnswer(ctx);
 		}
 	}
 
@@ -257,12 +269,13 @@ public class NetworkHandler extends SimpleChannelInboundHandler<String> {
 	 */
 	@Override
 	public void channelRead0(ChannelHandlerContext ctx, String e) {
-		if (isStillAlive()) {
+        this.ctx = ctx;
+		if (isStillAlive(ctx)) {
 			// First wait for the initialization to be fully done
 		    if (! session.isReady()) {
 		        session.setReplyCode(ReplyCode.REPLY_421_SERVICE_NOT_AVAILABLE_CLOSING_CONTROL_CONNECTION, null);
                 businessHandler.afterRunCommandKo(new Reply421Exception(session.getReplyCode().getMesg()));
-                writeIntermediateAnswer();
+                writeIntermediateAnswer(ctx);
                 return;
 		    }
 			String message = e;
@@ -294,7 +307,7 @@ public class NetworkHandler extends SimpleChannelInboundHandler<String> {
 							"Previous transfer command is not finished yet");
 					businessHandler.afterRunCommandKo(
 							new Reply503Exception(session.getReplyCode().getMesg()));
-					writeIntermediateAnswer();
+					writeIntermediateAnswer(ctx);
 					return;
 				}
 			}
@@ -303,26 +316,26 @@ public class NetworkHandler extends SimpleChannelInboundHandler<String> {
 			// Special check for SSL AUTH/PBSZ/PROT/USER/PASS/ACCT
 			if (FtpCommandCode.isSslOrAuthCommand(command.getCode())) {
 				session.setNextCommand(command);
-				messageRunAnswer();
+				messageRunAnswer(ctx);
 				return;
 			}
 			if (session.getCurrentCommand().isNextCommandValid(command)) {
 				logger.debug("Previous: "+session.getCurrentCommand().getCode()+
 						" Next: "+command.getCode());
 				session.setNextCommand(command);
-				messageRunAnswer();
+				messageRunAnswer(ctx);
 			} else {
 				if (! session.getAuth().isIdentified()) {
 					session.setReplyCode(ReplyCode.REPLY_530_NOT_LOGGED_IN, null);
 					session.setNextCommand(new USER());
-					writeFinalAnswer();
+					writeFinalAnswer(ctx);
 					return;
 				}
 				command = new IncorrectCommand();
 				command.setArgs(getFtpSession(), message, null,
 						FtpCommandCode.IncorrectSequence);
 				session.setNextCommand(command);
-				messageRunAnswer();
+				messageRunAnswer(ctx);
 			}
 		}
 	}
@@ -332,15 +345,15 @@ public class NetworkHandler extends SimpleChannelInboundHandler<String> {
 	 * 
 	 * @return True if the channel is closed due to the code
 	 */
-	private boolean writeFinalAnswer() {
+	private boolean writeFinalAnswer(ChannelHandlerContext ctx) {
 		if (session.getReplyCode() == ReplyCode.REPLY_421_SERVICE_NOT_AVAILABLE_CLOSING_CONTROL_CONNECTION
 				||
 				session.getReplyCode() == ReplyCode.REPLY_221_CLOSING_CONTROL_CONNECTION) {
 			session.getDataConn().getFtpTransferControl().clear();
-			writeIntermediateAnswer().addListener(WaarpSslUtility.SSLCLOSE);
+			writeIntermediateAnswer(ctx).addListener(WaarpSslUtility.SSLCLOSE);
 			return true;
 		}
-		writeIntermediateAnswer();
+		writeIntermediateAnswer(ctx);
 		session.setCurrentCommandFinished();
 		return false;
 	}
@@ -350,10 +363,18 @@ public class NetworkHandler extends SimpleChannelInboundHandler<String> {
 	 * 
 	 * @return the ChannelFuture associated with the write
 	 */
-	public ChannelFuture writeIntermediateAnswer() {
+	public ChannelFuture writeIntermediateAnswer(ChannelHandlerContext ctx) {
 		logger.debug("Answer: "+session.getAnswer());
-		return controlChannel.writeAndFlush(session.getAnswer());
+		return ctx.writeAndFlush(session.getAnswer());
 	}
+    /**
+     * Write an intermediate Answer from Business before last answer also set by the Business
+     * 
+     * @return the ChannelFuture associated with the write
+     */
+    public ChannelFuture writeIntermediateAnswer() {
+        return writeIntermediateAnswer(ctx);
+    }
 
 	/**
 	 * To be extended to inform of an error to SNMP support
@@ -368,7 +389,7 @@ public class NetworkHandler extends SimpleChannelInboundHandler<String> {
 	 * Execute one command and write the following answer
 	 */
 	@SuppressWarnings("unchecked")
-    private void messageRunAnswer() {
+    private void messageRunAnswer(ChannelHandlerContext ctx) {
 		boolean error = false;
 		logger.debug("Code: "+session.getCurrentCommand().getCode());
 		try {
@@ -389,14 +410,14 @@ public class NetworkHandler extends SimpleChannelInboundHandler<String> {
 			if (session.getCurrentCommand().getCode() == FtpCommandCode.AUTH ||
 					session.getCurrentCommand().getCode() == FtpCommandCode.CCC) {
 				controlChannel.config().setAutoRead(false);
-				ChannelFuture future = writeIntermediateAnswer();
+				ChannelFuture future = writeIntermediateAnswer(ctx);
 				session.setCurrentCommandFinished();
 				try {
 					future.await();
 				} catch (InterruptedException e) {
 				}
 			} else {
-				writeFinalAnswer();
+				writeFinalAnswer(ctx);
 			}
 		}
 		if (! error) {
@@ -431,6 +452,16 @@ public class NetworkHandler extends SimpleChannelInboundHandler<String> {
 				// remove the SSL support
 				WaarpSslUtility.removingSslHandler(controlChannel);
 			}
+		} else {
+		    // In error so Check that Data is closed
+		    if (session.getDataConn().isActive()) {
+		        logger.debug("Closing DataChannel while command is in error");
+		        try {
+                    session.getDataConn().getCurrentDataChannel().close();
+                } catch (FtpNoConnectionException e) {
+                    // ignore
+                }
+		    }
 		}
 		if (! controlChannel.config().isAutoRead()) {
 			controlChannel.config().setAutoRead(true);

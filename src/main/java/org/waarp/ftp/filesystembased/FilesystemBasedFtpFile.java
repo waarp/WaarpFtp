@@ -21,6 +21,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
+
 import org.waarp.common.command.exception.CommandAbstractException;
 import org.waarp.common.exception.FileEndOfTransferException;
 import org.waarp.common.exception.FileTransferException;
@@ -122,7 +123,8 @@ public abstract class FilesystemBasedFtpFile extends FilesystemBasedFileImpl imp
 			// While not last block
 			ChannelFuture future = null;
 			while (block != null && !block.isEOF()) {
-				future = channel.writeAndFlush(block);
+	            logger.debug("Write "+block.getByteCount());
+				future = channel.writeAndFlush(block).awaitUninterruptibly();
 				// Test if channel is writable in order to prevent OOM
 				if (channel.isWritable()) {
 					try {
@@ -160,6 +162,7 @@ public abstract class FilesystemBasedFtpFile extends FilesystemBasedFileImpl imp
 			// Last block
 			closeFile();
 			if (block != null) {
+                logger.debug("Write "+block.getByteCount());
 				future = channel.writeAndFlush(block);
 			}
 			// Wait for last write

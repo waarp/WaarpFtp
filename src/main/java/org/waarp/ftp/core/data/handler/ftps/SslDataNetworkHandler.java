@@ -84,21 +84,24 @@ public class SslDataNetworkHandler extends DataNetworkHandler {
 			return;
 		}
 		// Server: no renegotiation still, but possible clientAuthent
-		SslHandler sslHandler = 
-				FtpsInitializer.waarpSslContextFactory.initInitializer(true,
-						FtpsInitializer.waarpSslContextFactory.needClientAuthentication(),
-						FtpChannelUtils.getRemoteInetSocketAddress(session.getControlChannel()).getAddress().getHostAddress(),
-						FtpChannelUtils.getRemoteInetSocketAddress(session.getControlChannel()).getPort());
-		channel.pipeline().addFirst("ssl", sslHandler);
+		// Mode is always as SSL Server mode.
+        SslHandler sslHandler = 
+                FtpsInitializer.waarpSslContextFactory.initInitializer(true,
+                        FtpsInitializer.waarpSslContextFactory.needClientAuthentication(),
+                        FtpChannelUtils.getRemoteInetSocketAddress(session.getControlChannel()).getAddress().getHostAddress(),
+                        FtpChannelUtils.getRemoteInetSocketAddress(session.getControlChannel()).getPort());
+        channel.pipeline().addFirst("ssl", sslHandler);
+        channel.config().setAutoRead(true);
 		WaarpSslUtility.addSslOpenedChannel(channel);
-		channel.config().setAutoRead(true);
 		// Get the SslHandler and begin handshake ASAP.
 		logger.debug("SSL found but need handshake");
-		if (! WaarpSslUtility.waitForHandshake(ctx.channel())) {
-		    callForSnmp("SSL Connection Error", "During Ssl Handshake");
-		}
+		// Fix where adding the handler is somehow slower than ready to process...
+		Thread.sleep(10);
+        if (! WaarpSslUtility.waitForHandshake(ctx.channel())) {
+            callForSnmp("SSL Connection Error", "During Ssl Handshake");
+        }
+        logger.debug("End of initialization of SSL and data channel");
         super.channelActive(ctx);
-		logger.debug("End of initialization of SSL and data channel");
 	}
 
 }
