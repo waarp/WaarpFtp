@@ -64,7 +64,7 @@ public class FtpsInitializer extends FtpInitializer {
         SslHandler handler = waarpSslContextFactory.initInitializer(true,
                 waarpSslContextFactory.needClientAuthentication());
         // NO since we need to inform through SNMP: handler.setIssueHandshake(true);
-        pipeline.addLast("ssl", handler);
+        pipeline.addLast("SSL", handler);
         // Add the text line codec combination first,
         pipeline.addLast("framer", new DelimiterBasedFrameDecoder(8192, delimiter));
         pipeline.addLast("decoder", ftpControlStringDecoder);

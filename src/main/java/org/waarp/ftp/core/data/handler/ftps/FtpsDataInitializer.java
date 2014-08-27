@@ -29,6 +29,7 @@ import org.waarp.ftp.core.command.FtpArgumentCode.TransferMode;
 import org.waarp.ftp.core.command.FtpArgumentCode.TransferStructure;
 import org.waarp.ftp.core.config.FtpConfiguration;
 import org.waarp.ftp.core.data.handler.DataBusinessHandler;
+import org.waarp.ftp.core.data.handler.DataNetworkHandler;
 import org.waarp.ftp.core.data.handler.FtpDataModeCodec;
 import org.waarp.ftp.core.data.handler.FtpDataInitializer;
 
@@ -59,8 +60,9 @@ public class FtpsDataInitializer extends FtpDataInitializer {
     @Override
     public void initChannel(SocketChannel ch) throws Exception {
 		ChannelPipeline pipeline = ch.pipeline();
-		// SSL will be added in final handler in channelConnected
-		// Add default codec but they will change by the channelConnected
+		// SSL will be added in this handler during channelActive
+		pipeline.addLast(new FtpsTemporaryFirstHandler(configuration, isActive));
+		// Add default codec but they will change by the channelActive
 		pipeline.addLast(FtpDataInitializer.CODEC_MODE, new FtpDataModeCodec(TransferMode.STREAM,
 				TransferStructure.FILE));
 		pipeline.addLast(FtpDataInitializer.CODEC_LIMIT, configuration
@@ -79,8 +81,7 @@ public class FtpsDataInitializer extends FtpDataInitializer {
         EventExecutorGroup executorGroup = configuration.getFtpInternalConfiguration().getDataExecutor();
 		// and then business logic. New one on every connection
 		DataBusinessHandler newbusiness = dataBusinessHandler.newInstance();
-		SslDataNetworkHandler newNetworkHandler = new SslDataNetworkHandler(
-				configuration, newbusiness, isActive);
+		DataNetworkHandler newNetworkHandler = new DataNetworkHandler(configuration, newbusiness, isActive);
 		pipeline.addLast(executorGroup, FtpDataInitializer.HANDLER, newNetworkHandler);
 	}
 }

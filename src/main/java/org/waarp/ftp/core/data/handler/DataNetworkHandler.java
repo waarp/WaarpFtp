@@ -40,6 +40,7 @@ import org.waarp.common.file.DataBlock;
 import org.waarp.common.logging.WaarpLogger;
 import org.waarp.common.logging.WaarpLoggerFactory;
 import org.waarp.common.utility.WaarpStringUtils;
+import org.waarp.ftp.core.command.FtpCommandCode;
 import org.waarp.ftp.core.config.FtpConfiguration;
 import org.waarp.ftp.core.config.FtpInternalConfiguration;
 import org.waarp.ftp.core.control.NetworkHandler;
@@ -346,6 +347,12 @@ public class DataNetworkHandler extends SimpleChannelInboundHandler<DataBlock> {
     @Override
     public void channelRead0(ChannelHandlerContext ctx, DataBlock dataBlock) {
 		if (isStillAlive()) {
+		    /*if (session.isCurrentCommandFinished() || ! FtpCommandCode.isStoreLikeCommand(session.getCurrentCommand().getCode())) {
+		        // ignore
+		        logger.warn("Write ignored: "+session.getCurrentCommand().getCode()+" = "+dataBlock.toString());
+		        dataBlock.getBlock().release();
+		        return;
+		    }*/
 			try {
 				session.getDataConn().getFtpTransferControl()
 						.getExecutingFtpTransfer().getFtpFile().writeDataBlock(
@@ -367,7 +374,7 @@ public class DataNetworkHandler extends SimpleChannelInboundHandler<DataBlock> {
 						.setTransferAbortedFromInternal(true);
 				return;
 			} catch (FileTransferException e1) {
-			    logger.debug("db : "+dataBlock.getBlock().toString(WaarpStringUtil.UTF8), e1);
+			    logger.debug(e1);
 				session.getDataConn().getFtpTransferControl()
 						.setTransferAbortedFromInternal(true);
 			}

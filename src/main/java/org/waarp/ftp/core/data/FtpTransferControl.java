@@ -283,6 +283,7 @@ public class FtpTransferControl {
 				logger.warn("Connection abort in active mode from future while session: " +
 						session.toString() +
 						"\nTrying connect to: " + inetSocketAddress.toString() +
+						" From: " + dataAsyncConn.getLocalAddress() +
 						"\nWas: " + mylog,
 						future.cause());
 				// Cannot open connection

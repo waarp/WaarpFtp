@@ -25,7 +25,6 @@ import java.util.concurrent.RejectedExecutionException;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelException;
 import io.netty.channel.ChannelFuture;
-import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
@@ -388,8 +387,7 @@ public class NetworkHandler extends SimpleChannelInboundHandler<String> {
 	/**
 	 * Execute one command and write the following answer
 	 */
-	@SuppressWarnings("unchecked")
-    private void messageRunAnswer(ChannelHandlerContext ctx) {
+    private void messageRunAnswer(final ChannelHandlerContext ctx) {
 		boolean error = false;
 		logger.debug("Code: "+session.getCurrentCommand().getCode());
 		try {
@@ -406,65 +404,67 @@ public class NetworkHandler extends SimpleChannelInboundHandler<String> {
 		}
 		logger.debug("Code: "+session.getCurrentCommand().getCode()+
 				" ["+session.getReplyCode()+"]");
-		if (error || session.getCurrentCommand().getCode() != FtpCommandCode.INTERNALSHUTDOWN) {
-			if (session.getCurrentCommand().getCode() == FtpCommandCode.AUTH ||
-					session.getCurrentCommand().getCode() == FtpCommandCode.CCC) {
-				controlChannel.config().setAutoRead(false);
-				ChannelFuture future = writeIntermediateAnswer(ctx);
-				session.setCurrentCommandFinished();
-				try {
-					future.await();
-				} catch (InterruptedException e) {
-				}
-			} else {
-				writeFinalAnswer(ctx);
-			}
-		}
-		if (! error) {
-			if (session.getCurrentCommand().getCode() == FtpCommandCode.AUTH) {
-				logger.debug("SSL to be added to pipeline");
-				ChannelHandler sslHandler = controlChannel.pipeline().first();
-				if (sslHandler instanceof SslHandler) {
-					logger.debug("Already got a SslHandler");
-				} else {
-					// add the SSL support
-					sslHandler =
-							FtpsInitializer.waarpSslContextFactory.initInitializer(true,
-									FtpsInitializer.waarpSslContextFactory.needClientAuthentication());
-					controlChannel.pipeline().addFirst("SSL", sslHandler);
-				}
-				controlChannel.config().setAutoRead(true);
-				((SslHandler) sslHandler).handshakeFuture().addListener((GenericFutureListener<? extends Future<? super Channel>>) new ChannelFutureListener() {
-                    public void operationComplete(ChannelFuture future) throws Exception {
-                        logger.debug("Handshake: " + future.isSuccess(), future.cause());
-                        if (!future.isSuccess()) {
-                            String error2 = future.cause() != null ?
-                                    future.cause().getMessage() : "During Handshake";
-                            callForSnmp("SSL Connection Error", error2);
-                            future.channel().close();
-                        } else {
-                            session.setSsl(true);
-                        }
-                    }
-				});
-			} else if (session.getCurrentCommand().getCode() == FtpCommandCode.CCC) {
-				logger.debug("SSL to be removed from pipeline");
-				// remove the SSL support
-				WaarpSslUtility.removingSslHandler(controlChannel);
-			}
-		} else {
-		    // In error so Check that Data is closed
-		    if (session.getDataConn().isActive()) {
-		        logger.debug("Closing DataChannel while command is in error");
-		        try {
+        if (error) {
+            if (session.getCurrentCommand().getCode() != FtpCommandCode.INTERNALSHUTDOWN) {
+                writeFinalAnswer(ctx);
+            }
+            // In error so Check that Data is closed
+            if (session.getDataConn().isActive()) {
+                logger.debug("Closing DataChannel while command is in error");
+                try {
                     session.getDataConn().getCurrentDataChannel().close();
                 } catch (FtpNoConnectionException e) {
                     // ignore
                 }
-		    }
-		}
-		if (! controlChannel.config().isAutoRead()) {
-			controlChannel.config().setAutoRead(true);
-		}
+            }
+            return;
+        }
+        if (session.getCurrentCommand().getCode() == FtpCommandCode.AUTH ||
+                session.getCurrentCommand().getCode() == FtpCommandCode.CCC) {
+            try {
+                controlChannel.config().setAutoRead(false);
+                writeIntermediateAnswer(ctx);
+                session.setCurrentCommandFinished();
+                if (session.getCurrentCommand().getCode() == FtpCommandCode.AUTH) {
+                    logger.debug("SSL to be added to pipeline");
+                    ChannelHandler sslHandler = ctx.pipeline().first();
+                    if (sslHandler instanceof SslHandler) {
+                        logger.debug("Already got a SslHandler");
+                    } else {
+                        logger.debug("Add Explicitely SSL support to Command");
+                        // add the SSL support
+                        sslHandler =
+                                FtpsInitializer.waarpSslContextFactory.initInitializer(true,
+                                        FtpsInitializer.waarpSslContextFactory.needClientAuthentication());
+                        WaarpSslUtility.addSslHandlerToPipeline(ctx.pipeline(), sslHandler);
+                    }
+                    controlChannel.config().setAutoRead(true);
+                    // Get the SslHandler and begin handshake ASAP.
+                    logger.debug("SSL found but need handshake");
+                    WaarpSslUtility.actionOnSslHandshaked(ctx.pipeline(), new GenericFutureListener<Future<? super Channel>>() {
+                        public void operationComplete(Future<? super Channel> future) throws Exception {
+                            logger.debug("Handshake: " + future.isSuccess(), future.cause());
+                            if (! future.isSuccess()) {
+                                String error2 = future.cause() != null ?
+                                        future.cause().getMessage() : "During Handshake";
+                                callForSnmp("SSL Connection Error", error2);
+                                ctx.close();
+                            } else {
+                                logger.debug("End of initialization of SSL and command channel");
+                                session.setSsl(true);
+                            }
+                        }
+                    });
+                } else if (session.getCurrentCommand().getCode() == FtpCommandCode.CCC) {
+                    logger.debug("SSL to be removed from pipeline");
+                    // remove the SSL support
+                    WaarpSslUtility.removingSslHandler(controlChannel, false);
+                }
+            } finally {
+                controlChannel.config().setAutoRead(true);
+            }
+        } else if (session.getCurrentCommand().getCode() != FtpCommandCode.INTERNALSHUTDOWN) {
+            writeFinalAnswer(ctx);
+        }
 	}
 }

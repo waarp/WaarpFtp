@@ -519,8 +519,18 @@ public abstract class FtpConfiguration {
 	 * @return the FtpSession if it exists associated to this channel
 	 */
 	public FtpSession getFtpSession(Channel channel, boolean active) {
-		return internalConfiguration.getFtpSession(channel, active);
+		return internalConfiguration.getFtpSession(channel, active, true);
 	}
+    /**
+     * Return the FtpSession
+     * 
+     * @param channel
+     * @param active
+     * @return the FtpSession if it exists associated to this channel
+     */
+    public FtpSession getFtpSessionNoRemove(Channel channel, boolean active) {
+        return internalConfiguration.getFtpSession(channel, active, false);
+    }
 
 	/**
 	 * Remove the FtpSession

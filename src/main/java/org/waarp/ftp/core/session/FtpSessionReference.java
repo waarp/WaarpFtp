@@ -157,7 +157,7 @@ public class FtpSessionReference {
 	 * @param channel
 	 * @return the FtpSession if it exists associated to this channel
 	 */
-	public FtpSession getActiveFtpSession(Channel channel) {
+	public FtpSession getActiveFtpSession(Channel channel, boolean remove) {
 		// First check Active connection
 		P2PAddress pAddress = new P2PAddress(((InetSocketAddress) channel
 				.localAddress()).getAddress(), (InetSocketAddress) channel
@@ -168,7 +168,11 @@ public class FtpSessionReference {
 			return null;
 		}
 		// logger.debug("Get: {} {}", pAddress.ipOnly, pAddress.fullIp);
-		return hashMap.remove(pAddress);
+		if (remove) {
+		    return hashMap.remove(pAddress);
+		} else {
+		    return hashMap.get(pAddress);
+		}
 	}
 
 	/**
@@ -177,7 +181,7 @@ public class FtpSessionReference {
 	 * @param channel
 	 * @return the FtpSession if it exists associated to this channel
 	 */
-	public FtpSession getPassiveFtpSession(Channel channel) {
+	public FtpSession getPassiveFtpSession(Channel channel, boolean remove) {
 		// First check passive connection
 		P2PAddress pAddress = new P2PAddress(channel);
 		if (!pAddress.isValid()) {
@@ -185,7 +189,11 @@ public class FtpSessionReference {
 			return null;
 		}
 		// logger.debug("Get: {} {}", pAddress.ipOnly, pAddress.fullIp);
-		return hashMap.remove(pAddress);
+        if (remove) {
+            return hashMap.remove(pAddress);
+        } else {
+            return hashMap.get(pAddress);
+        }
 	}
 
 	/**

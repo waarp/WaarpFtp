@@ -438,10 +438,6 @@ public class FtpSession implements SessionInterface {
 		getNetworkHandler().writeIntermediateAnswer();
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * @see org.waarp.common.file.SessionInterface#getUniqueExtension()
-	 */
 	@Override
 	public String getUniqueExtension() {
 		return configuration.getUniqueExtension();

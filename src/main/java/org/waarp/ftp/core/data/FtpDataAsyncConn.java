@@ -21,8 +21,11 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 
 import io.netty.channel.Channel;
+
 import org.waarp.common.command.exception.Reply425Exception;
 import org.waarp.common.crypto.ssl.WaarpSslUtility;
+import org.waarp.common.logging.WaarpLogger;
+import org.waarp.common.logging.WaarpLoggerFactory;
 import org.waarp.ftp.core.command.FtpArgumentCode;
 import org.waarp.ftp.core.command.FtpArgumentCode.TransferMode;
 import org.waarp.ftp.core.command.FtpArgumentCode.TransferStructure;
@@ -40,6 +43,10 @@ import org.waarp.ftp.core.utils.FtpChannelUtils;
  * 
  */
 public class FtpDataAsyncConn {
+    /**
+     * Internal Logger
+     */
+    private static final WaarpLogger logger = WaarpLoggerFactory.getLogger(FtpDataAsyncConn.class);
 	/**
 	 * SessionInterface
 	 */
@@ -123,8 +130,7 @@ public class FtpDataAsyncConn {
 		remoteAddress = FtpChannelUtils.getRemoteInetSocketAddress(this.session.getControlChannel());
 		remotePort = remoteAddress.getPort();
 		setDefaultLocalPort();
-		localAddress = new InetSocketAddress(FtpChannelUtils.getLocalInetAddress(this.session.getControlChannel()),
-				localPort);
+        resetLocalAddress();
 		passiveMode = false;
 		isBind = false;
 		transferControl = new FtpTransferControl(session);
@@ -147,8 +153,8 @@ public class FtpDataAsyncConn {
 	 * 
 	 */
 	private void setDefaultLocalPort() {
-		setLocalPort(session.getConfiguration().getServerPort() - 1);// Default
-		// L-1
+		setLocalPort(session.getConfiguration().getServerPort() - 1);
+		// Default L-1
 	}
 
 	/**
@@ -188,6 +194,15 @@ public class FtpDataAsyncConn {
 		return localPort;
 	}
 
+	private void resetLocalAddress() {
+	    String address = session.getConfiguration().getServerAddress();
+        if (address == null) {
+            localAddress = new InetSocketAddress(FtpChannelUtils
+                    .getLocalInetAddress(session.getControlChannel()), localPort);
+        } else {
+            localAddress = new InetSocketAddress(address, localPort);
+        }
+	}
 	/**
 	 * Change to active connection (reset localPort to default)
 	 * 
@@ -197,10 +212,12 @@ public class FtpDataAsyncConn {
 	public void setActive(InetSocketAddress address) {
 		unbindPassive();
 		setDefaultLocalPort();
+		resetLocalAddress();
 		remoteAddress = address;
 		passiveMode = false;
 		isBind = false;
 		remotePort = remoteAddress.getPort();
+		logger.debug("SetActive: " + this);
 	}
 
 	/**
@@ -209,15 +226,10 @@ public class FtpDataAsyncConn {
 	 */
 	public void setPassive() {
 		unbindPassive();
-		String address = session.getConfiguration().getServerAddress();
-		if (address == null) {
-			localAddress = new InetSocketAddress(FtpChannelUtils
-					.getLocalInetAddress(session.getControlChannel()), localPort);
-		} else {
-			localAddress = new InetSocketAddress(address, localPort);
-		}
+        resetLocalAddress();
 		passiveMode = true;
 		isBind = false;
+        logger.debug("SetPassive: " + this);
 	}
 
 	/**
@@ -436,6 +448,10 @@ public class FtpDataAsyncConn {
 		builder.append('\n');
 		builder.append("Mode: ");
 		builder.append(transferMode.name());
+		builder.append(" localPort: ");
+		builder.append(getLocalPort());
+		builder.append(" remotePort: ");
+		builder.append(getRemotePort());
 		builder.append('\n');
 		builder.append("Structure: ");
 		builder.append(transferStructure.name());

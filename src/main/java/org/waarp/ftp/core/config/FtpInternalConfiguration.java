@@ -351,11 +351,11 @@ public class FtpInternalConfiguration {
 	 * @param active
 	 * @return the FtpSession if it exists associated to this channel
 	 */
-	public FtpSession getFtpSession(Channel channel, boolean active) {
+	public FtpSession getFtpSession(Channel channel, boolean active, boolean remove) {
 		if (active) {
-			return ftpSessionReference.getActiveFtpSession(channel);
+			return ftpSessionReference.getActiveFtpSession(channel, remove);
 		} else {
-			return ftpSessionReference.getPassiveFtpSession(channel);
+			return ftpSessionReference.getPassiveFtpSession(channel, remove);
 		}
 	}
 

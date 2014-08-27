@@ -37,8 +37,7 @@ public class SslNetworkHandler extends NetworkHandler {
 	/**
 	 * Internal Logger
 	 */
-	private static final WaarpLogger logger = WaarpLoggerFactory
-			.getLogger(SslNetworkHandler.class);
+	private static final WaarpLogger logger = WaarpLoggerFactory.getLogger(SslNetworkHandler.class);
 
 	/**
 	 * @param session
@@ -65,11 +64,10 @@ public class SslNetworkHandler extends NetworkHandler {
 	}
 
     @Override
-    public void channelActive(ChannelHandlerContext ctx) throws Exception {
+    public void channelActive(final ChannelHandlerContext ctx) throws Exception {
         if (! WaarpSslUtility.waitForHandshake(ctx.channel())) {
             callForSnmp("SSL Connection Error", "During Ssl Handshake");
             getFtpSession().setSsl(false);
-            ctx.close();
             return;
         } else {
             getFtpSession().setSsl(true);
