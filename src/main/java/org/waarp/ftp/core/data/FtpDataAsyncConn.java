@@ -21,7 +21,6 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 
 import io.netty.channel.Channel;
-import io.netty.channel.ChannelId;
 
 import org.waarp.common.command.exception.Reply425Exception;
 import org.waarp.common.crypto.ssl.WaarpSslUtility;
@@ -146,8 +145,7 @@ public class FtpDataAsyncConn {
 	    if (this.dataChannel == null || channel == null) {
 	        return false;
 	    }
-	    ChannelId id = this.dataChannel.id();
-	    return id != null && id.compareTo(channel.id()) == 0;
+	    return dataChannel.compareTo(channel) == 0;
 	}
 	/**
 	 * Clear the Data Connection

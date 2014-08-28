@@ -39,6 +39,7 @@ import org.waarp.common.command.exception.Reply503Exception;
 import org.waarp.common.crypto.ssl.WaarpSslUtility;
 import org.waarp.common.logging.WaarpLogger;
 import org.waarp.common.logging.WaarpLoggerFactory;
+import org.waarp.common.utility.WaarpNettyUtil;
 import org.waarp.ftp.core.command.AbstractCommand;
 import org.waarp.ftp.core.command.FtpCommandCode;
 import org.waarp.ftp.core.command.access.USER;
@@ -228,7 +229,7 @@ public class NetworkHandler extends SimpleChannelInboundHandler<String> {
 			return;
 		} else if (e1 instanceof NullPointerException) {
 			NullPointerException e2 = (NullPointerException) e1;
-			logger.warn("Null pointer Exception", e2);
+			logger.warn("Null pointer Exception: "+ctx.channel().toString(), e2);
 			try {
 				if (session != null) {
 					session.setExitErrorCode("Internal error: disconnect");
@@ -423,7 +424,7 @@ public class NetworkHandler extends SimpleChannelInboundHandler<String> {
                 session.getCurrentCommand().getCode() == FtpCommandCode.CCC) {
             try {
                 controlChannel.config().setAutoRead(false);
-                writeIntermediateAnswer(ctx);
+                ChannelFuture future = writeIntermediateAnswer(ctx);
                 session.setCurrentCommandFinished();
                 if (session.getCurrentCommand().getCode() == FtpCommandCode.AUTH) {
                     logger.debug("SSL to be added to pipeline");
@@ -436,14 +437,15 @@ public class NetworkHandler extends SimpleChannelInboundHandler<String> {
                         sslHandler =
                                 FtpsInitializer.waarpSslContextFactory.initInitializer(true,
                                         FtpsInitializer.waarpSslContextFactory.needClientAuthentication());
-                        WaarpSslUtility.addSslHandlerToPipeline(ctx.pipeline(), sslHandler);
+                        WaarpNettyUtil.waitOutOfNetty(future, session.getConfiguration().TIMEOUTCON);
+                        WaarpSslUtility.addSslHandlerToPipeline(session.getConfiguration().getFtpInternalConfiguration().getSslExecutor(), ctx.pipeline(), sslHandler);
                     }
                     controlChannel.config().setAutoRead(true);
                     // Get the SslHandler and begin handshake ASAP.
-                    logger.debug("SSL found but need handshake");
+                    logger.debug("SSL found but need handshake: "+ctx.channel().toString());
                     WaarpSslUtility.actionOnSslHandshaked(ctx.pipeline(), new GenericFutureListener<Future<? super Channel>>() {
                         public void operationComplete(Future<? super Channel> future) throws Exception {
-                            logger.debug("Handshake: " + future.isSuccess(), future.cause());
+                            logger.debug("Handshake: " + future.isSuccess()+":"+((Channel) future.get()).toString(), future.cause());
                             if (! future.isSuccess()) {
                                 String error2 = future.cause() != null ?
                                         future.cause().getMessage() : "During Handshake";

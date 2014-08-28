@@ -245,6 +245,9 @@ public class DataNetworkHandler extends SimpleChannelInboundHandler<DataBlock> {
 				.get(FtpDataInitializer.CODEC_TYPE);
 		FtpDataStructureCodec structureCodec = (FtpDataStructureCodec) channelPipeline
 				.get(FtpDataInitializer.CODEC_STRUCTURE);
+		if (modeCodec == null || typeCodec == null || structureCodec == null) {
+		    return;
+		}
 		modeCodec.setMode(session.getDataConn().getMode());
 		modeCodec.setStructure(session.getDataConn().getStructure());
 		typeCodec.setFullType(session.getDataConn().getType(), session

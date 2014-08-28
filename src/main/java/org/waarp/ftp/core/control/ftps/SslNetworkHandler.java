@@ -49,7 +49,7 @@ public class SslNetworkHandler extends NetworkHandler {
     @Override
     public void channelRegistered(ChannelHandlerContext ctx) throws Exception {
         Channel channel = ctx.channel();
-        logger.debug("Add channel to ssl " +channel.id());
+        logger.debug("Add channel to ssl " +channel.toString());
         WaarpSslUtility.addSslOpenedChannel(channel);
         super.channelRegistered(ctx);
     }

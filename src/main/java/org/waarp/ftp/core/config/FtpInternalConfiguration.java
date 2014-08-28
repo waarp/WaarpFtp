@@ -136,6 +136,10 @@ public class FtpInternalConfiguration {
      * ExecutorService Data Event Loop
      */
     private final EventLoopGroup execDataEvent;
+    /**
+     * ExecutorService Ssl Event Loop
+     */
+    private final EventLoopGroup execSslEvent;
 
 	/**
 	 * ExecutorService Data Active Worker
@@ -238,6 +242,7 @@ public class FtpInternalConfiguration {
 		execActiveDataWorker = new NioEventLoopGroup(configuration.CLIENT_THREAD, new WaarpThreadFactory("ActiveData"));
         execCommandEvent = new NioEventLoopGroup(configuration.CLIENT_THREAD, new WaarpThreadFactory("Command"));
         execDataEvent = new NioEventLoopGroup(configuration.CLIENT_THREAD, new WaarpThreadFactory("Data"));
+        execSslEvent = new NioEventLoopGroup(configuration.CLIENT_THREAD, new WaarpThreadFactory("Ssl"));
         execBoss = new NioEventLoopGroup(configuration.SERVER_THREAD, new WaarpThreadFactory("CommandBoss", false));
         execWorker = new NioEventLoopGroup(configuration.SERVER_THREAD, new WaarpThreadFactory("CommandWorker"));
         execPassiveDataBoss = new NioEventLoopGroup(configuration.SERVER_THREAD, new WaarpThreadFactory("PassiveDataBoss"));
@@ -482,6 +487,14 @@ public class FtpInternalConfiguration {
 	public EventExecutorGroup getDataExecutor() {
 		return execDataEvent;
 	}
+    /**
+     * Return the associated Executor for Ssl
+     * 
+     * @return the Ssl Executor
+     */
+    public EventExecutorGroup getSslExecutor() {
+        return execSslEvent;
+    }
 
 	/**
 	 * @param ssl

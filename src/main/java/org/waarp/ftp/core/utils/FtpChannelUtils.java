@@ -242,12 +242,7 @@ public class FtpChannelUtils implements Runnable {
 		int result = configuration.getFtpInternalConfiguration()
 				.getCommandChannelGroup().size();
 		configuration.getFtpInternalConfiguration().getCommandChannelGroup()
-				.close()/*.addListener(new ChannelGroupFutureListener() {
-                    @Override
-                    public void operationComplete(ChannelGroupFuture future) throws Exception {
-                        configuration.getFtpInternalConfiguration().getExecutor().shutdownGracefully().sync();
-                    }
-                })*/;
+				.close();
 		return result;
 	}
 
@@ -261,12 +256,7 @@ public class FtpChannelUtils implements Runnable {
 		int result = configuration.getFtpInternalConfiguration()
 				.getDataChannelGroup().size();
 		configuration.getFtpInternalConfiguration().getDataChannelGroup()
-                .close()/*.addListener(new ChannelGroupFutureListener() {
-                    @Override
-                    public void operationComplete(ChannelGroupFuture future) throws Exception {
-                        configuration.getFtpInternalConfiguration().getDataExecutor().shutdownGracefully().sync();
-                    }
-                })*/;
+                .close();
 		return result;
 	}
 
