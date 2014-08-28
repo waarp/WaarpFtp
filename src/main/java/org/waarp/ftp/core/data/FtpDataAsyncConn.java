@@ -21,6 +21,7 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 
 import io.netty.channel.Channel;
+import io.netty.channel.ChannelId;
 
 import org.waarp.common.command.exception.Reply425Exception;
 import org.waarp.common.crypto.ssl.WaarpSslUtility;
@@ -55,44 +56,44 @@ public class FtpDataAsyncConn {
 	/**
 	 * Current Data Network Handler
 	 */
-	private DataNetworkHandler dataNetworkHandler = null;
+	private volatile DataNetworkHandler dataNetworkHandler = null;
 
 	/**
 	 * Data Channel with the client
 	 */
-	private Channel dataChannel = null;
+	private volatile Channel dataChannel = null;
 
 	/**
 	 * External address of the client (active)
 	 */
-	private InetSocketAddress remoteAddress = null;
+	private volatile InetSocketAddress remoteAddress = null;
 
 	/**
 	 * Local listening address for the server (passive)
 	 */
-	private InetSocketAddress localAddress = null;
+	private volatile InetSocketAddress localAddress = null;
 
 	/**
 	 * Active: the connection is done from the Server to the Client on this remotePort Passive: not
 	 * used
 	 */
-	private int remotePort = -1;
+	private volatile int remotePort = -1;
 
 	/**
 	 * Active: the connection is done from the Server from this localPort to the Client Passive: the
 	 * connection is done from the Client to the Server on this localPort
 	 */
-	private int localPort = -1;
+	private volatile int localPort = -1;
 
 	/**
 	 * Is the connection passive
 	 */
-	private boolean passiveMode = false;
+	private volatile boolean passiveMode = false;
 
 	/**
 	 * Is the server binded (active or passive, but mainly passive)
 	 */
-	private boolean isBind = false;
+	private volatile boolean isBind = false;
 
 	/**
 	 * The FtpTransferControl
@@ -102,22 +103,22 @@ public class FtpDataAsyncConn {
 	/**
 	 * Current TransferType. Default ASCII
 	 */
-	private FtpArgumentCode.TransferType transferType = FtpArgumentCode.TransferType.ASCII;
+	private volatile FtpArgumentCode.TransferType transferType = FtpArgumentCode.TransferType.ASCII;
 
 	/**
 	 * Current TransferSubType. Default NONPRINT
 	 */
-	private FtpArgumentCode.TransferSubType transferSubType = FtpArgumentCode.TransferSubType.NONPRINT;
+	private volatile FtpArgumentCode.TransferSubType transferSubType = FtpArgumentCode.TransferSubType.NONPRINT;
 
 	/**
 	 * Current TransferStructure. Default FILE
 	 */
-	private FtpArgumentCode.TransferStructure transferStructure = FtpArgumentCode.TransferStructure.FILE;
+	private volatile FtpArgumentCode.TransferStructure transferStructure = FtpArgumentCode.TransferStructure.FILE;
 
 	/**
 	 * Current TransferMode. Default Stream
 	 */
-	private FtpArgumentCode.TransferMode transferMode = FtpArgumentCode.TransferMode.STREAM;
+	private volatile FtpArgumentCode.TransferMode transferMode = FtpArgumentCode.TransferMode.STREAM;
 
 	/**
 	 * Constructor for Active session by default
@@ -136,6 +137,18 @@ public class FtpDataAsyncConn {
 		transferControl = new FtpTransferControl(session);
 	}
 
+	/**
+	 * 
+	 * @param channel
+	 * @return True if the given channel is the same as the one currently registered
+	 */
+	public boolean checkCorrectChannel(Channel channel) {
+	    if (this.dataChannel == null || channel == null) {
+	        return false;
+	    }
+	    ChannelId id = this.dataChannel.id();
+	    return id != null && id.compareTo(channel.id()) == 0;
+	}
 	/**
 	 * Clear the Data Connection
 	 * 
@@ -353,7 +366,7 @@ public class FtpDataAsyncConn {
 	}
 
 	/**
-	 * Unbind passive connection when close the Data Channel (from channelClosed())
+	 * Unbind passive connection when close the Data Channel (from channelInactive())
 	 * 
 	 */
 	public void unbindPassive() {

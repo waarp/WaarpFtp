@@ -40,7 +40,6 @@ import org.waarp.common.file.DataBlock;
 import org.waarp.common.logging.WaarpLogger;
 import org.waarp.common.logging.WaarpLoggerFactory;
 import org.waarp.common.utility.WaarpStringUtils;
-import org.waarp.ftp.core.command.FtpCommandCode;
 import org.waarp.ftp.core.config.FtpConfiguration;
 import org.waarp.ftp.core.config.FtpInternalConfiguration;
 import org.waarp.ftp.core.control.NetworkHandler;
@@ -150,17 +149,19 @@ public class DataNetworkHandler extends SimpleChannelInboundHandler<DataBlock> {
 	@Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
 		if (session != null) {
-			session.getDataConn().getFtpTransferControl().setPreEndOfTransfer();
-			session.getDataConn().unbindPassive();
-			try {
-				getDataBusinessHandler().executeChannelClosed();
-				// release file and other permanent objects
-				getDataBusinessHandler().clear();
-			} catch (FtpNoConnectionException e1) {
-			}
-			dataBusinessHandler = null;
-			channelPipeline = null;
-			dataChannel = null;
+		    if (session.getDataConn().checkCorrectChannel(ctx.channel())) {
+    			session.getDataConn().getFtpTransferControl().setPreEndOfTransfer();
+    			session.getDataConn().unbindPassive();
+    			try {
+    				getDataBusinessHandler().executeChannelClosed();
+    				// release file and other permanent objects
+    				getDataBusinessHandler().clear();
+    			} catch (FtpNoConnectionException e1) {
+    			}
+    			dataBusinessHandler = null;
+    			channelPipeline = null;
+    			dataChannel = null;
+		    }
 		}
 		super.channelInactive(ctx);
 	}
@@ -293,8 +294,10 @@ public class DataNetworkHandler extends SimpleChannelInboundHandler<DataBlock> {
 				if (dataBusinessHandler != null) {
 					dataBusinessHandler.exceptionLocalCaught(e1);
 					if (session.getDataConn() != null) {
-						session.getDataConn().getFtpTransferControl()
+			            if (session.getDataConn().checkCorrectChannel(ctx.channel())) {
+			                session.getDataConn().getFtpTransferControl()
 								.setTransferAbortedFromInternal(true);
+			            }
 					}
 				}
 			} catch (NullPointerException e3) {
@@ -325,8 +328,10 @@ public class DataNetworkHandler extends SimpleChannelInboundHandler<DataBlock> {
 		if (dataBusinessHandler != null) {
 			dataBusinessHandler.exceptionLocalCaught(e1);
 		}
-		session.getDataConn().getFtpTransferControl()
+        if (session.getDataConn().checkCorrectChannel(ctx.channel())) {
+            session.getDataConn().getFtpTransferControl()
 				.setTransferAbortedFromInternal(true);
+        }
 	}
 
 	/**
@@ -347,22 +352,10 @@ public class DataNetworkHandler extends SimpleChannelInboundHandler<DataBlock> {
     @Override
     public void channelRead0(ChannelHandlerContext ctx, DataBlock dataBlock) {
 		if (isStillAlive()) {
-		    /*if (session.isCurrentCommandFinished() || ! FtpCommandCode.isStoreLikeCommand(session.getCurrentCommand().getCode())) {
-		        // ignore
-		        logger.warn("Write ignored: "+session.getCurrentCommand().getCode()+" = "+dataBlock.toString());
-		        dataBlock.getBlock().release();
-		        return;
-		    }*/
 			try {
 				session.getDataConn().getFtpTransferControl()
 						.getExecutingFtpTransfer().getFtpFile().writeDataBlock(
 								dataBlock);
-				/*
-				 * try { session.getDataConn().getFtpTransferControl()
-				 * .getExecutingFtpTransfer().getFtpFile().flush(); } catch (IOException e1) {
-				 * session.getDataConn().getFtpTransferControl()
-				 * .setTransferAbortedFromInternal(true); return; }
-				 */
 			} catch (FtpNoFileException e1) {
                 logger.debug(e1);
 				session.getDataConn().getFtpTransferControl()
