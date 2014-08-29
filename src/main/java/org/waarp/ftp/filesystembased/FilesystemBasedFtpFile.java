@@ -97,8 +97,7 @@ public abstract class FilesystemBasedFtpFile extends FilesystemBasedFileImpl imp
 				return;
 			}
 
-			Channel channel = ((FtpSession) session).getDataConn()
-					.getCurrentDataChannel();
+			Channel channel = ((FtpSession) session).getDataConn().getCurrentDataChannel();
 			DataBlock block = null;
 			try {
 				block = readDataBlock();

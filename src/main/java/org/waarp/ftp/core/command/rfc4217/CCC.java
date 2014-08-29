@@ -36,7 +36,7 @@ public class CCC extends AbstractCommand {
 		if (! getSession().getConfiguration().getFtpInternalConfiguration().isAcceptAuthProt()) {
 			throw new Reply534Exception("CCC not supported");
 		}
-		if (! getSession().isSsl()) {
+		if (! getSession().isSslReady()) {
 			// Not SSL
 			throw new Reply500Exception("Session already not using SSL / TLS");
 		}

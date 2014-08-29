@@ -39,13 +39,11 @@ import org.waarp.common.command.exception.Reply503Exception;
 import org.waarp.common.crypto.ssl.WaarpSslUtility;
 import org.waarp.common.logging.WaarpLogger;
 import org.waarp.common.logging.WaarpLoggerFactory;
-import org.waarp.common.utility.WaarpNettyUtil;
 import org.waarp.ftp.core.command.AbstractCommand;
 import org.waarp.ftp.core.command.FtpCommandCode;
 import org.waarp.ftp.core.command.access.USER;
 import org.waarp.ftp.core.command.internal.ConnectionCommand;
 import org.waarp.ftp.core.command.internal.IncorrectCommand;
-import org.waarp.ftp.core.config.FtpInternalConfiguration;
 import org.waarp.ftp.core.control.ftps.FtpsInitializer;
 import org.waarp.ftp.core.data.FtpTransferControl;
 import org.waarp.ftp.core.exception.FtpNoConnectionException;
@@ -286,21 +284,8 @@ public class NetworkHandler extends SimpleChannelInboundHandler<String> {
 				// Now check if a transfer is on its way: illegal to have at
 				// same time two commands (except ABORT). Wait is at most 100x
 				// RETRYINMS=1s
-				boolean notFinished = true;
 				FtpTransferControl control = session.getDataConn().getFtpTransferControl();
-				for (int i = 0; i < FtpInternalConfiguration.RETRYNB * 100; i++) {
-					if (control.isFtpTransferExecuting() ||
-							(!session.isCurrentCommandFinished())) {
-						try {
-							Thread.sleep(FtpInternalConfiguration.RETRYINMS);
-						} catch (InterruptedException e1) {
-							break;
-						}
-					} else {
-						notFinished = false;
-						break;
-					}
-				}
+                boolean notFinished = control.waitFtpTransferExecuting();
 				if (notFinished) {
 					session.setReplyCode(
 							ReplyCode.REPLY_503_BAD_SEQUENCE_OF_COMMANDS,
@@ -437,30 +422,29 @@ public class NetworkHandler extends SimpleChannelInboundHandler<String> {
                         sslHandler =
                                 FtpsInitializer.waarpSslContextFactory.initInitializer(true,
                                         FtpsInitializer.waarpSslContextFactory.needClientAuthentication());
-                        WaarpNettyUtil.waitOutOfNetty(future, session.getConfiguration().TIMEOUTCON);
-                        WaarpSslUtility.addSslHandlerToPipeline(session.getConfiguration().getFtpInternalConfiguration().getSslExecutor(), ctx.pipeline(), sslHandler);
-                    }
-                    controlChannel.config().setAutoRead(true);
-                    // Get the SslHandler and begin handshake ASAP.
-                    logger.debug("SSL found but need handshake: "+ctx.channel().toString());
-                    WaarpSslUtility.actionOnSslHandshaked(ctx.pipeline(), new GenericFutureListener<Future<? super Channel>>() {
-                        public void operationComplete(Future<? super Channel> future) throws Exception {
-                            logger.debug("Handshake: " + future.isSuccess()+":"+((Channel) future.get()).toString(), future.cause());
-                            if (! future.isSuccess()) {
-                                String error2 = future.cause() != null ?
-                                        future.cause().getMessage() : "During Handshake";
-                                callForSnmp("SSL Connection Error", error2);
-                                ctx.close();
-                            } else {
-                                logger.debug("End of initialization of SSL and command channel");
-                                session.setSsl(true);
+                        session.prepareSsl();
+                        WaarpSslUtility.addSslHandler(future, session.getConfiguration().getFtpInternalConfiguration().getSslExecutor(), ctx.pipeline(), sslHandler, new GenericFutureListener<Future<? super Channel>>() {
+                            public void operationComplete(Future<? super Channel> future) throws Exception {
+                                logger.debug("Handshake: " + future.isSuccess()+":"+((Channel) future.get()).toString(), future.cause());
+                                if (! future.isSuccess()) {
+                                    String error2 = future.cause() != null ?
+                                            future.cause().getMessage() : "During Handshake";
+                                    logger.error("Cannot finalize Ssl Command channel "+error2);
+                                    callForSnmp("SSL Connection Error", error2);
+                                    session.setSsl(false);
+                                    ctx.close();
+                                } else {
+                                    logger.debug("End of initialization of SSL and command channel: "+ctx.channel());
+                                    session.setSsl(true);
+                                }
                             }
-                        }
-                    });
+                        });
+                    }
                 } else if (session.getCurrentCommand().getCode() == FtpCommandCode.CCC) {
                     logger.debug("SSL to be removed from pipeline");
                     // remove the SSL support
-                    WaarpSslUtility.removingSslHandler(controlChannel, false);
+                    session.prepareSsl();
+                    WaarpSslUtility.removingSslHandler(future, controlChannel, false);
                 }
             } finally {
                 controlChannel.config().setAutoRead(true);

@@ -34,7 +34,7 @@ public class PBSZ extends AbstractCommand {
 
 	@Override
 	public void exec() throws CommandAbstractException {
-		if (!getSession().isSsl()) {
+		if (!getSession().isSslReady()) {
 			// Not SSL
 			throw new Reply503Exception("Session not using SSL / TLS");
 		}

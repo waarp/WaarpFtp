@@ -108,13 +108,12 @@ public class FtpsTemporaryFirstHandler extends ChannelDuplexHandler {
                         FtpsInitializer.waarpSslContextFactory.needClientAuthentication(),
                         FtpChannelUtils.getRemoteInetSocketAddress(session.getControlChannel()).getAddress().getHostAddress(),
                         FtpChannelUtils.getRemoteInetSocketAddress(session.getControlChannel()).getPort());
-        WaarpSslUtility.addSslHandlerToPipeline(session.getConfiguration().getFtpInternalConfiguration().getSslExecutor(), ctx.pipeline(), sslHandler);
-        channel.config().setAutoRead(true);
         WaarpSslUtility.addSslOpenedChannel(channel);
         // Get the SslHandler and begin handshake ASAP.
         logger.debug("SSL found but need handshake: "+ctx.channel().toString());
         final FtpsTemporaryFirstHandler myself = this;
-        WaarpSslUtility.actionOnSslHandshaked(ctx.pipeline(), new GenericFutureListener<Future<? super Channel>>() {
+        WaarpSslUtility.addSslHandler(null, session.getConfiguration().getFtpInternalConfiguration().getSslExecutor(), ctx.pipeline(), sslHandler,
+                new GenericFutureListener<Future<? super Channel>>() {
             public void operationComplete(Future<? super Channel> future) throws Exception {
                 logger.debug("Handshake: " + future.isSuccess()+":"+((Channel) future.get()).toString(), future.cause());
                 if (future.isSuccess()) {

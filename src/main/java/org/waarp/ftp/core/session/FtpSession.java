@@ -31,6 +31,8 @@ import org.waarp.common.file.FileParameterInterface;
 import org.waarp.common.file.Restart;
 import org.waarp.common.file.SessionInterface;
 import org.waarp.common.future.WaarpFuture;
+import org.waarp.common.logging.WaarpLogger;
+import org.waarp.common.logging.WaarpLoggerFactory;
 import org.waarp.ftp.core.command.AbstractCommand;
 import org.waarp.ftp.core.command.FtpArgumentCode;
 import org.waarp.ftp.core.command.FtpArgumentCode.TransferSubType;
@@ -39,6 +41,7 @@ import org.waarp.ftp.core.config.FtpConfiguration;
 import org.waarp.ftp.core.control.BusinessHandler;
 import org.waarp.ftp.core.control.NetworkHandler;
 import org.waarp.ftp.core.data.FtpDataAsyncConn;
+import org.waarp.ftp.core.exception.FtpNoConnectionException;
 import org.waarp.ftp.core.file.FtpAuth;
 import org.waarp.ftp.core.file.FtpDir;
 
@@ -50,6 +53,10 @@ import org.waarp.ftp.core.file.FtpDir;
  * 
  */
 public class FtpSession implements SessionInterface {
+    /**
+     * Internal Logger
+     */
+    private static final WaarpLogger logger = WaarpLoggerFactory.getLogger(FtpSession.class);
 	/**
 	 * Business Handler
 	 */
@@ -112,11 +119,15 @@ public class FtpSession implements SessionInterface {
 	/**
 	 * Is the current session using SSL on Control
 	 */
-	private boolean isSsl = false;
+	private volatile boolean isSsl = false;
+    /**
+     * Is the current session will using SSL on Control
+     */
+    private volatile WaarpFuture waitForSsl = null;
 	/**
 	 * WIll all data be using SSL
 	 */
-	private boolean isDataSsl = false;
+	private volatile boolean isDataSsl = false;
 
 	/**
 	 * Constructor
@@ -360,6 +371,10 @@ public class FtpSession implements SessionInterface {
 		if (ftpAuth != null) {
 			mesg += "User: " + ftpAuth.getUser() + "/" + ftpAuth.getAccount() + " ";
 		}
+        if (previousCommand != null) {
+            mesg += "PRVCMD: " + previousCommand.getCommand() + " " +
+                    previousCommand.getArg() + " ";
+        }
 		if (currentCommand != null) {
 			mesg += "CMD: " + currentCommand.getCommand() + " " +
 					currentCommand.getArg() + " ";
@@ -377,6 +392,15 @@ public class FtpSession implements SessionInterface {
 			} catch (CommandAbstractException e) {
 			}
 		}
+		if (getControlChannel() != null) {
+		    mesg += " Control: "+getControlChannel();
+		}
+        try {
+            if (getDataConn().getCurrentDataChannel() != null) {
+                mesg += " Data: "+getDataConn().getCurrentDataChannel();
+            }
+        } catch (FtpNoConnectionException e) {
+        }
 		return mesg + "\n";
 	}
 
@@ -449,7 +473,31 @@ public class FtpSession implements SessionInterface {
 
 	public void setSsl(boolean isSsl) {
 		this.isSsl = isSsl;
+		if (waitForSsl != null) {
+		    if (isSsl) {
+		        waitForSsl.setSuccess();
+		    } else {
+		        waitForSsl.cancel();
+		    }
+		}
 	}
+
+	public void prepareSsl() {
+	    waitForSsl = new WaarpFuture(true);
+	}
+	
+    public boolean isSslReady() {
+        if (waitForSsl != null) {
+            for (int i = 0; i < 10; i++) {
+                if (waitForSsl.awaitUninterruptibly(100)) {
+                    break;
+                }
+                Thread.yield();
+            }
+            logger.debug("DEBUG : "+(waitForSsl != null ? waitForSsl.isDone() : "not Finished") + ":"+isSsl+":"+getControlChannel());
+        }
+        return isSsl;
+    }
 
 	public boolean isDataSsl() {
 		return isDataSsl;

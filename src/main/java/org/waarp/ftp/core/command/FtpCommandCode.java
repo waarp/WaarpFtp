@@ -1157,6 +1157,17 @@ public enum FtpCommandCode {
 				command == MLST;
 	}
 
+    /**
+     * True if the command is using a Data connection
+     * 
+     * @param command
+     * @return True if the command is using a Data Connection
+     */
+    public static boolean isDataConnectionUsageCommand(FtpCommandCode command) {
+        return isRetrLikeCommand(command) || isStoreLikeCommand(command) || isListLikeCommand(command);
+    }
+
+
 	/**
 	 * True if the command is a special operation (QUIT, ABOR, NOOP, STAT, ...)
 	 * 

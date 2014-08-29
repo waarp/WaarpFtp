@@ -52,7 +52,7 @@ public class SimpleBusinessHandler extends BusinessHandler {
 		if (getFtpSession().getCurrentCommand() instanceof MKD) {
 			// do nothing
 		} else {
-			logger.warn("GBBH: AFTKO: {} {}", getFtpSession(), e.getMessage());
+			logger.debug("GBBH: AFTKO: {} {}", getFtpSession(), e.getMessage());
 		}
 	}
 

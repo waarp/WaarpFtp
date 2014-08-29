@@ -86,8 +86,7 @@ public class FtpInitializer extends ChannelInitializer<SocketChannel> {
 		EventExecutorGroup executorGroup = configuration.getFtpInternalConfiguration().getExecutor();
 		// and then business logic. New one on every connection
 		BusinessHandler newbusiness = businessHandler.newInstance();
-		NetworkHandler newNetworkHandler = new NetworkHandler(new FtpSession(
-				configuration, newbusiness));
+		NetworkHandler newNetworkHandler = new NetworkHandler(new FtpSession(configuration, newbusiness));
 		pipeline.addLast(executorGroup, "handler", newNetworkHandler);
 	}
 }

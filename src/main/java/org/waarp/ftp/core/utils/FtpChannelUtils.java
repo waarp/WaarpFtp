@@ -319,7 +319,7 @@ public class FtpChannelUtils implements Runnable {
 	 */
 	protected static void exit(FtpConfiguration configuration) {
 		configuration.isShutdown = true;
-		long delay = configuration.TIMEOUTCON;
+		long delay = configuration.TIMEOUTCON/2;
 		logger.warn("Exit: Give a delay of " + delay + " ms");
 		configuration.inShutdownProcess();
 		try {

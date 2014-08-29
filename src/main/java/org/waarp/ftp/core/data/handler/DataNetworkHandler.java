@@ -96,7 +96,7 @@ public class DataNetworkHandler extends SimpleChannelInboundHandler<DataBlock> {
 	/**
 	 * True when the DataNetworkHandler is fully ready (to prevent action before ready)
 	 */
-	private boolean isReady = false;
+	private volatile boolean isReady = false;
 
 	/**
 	 * Constructor from DataBusinessHandler
