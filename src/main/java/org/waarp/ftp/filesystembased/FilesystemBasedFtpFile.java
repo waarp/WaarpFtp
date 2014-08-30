@@ -29,6 +29,7 @@ import org.waarp.common.file.DataBlock;
 import org.waarp.common.file.filesystembased.FilesystemBasedFileImpl;
 import org.waarp.common.logging.WaarpLogger;
 import org.waarp.common.logging.WaarpLoggerFactory;
+import org.waarp.ftp.core.config.FtpConfiguration;
 import org.waarp.ftp.core.exception.FtpNoConnectionException;
 import org.waarp.ftp.core.file.FtpFile;
 import org.waarp.ftp.core.session.FtpSession;
@@ -50,7 +51,6 @@ public abstract class FilesystemBasedFtpFile extends FilesystemBasedFileImpl imp
 	 * Retrieve lock to ensure only one call at a time for one file
 	 */
 	private final ReentrantLock retrieveLock = new ReentrantLock();
-
 	/**
 	 * @param session
 	 * @param dir
@@ -96,8 +96,16 @@ public abstract class FilesystemBasedFtpFile extends FilesystemBasedFileImpl imp
 				logger.warn("DataNetworkHandler was not ready", e);
 				return;
 			}
-
-			Channel channel = ((FtpSession) session).getDataConn().getCurrentDataChannel();
+			Channel channel = null;
+			try {
+			    channel = ((FtpSession) session).getDataConn().getCurrentDataChannel();
+			} catch (FtpNoConnectionException e) {
+	            logger.debug("Should not be", e);
+			    closeFile();
+                ((FtpSession) session).getDataConn().getFtpTransferControl()
+                        .setPreEndOfTransfer();
+			    return;
+			}
 			DataBlock block = null;
 			try {
 				block = readDataBlock();
@@ -123,7 +131,7 @@ public abstract class FilesystemBasedFtpFile extends FilesystemBasedFileImpl imp
 			ChannelFuture future = null;
 			while (block != null && !block.isEOF()) {
 	            logger.debug("Write "+block.getByteCount());
-				future = channel.writeAndFlush(block).awaitUninterruptibly();
+				future = channel.writeAndFlush(block);
 				// Test if channel is writable in order to prevent OOM
 				if (channel.isWritable()) {
 					try {
@@ -132,7 +140,7 @@ public abstract class FilesystemBasedFtpFile extends FilesystemBasedFileImpl imp
 						closeFile();
 						// Wait for last write
 						try {
-							future.await();
+							future.await(FtpConfiguration.DATATIMEOUTCON);
 						} catch (InterruptedException e1) {
 							throw new FileTransferException("Interruption catched");
 						}
@@ -148,7 +156,7 @@ public abstract class FilesystemBasedFtpFile extends FilesystemBasedFileImpl imp
 					return;// Wait for the next InterestChanged
 				}
 				try {
-					future.await();
+					future.await(FtpConfiguration.DATATIMEOUTCON);
 				} catch (InterruptedException e) {
 					closeFile();
 					throw new FileTransferException("Interruption catched");
@@ -167,7 +175,7 @@ public abstract class FilesystemBasedFtpFile extends FilesystemBasedFileImpl imp
 			// Wait for last write
 			if (future != null) {
 				try {
-					future.await();
+					future.await(FtpConfiguration.DATATIMEOUTCON);
 				} catch (InterruptedException e) {
 					throw new FileTransferException("Interruption catched");
 				}
@@ -180,10 +188,6 @@ public abstract class FilesystemBasedFtpFile extends FilesystemBasedFileImpl imp
 			}
 		} catch (FileTransferException e) {
 			// An error occurs!
-			((FtpSession) session).getDataConn().getFtpTransferControl()
-					.setTransferAbortedFromInternal(true);
-		} catch (FtpNoConnectionException e) {
-			logger.error("Should not be", e);
 			((FtpSession) session).getDataConn().getFtpTransferControl()
 					.setTransferAbortedFromInternal(true);
 		} catch (CommandAbstractException e) {

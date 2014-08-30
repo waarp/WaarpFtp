@@ -28,6 +28,7 @@ import io.netty.bootstrap.Bootstrap;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelException;
+import io.netty.channel.ChannelFuture;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.group.ChannelGroup;
 import io.netty.channel.group.DefaultChannelGroup;
@@ -126,15 +127,6 @@ public class FtpInternalConfiguration {
 	 * ExecutorService Command Event Loop
 	 */
     private final EventLoopGroup execCommandEvent;
-
-    /**
-     * ExecutorService Data Event Loop
-     */
-    private final EventLoopGroup execDataEvent;
-    /**
-     * ExecutorService Ssl Event Loop
-     */
-    private final EventLoopGroup execSslEvent;
 
 	/**
 	 * ExecutorService Data Active Worker
@@ -235,8 +227,6 @@ public class FtpInternalConfiguration {
 		configuration.shutdownConfiguration.timeout = configuration.TIMEOUTCON;
 		new FtpShutdownHook(configuration.shutdownConfiguration, configuration);
         execCommandEvent = new NioEventLoopGroup(configuration.CLIENT_THREAD, new WaarpThreadFactory("Command"));
-        execDataEvent = new NioEventLoopGroup(configuration.CLIENT_THREAD, new WaarpThreadFactory("Data"));
-        execSslEvent = new NioEventLoopGroup(configuration.CLIENT_THREAD, new WaarpThreadFactory("Ssl"));
         execBoss = new NioEventLoopGroup(configuration.SERVER_THREAD, new WaarpThreadFactory("CommandBoss", false));
         execWorker = new NioEventLoopGroup(configuration.CLIENT_THREAD, new WaarpThreadFactory("CommandWorker"));
         execPassiveDataBoss = new NioEventLoopGroup(configuration.SERVER_THREAD, new WaarpThreadFactory("PassiveDataBoss"));
@@ -403,11 +393,19 @@ public class FtpInternalConfiguration {
 				logger.debug("Bind really to {}", address);
 				Channel parentChannel = null;
 				try {
+				    ChannelFuture future = null;
 					if (ssl) {
-						parentChannel = passiveSslBootstrap.bind(address).await().sync().channel();
+					    future = passiveSslBootstrap.bind(address);
 					} else {
-						parentChannel = passiveBootstrap.bind(address).await().sync().channel();
+                        future = passiveBootstrap.bind(address);
 					}
+                    if (future.await(configuration.TIMEOUTCON)) {
+                        parentChannel = future.sync().channel();
+                    } else {
+                        logger.warn("Cannot open passive connection due to Timeout");
+                        throw new Reply425Exception(
+                                "Cannot open a Passive Connection due to Timeout");
+                    }
 				} catch (ChannelException e) {
 					logger.warn("Cannot open passive connection {}", e
 							.getMessage());
@@ -472,23 +470,6 @@ public class FtpInternalConfiguration {
 	public EventExecutorGroup getExecutor() {
 		return execCommandEvent;
 	}
-
-	/**
-	 * Return the associated Executor for Data
-	 * 
-	 * @return the Data Executor
-	 */
-	public EventExecutorGroup getDataExecutor() {
-		return execDataEvent;
-	}
-    /**
-     * Return the associated Executor for Ssl
-     * 
-     * @return the Ssl Executor
-     */
-    public EventExecutorGroup getSslExecutor() {
-        return execSslEvent;
-    }
 
 	/**
 	 * @param ssl

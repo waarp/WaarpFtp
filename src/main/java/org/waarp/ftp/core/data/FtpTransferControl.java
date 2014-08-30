@@ -145,8 +145,11 @@ public class FtpTransferControl {
 	 */
 	public void waitForDataNetworkHandlerReady() throws InterruptedException {
 		if (!isDataNetworkHandlerReady) {
-			// logger.debug("Wait for DataNetwork Ready over {}");
-			throw new InterruptedException("Bad initialization");
+		    Thread.sleep(10);
+		    if (!isDataNetworkHandlerReady) {
+    			// logger.debug("Wait for DataNetwork Ready over {}");
+    			throw new InterruptedException("Bad initialization");
+    		}
 		}
 	}
 
@@ -196,6 +199,9 @@ public class FtpTransferControl {
 	 * Allow to reset the waitForOpenedDataChannel
 	 */
 	public void resetWaitForOpenedDataChannel() {
+	    if (waitForOpenedDataChannel != null) {
+	        waitForOpenedDataChannel.cancel();
+	    }
 		waitForOpenedDataChannel = new WaarpChannelFuture(true);
 	}
 
@@ -331,7 +337,7 @@ public class FtpTransferControl {
                         scheduleService.schedule(new Runnable() {
                             public void run() {
                                 if (! toFinish.isDone() || ! toCommand.isDone()) {
-                                    logger.warn("Will try to finish command: "+session+":"+toFinish.isDone()+":"+toCommand.isDone());
+                                    logger.warn("Will try to finish command: "+session+" CommandFinishing:"+toFinish.isDone()+" EndOfCommand:"+toCommand.isDone());
                                     toFinish.cancel();
                                 }
                             }
@@ -340,15 +346,8 @@ public class FtpTransferControl {
                 }
             });
         } catch (FtpNoConnectionException e1) {
-            e1.printStackTrace();
+            //e1.printStackTrace();
         }
-		// Unlock Mode Codec
-		try {
-			session.getDataConn().getDataNetworkHandler().unlockModeCodec();
-		} catch (FtpNoConnectionException e) {
-			setTransferAbortedFromInternal(false);
-			return;
-		}
         // Run the command
         if (executorService == null) {
             executorService = Executors.newSingleThreadExecutor();
@@ -486,7 +485,7 @@ public class FtpTransferControl {
 			}
 			throw new FtpNoTransferException("No transfer running");
 		}
-		if (!isDataNetworkHandlerReady) {
+		if (! isDataNetworkHandlerReady) {
 			// already done
 			logger.warn("Check: already DNH not ready");
 			throw new FtpNoTransferException("No connection");
@@ -702,7 +701,7 @@ public class FtpTransferControl {
 	 */
 	private synchronized void endDataConnection() {
 		// logger.debug("End Data connection");
-		if (isDataNetworkHandlerReady) {
+		if (isDataNetworkHandlerReady && dataChannel != null) {
 			try {
 			    WaarpSslUtility.closingSslChannel(dataChannel).await(FtpConfiguration.DATATIMEOUTCON,
 							TimeUnit.MILLISECONDS);

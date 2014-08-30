@@ -82,7 +82,6 @@ public class FtpInitializer extends ChannelInitializer<SocketChannel> {
 		pipeline.addLast("decoder", ftpControlStringDecoder);
 		pipeline.addLast("encoder", ftpControlStringEncoder);
 		// Threaded execution for business logic
-		
 		EventExecutorGroup executorGroup = configuration.getFtpInternalConfiguration().getExecutor();
 		// and then business logic. New one on every connection
 		BusinessHandler newbusiness = businessHandler.newInstance();

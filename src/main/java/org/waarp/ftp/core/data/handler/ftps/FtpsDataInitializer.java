@@ -23,7 +23,6 @@ package org.waarp.ftp.core.data.handler.ftps;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.handler.traffic.ChannelTrafficShapingHandler;
-import io.netty.util.concurrent.EventExecutorGroup;
 
 import org.waarp.ftp.core.command.FtpArgumentCode.TransferMode;
 import org.waarp.ftp.core.command.FtpArgumentCode.TransferStructure;
@@ -77,11 +76,9 @@ public class FtpsDataInitializer extends FtpDataInitializer {
 		}
 		pipeline.addLast(FtpDataInitializer.CODEC_TYPE, ftpDataTypeCodec);
 		pipeline.addLast(FtpDataInitializer.CODEC_STRUCTURE, ftpDataStructureCodec);
-		// Threaded execution for business logic
-        EventExecutorGroup executorGroup = configuration.getFtpInternalConfiguration().getDataExecutor();
 		// and then business logic. New one on every connection
 		DataBusinessHandler newbusiness = dataBusinessHandler.newInstance();
 		DataNetworkHandler newNetworkHandler = new DataNetworkHandler(configuration, newbusiness, isActive);
-		pipeline.addLast(executorGroup, FtpDataInitializer.HANDLER, newNetworkHandler);
+        pipeline.addLast(FtpDataInitializer.HANDLER, newNetworkHandler);
 	}
 }

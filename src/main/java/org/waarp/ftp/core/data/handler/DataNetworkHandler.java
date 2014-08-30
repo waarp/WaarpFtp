@@ -225,6 +225,7 @@ public class DataNetworkHandler extends SimpleChannelInboundHandler<DataBlock> {
 		}
 		if (isStillAlive()) {
 			setCorrectCodec();
+			unlockModeCodec();
 			session.getDataConn().getFtpTransferControl().setOpenedDataChannel(channel, this);
 		} else {
 			// Cannot continue
@@ -395,7 +396,8 @@ public class DataNetworkHandler extends SimpleChannelInboundHandler<DataBlock> {
 		ChannelFuture future;
 		logger.debug("Will write: "+buffer.toString(WaarpStringUtils.UTF8));
 		try {
-			future = dataChannel.writeAndFlush(dataBlock).await();
+			future = dataChannel.writeAndFlush(dataBlock);
+			future.await(FtpConfiguration.DATATIMEOUTCON);
 		} catch (InterruptedException e) {
 		    logger.debug("Interrupted", e);
 			return false;
