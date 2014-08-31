@@ -100,7 +100,12 @@ public abstract class FilesystemBasedFtpFile extends FilesystemBasedFileImpl imp
 			try {
 			    channel = ((FtpSession) session).getDataConn().getCurrentDataChannel();
 			} catch (FtpNoConnectionException e) {
-	            logger.debug("Should not be", e);
+			    if (this.isInReading()) {
+		            logger.error("Should not be", e);
+		            ((FtpSession) session).getDataConn().getFtpTransferControl()
+		                    .setTransferAbortedFromInternal(true);
+			    }
+	            logger.debug("Possible call while channel was on going to be closed once transfer was done", e);
 			    closeFile();
                 ((FtpSession) session).getDataConn().getFtpTransferControl()
                         .setPreEndOfTransfer();
