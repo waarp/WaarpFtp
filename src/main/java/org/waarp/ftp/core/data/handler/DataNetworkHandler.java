@@ -269,8 +269,6 @@ public class DataNetworkHandler extends SimpleChannelInboundHandler<DataBlock> {
 	/**
 	 * Default exception task: close the current connection after calling exceptionLocalCaught.
 	 * 
-	 * @see io.netty.channel.SimpleChannelHandler#exceptionCaught(io.netty.channel.ChannelHandlerContext,
-	 *      io.netty.channel.ExceptionEvent)
 	 */
 	@Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
