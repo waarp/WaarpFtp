@@ -211,13 +211,8 @@ public class FtpDataAsyncConn {
 	 */
 	public void setPassive() {
 		unbindPassive();
-		String address = session.getConfiguration().getServerAddress();
-		if (address == null) {
-			localAddress = new InetSocketAddress(FtpChannelUtils
-					.getLocalInetAddress(session.getControlChannel()), localPort);
-		} else {
-			localAddress = new InetSocketAddress(address, localPort);
-		}
+		localAddress = new InetSocketAddress(FtpChannelUtils
+				.getLocalInetAddress(session.getControlChannel()), localPort);
 		passiveMode = true;
 		isBind = false;
 	}

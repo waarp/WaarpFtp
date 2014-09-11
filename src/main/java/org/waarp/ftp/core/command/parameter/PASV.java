@@ -87,8 +87,15 @@ public class PASV extends AbstractCommand {
 		}
 		// Return the address in Ftp format
 		InetSocketAddress local = getSession().getDataConn().getLocalAddress();
+		int servPort = local.getPort();
+
+		String address = getSession().getConfiguration().getServerAddress();
+		if (address == null) {
+			address = local.getAddress().getHostAddress();
+		}
+
 		String slocal = "Entering Passive Mode (" +
-				FtpChannelUtils.getAddress(local) + ")";
+				FtpChannelUtils.getAddress(address, servPort) + ")";
 		InetAddress remote = getSession().getDataConn().getRemoteAddress()
 				.getAddress();
 		// Add the current FtpSession into the reference of session since the
