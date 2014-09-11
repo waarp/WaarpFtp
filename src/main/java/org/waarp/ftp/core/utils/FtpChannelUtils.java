@@ -147,6 +147,18 @@ public class FtpChannelUtils implements Runnable {
 	}
 
 	/**
+	 * Return the Address in the format compatible with FTP argument
+	 *
+	 * @param address
+	 * @param port
+	 * @return the String representation of the address
+	 */
+	public static String getAddress(String address, int port) {
+		return address.replace('.', ',') + ',' +
+				(port >> 8) + ',' + (port & 0xFF);
+	}
+
+	/**
 	 * Get the (RFC2428) InetSocketAddress corresponding to the FTP format of address (RFC2428)
 	 * 
 	 * @param arg
