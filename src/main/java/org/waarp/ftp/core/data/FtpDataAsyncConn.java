@@ -206,13 +206,8 @@ public class FtpDataAsyncConn {
 	}
 
 	private void resetLocalAddress() {
-	    String address = session.getConfiguration().getServerAddress();
-        if (address == null) {
-            localAddress = new InetSocketAddress(FtpChannelUtils
-                    .getLocalInetAddress(session.getControlChannel()), localPort);
-        } else {
-            localAddress = new InetSocketAddress(address, localPort);
-        }
+        localAddress = new InetSocketAddress(FtpChannelUtils
+                .getLocalInetAddress(session.getControlChannel()), localPort);
 	}
 	/**
 	 * Change to active connection (reset localPort to default)

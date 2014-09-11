@@ -130,6 +130,18 @@ public class FtpChannelUtils implements Runnable {
 		return new InetSocketAddress(inetAddress, port);
 	}
 
+    /**
+     * Return the Address in the format compatible with FTP argument
+     * 
+     * @param address
+     * @param port
+     * @return the String representation of the address
+     */
+    public static String getAddress(String address, int port) {
+        return address.replace('.', ',') + ',' +
+                (port >> 8) + ',' + (port & 0xFF);
+    }
+
 	/**
 	 * Return the Address in the format compatible with FTP argument
 	 * 
