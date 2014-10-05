@@ -205,7 +205,7 @@
 <a class="jxr_linenumber" name="195" href="#195">195</a> 	<em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="196" href="#196">196</a> <em class="jxr_javadoccomment">	 * Global TrafficCounter (set from global configuration)</em>
 <a class="jxr_linenumber" name="197" href="#197">197</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="198" href="#198">198</a> 	<strong class="jxr_keyword">private</strong> GlobalTrafficShapingHandler globalTrafficShapingHandler = <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="198" href="#198">198</a> 	<strong class="jxr_keyword">private</strong> <a href="../../../../../org/jboss/netty/handler/traffic/GlobalTrafficShapingHandler.html">GlobalTrafficShapingHandler</a> globalTrafficShapingHandler = <strong class="jxr_keyword">null</strong>;
 <a class="jxr_linenumber" name="199" href="#199">199</a> 
 <a class="jxr_linenumber" name="200" href="#200">200</a> 	<em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="201" href="#201">201</a> <em class="jxr_javadoccomment">	 * ObjectSizeEstimator</em>
@@ -401,7 +401,7 @@
 <a class="jxr_linenumber" name="391" href="#391">391</a> 		FtpShutdownHook.addShutdownHook();
 <a class="jxr_linenumber" name="392" href="#392">392</a> 		<em class="jxr_comment">// Factory for TrafficShapingHandler</em>
 <a class="jxr_linenumber" name="393" href="#393">393</a> 		objectSizeEstimator = <strong class="jxr_keyword">new</strong> DataBlockSizeEstimator();
-<a class="jxr_linenumber" name="394" href="#394">394</a> 		globalTrafficShapingHandler = <strong class="jxr_keyword">new</strong> GlobalTrafficShapingHandler(
+<a class="jxr_linenumber" name="394" href="#394">394</a> 		globalTrafficShapingHandler = <strong class="jxr_keyword">new</strong> <a href="../../../../../org/jboss/netty/handler/traffic/GlobalTrafficShapingHandler.html">GlobalTrafficShapingHandler</a>(
 <a class="jxr_linenumber" name="395" href="#395">395</a> 				objectSizeEstimator, timerTrafficCounter, configuration
 <a class="jxr_linenumber" name="396" href="#396">396</a> 						.getServerGlobalWriteLimit(), configuration
 <a class="jxr_linenumber" name="397" href="#397">397</a> 						.getServerGlobalReadLimit(), configuration
@@ -632,7 +632,7 @@
 <a class="jxr_linenumber" name="622" href="#622">622</a> <em class="jxr_javadoccomment">	 * </em>
 <a class="jxr_linenumber" name="623" href="#623">623</a> <em class="jxr_javadoccomment">	 * @return The TrafficCounterFactory</em>
 <a class="jxr_linenumber" name="624" href="#624">624</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="625" href="#625">625</a> 	<strong class="jxr_keyword">public</strong> GlobalTrafficShapingHandler getGlobalTrafficShapingHandler() {
+<a class="jxr_linenumber" name="625" href="#625">625</a> 	<strong class="jxr_keyword">public</strong> <a href="../../../../../org/jboss/netty/handler/traffic/GlobalTrafficShapingHandler.html">GlobalTrafficShapingHandler</a> getGlobalTrafficShapingHandler() {
 <a class="jxr_linenumber" name="626" href="#626">626</a> 		<strong class="jxr_keyword">return</strong> globalTrafficShapingHandler;
 <a class="jxr_linenumber" name="627" href="#627">627</a> 	}
 <a class="jxr_linenumber" name="628" href="#628">628</a> 
@@ -640,12 +640,12 @@
 <a class="jxr_linenumber" name="630" href="#630">630</a> <em class="jxr_javadoccomment">	 * </em>
 <a class="jxr_linenumber" name="631" href="#631">631</a> <em class="jxr_javadoccomment">	 * @return a new ChannelTrafficShapingHandler</em>
 <a class="jxr_linenumber" name="632" href="#632">632</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="633" href="#633">633</a> 	<strong class="jxr_keyword">public</strong> ChannelTrafficShapingHandler newChannelTrafficShapingHandler() {
+<a class="jxr_linenumber" name="633" href="#633">633</a> 	<strong class="jxr_keyword">public</strong> <a href="../../../../../org/jboss/netty/handler/traffic/ChannelTrafficShapingHandler.html">ChannelTrafficShapingHandler</a> newChannelTrafficShapingHandler() {
 <a class="jxr_linenumber" name="634" href="#634">634</a> 		<strong class="jxr_keyword">if</strong> (configuration.getServerChannelWriteLimit() == 0 &amp;&amp;
 <a class="jxr_linenumber" name="635" href="#635">635</a> 				configuration.getServerChannelReadLimit() == 0) {
 <a class="jxr_linenumber" name="636" href="#636">636</a> 			<strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">null</strong>;
 <a class="jxr_linenumber" name="637" href="#637">637</a> 		}
-<a class="jxr_linenumber" name="638" href="#638">638</a> 		<strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> ChannelTrafficShapingHandler(objectSizeEstimator,
+<a class="jxr_linenumber" name="638" href="#638">638</a> 		<strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> <a href="../../../../../org/jboss/netty/handler/traffic/ChannelTrafficShapingHandler.html">ChannelTrafficShapingHandler</a>(objectSizeEstimator,
 <a class="jxr_linenumber" name="639" href="#639">639</a> 				timerTrafficCounter, configuration.getServerChannelWriteLimit(),
 <a class="jxr_linenumber" name="640" href="#640">640</a> 				configuration.getServerChannelReadLimit(), configuration
 <a class="jxr_linenumber" name="641" href="#641">641</a> 						.getDelayLimit());

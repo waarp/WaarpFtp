@@ -221,285 +221,280 @@
 <a class="jxr_linenumber" name="211" href="#211">211</a> <em class="jxr_javadoccomment">	 */</em>
 <a class="jxr_linenumber" name="212" href="#212">212</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setPassive() {
 <a class="jxr_linenumber" name="213" href="#213">213</a> 		unbindPassive();
-<a class="jxr_linenumber" name="214" href="#214">214</a> 		String address = session.getConfiguration().getServerAddress();
-<a class="jxr_linenumber" name="215" href="#215">215</a> 		<strong class="jxr_keyword">if</strong> (address == <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="216" href="#216">216</a> 			localAddress = <strong class="jxr_keyword">new</strong> InetSocketAddress(<a href="../../../../../org/waarp/ftp/core/utils/FtpChannelUtils.html">FtpChannelUtils</a>
-<a class="jxr_linenumber" name="217" href="#217">217</a> 					.getLocalInetAddress(session.getControlChannel()), localPort);
-<a class="jxr_linenumber" name="218" href="#218">218</a> 		} <strong class="jxr_keyword">else</strong> {
-<a class="jxr_linenumber" name="219" href="#219">219</a> 			localAddress = <strong class="jxr_keyword">new</strong> InetSocketAddress(address, localPort);
-<a class="jxr_linenumber" name="220" href="#220">220</a> 		}
-<a class="jxr_linenumber" name="221" href="#221">221</a> 		passiveMode = <strong class="jxr_keyword">true</strong>;
-<a class="jxr_linenumber" name="222" href="#222">222</a> 		isBind = false;
-<a class="jxr_linenumber" name="223" href="#223">223</a> 	}
-<a class="jxr_linenumber" name="224" href="#224">224</a> 
-<a class="jxr_linenumber" name="225" href="#225">225</a> 	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="226" href="#226">226</a> <em class="jxr_javadoccomment">	 * @return the passiveMode</em>
-<a class="jxr_linenumber" name="227" href="#227">227</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="228" href="#228">228</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">boolean</strong> isPassiveMode() {
-<a class="jxr_linenumber" name="229" href="#229">229</a> 		<strong class="jxr_keyword">return</strong> passiveMode;
-<a class="jxr_linenumber" name="230" href="#230">230</a> 	}
-<a class="jxr_linenumber" name="231" href="#231">231</a> 
-<a class="jxr_linenumber" name="232" href="#232">232</a> 	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="233" href="#233">233</a> <em class="jxr_javadoccomment">	 * </em>
-<a class="jxr_linenumber" name="234" href="#234">234</a> <em class="jxr_javadoccomment">	 * @return True if the connection is bind (active = connected, passive = not necessarily</em>
-<a class="jxr_linenumber" name="235" href="#235">235</a> <em class="jxr_javadoccomment">	 *         connected)</em>
-<a class="jxr_linenumber" name="236" href="#236">236</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="237" href="#237">237</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">boolean</strong> isBind() {
-<a class="jxr_linenumber" name="238" href="#238">238</a> 		<strong class="jxr_keyword">return</strong> isBind;
-<a class="jxr_linenumber" name="239" href="#239">239</a> 	}
-<a class="jxr_linenumber" name="240" href="#240">240</a> 
-<a class="jxr_linenumber" name="241" href="#241">241</a> 	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="242" href="#242">242</a> <em class="jxr_javadoccomment">	 * Is the Data dataChannel connected</em>
-<a class="jxr_linenumber" name="243" href="#243">243</a> <em class="jxr_javadoccomment">	 * </em>
-<a class="jxr_linenumber" name="244" href="#244">244</a> <em class="jxr_javadoccomment">	 * @return True if the dataChannel is connected</em>
-<a class="jxr_linenumber" name="245" href="#245">245</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="246" href="#246">246</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">boolean</strong> isConnected() {
-<a class="jxr_linenumber" name="247" href="#247">247</a> 		<strong class="jxr_keyword">return</strong> dataChannel != <strong class="jxr_keyword">null</strong> &amp;&amp; dataChannel.isConnected();
-<a class="jxr_linenumber" name="248" href="#248">248</a> 	}
-<a class="jxr_linenumber" name="249" href="#249">249</a> 
-<a class="jxr_linenumber" name="250" href="#250">250</a> 	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="251" href="#251">251</a> <em class="jxr_javadoccomment">	 * @return the transferMode</em>
-<a class="jxr_linenumber" name="252" href="#252">252</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="253" href="#253">253</a> 	<strong class="jxr_keyword">public</strong> FtpArgumentCode.TransferMode getMode() {
-<a class="jxr_linenumber" name="254" href="#254">254</a> 		<strong class="jxr_keyword">return</strong> transferMode;
-<a class="jxr_linenumber" name="255" href="#255">255</a> 	}
-<a class="jxr_linenumber" name="256" href="#256">256</a> 
-<a class="jxr_linenumber" name="257" href="#257">257</a> 	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="258" href="#258">258</a> <em class="jxr_javadoccomment">	 * @param transferMode</em>
-<a class="jxr_linenumber" name="259" href="#259">259</a> <em class="jxr_javadoccomment">	 *            the transferMode to set</em>
-<a class="jxr_linenumber" name="260" href="#260">260</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="261" href="#261">261</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setMode(FtpArgumentCode.TransferMode transferMode) {
-<a class="jxr_linenumber" name="262" href="#262">262</a> 		<strong class="jxr_keyword">this</strong>.transferMode = transferMode;
-<a class="jxr_linenumber" name="263" href="#263">263</a> 		setCorrectCodec();
-<a class="jxr_linenumber" name="264" href="#264">264</a> 	}
-<a class="jxr_linenumber" name="265" href="#265">265</a> 
-<a class="jxr_linenumber" name="266" href="#266">266</a> 	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="267" href="#267">267</a> <em class="jxr_javadoccomment">	 * @return the transferStructure</em>
-<a class="jxr_linenumber" name="268" href="#268">268</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="269" href="#269">269</a> 	<strong class="jxr_keyword">public</strong> FtpArgumentCode.TransferStructure getStructure() {
-<a class="jxr_linenumber" name="270" href="#270">270</a> 		<strong class="jxr_keyword">return</strong> transferStructure;
-<a class="jxr_linenumber" name="271" href="#271">271</a> 	}
-<a class="jxr_linenumber" name="272" href="#272">272</a> 
-<a class="jxr_linenumber" name="273" href="#273">273</a> 	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="274" href="#274">274</a> <em class="jxr_javadoccomment">	 * @param transferStructure</em>
-<a class="jxr_linenumber" name="275" href="#275">275</a> <em class="jxr_javadoccomment">	 *            the transferStructure to set</em>
-<a class="jxr_linenumber" name="276" href="#276">276</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="277" href="#277">277</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setStructure(FtpArgumentCode.TransferStructure transferStructure) {
-<a class="jxr_linenumber" name="278" href="#278">278</a> 		<strong class="jxr_keyword">this</strong>.transferStructure = transferStructure;
-<a class="jxr_linenumber" name="279" href="#279">279</a> 		setCorrectCodec();
-<a class="jxr_linenumber" name="280" href="#280">280</a> 	}
-<a class="jxr_linenumber" name="281" href="#281">281</a> 
-<a class="jxr_linenumber" name="282" href="#282">282</a> 	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="283" href="#283">283</a> <em class="jxr_javadoccomment">	 * @return the transferSubType</em>
-<a class="jxr_linenumber" name="284" href="#284">284</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="285" href="#285">285</a> 	<strong class="jxr_keyword">public</strong> FtpArgumentCode.TransferSubType getSubType() {
-<a class="jxr_linenumber" name="286" href="#286">286</a> 		<strong class="jxr_keyword">return</strong> transferSubType;
-<a class="jxr_linenumber" name="287" href="#287">287</a> 	}
-<a class="jxr_linenumber" name="288" href="#288">288</a> 
-<a class="jxr_linenumber" name="289" href="#289">289</a> 	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="290" href="#290">290</a> <em class="jxr_javadoccomment">	 * @param transferSubType</em>
-<a class="jxr_linenumber" name="291" href="#291">291</a> <em class="jxr_javadoccomment">	 *            the transferSubType to set</em>
-<a class="jxr_linenumber" name="292" href="#292">292</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="293" href="#293">293</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setSubType(FtpArgumentCode.TransferSubType transferSubType) {
-<a class="jxr_linenumber" name="294" href="#294">294</a> 		<strong class="jxr_keyword">this</strong>.transferSubType = transferSubType;
-<a class="jxr_linenumber" name="295" href="#295">295</a> 		setCorrectCodec();
-<a class="jxr_linenumber" name="296" href="#296">296</a> 	}
-<a class="jxr_linenumber" name="297" href="#297">297</a> 
-<a class="jxr_linenumber" name="298" href="#298">298</a> 	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="299" href="#299">299</a> <em class="jxr_javadoccomment">	 * @return the transferType</em>
-<a class="jxr_linenumber" name="300" href="#300">300</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="301" href="#301">301</a> 	<strong class="jxr_keyword">public</strong> FtpArgumentCode.TransferType getType() {
-<a class="jxr_linenumber" name="302" href="#302">302</a> 		<strong class="jxr_keyword">return</strong> transferType;
-<a class="jxr_linenumber" name="303" href="#303">303</a> 	}
-<a class="jxr_linenumber" name="304" href="#304">304</a> 
-<a class="jxr_linenumber" name="305" href="#305">305</a> 	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="306" href="#306">306</a> <em class="jxr_javadoccomment">	 * @param transferType</em>
-<a class="jxr_linenumber" name="307" href="#307">307</a> <em class="jxr_javadoccomment">	 *            the transferType to set</em>
-<a class="jxr_linenumber" name="308" href="#308">308</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="309" href="#309">309</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setType(FtpArgumentCode.TransferType transferType) {
-<a class="jxr_linenumber" name="310" href="#310">310</a> 		<strong class="jxr_keyword">this</strong>.transferType = transferType;
-<a class="jxr_linenumber" name="311" href="#311">311</a> 		setCorrectCodec();
-<a class="jxr_linenumber" name="312" href="#312">312</a> 	}
-<a class="jxr_linenumber" name="313" href="#313">313</a> 
-<a class="jxr_linenumber" name="314" href="#314">314</a> 	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="315" href="#315">315</a> <em class="jxr_javadoccomment">	 * </em>
-<a class="jxr_linenumber" name="316" href="#316">316</a> <em class="jxr_javadoccomment">	 * @return True if the current mode for data connection is FileInterface + (Stream or Block) +</em>
-<a class="jxr_linenumber" name="317" href="#317">317</a> <em class="jxr_javadoccomment">	 *         (Ascii or Image)</em>
-<a class="jxr_linenumber" name="318" href="#318">318</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="319" href="#319">319</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">boolean</strong> isFileStreamBlockAsciiImage() {
-<a class="jxr_linenumber" name="320" href="#320">320</a> 		<strong class="jxr_keyword">return</strong> transferStructure == TransferStructure.FILE &amp;&amp;
-<a class="jxr_linenumber" name="321" href="#321">321</a> 				(transferMode == TransferMode.STREAM || transferMode == TransferMode.BLOCK) &amp;&amp;
-<a class="jxr_linenumber" name="322" href="#322">322</a> 				(transferType == TransferType.ASCII || transferType == TransferType.IMAGE);
-<a class="jxr_linenumber" name="323" href="#323">323</a> 	}
-<a class="jxr_linenumber" name="324" href="#324">324</a> 
-<a class="jxr_linenumber" name="325" href="#325">325</a> 	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="326" href="#326">326</a> <em class="jxr_javadoccomment">	 * </em>
-<a class="jxr_linenumber" name="327" href="#327">327</a> <em class="jxr_javadoccomment">	 * @return True if the current mode for data connection is Stream</em>
-<a class="jxr_linenumber" name="328" href="#328">328</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="329" href="#329">329</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">boolean</strong> isStreamFile() {
-<a class="jxr_linenumber" name="330" href="#330">330</a> 		<strong class="jxr_keyword">return</strong> transferMode == TransferMode.STREAM &amp;&amp;
-<a class="jxr_linenumber" name="331" href="#331">331</a> 				transferStructure == TransferStructure.FILE;
-<a class="jxr_linenumber" name="332" href="#332">332</a> 	}
-<a class="jxr_linenumber" name="333" href="#333">333</a> 
-<a class="jxr_linenumber" name="334" href="#334">334</a> 	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="335" href="#335">335</a> <em class="jxr_javadoccomment">	 * This function must be called after any changes of parameters, ie after MODE, STRU, TYPE</em>
-<a class="jxr_linenumber" name="336" href="#336">336</a> <em class="jxr_javadoccomment">	 * </em>
-<a class="jxr_linenumber" name="337" href="#337">337</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="338" href="#338">338</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> setCorrectCodec() {
-<a class="jxr_linenumber" name="339" href="#339">339</a> 		<strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="340" href="#340">340</a> 			getDataNetworkHandler().setCorrectCodec();
-<a class="jxr_linenumber" name="341" href="#341">341</a> 		} <strong class="jxr_keyword">catch</strong> (FtpNoConnectionException e) {
-<a class="jxr_linenumber" name="342" href="#342">342</a> 		}
-<a class="jxr_linenumber" name="343" href="#343">343</a> 	}
-<a class="jxr_linenumber" name="344" href="#344">344</a> 
-<a class="jxr_linenumber" name="345" href="#345">345</a> 	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="346" href="#346">346</a> <em class="jxr_javadoccomment">	 * Unbind passive connection when close the Data Channel (from channelClosed())</em>
-<a class="jxr_linenumber" name="347" href="#347">347</a> <em class="jxr_javadoccomment">	 * </em>
-<a class="jxr_linenumber" name="348" href="#348">348</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="349" href="#349">349</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> unbindPassive() {
-<a class="jxr_linenumber" name="350" href="#350">350</a> 		<strong class="jxr_keyword">if</strong> (isBind &amp;&amp; passiveMode) {
-<a class="jxr_linenumber" name="351" href="#351">351</a> 			isBind = false;
-<a class="jxr_linenumber" name="352" href="#352">352</a> 			InetSocketAddress local = getLocalAddress();
-<a class="jxr_linenumber" name="353" href="#353">353</a> 			<strong class="jxr_keyword">if</strong> (dataChannel != <strong class="jxr_keyword">null</strong> &amp;&amp; dataChannel.isConnected()) {
-<a class="jxr_linenumber" name="354" href="#354">354</a> 				WaarpSslUtility.closingSslChannel(dataChannel);
-<a class="jxr_linenumber" name="355" href="#355">355</a> 			}
-<a class="jxr_linenumber" name="356" href="#356">356</a> 			session.getConfiguration().getFtpInternalConfiguration()
-<a class="jxr_linenumber" name="357" href="#357">357</a> 					.unbindPassive(local);
-<a class="jxr_linenumber" name="358" href="#358">358</a> 			<em class="jxr_comment">// Previous mode was Passive so remove the current configuration if</em>
-<a class="jxr_linenumber" name="359" href="#359">359</a> 			<em class="jxr_comment">// any</em>
-<a class="jxr_linenumber" name="360" href="#360">360</a> 			InetAddress remote = remoteAddress.getAddress();
-<a class="jxr_linenumber" name="361" href="#361">361</a> 			session.getConfiguration().delFtpSession(remote, local);
-<a class="jxr_linenumber" name="362" href="#362">362</a> 		}
-<a class="jxr_linenumber" name="363" href="#363">363</a> 		dataChannel = <strong class="jxr_keyword">null</strong>;
-<a class="jxr_linenumber" name="364" href="#364">364</a> 		dataNetworkHandler = <strong class="jxr_keyword">null</strong>;
-<a class="jxr_linenumber" name="365" href="#365">365</a> 	}
-<a class="jxr_linenumber" name="366" href="#366">366</a> 
-<a class="jxr_linenumber" name="367" href="#367">367</a> 	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="368" href="#368">368</a> <em class="jxr_javadoccomment">	 * Initialize the socket from Server side (only used in Passive)</em>
-<a class="jxr_linenumber" name="369" href="#369">369</a> <em class="jxr_javadoccomment">	 * </em>
-<a class="jxr_linenumber" name="370" href="#370">370</a> <em class="jxr_javadoccomment">	 * @return True if OK</em>
-<a class="jxr_linenumber" name="371" href="#371">371</a> <em class="jxr_javadoccomment">	 * @throws Reply425Exception</em>
-<a class="jxr_linenumber" name="372" href="#372">372</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="373" href="#373">373</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">boolean</strong> initPassiveConnection() <strong class="jxr_keyword">throws</strong> Reply425Exception {
-<a class="jxr_linenumber" name="374" href="#374">374</a> 		unbindPassive();
-<a class="jxr_linenumber" name="375" href="#375">375</a> 		<strong class="jxr_keyword">if</strong> (passiveMode) {
-<a class="jxr_linenumber" name="376" href="#376">376</a> 			<em class="jxr_comment">// Connection is enable but the client will do the real connection</em>
-<a class="jxr_linenumber" name="377" href="#377">377</a> 			session.getConfiguration().getFtpInternalConfiguration()
-<a class="jxr_linenumber" name="378" href="#378">378</a> 					.bindPassive(getLocalAddress(), session.isDataSsl());
-<a class="jxr_linenumber" name="379" href="#379">379</a> 			isBind = <strong class="jxr_keyword">true</strong>;
-<a class="jxr_linenumber" name="380" href="#380">380</a> 			<strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">true</strong>;
-<a class="jxr_linenumber" name="381" href="#381">381</a> 		}
-<a class="jxr_linenumber" name="382" href="#382">382</a> 		<em class="jxr_comment">// Connection is already prepared</em>
-<a class="jxr_linenumber" name="383" href="#383">383</a> 		<strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">true</strong>;
-<a class="jxr_linenumber" name="384" href="#384">384</a> 	}
-<a class="jxr_linenumber" name="385" href="#385">385</a> 
-<a class="jxr_linenumber" name="386" href="#386">386</a> 	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="387" href="#387">387</a> <em class="jxr_javadoccomment">	 * Return the current Data Channel</em>
-<a class="jxr_linenumber" name="388" href="#388">388</a> <em class="jxr_javadoccomment">	 * </em>
-<a class="jxr_linenumber" name="389" href="#389">389</a> <em class="jxr_javadoccomment">	 * @return the current Data Channel</em>
-<a class="jxr_linenumber" name="390" href="#390">390</a> <em class="jxr_javadoccomment">	 * @throws FtpNoConnectionException</em>
-<a class="jxr_linenumber" name="391" href="#391">391</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="392" href="#392">392</a> 	<strong class="jxr_keyword">public</strong> Channel getCurrentDataChannel() <strong class="jxr_keyword">throws</strong> FtpNoConnectionException {
-<a class="jxr_linenumber" name="393" href="#393">393</a> 		<strong class="jxr_keyword">if</strong> (dataChannel == <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="394" href="#394">394</a> 			<strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a href="../../../../../org/waarp/ftp/core/exception/FtpNoConnectionException.html">FtpNoConnectionException</a>(<span class="jxr_string">"No Data Connection active"</span>);
-<a class="jxr_linenumber" name="395" href="#395">395</a> 		}
-<a class="jxr_linenumber" name="396" href="#396">396</a> 		<strong class="jxr_keyword">return</strong> dataChannel;
-<a class="jxr_linenumber" name="397" href="#397">397</a> 	}
-<a class="jxr_linenumber" name="398" href="#398">398</a> 
-<a class="jxr_linenumber" name="399" href="#399">399</a> 	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="400" href="#400">400</a> <em class="jxr_javadoccomment">	 * </em>
-<a class="jxr_linenumber" name="401" href="#401">401</a> <em class="jxr_javadoccomment">	 * @return the DataNetworkHandler</em>
-<a class="jxr_linenumber" name="402" href="#402">402</a> <em class="jxr_javadoccomment">	 * @throws FtpNoConnectionException</em>
-<a class="jxr_linenumber" name="403" href="#403">403</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="404" href="#404">404</a> 	<strong class="jxr_keyword">public</strong> <a href="../../../../../org/waarp/ftp/core/data/handler/DataNetworkHandler.html">DataNetworkHandler</a> getDataNetworkHandler()
-<a class="jxr_linenumber" name="405" href="#405">405</a> 			<strong class="jxr_keyword">throws</strong> <a href="../../../../../org/waarp/ftp/core/exception/FtpNoConnectionException.html">FtpNoConnectionException</a> {
-<a class="jxr_linenumber" name="406" href="#406">406</a> 		<strong class="jxr_keyword">if</strong> (dataNetworkHandler == <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="407" href="#407">407</a> 			<strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a href="../../../../../org/waarp/ftp/core/exception/FtpNoConnectionException.html">FtpNoConnectionException</a>(<span class="jxr_string">"No Data Connection active"</span>);
-<a class="jxr_linenumber" name="408" href="#408">408</a> 		}
-<a class="jxr_linenumber" name="409" href="#409">409</a> 		<strong class="jxr_keyword">return</strong> dataNetworkHandler;
-<a class="jxr_linenumber" name="410" href="#410">410</a> 	}
-<a class="jxr_linenumber" name="411" href="#411">411</a> 
-<a class="jxr_linenumber" name="412" href="#412">412</a> 	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="413" href="#413">413</a> <em class="jxr_javadoccomment">	 * </em>
-<a class="jxr_linenumber" name="414" href="#414">414</a> <em class="jxr_javadoccomment">	 * @param dataNetworkHandler</em>
-<a class="jxr_linenumber" name="415" href="#415">415</a> <em class="jxr_javadoccomment">	 *            the {@link DataNetworkHandler} to set</em>
-<a class="jxr_linenumber" name="416" href="#416">416</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="417" href="#417">417</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setDataNetworkHandler(<a href="../../../../../org/waarp/ftp/core/data/handler/DataNetworkHandler.html">DataNetworkHandler</a> dataNetworkHandler) {
-<a class="jxr_linenumber" name="418" href="#418">418</a> 		<strong class="jxr_keyword">this</strong>.dataNetworkHandler = dataNetworkHandler;
-<a class="jxr_linenumber" name="419" href="#419">419</a> 	}
-<a class="jxr_linenumber" name="420" href="#420">420</a> 
-<a class="jxr_linenumber" name="421" href="#421">421</a> 	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="422" href="#422">422</a> <em class="jxr_javadoccomment">	 * </em>
-<a class="jxr_linenumber" name="423" href="#423">423</a> <em class="jxr_javadoccomment">	 * @param configuration</em>
-<a class="jxr_linenumber" name="424" href="#424">424</a> <em class="jxr_javadoccomment">	 * @return a new Passive Port</em>
-<a class="jxr_linenumber" name="425" href="#425">425</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="426" href="#426">426</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">int</strong> getNewPassivePort(<a href="../../../../../org/waarp/ftp/core/config/FtpConfiguration.html">FtpConfiguration</a> configuration) {
-<a class="jxr_linenumber" name="427" href="#427">427</a> 		<strong class="jxr_keyword">return</strong> configuration.getNextRangePort();
-<a class="jxr_linenumber" name="428" href="#428">428</a> 	}
-<a class="jxr_linenumber" name="429" href="#429">429</a> 
-<a class="jxr_linenumber" name="430" href="#430">430</a> 	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="431" href="#431">431</a> <em class="jxr_javadoccomment">	 * @return The current status in String of the different parameters</em>
-<a class="jxr_linenumber" name="432" href="#432">432</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="433" href="#433">433</a> 	<strong class="jxr_keyword">public</strong> String getStatus() {
-<a class="jxr_linenumber" name="434" href="#434">434</a> 		StringBuilder builder = <strong class="jxr_keyword">new</strong> StringBuilder(<span class="jxr_string">"Data connection: "</span>);
-<a class="jxr_linenumber" name="435" href="#435">435</a> 		builder.append((isConnected() ? <span class="jxr_string">"connected "</span> : <span class="jxr_string">"not connected "</span>));
-<a class="jxr_linenumber" name="436" href="#436">436</a> 		builder.append((isBind() ? <span class="jxr_string">"bind "</span> : <span class="jxr_string">"not bind "</span>));
-<a class="jxr_linenumber" name="437" href="#437">437</a> 		builder.append((isPassiveMode() ? <span class="jxr_string">"passive mode"</span> : <span class="jxr_string">"active mode"</span>));
-<a class="jxr_linenumber" name="438" href="#438">438</a> 		builder.append('\n');
-<a class="jxr_linenumber" name="439" href="#439">439</a> 		builder.append(<span class="jxr_string">"Mode: "</span>);
-<a class="jxr_linenumber" name="440" href="#440">440</a> 		builder.append(transferMode.name());
-<a class="jxr_linenumber" name="441" href="#441">441</a> 		builder.append('\n');
-<a class="jxr_linenumber" name="442" href="#442">442</a> 		builder.append(<span class="jxr_string">"Structure: "</span>);
-<a class="jxr_linenumber" name="443" href="#443">443</a> 		builder.append(transferStructure.name());
-<a class="jxr_linenumber" name="444" href="#444">444</a> 		builder.append('\n');
-<a class="jxr_linenumber" name="445" href="#445">445</a> 		builder.append(<span class="jxr_string">"Type: "</span>);
-<a class="jxr_linenumber" name="446" href="#446">446</a> 		builder.append(transferType.name());
-<a class="jxr_linenumber" name="447" href="#447">447</a> 		builder.append(' ');
-<a class="jxr_linenumber" name="448" href="#448">448</a> 		builder.append(transferSubType.name());
-<a class="jxr_linenumber" name="449" href="#449">449</a> 		<strong class="jxr_keyword">return</strong> builder.toString();
-<a class="jxr_linenumber" name="450" href="#450">450</a> 	}
-<a class="jxr_linenumber" name="451" href="#451">451</a> 
-<a class="jxr_linenumber" name="452" href="#452">452</a> 	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="453" href="#453">453</a> <em class="jxr_javadoccomment">	 *</em>
-<a class="jxr_linenumber" name="454" href="#454">454</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="455" href="#455">455</a> 	@Override
-<a class="jxr_linenumber" name="456" href="#456">456</a> 	<strong class="jxr_keyword">public</strong> String toString() {
-<a class="jxr_linenumber" name="457" href="#457">457</a> 		<strong class="jxr_keyword">return</strong> getStatus().replace('\n', ' ');
-<a class="jxr_linenumber" name="458" href="#458">458</a> 	}
-<a class="jxr_linenumber" name="459" href="#459">459</a> 
-<a class="jxr_linenumber" name="460" href="#460">460</a> 	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="461" href="#461">461</a> <em class="jxr_javadoccomment">	 * </em>
-<a class="jxr_linenumber" name="462" href="#462">462</a> <em class="jxr_javadoccomment">	 * @return the FtpTransferControl</em>
-<a class="jxr_linenumber" name="463" href="#463">463</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="464" href="#464">464</a> 	<strong class="jxr_keyword">public</strong> <a href="../../../../../org/waarp/ftp/core/data/FtpTransferControl.html">FtpTransferControl</a> getFtpTransferControl() {
-<a class="jxr_linenumber" name="465" href="#465">465</a> 		<strong class="jxr_keyword">return</strong> transferControl;
-<a class="jxr_linenumber" name="466" href="#466">466</a> 	}
-<a class="jxr_linenumber" name="467" href="#467">467</a> 
-<a class="jxr_linenumber" name="468" href="#468">468</a> 	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="469" href="#469">469</a> <em class="jxr_javadoccomment">	 * Set the new connected Data Channel</em>
-<a class="jxr_linenumber" name="470" href="#470">470</a> <em class="jxr_javadoccomment">	 * </em>
-<a class="jxr_linenumber" name="471" href="#471">471</a> <em class="jxr_javadoccomment">	 * @param dataChannel</em>
-<a class="jxr_linenumber" name="472" href="#472">472</a> <em class="jxr_javadoccomment">	 *            the new Data Channel</em>
-<a class="jxr_linenumber" name="473" href="#473">473</a> <em class="jxr_javadoccomment">	 * @throws InterruptedException</em>
-<a class="jxr_linenumber" name="474" href="#474">474</a> <em class="jxr_javadoccomment">	 * @throws Reply425Exception</em>
-<a class="jxr_linenumber" name="475" href="#475">475</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="476" href="#476">476</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setNewOpenedDataChannel(Channel dataChannel)
-<a class="jxr_linenumber" name="477" href="#477">477</a> 			<strong class="jxr_keyword">throws</strong> InterruptedException, Reply425Exception {
-<a class="jxr_linenumber" name="478" href="#478">478</a> 		<strong class="jxr_keyword">this</strong>.dataChannel = dataChannel;
-<a class="jxr_linenumber" name="479" href="#479">479</a> 		<strong class="jxr_keyword">if</strong> (dataChannel == <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="480" href="#480">480</a> 			String curmode = <strong class="jxr_keyword">null</strong>;
-<a class="jxr_linenumber" name="481" href="#481">481</a> 			<strong class="jxr_keyword">if</strong> (isPassiveMode()) {
-<a class="jxr_linenumber" name="482" href="#482">482</a> 				curmode = <span class="jxr_string">"passive"</span>;
-<a class="jxr_linenumber" name="483" href="#483">483</a> 			} <strong class="jxr_keyword">else</strong> {
-<a class="jxr_linenumber" name="484" href="#484">484</a> 				curmode = <span class="jxr_string">"active"</span>;
-<a class="jxr_linenumber" name="485" href="#485">485</a> 			}
-<a class="jxr_linenumber" name="486" href="#486">486</a> 			<em class="jxr_comment">// Cannot open connection</em>
-<a class="jxr_linenumber" name="487" href="#487">487</a> 			<strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> Reply425Exception(<span class="jxr_string">"Cannot open "</span> + curmode +
-<a class="jxr_linenumber" name="488" href="#488">488</a> 					<span class="jxr_string">" data connection"</span>);
-<a class="jxr_linenumber" name="489" href="#489">489</a> 		}
-<a class="jxr_linenumber" name="490" href="#490">490</a> 		isBind = <strong class="jxr_keyword">true</strong>;
-<a class="jxr_linenumber" name="491" href="#491">491</a> 	}
-<a class="jxr_linenumber" name="492" href="#492">492</a> }
+<a class="jxr_linenumber" name="214" href="#214">214</a> 		localAddress = <strong class="jxr_keyword">new</strong> InetSocketAddress(<a href="../../../../../org/waarp/ftp/core/utils/FtpChannelUtils.html">FtpChannelUtils</a>
+<a class="jxr_linenumber" name="215" href="#215">215</a> 				.getLocalInetAddress(session.getControlChannel()), localPort);
+<a class="jxr_linenumber" name="216" href="#216">216</a> 		passiveMode = <strong class="jxr_keyword">true</strong>;
+<a class="jxr_linenumber" name="217" href="#217">217</a> 		isBind = false;
+<a class="jxr_linenumber" name="218" href="#218">218</a> 	}
+<a class="jxr_linenumber" name="219" href="#219">219</a> 
+<a class="jxr_linenumber" name="220" href="#220">220</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="221" href="#221">221</a> <em class="jxr_javadoccomment">	 * @return the passiveMode</em>
+<a class="jxr_linenumber" name="222" href="#222">222</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="223" href="#223">223</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">boolean</strong> isPassiveMode() {
+<a class="jxr_linenumber" name="224" href="#224">224</a> 		<strong class="jxr_keyword">return</strong> passiveMode;
+<a class="jxr_linenumber" name="225" href="#225">225</a> 	}
+<a class="jxr_linenumber" name="226" href="#226">226</a> 
+<a class="jxr_linenumber" name="227" href="#227">227</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="228" href="#228">228</a> <em class="jxr_javadoccomment">	 * </em>
+<a class="jxr_linenumber" name="229" href="#229">229</a> <em class="jxr_javadoccomment">	 * @return True if the connection is bind (active = connected, passive = not necessarily</em>
+<a class="jxr_linenumber" name="230" href="#230">230</a> <em class="jxr_javadoccomment">	 *         connected)</em>
+<a class="jxr_linenumber" name="231" href="#231">231</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="232" href="#232">232</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">boolean</strong> isBind() {
+<a class="jxr_linenumber" name="233" href="#233">233</a> 		<strong class="jxr_keyword">return</strong> isBind;
+<a class="jxr_linenumber" name="234" href="#234">234</a> 	}
+<a class="jxr_linenumber" name="235" href="#235">235</a> 
+<a class="jxr_linenumber" name="236" href="#236">236</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="237" href="#237">237</a> <em class="jxr_javadoccomment">	 * Is the Data dataChannel connected</em>
+<a class="jxr_linenumber" name="238" href="#238">238</a> <em class="jxr_javadoccomment">	 * </em>
+<a class="jxr_linenumber" name="239" href="#239">239</a> <em class="jxr_javadoccomment">	 * @return True if the dataChannel is connected</em>
+<a class="jxr_linenumber" name="240" href="#240">240</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="241" href="#241">241</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">boolean</strong> isConnected() {
+<a class="jxr_linenumber" name="242" href="#242">242</a> 		<strong class="jxr_keyword">return</strong> dataChannel != <strong class="jxr_keyword">null</strong> &amp;&amp; dataChannel.isConnected();
+<a class="jxr_linenumber" name="243" href="#243">243</a> 	}
+<a class="jxr_linenumber" name="244" href="#244">244</a> 
+<a class="jxr_linenumber" name="245" href="#245">245</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="246" href="#246">246</a> <em class="jxr_javadoccomment">	 * @return the transferMode</em>
+<a class="jxr_linenumber" name="247" href="#247">247</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="248" href="#248">248</a> 	<strong class="jxr_keyword">public</strong> FtpArgumentCode.TransferMode getMode() {
+<a class="jxr_linenumber" name="249" href="#249">249</a> 		<strong class="jxr_keyword">return</strong> transferMode;
+<a class="jxr_linenumber" name="250" href="#250">250</a> 	}
+<a class="jxr_linenumber" name="251" href="#251">251</a> 
+<a class="jxr_linenumber" name="252" href="#252">252</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="253" href="#253">253</a> <em class="jxr_javadoccomment">	 * @param transferMode</em>
+<a class="jxr_linenumber" name="254" href="#254">254</a> <em class="jxr_javadoccomment">	 *            the transferMode to set</em>
+<a class="jxr_linenumber" name="255" href="#255">255</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="256" href="#256">256</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setMode(FtpArgumentCode.TransferMode transferMode) {
+<a class="jxr_linenumber" name="257" href="#257">257</a> 		<strong class="jxr_keyword">this</strong>.transferMode = transferMode;
+<a class="jxr_linenumber" name="258" href="#258">258</a> 		setCorrectCodec();
+<a class="jxr_linenumber" name="259" href="#259">259</a> 	}
+<a class="jxr_linenumber" name="260" href="#260">260</a> 
+<a class="jxr_linenumber" name="261" href="#261">261</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="262" href="#262">262</a> <em class="jxr_javadoccomment">	 * @return the transferStructure</em>
+<a class="jxr_linenumber" name="263" href="#263">263</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="264" href="#264">264</a> 	<strong class="jxr_keyword">public</strong> FtpArgumentCode.TransferStructure getStructure() {
+<a class="jxr_linenumber" name="265" href="#265">265</a> 		<strong class="jxr_keyword">return</strong> transferStructure;
+<a class="jxr_linenumber" name="266" href="#266">266</a> 	}
+<a class="jxr_linenumber" name="267" href="#267">267</a> 
+<a class="jxr_linenumber" name="268" href="#268">268</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="269" href="#269">269</a> <em class="jxr_javadoccomment">	 * @param transferStructure</em>
+<a class="jxr_linenumber" name="270" href="#270">270</a> <em class="jxr_javadoccomment">	 *            the transferStructure to set</em>
+<a class="jxr_linenumber" name="271" href="#271">271</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="272" href="#272">272</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setStructure(FtpArgumentCode.TransferStructure transferStructure) {
+<a class="jxr_linenumber" name="273" href="#273">273</a> 		<strong class="jxr_keyword">this</strong>.transferStructure = transferStructure;
+<a class="jxr_linenumber" name="274" href="#274">274</a> 		setCorrectCodec();
+<a class="jxr_linenumber" name="275" href="#275">275</a> 	}
+<a class="jxr_linenumber" name="276" href="#276">276</a> 
+<a class="jxr_linenumber" name="277" href="#277">277</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="278" href="#278">278</a> <em class="jxr_javadoccomment">	 * @return the transferSubType</em>
+<a class="jxr_linenumber" name="279" href="#279">279</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="280" href="#280">280</a> 	<strong class="jxr_keyword">public</strong> FtpArgumentCode.TransferSubType getSubType() {
+<a class="jxr_linenumber" name="281" href="#281">281</a> 		<strong class="jxr_keyword">return</strong> transferSubType;
+<a class="jxr_linenumber" name="282" href="#282">282</a> 	}
+<a class="jxr_linenumber" name="283" href="#283">283</a> 
+<a class="jxr_linenumber" name="284" href="#284">284</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="285" href="#285">285</a> <em class="jxr_javadoccomment">	 * @param transferSubType</em>
+<a class="jxr_linenumber" name="286" href="#286">286</a> <em class="jxr_javadoccomment">	 *            the transferSubType to set</em>
+<a class="jxr_linenumber" name="287" href="#287">287</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="288" href="#288">288</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setSubType(FtpArgumentCode.TransferSubType transferSubType) {
+<a class="jxr_linenumber" name="289" href="#289">289</a> 		<strong class="jxr_keyword">this</strong>.transferSubType = transferSubType;
+<a class="jxr_linenumber" name="290" href="#290">290</a> 		setCorrectCodec();
+<a class="jxr_linenumber" name="291" href="#291">291</a> 	}
+<a class="jxr_linenumber" name="292" href="#292">292</a> 
+<a class="jxr_linenumber" name="293" href="#293">293</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="294" href="#294">294</a> <em class="jxr_javadoccomment">	 * @return the transferType</em>
+<a class="jxr_linenumber" name="295" href="#295">295</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="296" href="#296">296</a> 	<strong class="jxr_keyword">public</strong> FtpArgumentCode.TransferType getType() {
+<a class="jxr_linenumber" name="297" href="#297">297</a> 		<strong class="jxr_keyword">return</strong> transferType;
+<a class="jxr_linenumber" name="298" href="#298">298</a> 	}
+<a class="jxr_linenumber" name="299" href="#299">299</a> 
+<a class="jxr_linenumber" name="300" href="#300">300</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="301" href="#301">301</a> <em class="jxr_javadoccomment">	 * @param transferType</em>
+<a class="jxr_linenumber" name="302" href="#302">302</a> <em class="jxr_javadoccomment">	 *            the transferType to set</em>
+<a class="jxr_linenumber" name="303" href="#303">303</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="304" href="#304">304</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setType(FtpArgumentCode.TransferType transferType) {
+<a class="jxr_linenumber" name="305" href="#305">305</a> 		<strong class="jxr_keyword">this</strong>.transferType = transferType;
+<a class="jxr_linenumber" name="306" href="#306">306</a> 		setCorrectCodec();
+<a class="jxr_linenumber" name="307" href="#307">307</a> 	}
+<a class="jxr_linenumber" name="308" href="#308">308</a> 
+<a class="jxr_linenumber" name="309" href="#309">309</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="310" href="#310">310</a> <em class="jxr_javadoccomment">	 * </em>
+<a class="jxr_linenumber" name="311" href="#311">311</a> <em class="jxr_javadoccomment">	 * @return True if the current mode for data connection is FileInterface + (Stream or Block) +</em>
+<a class="jxr_linenumber" name="312" href="#312">312</a> <em class="jxr_javadoccomment">	 *         (Ascii or Image)</em>
+<a class="jxr_linenumber" name="313" href="#313">313</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="314" href="#314">314</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">boolean</strong> isFileStreamBlockAsciiImage() {
+<a class="jxr_linenumber" name="315" href="#315">315</a> 		<strong class="jxr_keyword">return</strong> transferStructure == TransferStructure.FILE &amp;&amp;
+<a class="jxr_linenumber" name="316" href="#316">316</a> 				(transferMode == TransferMode.STREAM || transferMode == TransferMode.BLOCK) &amp;&amp;
+<a class="jxr_linenumber" name="317" href="#317">317</a> 				(transferType == TransferType.ASCII || transferType == TransferType.IMAGE);
+<a class="jxr_linenumber" name="318" href="#318">318</a> 	}
+<a class="jxr_linenumber" name="319" href="#319">319</a> 
+<a class="jxr_linenumber" name="320" href="#320">320</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="321" href="#321">321</a> <em class="jxr_javadoccomment">	 * </em>
+<a class="jxr_linenumber" name="322" href="#322">322</a> <em class="jxr_javadoccomment">	 * @return True if the current mode for data connection is Stream</em>
+<a class="jxr_linenumber" name="323" href="#323">323</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="324" href="#324">324</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">boolean</strong> isStreamFile() {
+<a class="jxr_linenumber" name="325" href="#325">325</a> 		<strong class="jxr_keyword">return</strong> transferMode == TransferMode.STREAM &amp;&amp;
+<a class="jxr_linenumber" name="326" href="#326">326</a> 				transferStructure == TransferStructure.FILE;
+<a class="jxr_linenumber" name="327" href="#327">327</a> 	}
+<a class="jxr_linenumber" name="328" href="#328">328</a> 
+<a class="jxr_linenumber" name="329" href="#329">329</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="330" href="#330">330</a> <em class="jxr_javadoccomment">	 * This function must be called after any changes of parameters, ie after MODE, STRU, TYPE</em>
+<a class="jxr_linenumber" name="331" href="#331">331</a> <em class="jxr_javadoccomment">	 * </em>
+<a class="jxr_linenumber" name="332" href="#332">332</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="333" href="#333">333</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> setCorrectCodec() {
+<a class="jxr_linenumber" name="334" href="#334">334</a> 		<strong class="jxr_keyword">try</strong> {
+<a class="jxr_linenumber" name="335" href="#335">335</a> 			getDataNetworkHandler().setCorrectCodec();
+<a class="jxr_linenumber" name="336" href="#336">336</a> 		} <strong class="jxr_keyword">catch</strong> (FtpNoConnectionException e) {
+<a class="jxr_linenumber" name="337" href="#337">337</a> 		}
+<a class="jxr_linenumber" name="338" href="#338">338</a> 	}
+<a class="jxr_linenumber" name="339" href="#339">339</a> 
+<a class="jxr_linenumber" name="340" href="#340">340</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="341" href="#341">341</a> <em class="jxr_javadoccomment">	 * Unbind passive connection when close the Data Channel (from channelClosed())</em>
+<a class="jxr_linenumber" name="342" href="#342">342</a> <em class="jxr_javadoccomment">	 * </em>
+<a class="jxr_linenumber" name="343" href="#343">343</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="344" href="#344">344</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> unbindPassive() {
+<a class="jxr_linenumber" name="345" href="#345">345</a> 		<strong class="jxr_keyword">if</strong> (isBind &amp;&amp; passiveMode) {
+<a class="jxr_linenumber" name="346" href="#346">346</a> 			isBind = false;
+<a class="jxr_linenumber" name="347" href="#347">347</a> 			InetSocketAddress local = getLocalAddress();
+<a class="jxr_linenumber" name="348" href="#348">348</a> 			<strong class="jxr_keyword">if</strong> (dataChannel != <strong class="jxr_keyword">null</strong> &amp;&amp; dataChannel.isConnected()) {
+<a class="jxr_linenumber" name="349" href="#349">349</a> 				WaarpSslUtility.closingSslChannel(dataChannel);
+<a class="jxr_linenumber" name="350" href="#350">350</a> 			}
+<a class="jxr_linenumber" name="351" href="#351">351</a> 			session.getConfiguration().getFtpInternalConfiguration()
+<a class="jxr_linenumber" name="352" href="#352">352</a> 					.unbindPassive(local);
+<a class="jxr_linenumber" name="353" href="#353">353</a> 			<em class="jxr_comment">// Previous mode was Passive so remove the current configuration if</em>
+<a class="jxr_linenumber" name="354" href="#354">354</a> 			<em class="jxr_comment">// any</em>
+<a class="jxr_linenumber" name="355" href="#355">355</a> 			InetAddress remote = remoteAddress.getAddress();
+<a class="jxr_linenumber" name="356" href="#356">356</a> 			session.getConfiguration().delFtpSession(remote, local);
+<a class="jxr_linenumber" name="357" href="#357">357</a> 		}
+<a class="jxr_linenumber" name="358" href="#358">358</a> 		dataChannel = <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="359" href="#359">359</a> 		dataNetworkHandler = <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="360" href="#360">360</a> 	}
+<a class="jxr_linenumber" name="361" href="#361">361</a> 
+<a class="jxr_linenumber" name="362" href="#362">362</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="363" href="#363">363</a> <em class="jxr_javadoccomment">	 * Initialize the socket from Server side (only used in Passive)</em>
+<a class="jxr_linenumber" name="364" href="#364">364</a> <em class="jxr_javadoccomment">	 * </em>
+<a class="jxr_linenumber" name="365" href="#365">365</a> <em class="jxr_javadoccomment">	 * @return True if OK</em>
+<a class="jxr_linenumber" name="366" href="#366">366</a> <em class="jxr_javadoccomment">	 * @throws Reply425Exception</em>
+<a class="jxr_linenumber" name="367" href="#367">367</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="368" href="#368">368</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">boolean</strong> initPassiveConnection() <strong class="jxr_keyword">throws</strong> Reply425Exception {
+<a class="jxr_linenumber" name="369" href="#369">369</a> 		unbindPassive();
+<a class="jxr_linenumber" name="370" href="#370">370</a> 		<strong class="jxr_keyword">if</strong> (passiveMode) {
+<a class="jxr_linenumber" name="371" href="#371">371</a> 			<em class="jxr_comment">// Connection is enable but the client will do the real connection</em>
+<a class="jxr_linenumber" name="372" href="#372">372</a> 			session.getConfiguration().getFtpInternalConfiguration()
+<a class="jxr_linenumber" name="373" href="#373">373</a> 					.bindPassive(getLocalAddress(), session.isDataSsl());
+<a class="jxr_linenumber" name="374" href="#374">374</a> 			isBind = <strong class="jxr_keyword">true</strong>;
+<a class="jxr_linenumber" name="375" href="#375">375</a> 			<strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">true</strong>;
+<a class="jxr_linenumber" name="376" href="#376">376</a> 		}
+<a class="jxr_linenumber" name="377" href="#377">377</a> 		<em class="jxr_comment">// Connection is already prepared</em>
+<a class="jxr_linenumber" name="378" href="#378">378</a> 		<strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">true</strong>;
+<a class="jxr_linenumber" name="379" href="#379">379</a> 	}
+<a class="jxr_linenumber" name="380" href="#380">380</a> 
+<a class="jxr_linenumber" name="381" href="#381">381</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="382" href="#382">382</a> <em class="jxr_javadoccomment">	 * Return the current Data Channel</em>
+<a class="jxr_linenumber" name="383" href="#383">383</a> <em class="jxr_javadoccomment">	 * </em>
+<a class="jxr_linenumber" name="384" href="#384">384</a> <em class="jxr_javadoccomment">	 * @return the current Data Channel</em>
+<a class="jxr_linenumber" name="385" href="#385">385</a> <em class="jxr_javadoccomment">	 * @throws FtpNoConnectionException</em>
+<a class="jxr_linenumber" name="386" href="#386">386</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="387" href="#387">387</a> 	<strong class="jxr_keyword">public</strong> Channel getCurrentDataChannel() <strong class="jxr_keyword">throws</strong> FtpNoConnectionException {
+<a class="jxr_linenumber" name="388" href="#388">388</a> 		<strong class="jxr_keyword">if</strong> (dataChannel == <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="389" href="#389">389</a> 			<strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a href="../../../../../org/waarp/ftp/core/exception/FtpNoConnectionException.html">FtpNoConnectionException</a>(<span class="jxr_string">"No Data Connection active"</span>);
+<a class="jxr_linenumber" name="390" href="#390">390</a> 		}
+<a class="jxr_linenumber" name="391" href="#391">391</a> 		<strong class="jxr_keyword">return</strong> dataChannel;
+<a class="jxr_linenumber" name="392" href="#392">392</a> 	}
+<a class="jxr_linenumber" name="393" href="#393">393</a> 
+<a class="jxr_linenumber" name="394" href="#394">394</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="395" href="#395">395</a> <em class="jxr_javadoccomment">	 * </em>
+<a class="jxr_linenumber" name="396" href="#396">396</a> <em class="jxr_javadoccomment">	 * @return the DataNetworkHandler</em>
+<a class="jxr_linenumber" name="397" href="#397">397</a> <em class="jxr_javadoccomment">	 * @throws FtpNoConnectionException</em>
+<a class="jxr_linenumber" name="398" href="#398">398</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="399" href="#399">399</a> 	<strong class="jxr_keyword">public</strong> <a href="../../../../../org/waarp/ftp/core/data/handler/DataNetworkHandler.html">DataNetworkHandler</a> getDataNetworkHandler()
+<a class="jxr_linenumber" name="400" href="#400">400</a> 			<strong class="jxr_keyword">throws</strong> <a href="../../../../../org/waarp/ftp/core/exception/FtpNoConnectionException.html">FtpNoConnectionException</a> {
+<a class="jxr_linenumber" name="401" href="#401">401</a> 		<strong class="jxr_keyword">if</strong> (dataNetworkHandler == <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="402" href="#402">402</a> 			<strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a href="../../../../../org/waarp/ftp/core/exception/FtpNoConnectionException.html">FtpNoConnectionException</a>(<span class="jxr_string">"No Data Connection active"</span>);
+<a class="jxr_linenumber" name="403" href="#403">403</a> 		}
+<a class="jxr_linenumber" name="404" href="#404">404</a> 		<strong class="jxr_keyword">return</strong> dataNetworkHandler;
+<a class="jxr_linenumber" name="405" href="#405">405</a> 	}
+<a class="jxr_linenumber" name="406" href="#406">406</a> 
+<a class="jxr_linenumber" name="407" href="#407">407</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="408" href="#408">408</a> <em class="jxr_javadoccomment">	 * </em>
+<a class="jxr_linenumber" name="409" href="#409">409</a> <em class="jxr_javadoccomment">	 * @param dataNetworkHandler</em>
+<a class="jxr_linenumber" name="410" href="#410">410</a> <em class="jxr_javadoccomment">	 *            the {@link DataNetworkHandler} to set</em>
+<a class="jxr_linenumber" name="411" href="#411">411</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="412" href="#412">412</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setDataNetworkHandler(<a href="../../../../../org/waarp/ftp/core/data/handler/DataNetworkHandler.html">DataNetworkHandler</a> dataNetworkHandler) {
+<a class="jxr_linenumber" name="413" href="#413">413</a> 		<strong class="jxr_keyword">this</strong>.dataNetworkHandler = dataNetworkHandler;
+<a class="jxr_linenumber" name="414" href="#414">414</a> 	}
+<a class="jxr_linenumber" name="415" href="#415">415</a> 
+<a class="jxr_linenumber" name="416" href="#416">416</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="417" href="#417">417</a> <em class="jxr_javadoccomment">	 * </em>
+<a class="jxr_linenumber" name="418" href="#418">418</a> <em class="jxr_javadoccomment">	 * @param configuration</em>
+<a class="jxr_linenumber" name="419" href="#419">419</a> <em class="jxr_javadoccomment">	 * @return a new Passive Port</em>
+<a class="jxr_linenumber" name="420" href="#420">420</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="421" href="#421">421</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">int</strong> getNewPassivePort(<a href="../../../../../org/waarp/ftp/core/config/FtpConfiguration.html">FtpConfiguration</a> configuration) {
+<a class="jxr_linenumber" name="422" href="#422">422</a> 		<strong class="jxr_keyword">return</strong> configuration.getNextRangePort();
+<a class="jxr_linenumber" name="423" href="#423">423</a> 	}
+<a class="jxr_linenumber" name="424" href="#424">424</a> 
+<a class="jxr_linenumber" name="425" href="#425">425</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="426" href="#426">426</a> <em class="jxr_javadoccomment">	 * @return The current status in String of the different parameters</em>
+<a class="jxr_linenumber" name="427" href="#427">427</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="428" href="#428">428</a> 	<strong class="jxr_keyword">public</strong> String getStatus() {
+<a class="jxr_linenumber" name="429" href="#429">429</a> 		StringBuilder builder = <strong class="jxr_keyword">new</strong> StringBuilder(<span class="jxr_string">"Data connection: "</span>);
+<a class="jxr_linenumber" name="430" href="#430">430</a> 		builder.append((isConnected() ? <span class="jxr_string">"connected "</span> : <span class="jxr_string">"not connected "</span>));
+<a class="jxr_linenumber" name="431" href="#431">431</a> 		builder.append((isBind() ? <span class="jxr_string">"bind "</span> : <span class="jxr_string">"not bind "</span>));
+<a class="jxr_linenumber" name="432" href="#432">432</a> 		builder.append((isPassiveMode() ? <span class="jxr_string">"passive mode"</span> : <span class="jxr_string">"active mode"</span>));
+<a class="jxr_linenumber" name="433" href="#433">433</a> 		builder.append('\n');
+<a class="jxr_linenumber" name="434" href="#434">434</a> 		builder.append(<span class="jxr_string">"Mode: "</span>);
+<a class="jxr_linenumber" name="435" href="#435">435</a> 		builder.append(transferMode.name());
+<a class="jxr_linenumber" name="436" href="#436">436</a> 		builder.append('\n');
+<a class="jxr_linenumber" name="437" href="#437">437</a> 		builder.append(<span class="jxr_string">"Structure: "</span>);
+<a class="jxr_linenumber" name="438" href="#438">438</a> 		builder.append(transferStructure.name());
+<a class="jxr_linenumber" name="439" href="#439">439</a> 		builder.append('\n');
+<a class="jxr_linenumber" name="440" href="#440">440</a> 		builder.append(<span class="jxr_string">"Type: "</span>);
+<a class="jxr_linenumber" name="441" href="#441">441</a> 		builder.append(transferType.name());
+<a class="jxr_linenumber" name="442" href="#442">442</a> 		builder.append(' ');
+<a class="jxr_linenumber" name="443" href="#443">443</a> 		builder.append(transferSubType.name());
+<a class="jxr_linenumber" name="444" href="#444">444</a> 		<strong class="jxr_keyword">return</strong> builder.toString();
+<a class="jxr_linenumber" name="445" href="#445">445</a> 	}
+<a class="jxr_linenumber" name="446" href="#446">446</a> 
+<a class="jxr_linenumber" name="447" href="#447">447</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="448" href="#448">448</a> <em class="jxr_javadoccomment">	 *</em>
+<a class="jxr_linenumber" name="449" href="#449">449</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="450" href="#450">450</a> 	@Override
+<a class="jxr_linenumber" name="451" href="#451">451</a> 	<strong class="jxr_keyword">public</strong> String toString() {
+<a class="jxr_linenumber" name="452" href="#452">452</a> 		<strong class="jxr_keyword">return</strong> getStatus().replace('\n', ' ');
+<a class="jxr_linenumber" name="453" href="#453">453</a> 	}
+<a class="jxr_linenumber" name="454" href="#454">454</a> 
+<a class="jxr_linenumber" name="455" href="#455">455</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="456" href="#456">456</a> <em class="jxr_javadoccomment">	 * </em>
+<a class="jxr_linenumber" name="457" href="#457">457</a> <em class="jxr_javadoccomment">	 * @return the FtpTransferControl</em>
+<a class="jxr_linenumber" name="458" href="#458">458</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="459" href="#459">459</a> 	<strong class="jxr_keyword">public</strong> <a href="../../../../../org/waarp/ftp/core/data/FtpTransferControl.html">FtpTransferControl</a> getFtpTransferControl() {
+<a class="jxr_linenumber" name="460" href="#460">460</a> 		<strong class="jxr_keyword">return</strong> transferControl;
+<a class="jxr_linenumber" name="461" href="#461">461</a> 	}
+<a class="jxr_linenumber" name="462" href="#462">462</a> 
+<a class="jxr_linenumber" name="463" href="#463">463</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="464" href="#464">464</a> <em class="jxr_javadoccomment">	 * Set the new connected Data Channel</em>
+<a class="jxr_linenumber" name="465" href="#465">465</a> <em class="jxr_javadoccomment">	 * </em>
+<a class="jxr_linenumber" name="466" href="#466">466</a> <em class="jxr_javadoccomment">	 * @param dataChannel</em>
+<a class="jxr_linenumber" name="467" href="#467">467</a> <em class="jxr_javadoccomment">	 *            the new Data Channel</em>
+<a class="jxr_linenumber" name="468" href="#468">468</a> <em class="jxr_javadoccomment">	 * @throws InterruptedException</em>
+<a class="jxr_linenumber" name="469" href="#469">469</a> <em class="jxr_javadoccomment">	 * @throws Reply425Exception</em>
+<a class="jxr_linenumber" name="470" href="#470">470</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="471" href="#471">471</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setNewOpenedDataChannel(Channel dataChannel)
+<a class="jxr_linenumber" name="472" href="#472">472</a> 			<strong class="jxr_keyword">throws</strong> InterruptedException, Reply425Exception {
+<a class="jxr_linenumber" name="473" href="#473">473</a> 		<strong class="jxr_keyword">this</strong>.dataChannel = dataChannel;
+<a class="jxr_linenumber" name="474" href="#474">474</a> 		<strong class="jxr_keyword">if</strong> (dataChannel == <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="475" href="#475">475</a> 			String curmode = <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="476" href="#476">476</a> 			<strong class="jxr_keyword">if</strong> (isPassiveMode()) {
+<a class="jxr_linenumber" name="477" href="#477">477</a> 				curmode = <span class="jxr_string">"passive"</span>;
+<a class="jxr_linenumber" name="478" href="#478">478</a> 			} <strong class="jxr_keyword">else</strong> {
+<a class="jxr_linenumber" name="479" href="#479">479</a> 				curmode = <span class="jxr_string">"active"</span>;
+<a class="jxr_linenumber" name="480" href="#480">480</a> 			}
+<a class="jxr_linenumber" name="481" href="#481">481</a> 			<em class="jxr_comment">// Cannot open connection</em>
+<a class="jxr_linenumber" name="482" href="#482">482</a> 			<strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> Reply425Exception(<span class="jxr_string">"Cannot open "</span> + curmode +
+<a class="jxr_linenumber" name="483" href="#483">483</a> 					<span class="jxr_string">" data connection"</span>);
+<a class="jxr_linenumber" name="484" href="#484">484</a> 		}
+<a class="jxr_linenumber" name="485" href="#485">485</a> 		isBind = <strong class="jxr_keyword">true</strong>;
+<a class="jxr_linenumber" name="486" href="#486">486</a> 	}
+<a class="jxr_linenumber" name="487" href="#487">487</a> }
 </pre>
 <hr/><div id="footer">This page was automatically generated by <a href="http://maven.apache.org/">Maven</a></div></body>
 </html>
