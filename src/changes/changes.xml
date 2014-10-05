@@ -5,7 +5,11 @@
 		<author email="waarp1 at free.fr">Frederic Bregier</author>
 	</properties>
 	<body>
-        <release version="1.1.8" date="2014-03-01" description="Fix release">
+        <release version="1.1.9" date="2014-10-05" description="Fix release">
+            <action dev="Frederic Bregier" type="fix">Fix NATed FTP server</action>
+            <action dev="Frederic Bregier" type="fix">Fix after upgrading dependencies</action>
+        </release>
+	    <release version="1.1.8" date="2014-03-01" description="Fix release">
             <action dev="Frederic Bregier" type="fix">Fix after upgrading dependencies</action>
         </release>
         <release version="1.1.7" date="2013-12-14" description="Fix release">
