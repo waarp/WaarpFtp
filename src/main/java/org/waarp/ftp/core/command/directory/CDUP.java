@@ -31,25 +31,25 @@ import org.waarp.ftp.core.file.FtpDir;
  */
 public class CDUP extends AbstractCommand {
 
-	/*
-	 * (non-Javadoc)
-	 * @see org.waarp.ftp.core.command.AbstractCommand#exec()
-	 */
-	public void exec() throws CommandAbstractException {
-		FtpDir current = getSession().getDir();
-		if (current == null) {
-			throw new Reply530Exception("Not authentificated");
-		}
-		if (current.changeParentDirectory()) {
-			getSession()
-					.setReplyCode(
-							ReplyCode.REPLY_250_REQUESTED_FILE_ACTION_OKAY,
-							"\"" + current.getPwd() +
-									"\" is the new current directory");
-		} else {
-			getSession().setReplyCode(
-					ReplyCode.REPLY_550_REQUESTED_ACTION_NOT_TAKEN, null);
-		}
-	}
+    /*
+     * (non-Javadoc)
+     * @see org.waarp.ftp.core.command.AbstractCommand#exec()
+     */
+    public void exec() throws CommandAbstractException {
+        FtpDir current = getSession().getDir();
+        if (current == null) {
+            throw new Reply530Exception("Not authentificated");
+        }
+        if (current.changeParentDirectory()) {
+            getSession()
+                    .setReplyCode(
+                            ReplyCode.REPLY_250_REQUESTED_FILE_ACTION_OKAY,
+                            "\"" + current.getPwd() +
+                                    "\" is the new current directory");
+        } else {
+            getSession().setReplyCode(
+                    ReplyCode.REPLY_550_REQUESTED_ACTION_NOT_TAKEN, null);
+        }
+    }
 
 }

@@ -30,23 +30,23 @@ import org.waarp.ftp.core.command.AbstractCommand;
  * 
  */
 public class UnknownCommand extends AbstractCommand {
-	/**
-	 * Internal Logger
-	 */
-	private static final WaarpInternalLogger logger = WaarpInternalLoggerFactory
-			.getLogger(UnknownCommand.class);
+    /**
+     * Internal Logger
+     */
+    private static final WaarpInternalLogger logger = WaarpInternalLoggerFactory
+            .getLogger(UnknownCommand.class);
 
-	/*
-	 * (non-Javadoc)
-	 * @see org.waarp.ftp.core.command.AbstractCommand#exec()
-	 */
-	public void exec() throws Reply500Exception {
-		getSession().setReplyCode(
-				ReplyCode.REPLY_500_SYNTAX_ERROR_COMMAND_UNRECOGNIZED,
-				"Unknown Command: " + getCommand() + " with argument: " +
-						getArg());
-		logger.warn(getSession().getAnswer());
-		invalidCurrentCommand();
-		throw new Reply500Exception(getSession().getReplyCode().getMesg());
-	}
+    /*
+     * (non-Javadoc)
+     * @see org.waarp.ftp.core.command.AbstractCommand#exec()
+     */
+    public void exec() throws Reply500Exception {
+        getSession().setReplyCode(
+                ReplyCode.REPLY_500_SYNTAX_ERROR_COMMAND_UNRECOGNIZED,
+                "Unknown Command: " + getCommand() + " with argument: " +
+                        getArg());
+        logger.warn(getSession().getAnswer());
+        invalidCurrentCommand();
+        throw new Reply500Exception(getSession().getReplyCode().getMesg());
+    }
 }

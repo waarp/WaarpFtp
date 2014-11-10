@@ -37,73 +37,73 @@ import org.waarp.ftp.core.utils.FtpChannelUtils;
  * 
  */
 public class PASV extends AbstractCommand {
-	/**
-	 * Internal Logger
-	 */
-	private static final WaarpInternalLogger logger = WaarpInternalLoggerFactory
-			.getLogger(PASV.class);
+    /**
+     * Internal Logger
+     */
+    private static final WaarpInternalLogger logger = WaarpInternalLoggerFactory
+            .getLogger(PASV.class);
 
-	/*
-	 * (non-Javadoc)
-	 * @see org.waarp.ftp.core.command.AbstractCommand#exec()
-	 */
-	public void exec() throws Reply425Exception, Reply501Exception {
-		// First Check if any argument
-		if (hasArg()) {
-			throw new Reply501Exception("No argument allowed");
-		}
-		// Take a new port: 3 attempts
-		boolean isInit = false;
-		for (int i = 1; i <= FtpInternalConfiguration.RETRYNB; i++) {
-			int newport = FtpDataAsyncConn
-					.getNewPassivePort(getConfiguration());
-			if (newport == -1) {
-				throw new Reply425Exception("No port available");
-			}
-			if (getSession().getDataConn().isPassiveMode()) {
-				// Previous mode was Passive so remove the current configuration
-				InetSocketAddress local = getSession().getDataConn()
-						.getLocalAddress();
-				InetAddress remote = getSession().getDataConn()
-						.getRemoteAddress().getAddress();
-				getConfiguration().delFtpSession(remote, local);
-			}
-			logger.info("PASV: set Passive Port {}", newport);
-			getSession().getDataConn().setLocalPort(newport);
-			getSession().getDataConn().setPassive();
-			// Init the connection
-			try {
-				if (getSession().getDataConn().initPassiveConnection()) {
-					isInit = true;
-					break;
-				}
-			} catch (Reply425Exception e) {
-				logger.warn("Pasv refused at try: " + i +
-						" with port:  since {}" + newport, e.getMessage());
-			}
-		}
-		if (!isInit) {
-			throw new Reply425Exception("Passive mode not started");
-		}
-		// Return the address in Ftp format
-		InetSocketAddress local = getSession().getDataConn().getLocalAddress();
-		int servPort = local.getPort();
+    /*
+     * (non-Javadoc)
+     * @see org.waarp.ftp.core.command.AbstractCommand#exec()
+     */
+    public void exec() throws Reply425Exception, Reply501Exception {
+        // First Check if any argument
+        if (hasArg()) {
+            throw new Reply501Exception("No argument allowed");
+        }
+        // Take a new port: 3 attempts
+        boolean isInit = false;
+        for (int i = 1; i <= FtpInternalConfiguration.RETRYNB; i++) {
+            int newport = FtpDataAsyncConn
+                    .getNewPassivePort(getConfiguration());
+            if (newport == -1) {
+                throw new Reply425Exception("No port available");
+            }
+            if (getSession().getDataConn().isPassiveMode()) {
+                // Previous mode was Passive so remove the current configuration
+                InetSocketAddress local = getSession().getDataConn()
+                        .getLocalAddress();
+                InetAddress remote = getSession().getDataConn()
+                        .getRemoteAddress().getAddress();
+                getConfiguration().delFtpSession(remote, local);
+            }
+            logger.info("PASV: set Passive Port {}", newport);
+            getSession().getDataConn().setLocalPort(newport);
+            getSession().getDataConn().setPassive();
+            // Init the connection
+            try {
+                if (getSession().getDataConn().initPassiveConnection()) {
+                    isInit = true;
+                    break;
+                }
+            } catch (Reply425Exception e) {
+                logger.warn("Pasv refused at try: " + i +
+                        " with port:  since {}" + newport, e.getMessage());
+            }
+        }
+        if (!isInit) {
+            throw new Reply425Exception("Passive mode not started");
+        }
+        // Return the address in Ftp format
+        InetSocketAddress local = getSession().getDataConn().getLocalAddress();
+        int servPort = local.getPort();
 
-		String address = getSession().getConfiguration().getServerAddress();
-		if (address == null) {
-			address = local.getAddress().getHostAddress();
-		}
+        String address = getSession().getConfiguration().getServerAddress();
+        if (address == null) {
+            address = local.getAddress().getHostAddress();
+        }
 
-		String slocal = "Entering Passive Mode (" +
-				FtpChannelUtils.getAddress(address, servPort) + ")";
-		InetAddress remote = getSession().getDataConn().getRemoteAddress()
-				.getAddress();
-		// Add the current FtpSession into the reference of session since the
-		// client will open the connection
-		getConfiguration().setNewFtpSession(remote, local, getSession());
-		getSession().setReplyCode(ReplyCode.REPLY_227_ENTERING_PASSIVE_MODE,
-				slocal);
-		logger.info("PASV: answer ready on {}", slocal);
-	}
+        String slocal = "Entering Passive Mode (" +
+                FtpChannelUtils.getAddress(address, servPort) + ")";
+        InetAddress remote = getSession().getDataConn().getRemoteAddress()
+                .getAddress();
+        // Add the current FtpSession into the reference of session since the
+        // client will open the connection
+        getConfiguration().setNewFtpSession(remote, local, getSession());
+        getSession().setReplyCode(ReplyCode.REPLY_227_ENTERING_PASSIVE_MODE,
+                slocal);
+        logger.info("PASV: answer ready on {}", slocal);
+    }
 
 }

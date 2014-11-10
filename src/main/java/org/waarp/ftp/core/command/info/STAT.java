@@ -35,58 +35,53 @@ import org.waarp.ftp.core.utils.FtpChannelUtils;
  */
 public class STAT extends AbstractCommand {
 
-	/*
-	 * (non-Javadoc)
-	 * @see org.waarp.ftp.core.command.AbstractCommand#exec()
-	 */
-	public void exec() throws CommandAbstractException {
-		String path = null;
-		String message = null;
-		message = "STATUS information\nNo FtpFile currently in transfer\n";
-		FtpFile file = null;
-		try {
-			file = getSession().getDataConn().getFtpTransferControl()
-					.getExecutingFtpTransfer().getFtpFile();
-		} catch (FtpNoFileException e) {
-		} catch (FtpNoTransferException e) {
-		}
-		if (file != null) {
-			if (file.isInReading()) {
-				message = "STATUS information\nFile currently in Retrieve transfer\n";
-			} else if (file.isInWriting()) {
-				message = "STATUS information\nFile currently in Store transfer\n";
-			}
-		}
-		if (!hasArg()) {
-			// Current status of connection
-			message += getSession().getDataConn().getStatus();
-			message += "\nControl: " +
-					FtpChannelUtils.nbCommandChannels(getConfiguration()) +
-					" Data: " +
-					FtpChannelUtils.nbDataChannels(getConfiguration()) +
-					" Binded: " +
-					getConfiguration().getFtpInternalConfiguration()
-							.getNbBindedPassive();
-			message += "\nEnd of Status";
-			getSession().setReplyCode(ReplyCode.REPLY_211_SYSTEM_STATUS_REPLY,
-					message);
-		} else {
-			// List of files from path
-			path = getArg();
-			List<String> filesInfo = getSession().getDir().listFull(path, true);
-			StringBuilder builder = new StringBuilder();
-			builder.append("List of files from ");
-			builder.append(path);
-			builder.append('\n');
-			for (String newfileInfo : filesInfo) {
-				builder.append(newfileInfo);
-				builder.append('\n');
-			}
-			builder.append("End of Status");
-			message += builder.toString();
-			getSession().setReplyCode(ReplyCode.REPLY_212_DIRECTORY_STATUS,
-					message);
-		}
-	}
+    /*
+     * (non-Javadoc)
+     * @see org.waarp.ftp.core.command.AbstractCommand#exec()
+     */
+    public void exec() throws CommandAbstractException {
+        String path = null;
+        String message = null;
+        message = "STATUS information\nNo FtpFile currently in transfer\n";
+        FtpFile file = null;
+        try {
+            file = getSession().getDataConn().getFtpTransferControl()
+                    .getExecutingFtpTransfer().getFtpFile();
+        } catch (FtpNoFileException e) {} catch (FtpNoTransferException e) {}
+        if (file != null) {
+            if (file.isInReading()) {
+                message = "STATUS information\nFile currently in Retrieve transfer\n";
+            } else if (file.isInWriting()) {
+                message = "STATUS information\nFile currently in Store transfer\n";
+            }
+        }
+        if (!hasArg()) {
+            // Current status of connection
+            message += getSession().getDataConn().getStatus();
+            message += "\nControl: " +
+                    FtpChannelUtils.nbCommandChannels(getConfiguration()) +
+                    " Data: " +
+                    FtpChannelUtils.nbDataChannels(getConfiguration()) +
+                    " Binded: " +
+                    getConfiguration().getFtpInternalConfiguration()
+                            .getNbBindedPassive();
+            message += "\nEnd of Status";
+            getSession().setReplyCode(ReplyCode.REPLY_211_SYSTEM_STATUS_REPLY,
+                    message);
+        } else {
+            // List of files from path
+            path = getArg();
+            List<String> filesInfo = getSession().getDir().listFull(path, true);
+            StringBuilder builder = new StringBuilder()
+                    .append("List of files from ").append(path).append('\n');
+            for (String newfileInfo : filesInfo) {
+                builder.append(newfileInfo).append('\n');
+            }
+            builder.append("End of Status");
+            message += builder.toString();
+            getSession().setReplyCode(ReplyCode.REPLY_212_DIRECTORY_STATUS,
+                    message);
+        }
+    }
 
 }

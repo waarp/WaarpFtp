@@ -31,22 +31,22 @@ import org.waarp.ftp.core.command.AbstractCommand;
  */
 public class XMD5 extends AbstractCommand {
 
-	/*
-	 * (non-Javadoc)
-	 * @see org.waarp.ftp.core.command.AbstractCommand#exec()
-	 */
-	public void exec() throws CommandAbstractException {
-		if (!hasArg()) {
-			invalidCurrentCommand();
-			throw new Reply501Exception("Need a pathname as argument");
-		}
-		String filename = getArg();
+    /*
+     * (non-Javadoc)
+     * @see org.waarp.ftp.core.command.AbstractCommand#exec()
+     */
+    public void exec() throws CommandAbstractException {
+        if (!hasArg()) {
+            invalidCurrentCommand();
+            throw new Reply501Exception("Need a pathname as argument");
+        }
+        String filename = getArg();
 
-		String crc = FilesystemBasedDigest.getHex(getSession().getDir().getMD5(
-				filename));
-		getSession().setReplyCode(
-				ReplyCode.REPLY_250_REQUESTED_FILE_ACTION_OKAY,
-				crc + " \"" + filename + "\" MD5");
-	}
+        String crc = FilesystemBasedDigest.getHex(getSession().getDir().getMD5(
+                filename));
+        getSession().setReplyCode(
+                ReplyCode.REPLY_250_REQUESTED_FILE_ACTION_OKAY,
+                crc + " \"" + filename + "\" MD5");
+    }
 
 }

@@ -28,13 +28,13 @@ import org.waarp.ftp.core.command.AbstractCommand;
  */
 public class FEAT extends AbstractCommand {
 
-	/*
-	 * (non-Javadoc)
-	 * @see org.waarp.ftp.core.command.AbstractCommand#exec()
-	 */
-	public void exec() {
-		getSession().setReplyCode(ReplyCode.REPLY_211_SYSTEM_STATUS_REPLY,
-				getSession().getBusinessHandler().getFeatMessage());
-	}
+    /*
+     * (non-Javadoc)
+     * @see org.waarp.ftp.core.command.AbstractCommand#exec()
+     */
+    public void exec() {
+        getSession().setReplyCode(ReplyCode.REPLY_211_SYSTEM_STATUS_REPLY,
+                getSession().getBusinessHandler().getFeatMessage());
+    }
 
 }

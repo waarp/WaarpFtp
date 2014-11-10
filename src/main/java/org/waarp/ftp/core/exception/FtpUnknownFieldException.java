@@ -24,24 +24,24 @@ package org.waarp.ftp.core.exception;
  * 
  */
 public class FtpUnknownFieldException extends Exception {
-	/**
-	 * serialVersionUID of long:
-	 */
-	private static final long serialVersionUID = 6752182711992342555L;
+    /**
+     * serialVersionUID of long:
+     */
+    private static final long serialVersionUID = 6752182711992342555L;
 
-	/**
-	 * @param message
-	 */
-	public FtpUnknownFieldException(String message) {
-		super(message);
-	}
+    /**
+     * @param message
+     */
+    public FtpUnknownFieldException(String message) {
+        super(message);
+    }
 
-	/**
-	 * @param message
-	 * @param cause
-	 */
-	public FtpUnknownFieldException(String message, Throwable cause) {
-		super(message, cause);
-	}
+    /**
+     * @param message
+     * @param cause
+     */
+    public FtpUnknownFieldException(String message, Throwable cause) {
+        super(message, cause);
+    }
 
 }

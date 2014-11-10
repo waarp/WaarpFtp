@@ -35,54 +35,55 @@ import org.waarp.ftp.simpleimpl.data.FileSystemBasedDataBusinessHandler;
  * 
  */
 public class SimpleGatewaySslFtpServer {
-	/**
-	 * Internal Logger
-	 */
-	private static WaarpInternalLogger logger = null;
+    /**
+     * Internal Logger
+     */
+    private static WaarpInternalLogger logger = null;
 
-	/**
-	 * Take 2 simple XML files as configuration.
-	 * 
-	 * @param args
-	 */
-	public static void main(String[] args) {
-		if (args.length != 3) {
-			System.err.println("Usage: " +
-					SimpleGatewaySslFtpServer.class.getName() + " <config-file> <ssl-config-file> SSL|AUTH");
-			return;
-		}
-		InternalLoggerFactory.setDefaultFactory(new WaarpSlf4JLoggerFactory(null));
-		logger = WaarpInternalLoggerFactory
-				.getLogger(SimpleGatewaySslFtpServer.class);
-		String config = args[0];
-		FileBasedConfiguration configuration = new FileBasedConfiguration(
-				SimpleGatewaySslFtpServer.class, SimpleBusinessHandler.class,
-				FileSystemBasedDataBusinessHandler.class,
-				new FilesystemBasedFileParameterImpl());
-		if (!configuration.setConfigurationFromXml(config)) {
-			System.err.println("Bad configuration");
-			return;
-		}
-		if (! FileBasedSslConfiguration.setConfigurationServerFromXml(configuration, args[1])) {
-			System.err.println("Bad Ssl configuration");
-			return;
-		}
-		if (args[2].equalsIgnoreCase("SSL")) {
-			// native SSL support
-			configuration.getFtpInternalConfiguration().setUsingNativeSsl(true);
-			configuration.getFtpInternalConfiguration().setAcceptAuthProt(false);
-		} else if (args[2].equalsIgnoreCase("AUTH")) {
-			// AUTH, PROT, ... support
-			configuration.getFtpInternalConfiguration().setUsingNativeSsl(false);
-			configuration.getFtpInternalConfiguration().setAcceptAuthProt(true);
-		} else {
-			// unknown option
-			System.err.println("Bad Ssl Option configuration: SSL ot AUTH but "+args[2]);
-			return;
-		}
-		// Start server.
-		configuration.serverStartup();
-		logger.warn("FTP started: Mode "+(configuration.getFtpInternalConfiguration().isUsingNativeSsl()?"SSL":"AUTH"));
-	}
+    /**
+     * Take 2 simple XML files as configuration.
+     * 
+     * @param args
+     */
+    public static void main(String[] args) {
+        if (args.length != 3) {
+            System.err.println("Usage: " +
+                    SimpleGatewaySslFtpServer.class.getName() + " <config-file> <ssl-config-file> SSL|AUTH");
+            return;
+        }
+        InternalLoggerFactory.setDefaultFactory(new WaarpSlf4JLoggerFactory(null));
+        logger = WaarpInternalLoggerFactory
+                .getLogger(SimpleGatewaySslFtpServer.class);
+        String config = args[0];
+        FileBasedConfiguration configuration = new FileBasedConfiguration(
+                SimpleGatewaySslFtpServer.class, SimpleBusinessHandler.class,
+                FileSystemBasedDataBusinessHandler.class,
+                new FilesystemBasedFileParameterImpl());
+        if (!configuration.setConfigurationFromXml(config)) {
+            System.err.println("Bad configuration");
+            return;
+        }
+        if (!FileBasedSslConfiguration.setConfigurationServerFromXml(configuration, args[1])) {
+            System.err.println("Bad Ssl configuration");
+            return;
+        }
+        if (args[2].equalsIgnoreCase("SSL")) {
+            // native SSL support
+            configuration.getFtpInternalConfiguration().setUsingNativeSsl(true);
+            configuration.getFtpInternalConfiguration().setAcceptAuthProt(false);
+        } else if (args[2].equalsIgnoreCase("AUTH")) {
+            // AUTH, PROT, ... support
+            configuration.getFtpInternalConfiguration().setUsingNativeSsl(false);
+            configuration.getFtpInternalConfiguration().setAcceptAuthProt(true);
+        } else {
+            // unknown option
+            System.err.println("Bad Ssl Option configuration: SSL ot AUTH but " + args[2]);
+            return;
+        }
+        // Start server.
+        configuration.serverStartup();
+        logger.warn("FTP started: Mode "
+                + (configuration.getFtpInternalConfiguration().isUsingNativeSsl() ? "SSL" : "AUTH"));
+    }
 
 }

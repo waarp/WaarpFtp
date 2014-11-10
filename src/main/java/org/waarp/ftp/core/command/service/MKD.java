@@ -30,19 +30,19 @@ import org.waarp.ftp.core.command.AbstractCommand;
  */
 public class MKD extends AbstractCommand {
 
-	/*
-	 * (non-Javadoc)
-	 * @see org.waarp.ftp.core.command.AbstractCommand#exec()
-	 */
-	public void exec() throws CommandAbstractException {
-		// First Check if any argument
-		if (!hasArg()) {
-			throw new Reply501Exception("Need a path as argument");
-		}
-		String path = getArg();
-		String newpath = getSession().getDir().mkdir(path);
-		getSession().setReplyCode(ReplyCode.REPLY_257_PATHNAME_CREATED,
-				"\"" + newpath + "\" is created");
-	}
+    /*
+     * (non-Javadoc)
+     * @see org.waarp.ftp.core.command.AbstractCommand#exec()
+     */
+    public void exec() throws CommandAbstractException {
+        // First Check if any argument
+        if (!hasArg()) {
+            throw new Reply501Exception("Need a path as argument");
+        }
+        String path = getArg();
+        String newpath = getSession().getDir().mkdir(path);
+        getSession().setReplyCode(ReplyCode.REPLY_257_PATHNAME_CREATED,
+                "\"" + newpath + "\" is created");
+    }
 
 }

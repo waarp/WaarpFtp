@@ -33,43 +33,45 @@ import org.waarp.ftp.core.command.FtpCommandCode;
  */
 public class PROT extends AbstractCommand {
 
-	@Override
-	public void exec() throws CommandAbstractException {
-		if (! getSession().isSsl()) {
-			// Not in SSL
-			throw new Reply503Exception("Session not using SSL / TLS");
-		}
-		// First Check if any argument
-		if (!hasArg()) {
-			// Error since argument is needed
-			throw new Reply501Exception("Missing Parameter: P or C");
-		}
-		String[] types = getArgs();
-		if (types[0].equalsIgnoreCase("P")) {
-			if (getSession().isDataSsl() && getSession().getConfiguration().getFtpInternalConfiguration().isAcceptAuthProt()) {
-				// Already SSL
-				throw new Reply503Exception("Data already using SSL / TLS");
-			}
-			// Data will have SSL
-			getSession().setDataSsl(true);
-			getSession().setReplyCode(ReplyCode.REPLY_200_COMMAND_OKAY,
-					null);
-		} else if (types[0].equalsIgnoreCase("C") && ! getSession().getConfiguration().getFtpInternalConfiguration().isAcceptAuthProt()) {
-			if (!getSession().isDataSsl()) {
-				// Not in SSL
-				throw new Reply503Exception("Data already not using SSL / TLS");
-			}
-			getSession().setDataSsl(false);
-			getSession().setReplyCode(ReplyCode.REPLY_200_COMMAND_OKAY,
-					null);
-		} else if (! getSession().getConfiguration().getFtpInternalConfiguration().isAcceptAuthProt()) {
-			throw new Reply503Exception("Data is using SSL / TLS and cannot be removed due to Implicit mode");
-		} else {
-			throw new Reply504Exception("Unknown Parameter: "+types[0]);
-		}
-		if (! getSession().getAuth().isIdentified()) {
-			setExtraNextCommand(FtpCommandCode.AUTH);
-		}
-	}
-	
+    @Override
+    public void exec() throws CommandAbstractException {
+        if (!getSession().isSsl()) {
+            // Not in SSL
+            throw new Reply503Exception("Session not using SSL / TLS");
+        }
+        // First Check if any argument
+        if (!hasArg()) {
+            // Error since argument is needed
+            throw new Reply501Exception("Missing Parameter: P or C");
+        }
+        String[] types = getArgs();
+        if (types[0].equalsIgnoreCase("P")) {
+            if (getSession().isDataSsl()
+                    && getSession().getConfiguration().getFtpInternalConfiguration().isAcceptAuthProt()) {
+                // Already SSL
+                throw new Reply503Exception("Data already using SSL / TLS");
+            }
+            // Data will have SSL
+            getSession().setDataSsl(true);
+            getSession().setReplyCode(ReplyCode.REPLY_200_COMMAND_OKAY,
+                    null);
+        } else if (types[0].equalsIgnoreCase("C")
+                && !getSession().getConfiguration().getFtpInternalConfiguration().isAcceptAuthProt()) {
+            if (!getSession().isDataSsl()) {
+                // Not in SSL
+                throw new Reply503Exception("Data already not using SSL / TLS");
+            }
+            getSession().setDataSsl(false);
+            getSession().setReplyCode(ReplyCode.REPLY_200_COMMAND_OKAY,
+                    null);
+        } else if (!getSession().getConfiguration().getFtpInternalConfiguration().isAcceptAuthProt()) {
+            throw new Reply503Exception("Data is using SSL / TLS and cannot be removed due to Implicit mode");
+        } else {
+            throw new Reply504Exception("Unknown Parameter: " + types[0]);
+        }
+        if (!getSession().getAuth().isIdentified()) {
+            setExtraNextCommand(FtpCommandCode.AUTH);
+        }
+    }
+
 }

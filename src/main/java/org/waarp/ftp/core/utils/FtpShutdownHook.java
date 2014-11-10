@@ -25,26 +25,26 @@ import org.waarp.ftp.core.config.FtpConfiguration;
 
 /**
  * @author "Frederic Bregier"
- *
+ * 
  */
 public class FtpShutdownHook extends WaarpShutdownHook {
 
-	protected FtpConfiguration configuration;
-	/**
-	 * @param configuration
-	 */
-	public FtpShutdownHook(ShutdownConfiguration configuration, FtpConfiguration ftpconfiguration) {
-		super(configuration);
-		this.configuration = ftpconfiguration;
-	}
+    protected FtpConfiguration configuration;
 
-	@Override
-	protected void exit() {
-		FtpChannelUtils.exit(this.configuration);
-		try {
-			Thread.sleep(this.configuration.TIMEOUTCON/2);
-		} catch (InterruptedException e) {
-		}
-	}
+    /**
+     * @param configuration
+     */
+    public FtpShutdownHook(ShutdownConfiguration configuration, FtpConfiguration ftpconfiguration) {
+        super(configuration);
+        this.configuration = ftpconfiguration;
+    }
+
+    @Override
+    protected void exit() {
+        FtpChannelUtils.exit(this.configuration);
+        try {
+            Thread.sleep(this.configuration.TIMEOUTCON / 2);
+        } catch (InterruptedException e) {}
+    }
 
 }

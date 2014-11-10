@@ -36,23 +36,28 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
- * <p>AbstractTrafficShapingHandler allows to limit the global bandwidth
- * (see {@link GlobalTrafficShapingHandler}) or per session
- * bandwidth (see {@link ChannelTrafficShapingHandler}), as traffic shaping.
- * It allows too to implement an almost real time monitoring of the bandwidth using
- * the monitors from {@link TrafficCounter} that will call back every checkInterval
- * the method doAccounting of this handler.</p>
- *
- * <p>An {@link ObjectSizeEstimator} can be passed at construction to specify what
- * is the size of the object to be read or write accordingly to the type of
- * object. If not specified, it will used the {@link DefaultObjectSizeEstimator} implementation.</p>
- *
- * <p>If you want for any particular reasons to stop the monitoring (accounting) or to change
- * the read/write limit or the check interval, several methods allow that for you:</p>
+ * <p>
+ * AbstractTrafficShapingHandler allows to limit the global bandwidth (see
+ * {@link GlobalTrafficShapingHandler}) or per session bandwidth (see
+ * {@link ChannelTrafficShapingHandler}), as traffic shaping. It allows too to implement an almost
+ * real time monitoring of the bandwidth using the monitors from {@link TrafficCounter} that will
+ * call back every checkInterval the method doAccounting of this handler.
+ * </p>
+ * 
+ * <p>
+ * An {@link ObjectSizeEstimator} can be passed at construction to specify what is the size of the
+ * object to be read or write accordingly to the type of object. If not specified, it will used the
+ * {@link DefaultObjectSizeEstimator} implementation.
+ * </p>
+ * 
+ * <p>
+ * If you want for any particular reasons to stop the monitoring (accounting) or to change the
+ * read/write limit or the check interval, several methods allow that for you:
+ * </p>
  * <ul>
  * <li><tt>configure</tt> allows you to change read or write limits, or the checkInterval</li>
- * <li><tt>getTrafficCounter</tt> allows you to have access to the TrafficCounter and so to stop
- * or start the monitoring, to change the checkInterval directly, or to have access to its values.</li>
+ * <li><tt>getTrafficCounter</tt> allows you to have access to the TrafficCounter and so to stop or
+ * start the monitoring, to change the checkInterval directly, or to have access to its values.</li>
  * </ul>
  */
 public abstract class AbstractTrafficShapingHandler extends
@@ -69,8 +74,7 @@ public abstract class AbstractTrafficShapingHandler extends
     public static final long DEFAULT_CHECK_INTERVAL = 1000;
 
     /**
-     * Default max delay in case of traffic shaping
-     * (during which no communication will occur).
+     * Default max delay in case of traffic shaping (during which no communication will occur).
      * Shall be less than TIMEOUT. Here half of "standard" 30s
      */
     public static final long DEFAULT_MAX_TIME = 15000;
@@ -138,24 +142,23 @@ public abstract class AbstractTrafficShapingHandler extends
      */
     long maxWriteSize = DEFAULT_MAX_SIZE; // default 4MB
     /**
-     * Boolean associated with the release of this TrafficShapingHandler.
-     * It will be true only once when the releaseExternalRessources is called
-     * to prevent waiting when shutdown.
+     * Boolean associated with the release of this TrafficShapingHandler. It will be true only once
+     * when the releaseExternalRessources is called to prevent waiting when shutdown.
      */
     final AtomicBoolean release = new AtomicBoolean(false);
     final int index;
 
     /**
      * Attachment of ChannelHandlerContext
-     *
+     * 
      */
     static class ReadWriteStatus {
         volatile boolean readSuspend;
     }
 
     /**
-     * For simple ChannelBuffer, returns the readableBytes, else
-     * use standard DefaultObjectSizeEstimator.
+     * For simple ChannelBuffer, returns the readableBytes, else use standard
+     * DefaultObjectSizeEstimator.
      */
     public static class SimpleObjectSizeEstimator extends DefaultObjectSizeEstimator {
         @Override
@@ -185,62 +188,63 @@ public abstract class AbstractTrafficShapingHandler extends
     }
 
     private void init(ObjectSizeEstimator newObjectSizeEstimator,
-             Timer newTimer, long newWriteLimit, long newReadLimit,
-             long newCheckInterval, long newMaxTime) {
-         objectSizeEstimator = newObjectSizeEstimator;
-         timer = newTimer;
-         writeLimit = newWriteLimit;
-         readLimit = newReadLimit;
-         checkInterval = newCheckInterval;
-         maxTime = newMaxTime;
-         //logger.warn("TSH: "+writeLimit+":"+readLimit+":"+checkInterval);
-     }
+            Timer newTimer, long newWriteLimit, long newReadLimit,
+            long newCheckInterval, long newMaxTime) {
+        objectSizeEstimator = newObjectSizeEstimator;
+        timer = newTimer;
+        writeLimit = newWriteLimit;
+        readLimit = newReadLimit;
+        checkInterval = newCheckInterval;
+        maxTime = newMaxTime;
+        //logger.warn("TSH: "+writeLimit+":"+readLimit+":"+checkInterval);
+    }
 
     /**
-     *
-     * @param newTrafficCounter the TrafficCounter to set
+     * 
+     * @param newTrafficCounter
+     *            the TrafficCounter to set
      */
     void setTrafficCounter(TrafficCounter newTrafficCounter) {
         trafficCounter = newTrafficCounter;
     }
 
     /**
-     * Constructor using default {@link ObjectSizeEstimator} and
-     * default max time as delay allowed value of {@value #DEFAULT_MAX_TIME} ms
-     *
+     * Constructor using default {@link ObjectSizeEstimator} and default max time as delay allowed
+     * value of {@value #DEFAULT_MAX_TIME} ms
+     * 
      * @param timer
-     *          created once for instance like HashedWheelTimer(10, TimeUnit.MILLISECONDS, 1024)
+     *            created once for instance like HashedWheelTimer(10, TimeUnit.MILLISECONDS, 1024)
      * @param writeLimit
-     *          0 or a limit in bytes/s
+     *            0 or a limit in bytes/s
      * @param readLimit
-     *          0 or a limit in bytes/s
+     *            0 or a limit in bytes/s
      * @param checkInterval
-     *          The delay between two computations of performances for
-     *            channels or 0 if no stats are to be computed
+     *            The delay between two computations of performances for channels or 0 if no stats
+     *            are to be computed
      */
     protected AbstractTrafficShapingHandler(Timer timer, long writeLimit,
-                                            long readLimit, long checkInterval) {
+            long readLimit, long checkInterval) {
         this.index = userDefinedWritabilityIndex();
         init(new SimpleObjectSizeEstimator(), timer, writeLimit, readLimit, checkInterval,
                 DEFAULT_MAX_TIME);
     }
 
     /**
-     * Constructor using the specified ObjectSizeEstimator and
-     * default max time as delay allowed value of {@value #DEFAULT_MAX_TIME} ms
-     *
+     * Constructor using the specified ObjectSizeEstimator and default max time as delay allowed
+     * value of {@value #DEFAULT_MAX_TIME} ms
+     * 
      * @param objectSizeEstimator
-     *            the {@link ObjectSizeEstimator} that will be used to compute
-     *            the size of the message
+     *            the {@link ObjectSizeEstimator} that will be used to compute the size of the
+     *            message
      * @param timer
-     *          created once for instance like HashedWheelTimer(10, TimeUnit.MILLISECONDS, 1024)
+     *            created once for instance like HashedWheelTimer(10, TimeUnit.MILLISECONDS, 1024)
      * @param writeLimit
-     *          0 or a limit in bytes/s
+     *            0 or a limit in bytes/s
      * @param readLimit
-     *          0 or a limit in bytes/s
+     *            0 or a limit in bytes/s
      * @param checkInterval
-     *          The delay between two computations of performances for
-     *            channels or 0 if no stats are to be computed
+     *            The delay between two computations of performances for channels or 0 if no stats
+     *            are to be computed
      */
     protected AbstractTrafficShapingHandler(
             ObjectSizeEstimator objectSizeEstimator, Timer timer,
@@ -250,38 +254,38 @@ public abstract class AbstractTrafficShapingHandler extends
     }
 
     /**
-     * Constructor using default {@link ObjectSizeEstimator} and using
-     * default Check Interval value of {@value #DEFAULT_CHECK_INTERVAL} ms and
-     * default max time as delay allowed value of {@value #DEFAULT_MAX_TIME} ms
-     *
+     * Constructor using default {@link ObjectSizeEstimator} and using default Check Interval value
+     * of {@value #DEFAULT_CHECK_INTERVAL} ms and default max time as delay allowed value of
+     * {@value #DEFAULT_MAX_TIME} ms
+     * 
      * @param timer
-     *          created once for instance like HashedWheelTimer(10, TimeUnit.MILLISECONDS, 1024)
+     *            created once for instance like HashedWheelTimer(10, TimeUnit.MILLISECONDS, 1024)
      * @param writeLimit
-     *          0 or a limit in bytes/s
+     *            0 or a limit in bytes/s
      * @param readLimit
-     *          0 or a limit in bytes/s
+     *            0 or a limit in bytes/s
      */
     protected AbstractTrafficShapingHandler(Timer timer, long writeLimit,
-                                            long readLimit) {
+            long readLimit) {
         this.index = userDefinedWritabilityIndex();
         init(new SimpleObjectSizeEstimator(), timer, writeLimit, readLimit,
                 DEFAULT_CHECK_INTERVAL, DEFAULT_MAX_TIME);
     }
 
     /**
-     * Constructor using the specified ObjectSizeEstimator and using
-     * default Check Interval value of {@value #DEFAULT_CHECK_INTERVAL} ms and
-     * default max time as delay allowed value of {@value #DEFAULT_MAX_TIME} ms
-     *
+     * Constructor using the specified ObjectSizeEstimator and using default Check Interval value of
+     * {@value #DEFAULT_CHECK_INTERVAL} ms and default max time as delay allowed value of
+     * {@value #DEFAULT_MAX_TIME} ms
+     * 
      * @param objectSizeEstimator
-     *            the {@link ObjectSizeEstimator} that will be used to compute
-     *            the size of the message
+     *            the {@link ObjectSizeEstimator} that will be used to compute the size of the
+     *            message
      * @param timer
-     *          created once for instance like HashedWheelTimer(10, TimeUnit.MILLISECONDS, 1024)
+     *            created once for instance like HashedWheelTimer(10, TimeUnit.MILLISECONDS, 1024)
      * @param writeLimit
-     *          0 or a limit in bytes/s
+     *            0 or a limit in bytes/s
      * @param readLimit
-     *          0 or a limit in bytes/s
+     *            0 or a limit in bytes/s
      */
     protected AbstractTrafficShapingHandler(
             ObjectSizeEstimator objectSizeEstimator, Timer timer,
@@ -292,12 +296,12 @@ public abstract class AbstractTrafficShapingHandler extends
     }
 
     /**
-     * Constructor using default {@link ObjectSizeEstimator} and using NO LIMIT and
-     * default Check Interval value of {@value #DEFAULT_CHECK_INTERVAL} ms and
-     * default max time as delay allowed value of {@value #DEFAULT_MAX_TIME} ms
-     *
+     * Constructor using default {@link ObjectSizeEstimator} and using NO LIMIT and default Check
+     * Interval value of {@value #DEFAULT_CHECK_INTERVAL} ms and default max time as delay allowed
+     * value of {@value #DEFAULT_MAX_TIME} ms
+     * 
      * @param timer
-     *          created once for instance like HashedWheelTimer(10, TimeUnit.MILLISECONDS, 1024)
+     *            created once for instance like HashedWheelTimer(10, TimeUnit.MILLISECONDS, 1024)
      */
     protected AbstractTrafficShapingHandler(Timer timer) {
         this.index = userDefinedWritabilityIndex();
@@ -306,15 +310,15 @@ public abstract class AbstractTrafficShapingHandler extends
     }
 
     /**
-     * Constructor using the specified ObjectSizeEstimator and using NO LIMIT and
-     * default Check Interval value of {@value #DEFAULT_CHECK_INTERVAL} ms and
-     * default max time as delay allowed value of {@value #DEFAULT_MAX_TIME} ms
-     *
+     * Constructor using the specified ObjectSizeEstimator and using NO LIMIT and default Check
+     * Interval value of {@value #DEFAULT_CHECK_INTERVAL} ms and default max time as delay allowed
+     * value of {@value #DEFAULT_MAX_TIME} ms
+     * 
      * @param objectSizeEstimator
-     *            the {@link ObjectSizeEstimator} that will be used to compute
-     *            the size of the message
+     *            the {@link ObjectSizeEstimator} that will be used to compute the size of the
+     *            message
      * @param timer
-     *          created once for instance like HashedWheelTimer(10, TimeUnit.MILLISECONDS, 1024)
+     *            created once for instance like HashedWheelTimer(10, TimeUnit.MILLISECONDS, 1024)
      */
     protected AbstractTrafficShapingHandler(
             ObjectSizeEstimator objectSizeEstimator, Timer timer) {
@@ -324,14 +328,14 @@ public abstract class AbstractTrafficShapingHandler extends
     }
 
     /**
-     * Constructor using default {@link ObjectSizeEstimator} and using NO LIMIT and
-     * default max time as delay allowed value of {@value #DEFAULT_MAX_TIME} ms
-     *
+     * Constructor using default {@link ObjectSizeEstimator} and using NO LIMIT and default max time
+     * as delay allowed value of {@value #DEFAULT_MAX_TIME} ms
+     * 
      * @param timer
-     *          created once for instance like HashedWheelTimer(10, TimeUnit.MILLISECONDS, 1024)
+     *            created once for instance like HashedWheelTimer(10, TimeUnit.MILLISECONDS, 1024)
      * @param checkInterval
-     *          The delay between two computations of performances for
-     *            channels or 0 if no stats are to be computed
+     *            The delay between two computations of performances for channels or 0 if no stats
+     *            are to be computed
      */
     protected AbstractTrafficShapingHandler(Timer timer, long checkInterval) {
         this.index = userDefinedWritabilityIndex();
@@ -339,17 +343,17 @@ public abstract class AbstractTrafficShapingHandler extends
     }
 
     /**
-     * Constructor using the specified ObjectSizeEstimator and using NO LIMIT and
-     * default max time as delay allowed value of {@value #DEFAULT_MAX_TIME} ms
-     *
+     * Constructor using the specified ObjectSizeEstimator and using NO LIMIT and default max time
+     * as delay allowed value of {@value #DEFAULT_MAX_TIME} ms
+     * 
      * @param objectSizeEstimator
-     *            the {@link ObjectSizeEstimator} that will be used to compute
-     *            the size of the message
+     *            the {@link ObjectSizeEstimator} that will be used to compute the size of the
+     *            message
      * @param timer
-     *          created once for instance like HashedWheelTimer(10, TimeUnit.MILLISECONDS, 1024)
+     *            created once for instance like HashedWheelTimer(10, TimeUnit.MILLISECONDS, 1024)
      * @param checkInterval
-     *          The delay between two computations of performances for
-     *            channels or 0 if no stats are to be computed
+     *            The delay between two computations of performances for channels or 0 if no stats
+     *            are to be computed
      */
     protected AbstractTrafficShapingHandler(
             ObjectSizeEstimator objectSizeEstimator, Timer timer,
@@ -360,21 +364,21 @@ public abstract class AbstractTrafficShapingHandler extends
 
     /**
      * Constructor using default {@link ObjectSizeEstimator}
-     *
+     * 
      * @param timer
-     *          created once for instance like HashedWheelTimer(10, TimeUnit.MILLISECONDS, 1024)
+     *            created once for instance like HashedWheelTimer(10, TimeUnit.MILLISECONDS, 1024)
      * @param writeLimit
-     *          0 or a limit in bytes/s
+     *            0 or a limit in bytes/s
      * @param readLimit
-     *          0 or a limit in bytes/s
+     *            0 or a limit in bytes/s
      * @param checkInterval
-     *          The delay between two computations of performances for
-     *            channels or 0 if no stats are to be computed
+     *            The delay between two computations of performances for channels or 0 if no stats
+     *            are to be computed
      * @param maxTime
-     *          The max time to wait in case of excess of traffic (to prevent Time Out event)
+     *            The max time to wait in case of excess of traffic (to prevent Time Out event)
      */
     protected AbstractTrafficShapingHandler(Timer timer, long writeLimit,
-                                            long readLimit, long checkInterval, long maxTime) {
+            long readLimit, long checkInterval, long maxTime) {
         this.index = userDefinedWritabilityIndex();
         init(new SimpleObjectSizeEstimator(), timer, writeLimit, readLimit, checkInterval,
                 maxTime);
@@ -382,21 +386,21 @@ public abstract class AbstractTrafficShapingHandler extends
 
     /**
      * Constructor using the specified ObjectSizeEstimator
-     *
+     * 
      * @param objectSizeEstimator
-     *            the {@link ObjectSizeEstimator} that will be used to compute
-     *            the size of the message
+     *            the {@link ObjectSizeEstimator} that will be used to compute the size of the
+     *            message
      * @param timer
-     *          created once for instance like HashedWheelTimer(10, TimeUnit.MILLISECONDS, 1024)
+     *            created once for instance like HashedWheelTimer(10, TimeUnit.MILLISECONDS, 1024)
      * @param writeLimit
-     *          0 or a limit in bytes/s
+     *            0 or a limit in bytes/s
      * @param readLimit
-     *          0 or a limit in bytes/s
+     *            0 or a limit in bytes/s
      * @param checkInterval
-     *          The delay between two computations of performances for
-     *            channels or 0 if no stats are to be computed
+     *            The delay between two computations of performances for channels or 0 if no stats
+     *            are to be computed
      * @param maxTime
-     *          The max time to wait in case of excess of traffic (to prevent Time Out event)
+     *            The max time to wait in case of excess of traffic (to prevent Time Out event)
      */
     protected AbstractTrafficShapingHandler(
             ObjectSizeEstimator objectSizeEstimator, Timer timer,
@@ -407,12 +411,13 @@ public abstract class AbstractTrafficShapingHandler extends
 
     /**
      * Change the underlying limitations and check interval.
-     * <p>Note the change will be taken as best effort, meaning
-     * that all already scheduled traffics will not be
-     * changed, but only applied to new traffics.</p>
-     * So the expected usage of this method is to be used not too often,
-     * accordingly to the traffic shaping configuration.
-     *
+     * <p>
+     * Note the change will be taken as best effort, meaning that all already scheduled traffics
+     * will not be changed, but only applied to new traffics.
+     * </p>
+     * So the expected usage of this method is to be used not too often, accordingly to the traffic
+     * shaping configuration.
+     * 
      * @param newWriteLimit
      *            The new write limit (in bytes)
      * @param newReadLimit
@@ -428,12 +433,13 @@ public abstract class AbstractTrafficShapingHandler extends
 
     /**
      * Change the underlying limitations.
-     * <p>Note the change will be taken as best effort, meaning
-     * that all already scheduled traffics will not be
-     * changed, but only applied to new traffics.</p>
-     * So the expected usage of this method is to be used not too often,
-     * accordingly to the traffic shaping configuration.
-     *
+     * <p>
+     * Note the change will be taken as best effort, meaning that all already scheduled traffics
+     * will not be changed, but only applied to new traffics.
+     * </p>
+     * So the expected usage of this method is to be used not too often, accordingly to the traffic
+     * shaping configuration.
+     * 
      * @param newWriteLimit
      *            The new write limit (in bytes)
      * @param newReadLimit
@@ -462,13 +468,15 @@ public abstract class AbstractTrafficShapingHandler extends
     }
 
     /**
-     * <p>Note the change will be taken as best effort, meaning
-     * that all already scheduled traffics will not be
-     * changed, but only applied to new traffics.</p>
-     * So the expected usage of this method is to be used not too often,
-     * accordingly to the traffic shaping configuration.
-     *
-     * @param writeLimit the writeLimit to set
+     * <p>
+     * Note the change will be taken as best effort, meaning that all already scheduled traffics
+     * will not be changed, but only applied to new traffics.
+     * </p>
+     * So the expected usage of this method is to be used not too often, accordingly to the traffic
+     * shaping configuration.
+     * 
+     * @param writeLimit
+     *            the writeLimit to set
      */
     public void setWriteLimit(long writeLimit) {
         this.writeLimit = writeLimit;
@@ -485,13 +493,15 @@ public abstract class AbstractTrafficShapingHandler extends
     }
 
     /**
-     * <p>Note the change will be taken as best effort, meaning
-     * that all already scheduled traffics will not be
-     * changed, but only applied to new traffics.</p>
-     * So the expected usage of this method is to be used not too often,
-     * accordingly to the traffic shaping configuration.
-     *
-     * @param readLimit the readLimit to set
+     * <p>
+     * Note the change will be taken as best effort, meaning that all already scheduled traffics
+     * will not be changed, but only applied to new traffics.
+     * </p>
+     * So the expected usage of this method is to be used not too often, accordingly to the traffic
+     * shaping configuration.
+     * 
+     * @param readLimit
+     *            the readLimit to set
      */
     public void setReadLimit(long readLimit) {
         this.readLimit = readLimit;
@@ -508,7 +518,8 @@ public abstract class AbstractTrafficShapingHandler extends
     }
 
     /**
-     * @param newCheckInterval the checkInterval to set
+     * @param newCheckInterval
+     *            the checkInterval to set
      */
     public void setCheckInterval(long newCheckInterval) {
         this.checkInterval = newCheckInterval;
@@ -524,66 +535,70 @@ public abstract class AbstractTrafficShapingHandler extends
         return maxTime;
     }
 
-   /**
-    * <p>Note the change will be taken as best effort, meaning
-    * that all already scheduled traffics will not be
-    * changed, but only applied to new traffics.</p>
-    * So the expected usage of this method is to be used not too often,
-    * accordingly to the traffic shaping configuration.
-    *
-    * @param maxTime
-    *    Max delay in wait, shall be less than TIME OUT in related protocol
-    */
-   public void setMaxTimeWait(long maxTime) {
-       this.maxTime = maxTime;
-   }
-
-   /**
-    * @return the maxWriteDelay
-    */
-   public long getMaxWriteDelay() {
-       return maxWriteDelay;
-   }
-
-   /**
-    * <p>Note the change will be taken as best effort, meaning
-    * that all already scheduled traffics will not be
-    * changed, but only applied to new traffics.</p>
-    * So the expected usage of this method is to be used not too often,
-    * accordingly to the traffic shaping configuration.
-    *
-    * @param maxWriteDelay the maximum Write Delay in ms in the buffer allowed before write suspended is set
-    */
-   public void setMaxWriteDelay(long maxWriteDelay) {
-       this.maxWriteDelay = maxWriteDelay;
-   }
-
-   /**
-    * @return the maxWriteSize default being {@value #DEFAULT_MAX_SIZE} bytes
-    */
-   public long getMaxWriteSize() {
-       return maxWriteSize;
-   }
-
-   /**
-    * <p>Note the change will be taken as best effort, meaning
-    * that all already scheduled traffics will not be
-    * changed, but only applied to new traffics.</p>
-    * So the expected usage of this method is to be used not too often,
-    * accordingly to the traffic shaping configuration.
-    *
-    * @param maxWriteSize the maximum Write Size allowed in the buffer
-    *            per channel before write suspended is set,
-    *            default being {@value #DEFAULT_MAX_SIZE} bytes
-    */
-   public void setMaxWriteSize(long maxWriteSize) {
-       this.maxWriteSize = maxWriteSize;
-   }
+    /**
+     * <p>
+     * Note the change will be taken as best effort, meaning that all already scheduled traffics
+     * will not be changed, but only applied to new traffics.
+     * </p>
+     * So the expected usage of this method is to be used not too often, accordingly to the traffic
+     * shaping configuration.
+     * 
+     * @param maxTime
+     *            Max delay in wait, shall be less than TIME OUT in related protocol
+     */
+    public void setMaxTimeWait(long maxTime) {
+        this.maxTime = maxTime;
+    }
 
     /**
-     * Called each time the accounting is computed from the TrafficCounters.
-     * This method could be used for instance to implement almost real time accounting.
-     *
+     * @return the maxWriteDelay
+     */
+    public long getMaxWriteDelay() {
+        return maxWriteDelay;
+    }
+
+    /**
+     * <p>
+     * Note the change will be taken as best effort, meaning that all already scheduled traffics
+     * will not be changed, but only applied to new traffics.
+     * </p>
+     * So the expected usage of this method is to be used not too often, accordingly to the traffic
+     * shaping configuration.
+     * 
+     * @param maxWriteDelay
+     *            the maximum Write Delay in ms in the buffer allowed before write suspended is set
+     */
+    public void setMaxWriteDelay(long maxWriteDelay) {
+        this.maxWriteDelay = maxWriteDelay;
+    }
+
+    /**
+     * @return the maxWriteSize default being {@value #DEFAULT_MAX_SIZE} bytes
+     */
+    public long getMaxWriteSize() {
+        return maxWriteSize;
+    }
+
+    /**
+     * <p>
+     * Note the change will be taken as best effort, meaning that all already scheduled traffics
+     * will not be changed, but only applied to new traffics.
+     * </p>
+     * So the expected usage of this method is to be used not too often, accordingly to the traffic
+     * shaping configuration.
+     * 
+     * @param maxWriteSize
+     *            the maximum Write Size allowed in the buffer per channel before write suspended is
+     *            set, default being {@value #DEFAULT_MAX_SIZE} bytes
+     */
+    public void setMaxWriteSize(long maxWriteSize) {
+        this.maxWriteSize = maxWriteSize;
+    }
+
+    /**
+     * Called each time the accounting is computed from the TrafficCounters. This method could be
+     * used for instance to implement almost real time accounting.
+     * 
      * @param counter
      *            the TrafficCounter that computes its performance
      */
@@ -596,9 +611,11 @@ public abstract class AbstractTrafficShapingHandler extends
      */
     private class ReopenReadTimerTask implements TimerTask {
         final ChannelHandlerContext ctx;
+
         ReopenReadTimerTask(ChannelHandlerContext ctx) {
             this.ctx = ctx;
         }
+
         public void run(Timeout timeoutArg) throws Exception {
             //logger.warn("Start RRTT: "+release.get());
             if (release.get()) {
@@ -606,11 +623,11 @@ public abstract class AbstractTrafficShapingHandler extends
             }
             ReadWriteStatus rws = checkAttachment(ctx);
             Channel channel = ctx.getChannel();
-            if (! channel.isConnected()) {
+            if (!channel.isConnected()) {
                 // ignore
                 return;
             }
-            if (!channel.isReadable() && ! rws.readSuspend) {
+            if (!channel.isReadable() && !rws.readSuspend) {
                 // If isReadable is False and Active is True, user make a direct setReadable(false)
                 // Then Just reset the status
                 if (logger.isDebugEnabled()) {
@@ -639,9 +656,9 @@ public abstract class AbstractTrafficShapingHandler extends
         }
     }
 
-   /**
-    * Release the Read suspension
-    */
+    /**
+     * Release the Read suspension
+     */
     void releaseReadSuspended(ChannelHandlerContext ctx) {
         ReadWriteStatus rws = checkAttachment(ctx);
         rws.readSuspend = false;
@@ -677,7 +694,7 @@ public abstract class AbstractTrafficShapingHandler extends
                             Thread.sleep(wait);
                             return;
                         }
-                        if (channel.isReadable() && ! rws.readSuspend) {
+                        if (channel.isReadable() && !rws.readSuspend) {
                             rws.readSuspend = true;
                             channel.setReadable(false);
                             if (logger.isDebugEnabled()) {
@@ -702,8 +719,11 @@ public abstract class AbstractTrafficShapingHandler extends
 
     /**
      * Method overridden in GTSH to take into account specific timer for the channel
-     * @param wait the wait delay computed in ms
-     * @param now the relative now time in ms
+     * 
+     * @param wait
+     *            the wait delay computed in ms
+     * @param now
+     *            the relative now time in ms
      * @return the wait to use according to the context
      */
     long checkWaitReadTime(final ChannelHandlerContext ctx, long wait, final long now) {
@@ -713,7 +733,9 @@ public abstract class AbstractTrafficShapingHandler extends
 
     /**
      * Method overridden in GTSH to take into account specific timer for the channel
-     * @param now the relative now time in ms
+     * 
+     * @param now
+     *            the relative now time in ms
      */
     void informReadOperation(final ChannelHandlerContext ctx, final long now) {
         // default noop
@@ -773,10 +795,13 @@ public abstract class AbstractTrafficShapingHandler extends
     }
 
     /**
-     * Check the writability according to delay and size for the channel.
-     * Set if necessary the write suspended status.
-     * @param delay the computed delai
-     * @param queueSize the current queueSize
+     * Check the writability according to delay and size for the channel. Set if necessary the write
+     * suspended status.
+     * 
+     * @param delay
+     *            the computed delai
+     * @param queueSize
+     *            the current queueSize
      */
     void checkWriteSuspend(ChannelHandlerContext ctx, long delay, long queueSize) {
         if (queueSize > maxWriteSize || delay > maxWriteDelay) {
@@ -812,9 +837,8 @@ public abstract class AbstractTrafficShapingHandler extends
     }
 
     /**
-     *
-     * @return the current TrafficCounter (if
-     *         channel is still connected)
+     * 
+     * @return the current TrafficCounter (if channel is still connected)
      */
     public TrafficCounter getTrafficCounter() {
         return trafficCounter;

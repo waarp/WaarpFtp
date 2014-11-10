@@ -30,18 +30,18 @@ import org.waarp.ftp.core.command.AbstractCommand;
  */
 public class MDTM extends AbstractCommand {
 
-	/*
-	 * (non-Javadoc)
-	 * @see org.waarp.ftp.core.command.AbstractCommand#exec()
-	 */
-	public void exec() throws CommandAbstractException {
-		// First Check if any argument
-		if (!hasArg()) {
-			throw new Reply501Exception("Need a path as argument");
-		}
-		String arg = getArg();
-		String time = getSession().getDir().getModificationTime(arg);
-		getSession().setReplyCode(ReplyCode.REPLY_213_FILE_STATUS, time);
-	}
+    /*
+     * (non-Javadoc)
+     * @see org.waarp.ftp.core.command.AbstractCommand#exec()
+     */
+    public void exec() throws CommandAbstractException {
+        // First Check if any argument
+        if (!hasArg()) {
+            throw new Reply501Exception("Need a path as argument");
+        }
+        String arg = getArg();
+        String time = getSession().getDir().getModificationTime(arg);
+        getSession().setReplyCode(ReplyCode.REPLY_213_FILE_STATUS, time);
+    }
 
 }

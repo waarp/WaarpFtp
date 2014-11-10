@@ -25,10 +25,10 @@ import org.waarp.common.file.FileInterface;
  */
 public interface FtpFile extends FileInterface {
 
-	/**
-	 * Launch retrieve operation (internal method, should not be called directly)
-	 * 
-	 */
-	public void trueRetrieve();
+    /**
+     * Launch retrieve operation (internal method, should not be called directly)
+     * 
+     */
+    public void trueRetrieve();
 
 }

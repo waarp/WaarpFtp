@@ -38,79 +38,79 @@ import org.waarp.ftp.core.data.handler.FtpDataTypeCodec;
 
 /**
  * @author "Frederic Bregier"
- *
+ * 
  */
 public class FtpsDataPipelineFactory implements ChannelPipelineFactory {
 
-	private static final FtpDataTypeCodec ftpDataTypeCodec = new FtpDataTypeCodec(
-			TransferType.ASCII, TransferSubType.NONPRINT);
+    private static final FtpDataTypeCodec ftpDataTypeCodec = new FtpDataTypeCodec(
+            TransferType.ASCII, TransferSubType.NONPRINT);
 
-	private static final FtpDataStructureCodec ftpDataStructureCodec = new FtpDataStructureCodec(
-			TransferStructure.FILE);
+    private static final FtpDataStructureCodec ftpDataStructureCodec = new FtpDataStructureCodec(
+            TransferStructure.FILE);
 
-	/**
-	 * Business Handler Class
-	 */
-	private final Class<? extends DataBusinessHandler> dataBusinessHandler;
+    /**
+     * Business Handler Class
+     */
+    private final Class<? extends DataBusinessHandler> dataBusinessHandler;
 
-	/**
-	 * Configuration
-	 */
-	private final FtpConfiguration configuration;
+    /**
+     * Configuration
+     */
+    private final FtpConfiguration configuration;
 
-	/**
-	 * Is this factory for Active mode
-	 */
-	private final boolean isActive;
+    /**
+     * Is this factory for Active mode
+     */
+    private final boolean isActive;
 
-	/**
-	 * Constructor which Initializes some data
-	 * 
-	 * @param dataBusinessHandler
-	 * @param configuration
-	 * @param active
-	 * @param executor
-	 */
-	public FtpsDataPipelineFactory(
-			Class<? extends DataBusinessHandler> dataBusinessHandler,
-			FtpConfiguration configuration, boolean active) {
-		this.dataBusinessHandler = dataBusinessHandler;
-		this.configuration = configuration;
-		isActive = active;
-	}
+    /**
+     * Constructor which Initializes some data
+     * 
+     * @param dataBusinessHandler
+     * @param configuration
+     * @param active
+     * @param executor
+     */
+    public FtpsDataPipelineFactory(
+            Class<? extends DataBusinessHandler> dataBusinessHandler,
+            FtpConfiguration configuration, boolean active) {
+        this.dataBusinessHandler = dataBusinessHandler;
+        this.configuration = configuration;
+        isActive = active;
+    }
 
-	/**
-	 * Create the pipeline with Handler, ObjectDecoder, ObjectEncoder.
-	 * 
-	 * @see org.jboss.netty.channel.ChannelPipelineFactory#getPipeline()
-	 */
-	public ChannelPipeline getPipeline() throws Exception {
-		ChannelPipeline pipeline = Channels.pipeline();
-		// SSL will be added in final handler in channelConnected
-		// Add default codec but they will change by the channelConnected
-		pipeline.addLast(FtpDataPipelineFactory.CODEC_MODE, new FtpDataModeCodec(TransferMode.STREAM,
-				TransferStructure.FILE));
-		pipeline
-				.addLast(FtpDataPipelineFactory.CODEC_LIMIT, configuration
-						.getFtpInternalConfiguration()
-						.getGlobalTrafficShapingHandler());
-		ChannelTrafficShapingHandler limitChannel =
-				configuration
-						.getFtpInternalConfiguration()
-						.newChannelTrafficShapingHandler();
-		if (limitChannel != null) {
-			pipeline.addLast(FtpDataPipelineFactory.CODEC_LIMIT + "CHANNEL", limitChannel);
-		}
-		pipeline.addLast(FtpDataPipelineFactory.CODEC_TYPE, ftpDataTypeCodec);
-		pipeline.addLast(FtpDataPipelineFactory.CODEC_STRUCTURE, ftpDataStructureCodec);
-		// Threaded execution for business logic
-		pipeline.addLast(FtpDataPipelineFactory.PIPELINE_EXECUTOR, new ExecutionHandler(configuration
-				.getFtpInternalConfiguration().getDataPipelineExecutor()));
-		// and then business logic. New one on every connection
-		DataBusinessHandler newbusiness = dataBusinessHandler.newInstance();
-		SslDataNetworkHandler newNetworkHandler = new SslDataNetworkHandler(
-				configuration, newbusiness, isActive);
-		pipeline.addLast(FtpDataPipelineFactory.HANDLER, newNetworkHandler);
-		return pipeline;
-	}
+    /**
+     * Create the pipeline with Handler, ObjectDecoder, ObjectEncoder.
+     * 
+     * @see org.jboss.netty.channel.ChannelPipelineFactory#getPipeline()
+     */
+    public ChannelPipeline getPipeline() throws Exception {
+        ChannelPipeline pipeline = Channels.pipeline();
+        // SSL will be added in final handler in channelConnected
+        // Add default codec but they will change by the channelConnected
+        pipeline.addLast(FtpDataPipelineFactory.CODEC_MODE, new FtpDataModeCodec(TransferMode.STREAM,
+                TransferStructure.FILE));
+        pipeline
+                .addLast(FtpDataPipelineFactory.CODEC_LIMIT, configuration
+                        .getFtpInternalConfiguration()
+                        .getGlobalTrafficShapingHandler());
+        ChannelTrafficShapingHandler limitChannel =
+                configuration
+                        .getFtpInternalConfiguration()
+                        .newChannelTrafficShapingHandler();
+        if (limitChannel != null) {
+            pipeline.addLast(FtpDataPipelineFactory.CODEC_LIMIT + "CHANNEL", limitChannel);
+        }
+        pipeline.addLast(FtpDataPipelineFactory.CODEC_TYPE, ftpDataTypeCodec);
+        pipeline.addLast(FtpDataPipelineFactory.CODEC_STRUCTURE, ftpDataStructureCodec);
+        // Threaded execution for business logic
+        pipeline.addLast(FtpDataPipelineFactory.PIPELINE_EXECUTOR, new ExecutionHandler(configuration
+                .getFtpInternalConfiguration().getDataPipelineExecutor()));
+        // and then business logic. New one on every connection
+        DataBusinessHandler newbusiness = dataBusinessHandler.newInstance();
+        SslDataNetworkHandler newNetworkHandler = new SslDataNetworkHandler(
+                configuration, newbusiness, isActive);
+        pipeline.addLast(FtpDataPipelineFactory.HANDLER, newNetworkHandler);
+        return pipeline;
+    }
 }

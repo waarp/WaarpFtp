@@ -30,36 +30,36 @@ import org.jboss.netty.handler.codec.string.StringDecoder;
  * 
  */
 public class FtpControlStringDecoder extends StringDecoder {
-	/**
+    /**
 	 *
 	 */
-	public FtpControlStringDecoder() {
-	}
+    public FtpControlStringDecoder() {
+    }
 
-	/**
-	 * @see StringDecoder
-	 * @param arg0
-	 */
-	public FtpControlStringDecoder(String arg0) {
-		super(Charset.forName(arg0));
-	}
+    /**
+     * @see StringDecoder
+     * @param arg0
+     */
+    public FtpControlStringDecoder(String arg0) {
+        super(Charset.forName(arg0));
+    }
 
-	/**
-	 * @see StringDecoder
-	 * @param arg0
-	 */
-	public FtpControlStringDecoder(Charset arg0) {
-		super(arg0);
-	}
+    /**
+     * @see StringDecoder
+     * @param arg0
+     */
+    public FtpControlStringDecoder(Charset arg0) {
+        super(arg0);
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * @see org.jboss.netty.handler.codec.string.StringDecoder#decode(org.jboss.netty
-	 * .channel.ChannelHandlerContext, org.jboss.netty.channel.Channel, java.lang.Object)
-	 */
-	@Override
-	protected Object decode(ChannelHandlerContext ctx, Channel channel,
-			Object msg) throws Exception {
-		return super.decode(ctx, channel, msg);
-	}
+    /*
+     * (non-Javadoc)
+     * @see org.jboss.netty.handler.codec.string.StringDecoder#decode(org.jboss.netty
+     * .channel.ChannelHandlerContext, org.jboss.netty.channel.Channel, java.lang.Object)
+     */
+    @Override
+    protected Object decode(ChannelHandlerContext ctx, Channel channel,
+            Object msg) throws Exception {
+        return super.decode(ctx, channel, msg);
+    }
 }

@@ -32,39 +32,39 @@ import org.waarp.ftp.core.command.FtpArgumentCode;
  */
 public class MODE extends AbstractCommand {
 
-	/*
-	 * (non-Javadoc)
-	 * @see org.waarp.ftp.core.command.AbstractCommand#exec()
-	 */
-	public void exec() throws Reply501Exception, Reply504Exception {
-		// First Check if any argument
-		if (!hasArg()) {
-			// Default
-			getSession().getDataConn().setMode(
-					FtpArgumentCode.TransferMode.STREAM);
-			getSession()
-					.setReplyCode(
-							ReplyCode.REPLY_200_COMMAND_OKAY,
-							"Mode set to " +
-									FtpArgumentCode.TransferMode.STREAM.name());
-			return;
-		}
-		FtpArgumentCode.TransferMode transferMode;
-		try {
-			transferMode = FtpArgumentCode.getTransferMode(getArg().charAt(0));
-		} catch (InvalidArgumentException e) {
-			throw new Reply501Exception("Unrecognize Mode: " + getArg());
-		}
-		if (transferMode == FtpArgumentCode.TransferMode.BLOCK) {
-			getSession().getDataConn().setMode(transferMode);
-		} else if (transferMode == FtpArgumentCode.TransferMode.STREAM) {
-			getSession().getDataConn().setMode(transferMode);
-		} else {
-			throw new Reply504Exception("Mode not implemented: " +
-					transferMode.name());
-		}
-		getSession().setReplyCode(ReplyCode.REPLY_200_COMMAND_OKAY,
-				"Mode set to " + transferMode.name());
-	}
+    /*
+     * (non-Javadoc)
+     * @see org.waarp.ftp.core.command.AbstractCommand#exec()
+     */
+    public void exec() throws Reply501Exception, Reply504Exception {
+        // First Check if any argument
+        if (!hasArg()) {
+            // Default
+            getSession().getDataConn().setMode(
+                    FtpArgumentCode.TransferMode.STREAM);
+            getSession()
+                    .setReplyCode(
+                            ReplyCode.REPLY_200_COMMAND_OKAY,
+                            "Mode set to " +
+                                    FtpArgumentCode.TransferMode.STREAM.name());
+            return;
+        }
+        FtpArgumentCode.TransferMode transferMode;
+        try {
+            transferMode = FtpArgumentCode.getTransferMode(getArg().charAt(0));
+        } catch (InvalidArgumentException e) {
+            throw new Reply501Exception("Unrecognize Mode: " + getArg());
+        }
+        if (transferMode == FtpArgumentCode.TransferMode.BLOCK) {
+            getSession().getDataConn().setMode(transferMode);
+        } else if (transferMode == FtpArgumentCode.TransferMode.STREAM) {
+            getSession().getDataConn().setMode(transferMode);
+        } else {
+            throw new Reply504Exception("Mode not implemented: " +
+                    transferMode.name());
+        }
+        getSession().setReplyCode(ReplyCode.REPLY_200_COMMAND_OKAY,
+                "Mode set to " + transferMode.name());
+    }
 
 }

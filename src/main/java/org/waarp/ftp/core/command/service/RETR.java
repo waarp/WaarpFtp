@@ -32,29 +32,29 @@ import org.waarp.ftp.core.file.FtpFile;
  */
 public class RETR extends AbstractCommand {
 
-	/*
-	 * (non-Javadoc)
-	 * @see org.waarp.ftp.core.command.AbstractCommand#exec()
-	 */
-	public void exec() throws CommandAbstractException {
-		if (!hasArg()) {
-			invalidCurrentCommand();
-			throw new Reply501Exception("Need a pathname as argument");
-		}
-		String filename = getArg();
-		FtpFile file = getSession().getDir().setFile(filename, false);
-		if (file != null) {
-			if (file.retrieve()) {
-				getSession().openDataConnection();
-				getSession().getDataConn().getFtpTransferControl()
-						.setNewFtpTransfer(getCode(), file);
-				return;
-			}
-			// FtpFile does not exist
-			throw new Reply450Exception("Retrieve operation not allowed");
-		}
-		// FtpFile name not allowed
-		throw new Reply550Exception("Filename not allowed");
-	}
+    /*
+     * (non-Javadoc)
+     * @see org.waarp.ftp.core.command.AbstractCommand#exec()
+     */
+    public void exec() throws CommandAbstractException {
+        if (!hasArg()) {
+            invalidCurrentCommand();
+            throw new Reply501Exception("Need a pathname as argument");
+        }
+        String filename = getArg();
+        FtpFile file = getSession().getDir().setFile(filename, false);
+        if (file != null) {
+            if (file.retrieve()) {
+                getSession().openDataConnection();
+                getSession().getDataConn().getFtpTransferControl()
+                        .setNewFtpTransfer(getCode(), file);
+                return;
+            }
+            // FtpFile does not exist
+            throw new Reply450Exception("Retrieve operation not allowed");
+        }
+        // FtpFile name not allowed
+        throw new Reply550Exception("Filename not allowed");
+    }
 
 }

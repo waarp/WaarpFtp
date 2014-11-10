@@ -41,144 +41,142 @@ import org.waarp.ftp.simpleimpl.file.FileBasedDir;
  * 
  */
 public class SimpleBusinessHandler extends BusinessHandler {
-	/**
-	 * Internal Logger
-	 */
-	private static final WaarpInternalLogger logger = WaarpInternalLoggerFactory
-			.getLogger(SimpleBusinessHandler.class);
-	
-	@Override
-	public void afterRunCommandKo(CommandAbstractException e) {
-		// TODO Auto-generated method stub
-		if (getFtpSession().getCurrentCommand() instanceof MKD) {
-			// do nothing
-		} else {
-			logger.warn("GBBH: AFTKO: {} {}", getFtpSession(), e.getMessage());
-		}
-	}
+    /**
+     * Internal Logger
+     */
+    private static final WaarpInternalLogger logger = WaarpInternalLoggerFactory
+            .getLogger(SimpleBusinessHandler.class);
 
-	@Override
-	public void afterRunCommandOk() throws CommandAbstractException {
-		// TODO Auto-generated method stub
-		// logger.info("GBBH: AFTOK: {}", getFtpSession());
-	}
+    @Override
+    public void afterRunCommandKo(CommandAbstractException e) {
+        // TODO Auto-generated method stub
+        if (getFtpSession().getCurrentCommand() instanceof MKD) {
+            // do nothing
+        } else {
+            logger.warn("GBBH: AFTKO: {} {}", getFtpSession(), e.getMessage());
+        }
+    }
 
-	@Override
-	public void beforeRunCommand() throws CommandAbstractException {
-		// TODO Auto-generated method stub
-		// logger.info("GBBH: BEFCD: {}", getFtpSession());
-	}
+    @Override
+    public void afterRunCommandOk() throws CommandAbstractException {
+        // TODO Auto-generated method stub
+        // logger.info("GBBH: AFTOK: {}", getFtpSession());
+    }
 
-	@Override
-	protected void cleanSession() {
-		// TODO Auto-generated method stub
-		// logger.info("GBBH: CLNSE: {}", getFtpSession());
-	}
+    @Override
+    public void beforeRunCommand() throws CommandAbstractException {
+        // TODO Auto-generated method stub
+        // logger.info("GBBH: BEFCD: {}", getFtpSession());
+    }
 
-	@Override
-	public void exceptionLocalCaught(ExceptionEvent e) {
-		// TODO Auto-generated method stub
-		logger.warn("GBBH: EXCEP: {} {}", getFtpSession(), e.getCause()
-				.getMessage());
-	}
+    @Override
+    protected void cleanSession() {
+        // TODO Auto-generated method stub
+        // logger.info("GBBH: CLNSE: {}", getFtpSession());
+    }
 
-	@Override
-	public void executeChannelClosed() {
-		// TODO Auto-generated method stub
-		// logger.info("GBBH: CLOSED: for user {} with session {} ",
-		// getFtpSession().getAuth().getUser(), getFtpSession());
-	}
+    @Override
+    public void exceptionLocalCaught(ExceptionEvent e) {
+        // TODO Auto-generated method stub
+        logger.warn("GBBH: EXCEP: {} {}", getFtpSession(), e.getCause()
+                .getMessage());
+    }
 
-	@Override
-	public void executeChannelConnected(Channel channel) {
-		// TODO Auto-generated method stub
-		// logger.info("GBBH: CONNEC: {}", getFtpSession());
-	}
+    @Override
+    public void executeChannelClosed() {
+        // TODO Auto-generated method stub
+        // logger.info("GBBH: CLOSED: for user {} with session {} ",
+        // getFtpSession().getAuth().getUser(), getFtpSession());
+    }
 
-	@Override
-	public FileBasedAuth getBusinessNewAuth() {
-		return new FileBasedAuth(getFtpSession());
-	}
+    @Override
+    public void executeChannelConnected(Channel channel) {
+        // TODO Auto-generated method stub
+        // logger.info("GBBH: CONNEC: {}", getFtpSession());
+    }
 
-	@Override
-	public FileBasedDir getBusinessNewDir() {
-		return new FileBasedDir(getFtpSession());
-	}
+    @Override
+    public FileBasedAuth getBusinessNewAuth() {
+        return new FileBasedAuth(getFtpSession());
+    }
 
-	@Override
-	public FilesystemBasedFtpRestart getBusinessNewRestart() {
-		return new FilesystemBasedFtpRestart(getFtpSession());
-	}
+    @Override
+    public FileBasedDir getBusinessNewDir() {
+        return new FileBasedDir(getFtpSession());
+    }
 
-	@Override
-	public String getHelpMessage(String arg) {
-		return "This FTP server is only intend as a Gateway.\n"
-				+ "This FTP server refers to RFC 959, 775, 2389, 2428, 3659, 4217 and supports XCRC, XMD5 and XSHA1 commands.\n"
-				+ "XCRC, XMD5 and XSHA1 take a simple filename as argument and return \"250 digest-value is the digest of filename\".";
-	}
+    @Override
+    public FilesystemBasedFtpRestart getBusinessNewRestart() {
+        return new FilesystemBasedFtpRestart(getFtpSession());
+    }
 
-	@Override
-	public String getFeatMessage() {
-		StringBuilder builder = new StringBuilder("Extensions supported:");
-		builder.append('\n');
-		builder.append(getDefaultFeatMessage());
-		if (getFtpSession().getConfiguration().getFtpInternalConfiguration().isAcceptAuthProt()) {
-			builder.append('\n');
-			builder.append(getSslFeatMessage());
-		}
-		builder.append("\nEnd");
-		return builder.toString();
-	}
+    @Override
+    public String getHelpMessage(String arg) {
+        return "This FTP server is only intend as a Gateway.\n"
+                + "This FTP server refers to RFC 959, 775, 2389, 2428, 3659, 4217 and supports XCRC, XMD5 and XSHA1 commands.\n"
+                + "XCRC, XMD5 and XSHA1 take a simple filename as argument and return \"250 digest-value is the digest of filename\".";
+    }
 
-	@Override
-	public String getOptsMessage(String[] args) throws CommandAbstractException {
-		if (args.length > 0) {
-			if (args[0].equalsIgnoreCase(FtpCommandCode.MLST.name()) ||
-					args[0].equalsIgnoreCase(FtpCommandCode.MLSD.name())) {
-				return getMLSxOptsMessage(args);
-			}
-			throw new Reply502Exception("OPTS not implemented for " + args[0]);
-		}
-		throw new Reply502Exception("OPTS not implemented");
-	}
+    @Override
+    public String getFeatMessage() {
+        StringBuilder builder = new StringBuilder("Extensions supported:").append('\n')
+                .append(getDefaultFeatMessage());
+        if (getFtpSession().getConfiguration().getFtpInternalConfiguration().isAcceptAuthProt()) {
+            builder.append('\n').append(getSslFeatMessage());
+        }
+        builder.append("\nEnd");
+        return builder.toString();
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * @see
-	 * org.waarp.ftp.core.control.BusinessHandler#getSpecializedSiteCommand(org.waarp.ftp.core.session
-	 * .FtpSession, java.lang.String)
-	 */
-	@Override
-	public AbstractCommand getSpecializedSiteCommand(FtpSession session,
-			String line) {
-		return null;
-	}
+    @Override
+    public String getOptsMessage(String[] args) throws CommandAbstractException {
+        if (args.length > 0) {
+            if (args[0].equalsIgnoreCase(FtpCommandCode.MLST.name()) ||
+                    args[0].equalsIgnoreCase(FtpCommandCode.MLSD.name())) {
+                return getMLSxOptsMessage(args);
+            }
+            throw new Reply502Exception("OPTS not implemented for " + args[0]);
+        }
+        throw new Reply502Exception("OPTS not implemented");
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * @see
-	 * org.waarp.ftp.core.control.BusinessHandler#afterTransferDoneBeforeAnswer(org.waarp.ftp.core
-	 * .data.FtpTransfer)
-	 */
-	@Override
-	public void afterTransferDoneBeforeAnswer(FtpTransfer transfer)
-			throws CommandAbstractException {
-		if (transfer.getCommand() == FtpCommandCode.APPE) {
-			logger.info("GBBH: Transfer: {} " + transfer.getStatus() + " {}",
-					transfer.getCommand(), transfer.getPath());
-		} else if (transfer.getCommand() == FtpCommandCode.RETR) {
-			logger.info("GBBH: Transfer: {} " + transfer.getStatus() + " {}",
-					transfer.getCommand(), transfer.getPath());
-		} else if (transfer.getCommand() == FtpCommandCode.STOR) {
-			logger.info("GBBH: Transfer: {} " + transfer.getStatus() + " {}",
-					transfer.getCommand(), transfer.getPath());
-		} else if (transfer.getCommand() == FtpCommandCode.STOU) {
-			logger.info("GBBH: Transfer: {} " + transfer.getStatus() + " {}",
-					transfer.getCommand(), transfer.getPath());
-		} else {
-			logger.warn("GBBH: Transfer unknown: {} " + transfer.getStatus() +
-					" {}", transfer.getCommand(), transfer.getPath());
-			// Nothing to do
-		}
-	}
+    /*
+     * (non-Javadoc)
+     * @see
+     * org.waarp.ftp.core.control.BusinessHandler#getSpecializedSiteCommand(org.waarp.ftp.core.session
+     * .FtpSession, java.lang.String)
+     */
+    @Override
+    public AbstractCommand getSpecializedSiteCommand(FtpSession session,
+            String line) {
+        return null;
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see
+     * org.waarp.ftp.core.control.BusinessHandler#afterTransferDoneBeforeAnswer(org.waarp.ftp.core
+     * .data.FtpTransfer)
+     */
+    @Override
+    public void afterTransferDoneBeforeAnswer(FtpTransfer transfer)
+            throws CommandAbstractException {
+        if (transfer.getCommand() == FtpCommandCode.APPE) {
+            logger.info("GBBH: Transfer: {} " + transfer.getStatus() + " {}",
+                    transfer.getCommand(), transfer.getPath());
+        } else if (transfer.getCommand() == FtpCommandCode.RETR) {
+            logger.info("GBBH: Transfer: {} " + transfer.getStatus() + " {}",
+                    transfer.getCommand(), transfer.getPath());
+        } else if (transfer.getCommand() == FtpCommandCode.STOR) {
+            logger.info("GBBH: Transfer: {} " + transfer.getStatus() + " {}",
+                    transfer.getCommand(), transfer.getPath());
+        } else if (transfer.getCommand() == FtpCommandCode.STOU) {
+            logger.info("GBBH: Transfer: {} " + transfer.getStatus() + " {}",
+                    transfer.getCommand(), transfer.getPath());
+        } else {
+            logger.warn("GBBH: Transfer unknown: {} " + transfer.getStatus() +
+                    " {}", transfer.getCommand(), transfer.getPath());
+            // Nothing to do
+        }
+    }
 }

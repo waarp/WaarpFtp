@@ -29,25 +29,26 @@ import org.waarp.ftp.core.session.FtpSession;
  * 
  */
 public class NOOP extends AbstractCommand {
-	public NOOP() {
-		super();
-	}
-	/**
-	 * Constructor for empty NOOP
-	 * 
-	 * @param session
-	 */
-	public NOOP(FtpSession session) {
-		super();
-		setArgs(session, FtpCommandCode.NOOP.name(), null, FtpCommandCode.NOOP);
-	}
+    public NOOP() {
+        super();
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * @see org.waarp.ftp.core.command.AbstractCommand#exec()
-	 */
-	public void exec() {
-		getSession().setReplyCode(ReplyCode.REPLY_200_COMMAND_OKAY, null);
-	}
+    /**
+     * Constructor for empty NOOP
+     * 
+     * @param session
+     */
+    public NOOP(FtpSession session) {
+        super();
+        setArgs(session, FtpCommandCode.NOOP.name(), null, FtpCommandCode.NOOP);
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see org.waarp.ftp.core.command.AbstractCommand#exec()
+     */
+    public void exec() {
+        getSession().setReplyCode(ReplyCode.REPLY_200_COMMAND_OKAY, null);
+    }
 
 }

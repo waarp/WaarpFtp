@@ -31,29 +31,29 @@ import org.waarp.ftp.filesystembased.FilesystemBasedFtpFile;
  * 
  */
 public class FileBasedFile extends FilesystemBasedFtpFile {
-	/**
-	 * @param session
-	 * @param fileBasedDir
-	 *            It is not necessary the directory that owns this file.
-	 * @param path
-	 * @param append
-	 * @throws CommandAbstractException
-	 */
-	public FileBasedFile(FtpSession session, FileBasedDir fileBasedDir,
-			String path, boolean append) throws CommandAbstractException {
-		super(session, fileBasedDir, path, append);
-	}
+    /**
+     * @param session
+     * @param fileBasedDir
+     *            It is not necessary the directory that owns this file.
+     * @param path
+     * @param append
+     * @throws CommandAbstractException
+     */
+    public FileBasedFile(FtpSession session, FileBasedDir fileBasedDir,
+            String path, boolean append) throws CommandAbstractException {
+        super(session, fileBasedDir, path, append);
+    }
 
-	/**
-	 * This method is a good to have in a true {@link FtpFile} implementation.
-	 * 
-	 * @return the File associated with the current FtpFile operation
-	 */
-	public File getTrueFile() {
-		try {
-			return getFileFromPath(getFile());
-		} catch (CommandAbstractException e) {
-			return null;
-		}
-	}
+    /**
+     * This method is a good to have in a true {@link FtpFile} implementation.
+     * 
+     * @return the File associated with the current FtpFile operation
+     */
+    public File getTrueFile() {
+        try {
+            return getFileFromPath(getFile());
+        } catch (CommandAbstractException e) {
+            return null;
+        }
+    }
 }

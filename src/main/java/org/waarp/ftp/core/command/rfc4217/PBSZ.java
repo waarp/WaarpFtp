@@ -32,25 +32,25 @@ import org.waarp.ftp.core.command.FtpCommandCode;
  */
 public class PBSZ extends AbstractCommand {
 
-	@Override
-	public void exec() throws CommandAbstractException {
-		if (!getSession().isSsl()) {
-			// Not SSL
-			throw new Reply503Exception("Session not using SSL / TLS");
-		}
-		// First Check if any argument
-		if (!hasArg()) {
-			// Error since argument is needed
-			throw new Reply501Exception("Missing Parameter: 0");
-		}
-		String[] types = getArgs();
-		if (! types[0].equalsIgnoreCase("0")) {
-			// Only 0 allowed
-			throw new Reply501Exception("Unknown Parameter: "+types[0]);
-		}
-		setExtraNextCommand(FtpCommandCode.PROT);
-		getSession().setReplyCode(ReplyCode.REPLY_200_COMMAND_OKAY,
-				null);
-	}
-	
+    @Override
+    public void exec() throws CommandAbstractException {
+        if (!getSession().isSsl()) {
+            // Not SSL
+            throw new Reply503Exception("Session not using SSL / TLS");
+        }
+        // First Check if any argument
+        if (!hasArg()) {
+            // Error since argument is needed
+            throw new Reply501Exception("Missing Parameter: 0");
+        }
+        String[] types = getArgs();
+        if (!types[0].equalsIgnoreCase("0")) {
+            // Only 0 allowed
+            throw new Reply501Exception("Unknown Parameter: " + types[0]);
+        }
+        setExtraNextCommand(FtpCommandCode.PROT);
+        getSession().setReplyCode(ReplyCode.REPLY_200_COMMAND_OKAY,
+                null);
+    }
+
 }

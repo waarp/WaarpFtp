@@ -29,21 +29,21 @@ import org.waarp.ftp.core.command.AbstractCommand;
  */
 public class MLST extends AbstractCommand {
 
-	/*
-	 * (non-Javadoc)
-	 * @see org.waarp.ftp.core.command.AbstractCommand#exec()
-	 */
-	public void exec() throws CommandAbstractException {
-		// First Check if any argument
-		String path = null;
-		if (!hasArg()) {
-			path = getSession().getDir().getPwd();
-		} else {
-			path = getArg();
-		}
-		String message = getSession().getDir().fileFull(path, false);
-		getSession().setReplyCode(
-				ReplyCode.REPLY_226_CLOSING_DATA_CONNECTION, message);
-	}
+    /*
+     * (non-Javadoc)
+     * @see org.waarp.ftp.core.command.AbstractCommand#exec()
+     */
+    public void exec() throws CommandAbstractException {
+        // First Check if any argument
+        String path = null;
+        if (!hasArg()) {
+            path = getSession().getDir().getPwd();
+        } else {
+            path = getArg();
+        }
+        String message = getSession().getDir().fileFull(path, false);
+        getSession().setReplyCode(
+                ReplyCode.REPLY_226_CLOSING_DATA_CONNECTION, message);
+    }
 
 }
