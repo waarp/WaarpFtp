@@ -26,53 +26,53 @@ import io.netty.buffer.ByteBuf;
  * 
  */
 public class FtpSeekAheadData {
-	/**
-	 * Exception when NO Backend Array is found
-	 */
-	static class SeekAheadNoBackArrayException extends Exception {
-		private static final long serialVersionUID = -630418804938699495L;
-	}
+    /**
+     * Exception when NO Backend Array is found
+     */
+    static class SeekAheadNoBackArrayException extends Exception {
+        private static final long serialVersionUID = -630418804938699495L;
+    }
 
-	byte[] bytes;
+    byte[] bytes;
 
-	int readerIndex;
+    int readerIndex;
 
-	int pos;
+    int pos;
 
-	int limit;
+    int limit;
 
-	ByteBuf buffer;
+    ByteBuf buffer;
 
-	/**
-	 * @param buffer
-	 */
-	FtpSeekAheadData(ByteBuf buffer) throws SeekAheadNoBackArrayException {
-		if (!buffer.hasArray()) {
-			throw new SeekAheadNoBackArrayException();
-		}
-		this.buffer = buffer;
-		this.bytes = buffer.array();
-		this.pos = this.readerIndex = buffer.arrayOffset() + buffer.readerIndex();
+    /**
+     * @param buffer
+     */
+    FtpSeekAheadData(ByteBuf buffer) throws SeekAheadNoBackArrayException {
+        if (!buffer.hasArray()) {
+            throw new SeekAheadNoBackArrayException();
+        }
+        this.buffer = buffer;
+        this.bytes = buffer.array();
+        this.pos = this.readerIndex = buffer.arrayOffset() + buffer.readerIndex();
         this.limit = buffer.arrayOffset() + buffer.writerIndex();
-	}
+    }
 
-	/**
-	 * 
-	 * @param minus
-	 *            this value will be used as (currentPos - minus) to set the current readerIndex in
-	 *            the buffer.
-	 */
-	void setReadPosition(int minus) {
-		pos -= minus;
-		readerIndex = pos;
-		buffer.readerIndex(readerIndex);
-	}
+    /**
+     * 
+     * @param minus
+     *            this value will be used as (currentPos - minus) to set the current readerIndex in
+     *            the buffer.
+     */
+    void setReadPosition(int minus) {
+        pos -= minus;
+        readerIndex = pos;
+        buffer.readerIndex(readerIndex);
+    }
 
-	void clear() {
-		this.buffer = null;
-		this.bytes = null;
-		this.limit = 0;
-		this.pos = 0;
-		this.readerIndex = 0;
-	}
+    void clear() {
+        this.buffer = null;
+        this.bytes = null;
+        this.limit = 0;
+        this.pos = 0;
+        this.readerIndex = 0;
+    }
 }

@@ -28,25 +28,25 @@ import io.netty.handler.codec.string.StringEncoder;
  * 
  */
 public class FtpControlStringEncoder extends StringEncoder {
-	/**
+    /**
 	 *
 	 */
-	public FtpControlStringEncoder() {
-	}
+    public FtpControlStringEncoder() {
+    }
 
-	/**
-	 * @see StringEncoder
-	 * @param arg0
-	 */
-	public FtpControlStringEncoder(String arg0) {
-		super(Charset.forName(arg0));
-	}
+    /**
+     * @see StringEncoder
+     * @param arg0
+     */
+    public FtpControlStringEncoder(String arg0) {
+        super(Charset.forName(arg0));
+    }
 
-	/**
-	 * @see StringEncoder
-	 * @param arg0
-	 */
-	public FtpControlStringEncoder(Charset arg0) {
-		super(arg0);
-	}
+    /**
+     * @see StringEncoder
+     * @param arg0
+     */
+    public FtpControlStringEncoder(Charset arg0) {
+        super(arg0);
+    }
 }

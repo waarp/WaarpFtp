@@ -33,27 +33,27 @@ import org.waarp.ftp.core.session.FtpSession;
  */
 public class APPE extends AbstractCommand {
 
-	/*
-	 * (non-Javadoc)
-	 * @see org.waarp.ftp.core.command.AbstractCommand#exec()
-	 */
-	public void exec() throws CommandAbstractException {
-		if (!hasArg()) {
-			invalidCurrentCommand();
-			throw new Reply501Exception("Need a pathname as argument");
-		}
-		String filename = FtpSession.getBasename(getArg());
-		FtpFile file = getSession().getDir().setFile(filename, true);
-		if (file != null) {
-			if (file.store()) {
-				getSession().openDataConnection();
-				getSession().getDataConn().getFtpTransferControl()
-						.setNewFtpTransfer(getCode(), file);
-				return;
-			}
-			throw new Reply450Exception("Append operation not started");
-		}
-		throw new Reply553Exception("Filename not allowed");
-	}
+    /*
+     * (non-Javadoc)
+     * @see org.waarp.ftp.core.command.AbstractCommand#exec()
+     */
+    public void exec() throws CommandAbstractException {
+        if (!hasArg()) {
+            invalidCurrentCommand();
+            throw new Reply501Exception("Need a pathname as argument");
+        }
+        String filename = FtpSession.getBasename(getArg());
+        FtpFile file = getSession().getDir().setFile(filename, true);
+        if (file != null) {
+            if (file.store()) {
+                getSession().openDataConnection();
+                getSession().getDataConn().getFtpTransferControl()
+                        .setNewFtpTransfer(getCode(), file);
+                return;
+            }
+            throw new Reply450Exception("Append operation not started");
+        }
+        throw new Reply553Exception("Filename not allowed");
+    }
 
 }

@@ -33,64 +33,64 @@ import org.waarp.ftp.core.command.FtpArgumentCode.TransferSubType;
  */
 public class TYPE extends AbstractCommand {
 
-	/*
-	 * (non-Javadoc)
-	 * @see org.waarp.ftp.core.command.AbstractCommand#exec()
-	 */
-	public void exec() throws Reply501Exception, Reply504Exception {
-		// First Check if any argument
-		if (!hasArg()) {
-			getSession().getDataConn().setType(
-					FtpArgumentCode.TransferType.ASCII);
-			getSession().getDataConn().setSubType(TransferSubType.NONPRINT);
-			getSession().setReplyCode(
-					ReplyCode.REPLY_200_COMMAND_OKAY,
-					"Type set to " + FtpArgumentCode.TransferType.ASCII.name() +
-							" " + TransferSubType.NONPRINT);
-			return;
-		}
-		FtpArgumentCode.TransferType transferType;
-		String[] types = getArgs();
-		try {
-			transferType = FtpArgumentCode.getTransferType(types[0].charAt(0));
-		} catch (InvalidArgumentException e) {
-			throw new Reply501Exception("Unrecognize Type: " + getArg());
-		}
-		if (transferType == FtpArgumentCode.TransferType.ASCII) {
-			getSession().getDataConn().setType(transferType);
-		} else if (transferType == FtpArgumentCode.TransferType.IMAGE) {
-			getSession().getDataConn().setType(transferType);
-		} else {
-			throw new Reply504Exception("Type not implemented: " +
-					transferType.name());
-		}
-		// Look at the subtype or format control
-		if (types.length > 2) {
-			TransferSubType transferSubType = null;
-			for (int i = 1; i < types.length; i++) {
-				if (types[i].length() != 0) {
-					try {
-						transferSubType = FtpArgumentCode
-								.getTransferSubType(types[i].charAt(0));
-					} catch (InvalidArgumentException e) {
-						throw new Reply501Exception(
-								"Unrecognize Format Control: " + types[i]);
-					}
-					if (transferSubType != TransferSubType.NONPRINT) {
-						throw new Reply504Exception(
-								"Format Control not implemented: " +
-										transferSubType.name());
-					}
-				}
-			}
-			getSession().getDataConn().setSubType(TransferSubType.NONPRINT);
-		} else {
-			getSession().getDataConn().setSubType(TransferSubType.NONPRINT);
-		}
-		getSession().setReplyCode(
-				ReplyCode.REPLY_200_COMMAND_OKAY,
-				"Type set to " + transferType.name() + " " +
-						TransferSubType.NONPRINT);
-	}
+    /*
+     * (non-Javadoc)
+     * @see org.waarp.ftp.core.command.AbstractCommand#exec()
+     */
+    public void exec() throws Reply501Exception, Reply504Exception {
+        // First Check if any argument
+        if (!hasArg()) {
+            getSession().getDataConn().setType(
+                    FtpArgumentCode.TransferType.ASCII);
+            getSession().getDataConn().setSubType(TransferSubType.NONPRINT);
+            getSession().setReplyCode(
+                    ReplyCode.REPLY_200_COMMAND_OKAY,
+                    "Type set to " + FtpArgumentCode.TransferType.ASCII.name() +
+                            " " + TransferSubType.NONPRINT);
+            return;
+        }
+        FtpArgumentCode.TransferType transferType;
+        String[] types = getArgs();
+        try {
+            transferType = FtpArgumentCode.getTransferType(types[0].charAt(0));
+        } catch (InvalidArgumentException e) {
+            throw new Reply501Exception("Unrecognize Type: " + getArg());
+        }
+        if (transferType == FtpArgumentCode.TransferType.ASCII) {
+            getSession().getDataConn().setType(transferType);
+        } else if (transferType == FtpArgumentCode.TransferType.IMAGE) {
+            getSession().getDataConn().setType(transferType);
+        } else {
+            throw new Reply504Exception("Type not implemented: " +
+                    transferType.name());
+        }
+        // Look at the subtype or format control
+        if (types.length > 2) {
+            TransferSubType transferSubType = null;
+            for (int i = 1; i < types.length; i++) {
+                if (types[i].length() != 0) {
+                    try {
+                        transferSubType = FtpArgumentCode
+                                .getTransferSubType(types[i].charAt(0));
+                    } catch (InvalidArgumentException e) {
+                        throw new Reply501Exception(
+                                "Unrecognize Format Control: " + types[i]);
+                    }
+                    if (transferSubType != TransferSubType.NONPRINT) {
+                        throw new Reply504Exception(
+                                "Format Control not implemented: " +
+                                        transferSubType.name());
+                    }
+                }
+            }
+            getSession().getDataConn().setSubType(TransferSubType.NONPRINT);
+        } else {
+            getSession().getDataConn().setSubType(TransferSubType.NONPRINT);
+        }
+        getSession().setReplyCode(
+                ReplyCode.REPLY_200_COMMAND_OKAY,
+                "Type set to " + transferType.name() + " " +
+                        TransferSubType.NONPRINT);
+    }
 
 }

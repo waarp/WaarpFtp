@@ -85,5 +85,4 @@ public class FtpGlobalTrafficShapingHandler extends GlobalTrafficShapingHandler 
         return super.calculateSize(msg);
     }
 
-    
 }

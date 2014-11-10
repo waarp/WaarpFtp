@@ -32,29 +32,29 @@ import org.waarp.ftp.core.command.info.NOOP;
  * 
  */
 public class IncorrectCommand extends AbstractCommand {
-	/**
-	 * Internal Logger
-	 */
-	private static final WaarpLogger logger = WaarpLoggerFactory
-			.getLogger(IncorrectCommand.class);
+    /**
+     * Internal Logger
+     */
+    private static final WaarpLogger logger = WaarpLoggerFactory
+            .getLogger(IncorrectCommand.class);
 
-	/*
-	 * (non-Javadoc)
-	 * @see org.waarp.ftp.core.command.AbstractCommand#exec()
-	 */
-	public void exec() throws Reply503Exception {
-		getSession().setReplyCode(
-				ReplyCode.REPLY_503_BAD_SEQUENCE_OF_COMMANDS,
-				"Bas sequence of commands: " + getCommand() + " following " +
-						getSession().getPreviousCommand().getCommand());
-		logger.warn(getSession().getAnswer());
-		if (getSession().getPreviousCommand().getCode() != FtpCommandCode.Connection &&
-				getSession().getPreviousCommand().getCode() != FtpCommandCode.PASS &&
-				getSession().getPreviousCommand().getCode() != FtpCommandCode.USER) {
-			getSession().setNextCommand(new NOOP(getSession()));
-		} else {
-			invalidCurrentCommand();
-		}
-		throw new Reply503Exception(getSession().getReplyCode().getMesg());
-	}
+    /*
+     * (non-Javadoc)
+     * @see org.waarp.ftp.core.command.AbstractCommand#exec()
+     */
+    public void exec() throws Reply503Exception {
+        getSession().setReplyCode(
+                ReplyCode.REPLY_503_BAD_SEQUENCE_OF_COMMANDS,
+                "Bas sequence of commands: " + getCommand() + " following " +
+                        getSession().getPreviousCommand().getCommand());
+        logger.warn(getSession().getAnswer());
+        if (getSession().getPreviousCommand().getCode() != FtpCommandCode.Connection &&
+                getSession().getPreviousCommand().getCode() != FtpCommandCode.PASS &&
+                getSession().getPreviousCommand().getCode() != FtpCommandCode.USER) {
+            getSession().setNextCommand(new NOOP(getSession()));
+        } else {
+            invalidCurrentCommand();
+        }
+        throw new Reply503Exception(getSession().getReplyCode().getMesg());
+    }
 }

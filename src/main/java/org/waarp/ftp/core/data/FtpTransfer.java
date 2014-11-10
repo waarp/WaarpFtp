@@ -34,113 +34,113 @@ import org.waarp.ftp.core.file.FtpFile;
  */
 public class FtpTransfer {
     private static final WaarpLogger logger = WaarpLoggerFactory.getLogger(FtpTransfer.class);
-    
-	/**
-	 * The command to execute
-	 */
-	private final FtpCommandCode command;
 
-	/**
-	 * The information (list) on which the command was executed
-	 */
-	private final List<String> info;
+    /**
+     * The command to execute
+     */
+    private final FtpCommandCode command;
 
-	/**
-	 * The original path on which the command was executed
-	 */
-	private String path = null;
+    /**
+     * The information (list) on which the command was executed
+     */
+    private final List<String> info;
 
-	/**
-	 * Current Ftp FileInterface
-	 */
-	private final FtpFile currentFile;
+    /**
+     * The original path on which the command was executed
+     */
+    private String path = null;
 
-	/**
-	 * The status
-	 */
-	private boolean status = false;
+    /**
+     * Current Ftp FileInterface
+     */
+    private final FtpFile currentFile;
 
-	/**
-	 * @param command
-	 * @param fileOrInfo
-	 * @param path
-	 */
-	public FtpTransfer(FtpCommandCode command, List<String> fileOrInfo,
-			String path) {
-		this.command = command;
-		info = fileOrInfo;
-		this.path = path;
-		currentFile = null;
-	}
+    /**
+     * The status
+     */
+    private boolean status = false;
 
-	/**
-	 * @param command
-	 * @param file
-	 */
-	public FtpTransfer(FtpCommandCode command, FtpFile file) {
-		this.command = command;
-		currentFile = file;
-		try {
-			path = file.getFile();
-		} catch (CommandAbstractException e) {
-		}
-		info = null;
-	}
+    /**
+     * @param command
+     * @param fileOrInfo
+     * @param path
+     */
+    public FtpTransfer(FtpCommandCode command, List<String> fileOrInfo,
+            String path) {
+        this.command = command;
+        info = fileOrInfo;
+        this.path = path;
+        currentFile = null;
+    }
 
-	/**
-	 * @return the command
-	 */
-	public FtpCommandCode getCommand() {
-		return command;
-	}
+    /**
+     * @param command
+     * @param file
+     */
+    public FtpTransfer(FtpCommandCode command, FtpFile file) {
+        this.command = command;
+        currentFile = file;
+        try {
+            path = file.getFile();
+        } catch (CommandAbstractException e) {
+        }
+        info = null;
+    }
 
-	/**
-	 * @return the file
-	 * @throws FtpNoFileException
-	 */
-	public FtpFile getFtpFile() throws FtpNoFileException {
-		if (currentFile == null) {
-			throw new FtpNoFileException("No file associated with the transfer");
-		}
-		return currentFile;
-	}
+    /**
+     * @return the command
+     */
+    public FtpCommandCode getCommand() {
+        return command;
+    }
 
-	/**
-	 * @return the Info
-	 */
-	public List<String> getInfo() {
-		return info;
-	}
+    /**
+     * @return the file
+     * @throws FtpNoFileException
+     */
+    public FtpFile getFtpFile() throws FtpNoFileException {
+        if (currentFile == null) {
+            throw new FtpNoFileException("No file associated with the transfer");
+        }
+        return currentFile;
+    }
 
-	/**
-	 * @return the path
-	 */
-	public String getPath() {
-		return path;
-	}
+    /**
+     * @return the Info
+     */
+    public List<String> getInfo() {
+        return info;
+    }
 
-	/**
-	 * @return the status
-	 */
-	public boolean getStatus() {
-		return status;
-	}
+    /**
+     * @return the path
+     */
+    public String getPath() {
+        return path;
+    }
 
-	/**
-	 * @param status
-	 */
-	public void setStatus(boolean status) {
-	    if (!status) {
-	        logger.debug("Status false", new Exception("Trace only exception"));
-	    }
-		this.status = status;
-	}
+    /**
+     * @return the status
+     */
+    public boolean getStatus() {
+        return status;
+    }
 
-	/**
+    /**
+     * @param status
+     */
+    public void setStatus(boolean status) {
+        if (!status) {
+            logger.debug("Status false", new Exception("Trace only exception"));
+        }
+        this.status = status;
+    }
+
+    /**
 	 *
 	 */
-	@Override
-	public String toString() {
-		return command.name() + " " + path;
-	}
+    @Override
+    public String toString() {
+        return command.name() + " " + path;
+    }
 }

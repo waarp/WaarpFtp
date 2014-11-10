@@ -31,20 +31,20 @@ import org.waarp.ftp.core.command.AbstractCommand;
  */
 public class RMD extends AbstractCommand {
 
-	/*
-	 * (non-Javadoc)
-	 * @see org.waarp.ftp.core.command.AbstractCommand#exec()
-	 */
-	public void exec() throws Reply550Exception, CommandAbstractException {
-		// First Check if any argument
-		if (!hasArg()) {
-			throw new Reply501Exception("Need a path as argument");
-		}
-		String path = getArg();
-		String pastdir = getSession().getDir().rmdir(path);
-		getSession().setReplyCode(
-				ReplyCode.REPLY_250_REQUESTED_FILE_ACTION_OKAY,
-				"\"" + pastdir + "\" is deleted");
-	}
+    /*
+     * (non-Javadoc)
+     * @see org.waarp.ftp.core.command.AbstractCommand#exec()
+     */
+    public void exec() throws Reply550Exception, CommandAbstractException {
+        // First Check if any argument
+        if (!hasArg()) {
+            throw new Reply501Exception("Need a path as argument");
+        }
+        String path = getArg();
+        String pastdir = getSession().getDir().rmdir(path);
+        getSession().setReplyCode(
+                ReplyCode.REPLY_250_REQUESTED_FILE_ACTION_OKAY,
+                "\"" + pastdir + "\" is deleted");
+    }
 
 }

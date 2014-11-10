@@ -29,23 +29,23 @@ import org.waarp.common.file.AuthInterface;
  */
 public interface FtpAuth extends AuthInterface {
 
-	/**
-	 * @return the account
-	 */
-	public String getAccount();
+    /**
+     * @return the account
+     */
+    public String getAccount();
 
-	/**
-	 * @param account
-	 *            the account to set
-	 * @return (NOOP,230) if the Account is OK, else return the following command that must follow
-	 *         and the associated reply
-	 * @throws Reply421Exception
-	 *             if there is a problem during the authentication
-	 * @throws Reply530Exception
-	 *             if there is a problem during the authentication
-	 * @throws Reply502Exception
-	 */
-	public NextCommandReply setAccount(String account)
-			throws Reply421Exception, Reply530Exception, Reply502Exception;
+    /**
+     * @param account
+     *            the account to set
+     * @return (NOOP,230) if the Account is OK, else return the following command that must follow
+     *         and the associated reply
+     * @throws Reply421Exception
+     *             if there is a problem during the authentication
+     * @throws Reply530Exception
+     *             if there is a problem during the authentication
+     * @throws Reply502Exception
+     */
+    public NextCommandReply setAccount(String account)
+            throws Reply421Exception, Reply530Exception, Reply502Exception;
 
 }

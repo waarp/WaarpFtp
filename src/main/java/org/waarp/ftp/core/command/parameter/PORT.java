@@ -34,50 +34,50 @@ import org.waarp.ftp.core.utils.FtpChannelUtils;
  * 
  */
 public class PORT extends AbstractCommand {
-	/**
-	 * Internal Logger
-	 */
-	private static final WaarpLogger logger = WaarpLoggerFactory
-			.getLogger(PORT.class);
-	
-	/*
-	 * (non-Javadoc)
-	 * @see org.waarp.ftp.core.command.AbstractCommand#exec()
-	 */
-	public void exec() throws Reply501Exception {
-		// First Check if any argument
-		if (!hasArg()) {
-			InetSocketAddress inetSocketAddress = getSession().getDataConn()
-					.getRemoteAddress();
-			getSession().getDataConn().setActive(inetSocketAddress);
-			getSession().setReplyCode(
-					ReplyCode.REPLY_200_COMMAND_OKAY,
-					"PORT command successful on (" +
-							inetSocketAddress.toString() + ")");
-			return;
-		}
-		// Check if Inet Address is OK
-		InetSocketAddress inetSocketAddress = FtpChannelUtils
-				.getInetSocketAddress(getArg());
-		if (inetSocketAddress == null) {
-			// ERROR
-			throw new Reply501Exception("Need correct Inet Address as argument");
-		}
-		// Check if the Client address is the same as given
-		InetAddress remoteAddress = inetSocketAddress.getAddress();
-		InetAddress trueRemoteAddress = getSession().getDataConn()
-				.getRemoteAddress().getAddress();
-		if (!remoteAddress.equals(trueRemoteAddress)) {
-			// ERROR
-			logger.warn("Given Inet Address {} mismatchs actual client Address {}", remoteAddress, trueRemoteAddress);
-			throw new Reply501Exception(
-					"Given Inet Address mismatchs actual client Address");
-		}
-		// OK now try to initialize connection (not open)
-		getSession().getDataConn().setActive(inetSocketAddress);
-		getSession().setReplyCode(
-				ReplyCode.REPLY_200_COMMAND_OKAY,
-				"PORT command successful on (" + inetSocketAddress.toString() +
-						")");
-	}
+    /**
+     * Internal Logger
+     */
+    private static final WaarpLogger logger = WaarpLoggerFactory
+            .getLogger(PORT.class);
+
+    /*
+     * (non-Javadoc)
+     * @see org.waarp.ftp.core.command.AbstractCommand#exec()
+     */
+    public void exec() throws Reply501Exception {
+        // First Check if any argument
+        if (!hasArg()) {
+            InetSocketAddress inetSocketAddress = getSession().getDataConn()
+                    .getRemoteAddress();
+            getSession().getDataConn().setActive(inetSocketAddress);
+            getSession().setReplyCode(
+                    ReplyCode.REPLY_200_COMMAND_OKAY,
+                    "PORT command successful on (" +
+                            inetSocketAddress.toString() + ")");
+            return;
+        }
+        // Check if Inet Address is OK
+        InetSocketAddress inetSocketAddress = FtpChannelUtils
+                .getInetSocketAddress(getArg());
+        if (inetSocketAddress == null) {
+            // ERROR
+            throw new Reply501Exception("Need correct Inet Address as argument");
+        }
+        // Check if the Client address is the same as given
+        InetAddress remoteAddress = inetSocketAddress.getAddress();
+        InetAddress trueRemoteAddress = getSession().getDataConn()
+                .getRemoteAddress().getAddress();
+        if (!remoteAddress.equals(trueRemoteAddress)) {
+            // ERROR
+            logger.warn("Given Inet Address {} mismatchs actual client Address {}", remoteAddress, trueRemoteAddress);
+            throw new Reply501Exception(
+                    "Given Inet Address mismatchs actual client Address");
+        }
+        // OK now try to initialize connection (not open)
+        getSession().getDataConn().setActive(inetSocketAddress);
+        getSession().setReplyCode(
+                ReplyCode.REPLY_200_COMMAND_OKAY,
+                "PORT command successful on (" + inetSocketAddress.toString() +
+                        ")");
+    }
 }

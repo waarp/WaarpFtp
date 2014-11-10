@@ -30,25 +30,25 @@ import org.waarp.ftp.core.command.AbstractCommand;
  */
 public class REST extends AbstractCommand {
 
-	/*
-	 * (non-Javadoc)
-	 * @see org.waarp.ftp.core.command.AbstractCommand#exec()
-	 */
-	public void exec() throws CommandAbstractException {
-		if (!hasArg()) {
-			invalidCurrentCommand();
-			throw new Reply501Exception("Need a Marker as argument");
-		}
-		String marker = getArg();
-		if (getSession().getRestart().restartMarker(marker)) {
-			getSession()
-					.setReplyCode(
-							ReplyCode.REPLY_350_REQUESTED_FILE_ACTION_PENDING_FURTHER_INFORMATION,
-							null);
-			return;
-		}
-		// Marker in error
-		throw new Reply501Exception("Marker is not allowed");
-	}
+    /*
+     * (non-Javadoc)
+     * @see org.waarp.ftp.core.command.AbstractCommand#exec()
+     */
+    public void exec() throws CommandAbstractException {
+        if (!hasArg()) {
+            invalidCurrentCommand();
+            throw new Reply501Exception("Need a Marker as argument");
+        }
+        String marker = getArg();
+        if (getSession().getRestart().restartMarker(marker)) {
+            getSession()
+                    .setReplyCode(
+                            ReplyCode.REPLY_350_REQUESTED_FILE_ACTION_PENDING_FURTHER_INFORMATION,
+                            null);
+            return;
+        }
+        // Marker in error
+        throw new Reply501Exception("Marker is not allowed");
+    }
 
 }

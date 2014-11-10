@@ -32,34 +32,34 @@ import org.waarp.ftp.core.command.AbstractCommand;
  */
 public class ALLO extends AbstractCommand {
 
-	/*
-	 * (non-Javadoc)
-	 * @see org.waarp.ftp.core.command.AbstractCommand#exec()
-	 */
-	public void exec() throws CommandAbstractException {
-		// First Check if any argument
-		if (!hasArg()) {
-			throw new Reply501Exception("Need a size as argument");
-		}
-		String[] args = getArgs();
-		int size = 0;
-		try {
-			size = getValue(args[0]);
-		} catch (InvalidArgumentException e) {
-			throw new Reply501Exception("Need a valid size as argument: " +
-					args[0]);
-		}
-		long free = getSession().getDir().getFreeSpace();
-		if (free > 0 && free < size) {
-			throw new Reply452Exception("Not enough space left");
-		}
-		if (free == -1) {
-			getSession().setReplyCode(
-					ReplyCode.REPLY_202_COMMAND_NOT_IMPLEMENTED, null);
-		} else {
-			getSession().setReplyCode(ReplyCode.REPLY_200_COMMAND_OKAY,
-					"ALLO OK: " + free + " bytes available");
-		}
-	}
+    /*
+     * (non-Javadoc)
+     * @see org.waarp.ftp.core.command.AbstractCommand#exec()
+     */
+    public void exec() throws CommandAbstractException {
+        // First Check if any argument
+        if (!hasArg()) {
+            throw new Reply501Exception("Need a size as argument");
+        }
+        String[] args = getArgs();
+        int size = 0;
+        try {
+            size = getValue(args[0]);
+        } catch (InvalidArgumentException e) {
+            throw new Reply501Exception("Need a valid size as argument: " +
+                    args[0]);
+        }
+        long free = getSession().getDir().getFreeSpace();
+        if (free > 0 && free < size) {
+            throw new Reply452Exception("Not enough space left");
+        }
+        if (free == -1) {
+            getSession().setReplyCode(
+                    ReplyCode.REPLY_202_COMMAND_NOT_IMPLEMENTED, null);
+        } else {
+            getSession().setReplyCode(ReplyCode.REPLY_200_COMMAND_OKAY,
+                    "ALLO OK: " + free + " bytes available");
+        }
+    }
 
 }

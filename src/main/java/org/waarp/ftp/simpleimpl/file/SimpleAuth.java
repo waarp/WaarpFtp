@@ -27,90 +27,90 @@ import org.waarp.common.logging.WaarpLoggerFactory;
  * 
  */
 public class SimpleAuth {
-	/**
-	 * Internal Logger
-	 */
-	private static final WaarpLogger logger = WaarpLoggerFactory
-			.getLogger(SimpleAuth.class);
+    /**
+     * Internal Logger
+     */
+    private static final WaarpLogger logger = WaarpLoggerFactory
+            .getLogger(SimpleAuth.class);
 
-	/**
-	 * User name
-	 */
-	public String user = null;
+    /**
+     * User name
+     */
+    public String user = null;
 
-	/**
-	 * Password
-	 */
-	public String password = null;
+    /**
+     * Password
+     */
+    public String password = null;
 
-	/**
-	 * Multiple accounts
-	 */
-	public String[] accounts = null;
+    /**
+     * Multiple accounts
+     */
+    public String[] accounts = null;
 
-	/**
-	 * Is the current user an administrator (which can shutdown or change bandwidth limitation)
-	 */
-	public boolean isAdmin = false;
+    /**
+     * Is the current user an administrator (which can shutdown or change bandwidth limitation)
+     */
+    public boolean isAdmin = false;
 
-	/**
-	 * @param user
-	 * @param password
-	 * @param accounts
-	 */
-	public SimpleAuth(String user, String password, String[] accounts) {
-		this.user = user;
-		this.password = password;
-		this.accounts = accounts;
-	}
+    /**
+     * @param user
+     * @param password
+     * @param accounts
+     */
+    public SimpleAuth(String user, String password, String[] accounts) {
+        this.user = user;
+        this.password = password;
+        this.accounts = accounts;
+    }
 
-	/**
-	 * Is the given password a valid one
-	 * 
-	 * @param newpassword
-	 * @return True if the password is valid (or any password is valid)
-	 */
-	public boolean isPasswordValid(String newpassword) {
-		if (password == null) {
-			return true;
-		}
-		if (newpassword == null) {
-			return false;
-		}
-		return password.equals(newpassword);
-	}
+    /**
+     * Is the given password a valid one
+     * 
+     * @param newpassword
+     * @return True if the password is valid (or any password is valid)
+     */
+    public boolean isPasswordValid(String newpassword) {
+        if (password == null) {
+            return true;
+        }
+        if (newpassword == null) {
+            return false;
+        }
+        return password.equals(newpassword);
+    }
 
-	/**
-	 * Is the given account a valid one
-	 * 
-	 * @param account
-	 * @return True if the account is valid (or any account is valid)
-	 */
-	public boolean isAccountValid(String account) {
-		if (accounts == null) {
-			logger.debug("No account needed");
-			return true;
-		}
-		if (account == null) {
-			logger.debug("No account given");
-			return false;
-		}
-		for (String acct : accounts) {
-			if (acct.equals(account)) {
-				logger.debug("Account found");
-				return true;
-			}
-		}
-		logger.debug("No account found");
-		return false;
-	}
+    /**
+     * Is the given account a valid one
+     * 
+     * @param account
+     * @return True if the account is valid (or any account is valid)
+     */
+    public boolean isAccountValid(String account) {
+        if (accounts == null) {
+            logger.debug("No account needed");
+            return true;
+        }
+        if (account == null) {
+            logger.debug("No account given");
+            return false;
+        }
+        for (String acct : accounts) {
+            if (acct.equals(account)) {
+                logger.debug("Account found");
+                return true;
+            }
+        }
+        logger.debug("No account found");
+        return false;
+    }
 
-	/**
-	 * 
-	 * @param isAdmin
-	 *            True if the user should be an administrator
-	 */
-	public void setAdmin(boolean isAdmin) {
-		this.isAdmin = isAdmin;
-	}
+    /**
+     * 
+     * @param isAdmin
+     *            True if the user should be an administrator
+     */
+    public void setAdmin(boolean isAdmin) {
+        this.isAdmin = isAdmin;
+    }
 }

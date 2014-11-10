@@ -38,47 +38,47 @@ import org.waarp.ftp.core.data.handler.FtpDataInitializer;
  */
 public class FtpsDataInitializer extends FtpDataInitializer {
 
-	/**
-	 * Constructor which Initializes some data
-	 * 
-	 * @param dataBusinessHandler
-	 * @param configuration
-	 * @param active
-	 * @param executor
-	 */
-	public FtpsDataInitializer(
-			Class<? extends DataBusinessHandler> dataBusinessHandler,
-			FtpConfiguration configuration, boolean active) {
-	    super(dataBusinessHandler, configuration, active);
-	}
+    /**
+     * Constructor which Initializes some data
+     * 
+     * @param dataBusinessHandler
+     * @param configuration
+     * @param active
+     * @param executor
+     */
+    public FtpsDataInitializer(
+            Class<? extends DataBusinessHandler> dataBusinessHandler,
+            FtpConfiguration configuration, boolean active) {
+        super(dataBusinessHandler, configuration, active);
+    }
 
-	/**
-	 * Create the pipeline with Handler, ObjectDecoder, ObjectEncoder.
-	 * 
-	 */
+    /**
+     * Create the pipeline with Handler, ObjectDecoder, ObjectEncoder.
+     * 
+     */
     @Override
     public void initChannel(SocketChannel ch) throws Exception {
-		ChannelPipeline pipeline = ch.pipeline();
-		// SSL will be added in this handler during channelActive
-		pipeline.addLast(new FtpsTemporaryFirstHandler(configuration, isActive));
-		// Add default codec but they will change by the channelActive
-		pipeline.addLast(FtpDataInitializer.CODEC_MODE, new FtpDataModeCodec(TransferMode.STREAM,
-				TransferStructure.FILE));
-		pipeline.addLast(FtpDataInitializer.CODEC_LIMIT, configuration
-						.getFtpInternalConfiguration()
-						.getGlobalTrafficShapingHandler());
-		ChannelTrafficShapingHandler limitChannel =
-				configuration
-						.getFtpInternalConfiguration()
-						.newChannelTrafficShapingHandler();
-		if (limitChannel != null) {
-			pipeline.addLast(FtpDataInitializer.CODEC_LIMIT + "CHANNEL", limitChannel);
-		}
-		pipeline.addLast(FtpDataInitializer.CODEC_TYPE, ftpDataTypeCodec);
-		pipeline.addLast(FtpDataInitializer.CODEC_STRUCTURE, ftpDataStructureCodec);
-		// and then business logic. New one on every connection
-		DataBusinessHandler newbusiness = dataBusinessHandler.newInstance();
-		DataNetworkHandler newNetworkHandler = new DataNetworkHandler(configuration, newbusiness, isActive);
+        ChannelPipeline pipeline = ch.pipeline();
+        // SSL will be added in this handler during channelActive
+        pipeline.addLast(new FtpsTemporaryFirstHandler(configuration, isActive));
+        // Add default codec but they will change by the channelActive
+        pipeline.addLast(FtpDataInitializer.CODEC_MODE, new FtpDataModeCodec(TransferMode.STREAM,
+                TransferStructure.FILE));
+        pipeline.addLast(FtpDataInitializer.CODEC_LIMIT, configuration
+                .getFtpInternalConfiguration()
+                .getGlobalTrafficShapingHandler());
+        ChannelTrafficShapingHandler limitChannel =
+                configuration
+                        .getFtpInternalConfiguration()
+                        .newChannelTrafficShapingHandler();
+        if (limitChannel != null) {
+            pipeline.addLast(FtpDataInitializer.CODEC_LIMIT + "CHANNEL", limitChannel);
+        }
+        pipeline.addLast(FtpDataInitializer.CODEC_TYPE, ftpDataTypeCodec);
+        pipeline.addLast(FtpDataInitializer.CODEC_STRUCTURE, ftpDataStructureCodec);
+        // and then business logic. New one on every connection
+        DataBusinessHandler newbusiness = dataBusinessHandler.newInstance();
+        DataNetworkHandler newNetworkHandler = new DataNetworkHandler(configuration, newbusiness, isActive);
         pipeline.addLast(FtpDataInitializer.HANDLER, newNetworkHandler);
-	}
+    }
 }

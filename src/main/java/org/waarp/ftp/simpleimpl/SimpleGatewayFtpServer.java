@@ -34,40 +34,40 @@ import org.waarp.ftp.simpleimpl.data.FileSystemBasedDataBusinessHandler;
  * 
  */
 public class SimpleGatewayFtpServer {
-	/**
-	 * Internal Logger
-	 */
-	private static WaarpLogger logger = null;
+    /**
+     * Internal Logger
+     */
+    private static WaarpLogger logger = null;
 
-	/**
-	 * Take a simple XML file as configuration.
-	 * 
-	 * @param args
-	 */
-	public static void main(String[] args) {
-		if (args.length != 1) {
-			System.err.println("Usage: " +
-					SimpleGatewayFtpServer.class.getName() + " <config-file>");
-			return;
-		}
-		WaarpLoggerFactory.setDefaultFactory(new WaarpSlf4JLoggerFactory(null));
-		logger = WaarpLoggerFactory.getLogger(SimpleGatewayFtpServer.class);
-		String config = args[0];
-		FileBasedConfiguration configuration = new FileBasedConfiguration(
-				SimpleGatewayFtpServer.class, SimpleBusinessHandler.class,
-				FileSystemBasedDataBusinessHandler.class,
-				new FilesystemBasedFileParameterImpl());
-		if (!configuration.setConfigurationFromXml(config)) {
-			System.err.println("Bad configuration");
-			return;
-		}
-		// Start server.
-		try {
+    /**
+     * Take a simple XML file as configuration.
+     * 
+     * @param args
+     */
+    public static void main(String[] args) {
+        if (args.length != 1) {
+            System.err.println("Usage: " +
+                    SimpleGatewayFtpServer.class.getName() + " <config-file>");
+            return;
+        }
+        WaarpLoggerFactory.setDefaultFactory(new WaarpSlf4JLoggerFactory(null));
+        logger = WaarpLoggerFactory.getLogger(SimpleGatewayFtpServer.class);
+        String config = args[0];
+        FileBasedConfiguration configuration = new FileBasedConfiguration(
+                SimpleGatewayFtpServer.class, SimpleBusinessHandler.class,
+                FileSystemBasedDataBusinessHandler.class,
+                new FilesystemBasedFileParameterImpl());
+        if (!configuration.setConfigurationFromXml(config)) {
+            System.err.println("Bad configuration");
+            return;
+        }
+        // Start server.
+        try {
             configuration.serverStartup();
         } catch (FtpNoConnectionException e) {
             logger.error("FTP not started", e);
         }
-		logger.info("FTP started");
-	}
+        logger.info("FTP started");
+    }
 
 }

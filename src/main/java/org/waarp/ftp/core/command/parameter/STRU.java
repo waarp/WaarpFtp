@@ -32,38 +32,38 @@ import org.waarp.ftp.core.command.FtpArgumentCode;
  */
 public class STRU extends AbstractCommand {
 
-	/*
-	 * (non-Javadoc)
-	 * @see org.waarp.ftp.core.command.AbstractCommand#exec()
-	 */
-	public void exec() throws Reply501Exception, Reply504Exception {
-		// First Check if any argument
-		if (!hasArg()) {
-			getSession().getDataConn().setStructure(
-					FtpArgumentCode.TransferStructure.FILE);
-			getSession().setReplyCode(
-					ReplyCode.REPLY_200_COMMAND_OKAY,
-					"Structure set to " +
-							FtpArgumentCode.TransferStructure.FILE.name());
-			return;
-		}
-		FtpArgumentCode.TransferStructure transferStructure;
-		try {
-			transferStructure = FtpArgumentCode.getTransferStructure(getArg()
-					.charAt(0));
-		} catch (InvalidArgumentException e) {
-			throw new Reply501Exception("Unrecognize Structure: " + getArg());
-		}
-		if (transferStructure == FtpArgumentCode.TransferStructure.FILE) {
-			getSession().getDataConn().setStructure(transferStructure);
-		} else if (transferStructure == FtpArgumentCode.TransferStructure.RECORD) {
-			getSession().getDataConn().setStructure(transferStructure);
-		} else {
-			throw new Reply504Exception("Structure not implemented: " +
-					transferStructure.name());
-		}
-		getSession().setReplyCode(ReplyCode.REPLY_200_COMMAND_OKAY,
-				"Structure set to " + transferStructure.name());
-	}
+    /*
+     * (non-Javadoc)
+     * @see org.waarp.ftp.core.command.AbstractCommand#exec()
+     */
+    public void exec() throws Reply501Exception, Reply504Exception {
+        // First Check if any argument
+        if (!hasArg()) {
+            getSession().getDataConn().setStructure(
+                    FtpArgumentCode.TransferStructure.FILE);
+            getSession().setReplyCode(
+                    ReplyCode.REPLY_200_COMMAND_OKAY,
+                    "Structure set to " +
+                            FtpArgumentCode.TransferStructure.FILE.name());
+            return;
+        }
+        FtpArgumentCode.TransferStructure transferStructure;
+        try {
+            transferStructure = FtpArgumentCode.getTransferStructure(getArg()
+                    .charAt(0));
+        } catch (InvalidArgumentException e) {
+            throw new Reply501Exception("Unrecognize Structure: " + getArg());
+        }
+        if (transferStructure == FtpArgumentCode.TransferStructure.FILE) {
+            getSession().getDataConn().setStructure(transferStructure);
+        } else if (transferStructure == FtpArgumentCode.TransferStructure.RECORD) {
+            getSession().getDataConn().setStructure(transferStructure);
+        } else {
+            throw new Reply504Exception("Structure not implemented: " +
+                    transferStructure.name());
+        }
+        getSession().setReplyCode(ReplyCode.REPLY_200_COMMAND_OKAY,
+                "Structure set to " + transferStructure.name());
+    }
 
 }

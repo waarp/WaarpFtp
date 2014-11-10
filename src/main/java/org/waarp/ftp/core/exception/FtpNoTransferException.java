@@ -25,24 +25,24 @@ package org.waarp.ftp.core.exception;
  */
 public class FtpNoTransferException extends Exception {
 
-	/**
+    /**
 	 *
 	 */
-	private static final long serialVersionUID = 977343700748516315L;
+    private static final long serialVersionUID = 977343700748516315L;
 
-	/**
-	 * @param message
-	 */
-	public FtpNoTransferException(String message) {
-		super(message);
-	}
+    /**
+     * @param message
+     */
+    public FtpNoTransferException(String message) {
+        super(message);
+    }
 
-	/**
-	 * @param message
-	 * @param cause
-	 */
-	public FtpNoTransferException(String message, Throwable cause) {
-		super(message, cause);
-	}
+    /**
+     * @param message
+     * @param cause
+     */
+    public FtpNoTransferException(String message, Throwable cause) {
+        super(message, cause);
+    }
 
 }

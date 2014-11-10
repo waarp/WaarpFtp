@@ -31,21 +31,21 @@ import org.waarp.ftp.core.session.FtpSession;
  * 
  */
 public abstract class FilesystemBasedFtpDir extends FilesystemBasedDirImpl implements FtpDir {
-	/**
-	 * 
-	 * @param session
-	 */
-	public FilesystemBasedFtpDir(FtpSession session) {
-		super(session, new FilesystemBasedOptsMLSxImpl());
-	}
+    /**
+     * 
+     * @param session
+     */
+    public FilesystemBasedFtpDir(FtpSession session) {
+        super(session, new FilesystemBasedOptsMLSxImpl());
+    }
 
-	public FtpFile setUniqueFile()
-			throws CommandAbstractException {
-		return (FtpFile) super.setUniqueFile();
-	}
+    public FtpFile setUniqueFile()
+            throws CommandAbstractException {
+        return (FtpFile) super.setUniqueFile();
+    }
 
-	public FtpFile setFile(String path,
-			boolean append) throws CommandAbstractException {
-		return (FtpFile) super.setFile(path, append);
-	}
+    public FtpFile setFile(String path,
+            boolean append) throws CommandAbstractException {
+        return (FtpFile) super.setFile(path, append);
+    }
 }

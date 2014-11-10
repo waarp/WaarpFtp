@@ -50,7 +50,6 @@ public class FtpsTemporaryFirstHandler extends ChannelDuplexHandler {
      */
     FtpSession session = null;
 
-    
     public FtpsTemporaryFirstHandler(FtpConfiguration configuration, boolean active) {
         this.configuration = configuration;
         this.active = active;
@@ -86,14 +85,16 @@ public class FtpsTemporaryFirstHandler extends ChannelDuplexHandler {
             return;
         }
     }
+
     private void superChannelActive(ChannelHandlerContext ctx) throws Exception {
         super.channelActive(ctx);
     }
+
     @Override
     public void channelActive(final ChannelHandlerContext ctx) throws Exception {
         // Get the SslHandler in the current pipeline.
         Channel channel = ctx.channel();
-        
+
         if (session == null) {
             setSession(channel);
         }
@@ -103,29 +104,30 @@ public class FtpsTemporaryFirstHandler extends ChannelDuplexHandler {
         }
         // Server: no renegotiation still, but possible clientAuthent
         // Mode is always as SSL Server mode.
-        SslHandler sslHandler = 
+        SslHandler sslHandler =
                 FtpsInitializer.waarpSslContextFactory.initInitializer(true,
                         FtpsInitializer.waarpSslContextFactory.needClientAuthentication(),
-                        FtpChannelUtils.getRemoteInetSocketAddress(session.getControlChannel()).getAddress().getHostAddress(),
+                        FtpChannelUtils.getRemoteInetSocketAddress(session.getControlChannel()).getAddress()
+                                .getHostAddress(),
                         FtpChannelUtils.getRemoteInetSocketAddress(session.getControlChannel()).getPort());
         WaarpSslUtility.addSslOpenedChannel(channel);
         // Get the SslHandler and begin handshake ASAP.
-        logger.debug("SSL found but need handshake: "+ctx.channel().toString());
+        logger.debug("SSL found but need handshake: " + ctx.channel().toString());
         final FtpsTemporaryFirstHandler myself = this;
         WaarpSslUtility.addSslHandler(null, ctx.pipeline(), sslHandler,
                 new GenericFutureListener<Future<? super Channel>>() {
-            public void operationComplete(Future<? super Channel> future) throws Exception {
-                logger.debug("Handshake: " + future.isSuccess()+":"+((Channel) future.get()).toString(), future.cause());
-                if (future.isSuccess()) {
-                    logger.debug("End of initialization of SSL and data channel");
-                    myself.superChannelActive(ctx);
-                    ctx.pipeline().remove(myself);
-                } else {
-                    ctx.close();
-                }
-            }
-        });
+                    public void operationComplete(Future<? super Channel> future) throws Exception {
+                        logger.debug("Handshake: " + future.isSuccess() + ":" + ((Channel) future.get()).toString(),
+                                future.cause());
+                        if (future.isSuccess()) {
+                            logger.debug("End of initialization of SSL and data channel");
+                            myself.superChannelActive(ctx);
+                            ctx.pipeline().remove(myself);
+                        } else {
+                            ctx.close();
+                        }
+                    }
+                });
     }
 
-    
 }

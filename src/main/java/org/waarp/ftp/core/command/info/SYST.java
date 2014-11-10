@@ -28,13 +28,13 @@ import org.waarp.ftp.core.command.AbstractCommand;
  */
 public class SYST extends AbstractCommand {
 
-	/*
-	 * (non-Javadoc)
-	 * @see org.waarp.ftp.core.command.AbstractCommand#exec()
-	 */
-	public void exec() {
-		getSession().setReplyCode(ReplyCode.REPLY_215_NAME_SYSTEM_TYPE,
-				"UNIX Type: L8");
-	}
+    /*
+     * (non-Javadoc)
+     * @see org.waarp.ftp.core.command.AbstractCommand#exec()
+     */
+    public void exec() {
+        getSession().setReplyCode(ReplyCode.REPLY_215_NAME_SYSTEM_TYPE,
+                "UNIX Type: L8");
+    }
 
 }

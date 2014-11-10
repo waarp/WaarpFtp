@@ -36,51 +36,51 @@ import org.waarp.ftp.core.utils.FtpChannelUtils;
  * 
  */
 public class INTERNALSHUTDOWN extends AbstractCommand {
-	/**
-	 * Internal Logger
-	 */
-	private static final WaarpLogger logger = WaarpLoggerFactory
-			.getLogger(INTERNALSHUTDOWN.class);
+    /**
+     * Internal Logger
+     */
+    private static final WaarpLogger logger = WaarpLoggerFactory
+            .getLogger(INTERNALSHUTDOWN.class);
 
-	/**
-	 * 
-	 * @author Frederic Bregier
-	 * 
-	 */
-	private static class ShutdownChannelFutureListener implements
-			ChannelFutureListener {
+    /**
+     * 
+     * @author Frederic Bregier
+     * 
+     */
+    private static class ShutdownChannelFutureListener implements
+            ChannelFutureListener {
 
-		private final FtpConfiguration configuration;
+        private final FtpConfiguration configuration;
 
-		protected ShutdownChannelFutureListener(FtpConfiguration configuration) {
-			this.configuration = configuration;
-		}
+        protected ShutdownChannelFutureListener(FtpConfiguration configuration) {
+            this.configuration = configuration;
+        }
 
-		public void operationComplete(ChannelFuture arg0) throws Exception {
+        public void operationComplete(ChannelFuture arg0) throws Exception {
             WaarpSslUtility.closingSslChannel(arg0.channel());
-			FtpChannelUtils.teminateServer(configuration);
-		}
+            FtpChannelUtils.teminateServer(configuration);
+        }
 
-	}
+    }
 
-	public void exec() throws Reply501Exception, Reply500Exception {
-		if (!getSession().getAuth().isAdmin()) {
-			// not admin
-			throw new Reply500Exception("Command Not Allowed");
-		}
-		if (!hasArg()) {
-			throw new Reply501Exception("Shutdown Need password");
-		}
-		String password = getArg();
-		if (!getConfiguration().checkPassword(password)) {
-			throw new Reply501Exception("Shutdown Need a correct password");
-		}
-		logger.warn("Shutdown...");
-		getSession().setReplyCode(
-				ReplyCode.REPLY_221_CLOSING_CONTROL_CONNECTION,
-				"System shutdown");
-		getSession().getNetworkHandler().writeIntermediateAnswer().addListener(
-				new ShutdownChannelFutureListener(getConfiguration()));
-	}
+    public void exec() throws Reply501Exception, Reply500Exception {
+        if (!getSession().getAuth().isAdmin()) {
+            // not admin
+            throw new Reply500Exception("Command Not Allowed");
+        }
+        if (!hasArg()) {
+            throw new Reply501Exception("Shutdown Need password");
+        }
+        String password = getArg();
+        if (!getConfiguration().checkPassword(password)) {
+            throw new Reply501Exception("Shutdown Need a correct password");
+        }
+        logger.warn("Shutdown...");
+        getSession().setReplyCode(
+                ReplyCode.REPLY_221_CLOSING_CONTROL_CONNECTION,
+                "System shutdown");
+        getSession().getNetworkHandler().writeIntermediateAnswer().addListener(
+                new ShutdownChannelFutureListener(getConfiguration()));
+    }
 
 }

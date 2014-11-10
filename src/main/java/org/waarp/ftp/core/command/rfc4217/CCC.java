@@ -31,18 +31,18 @@ import org.waarp.ftp.core.command.AbstractCommand;
  */
 public class CCC extends AbstractCommand {
 
-	@Override
-	public void exec() throws CommandAbstractException {
-		if (! getSession().getConfiguration().getFtpInternalConfiguration().isAcceptAuthProt()) {
-			throw new Reply534Exception("CCC not supported");
-		}
-		if (! getSession().isSslReady()) {
-			// Not SSL
-			throw new Reply500Exception("Session already not using SSL / TLS");
-		}
-		getSession().setSsl(false);
-		getSession().setReplyCode(ReplyCode.REPLY_200_COMMAND_OKAY,
-				null);
-	}
-	
+    @Override
+    public void exec() throws CommandAbstractException {
+        if (!getSession().getConfiguration().getFtpInternalConfiguration().isAcceptAuthProt()) {
+            throw new Reply534Exception("CCC not supported");
+        }
+        if (!getSession().isSslReady()) {
+            // Not SSL
+            throw new Reply500Exception("Session already not using SSL / TLS");
+        }
+        getSession().setSsl(false);
+        getSession().setReplyCode(ReplyCode.REPLY_200_COMMAND_OKAY,
+                null);
+    }
+
 }

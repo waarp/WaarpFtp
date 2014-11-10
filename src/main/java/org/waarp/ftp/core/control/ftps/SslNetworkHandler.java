@@ -34,46 +34,47 @@ import org.waarp.ftp.core.session.FtpSession;
  *
  */
 public class SslNetworkHandler extends NetworkHandler {
-	/**
-	 * Internal Logger
-	 */
-	private static final WaarpLogger logger = WaarpLoggerFactory.getLogger(SslNetworkHandler.class);
+    /**
+     * Internal Logger
+     */
+    private static final WaarpLogger logger = WaarpLoggerFactory.getLogger(SslNetworkHandler.class);
 
-	/**
-	 * @param session
-	 */
-	public SslNetworkHandler(FtpSession session) {
-		super(session);
-	}
+    /**
+     * @param session
+     */
+    public SslNetworkHandler(FtpSession session) {
+        super(session);
+    }
 
     @Override
     public void channelRegistered(ChannelHandlerContext ctx) throws Exception {
         Channel channel = ctx.channel();
-        logger.debug("Add channel to ssl " +channel.toString());
+        logger.debug("Add channel to ssl " + channel.toString());
         WaarpSslUtility.addSslOpenedChannel(channel);
         getFtpSession().prepareSsl();
         super.channelRegistered(ctx);
     }
-    
-	/**
-	 * To be extended to inform of an error to SNMP support
-	 * @param error1
-	 * @param error2
-	 */
-	protected void callForSnmp(String error1, String error2) {
-		// ignore
-	}
+
+    /**
+     * To be extended to inform of an error to SNMP support
+     * 
+     * @param error1
+     * @param error2
+     */
+    protected void callForSnmp(String error1, String error2) {
+        // ignore
+    }
 
     @Override
     public void channelActive(final ChannelHandlerContext ctx) throws Exception {
-        if (! WaarpSslUtility.waitForHandshake(ctx.channel())) {
+        if (!WaarpSslUtility.waitForHandshake(ctx.channel())) {
             callForSnmp("SSL Connection Error", "During Ssl Handshake");
             getFtpSession().setSsl(false);
             return;
         } else {
             getFtpSession().setSsl(true);
         }
-		super.channelActive(ctx);
-	}
+        super.channelActive(ctx);
+    }
 
 }

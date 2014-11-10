@@ -41,46 +41,46 @@ import org.waarp.ftp.core.command.AbstractCommand;
  * 
  */
 public class AUTH extends AbstractCommand {
-	/**
-	 * Internal Logger
-	 */
-	private static final WaarpLogger logger = WaarpLoggerFactory
-			.getLogger(AUTH.class);
-	
-	@Override
-	public void exec() throws CommandAbstractException {
-		if (! getSession().getConfiguration().getFtpInternalConfiguration().isAcceptAuthProt()) {
-			throw new Reply534Exception("AUTH SSL / TLS not supported");
-		}
-		if (getSession().isSsl()) {
-			// Already SSL
-			throw new Reply503Exception("Session already using SSL / TLS");
-		}
-		// First Check if any argument
-		if (!hasArg()) {
-			// Error since argument is needed
-			throw new Reply501Exception("Missing Parameter: TLS or SSL");
-		}
-		String[] types = getArgs();
-		if (types[0].equalsIgnoreCase("TLS")) {
-			// Only Command will have SSL
-			logger.debug("Start TLS");
-			getSession().rein();
-			getSession().setNextCommand(this);
-			getSession().setReplyCode(ReplyCode.REPLY_234_SECURITY_DATA_EXCHANGE_COMPLETE,
-					null);
-		} else if (types[0].equalsIgnoreCase("SSL")) {
-			// Both Command and Data will have SSL
-			logger.debug("Start SSL");
-			getSession().rein();
-			getSession().setNextCommand(this);
-			getSession().setReplyCode(ReplyCode.REPLY_234_SECURITY_DATA_EXCHANGE_COMPLETE,
-					null);
-			getSession().setDataSsl(true);
-		} else {
-			throw new Reply504Exception("Unknown Parameter: "+types[0]);
-		}
-		logger.debug("End of AUTH "+types[0]);
-	}
-	
+    /**
+     * Internal Logger
+     */
+    private static final WaarpLogger logger = WaarpLoggerFactory
+            .getLogger(AUTH.class);
+
+    @Override
+    public void exec() throws CommandAbstractException {
+        if (!getSession().getConfiguration().getFtpInternalConfiguration().isAcceptAuthProt()) {
+            throw new Reply534Exception("AUTH SSL / TLS not supported");
+        }
+        if (getSession().isSsl()) {
+            // Already SSL
+            throw new Reply503Exception("Session already using SSL / TLS");
+        }
+        // First Check if any argument
+        if (!hasArg()) {
+            // Error since argument is needed
+            throw new Reply501Exception("Missing Parameter: TLS or SSL");
+        }
+        String[] types = getArgs();
+        if (types[0].equalsIgnoreCase("TLS")) {
+            // Only Command will have SSL
+            logger.debug("Start TLS");
+            getSession().rein();
+            getSession().setNextCommand(this);
+            getSession().setReplyCode(ReplyCode.REPLY_234_SECURITY_DATA_EXCHANGE_COMPLETE,
+                    null);
+        } else if (types[0].equalsIgnoreCase("SSL")) {
+            // Both Command and Data will have SSL
+            logger.debug("Start SSL");
+            getSession().rein();
+            getSession().setNextCommand(this);
+            getSession().setReplyCode(ReplyCode.REPLY_234_SECURITY_DATA_EXCHANGE_COMPLETE,
+                    null);
+            getSession().setDataSsl(true);
+        } else {
+            throw new Reply504Exception("Unknown Parameter: " + types[0]);
+        }
+        logger.debug("End of AUTH " + types[0]);
+    }
+
 }

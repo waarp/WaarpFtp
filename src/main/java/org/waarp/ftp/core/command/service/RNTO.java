@@ -34,35 +34,35 @@ import org.waarp.ftp.core.file.FtpFile;
  */
 public class RNTO extends AbstractCommand {
 
-	/*
-	 * (non-Javadoc)
-	 * @see org.waarp.ftp.core.command.AbstractCommand#exec()
-	 */
-	public void exec() throws CommandAbstractException {
-		if (!hasArg()) {
-			invalidCurrentCommand();
-			throw new Reply501Exception("Need a pathname as argument");
-		}
-		String filename = getArg();
-		FtpFile file = null;
-		try {
-			file = getSession().getDataConn().getFtpTransferControl()
-					.getExecutingFtpTransfer().getFtpFile();
-		} catch (FtpNoFileException e) {
-		} catch (FtpNoTransferException e) {
-		}
-		if (file != null) {
-			String previousName = file.getFile();
-			if (file.renameTo(filename)) {
-				getSession().setReplyCode(
-						ReplyCode.REPLY_250_REQUESTED_FILE_ACTION_OKAY,
-						"\"" + filename + "\" as new file name for \"" +
-								previousName + "\"");
-				return;
-			}
-		}
-		// FtpFile name not allowed or not found
-		throw new Reply553Exception("Filename not allowed");
-	}
+    /*
+     * (non-Javadoc)
+     * @see org.waarp.ftp.core.command.AbstractCommand#exec()
+     */
+    public void exec() throws CommandAbstractException {
+        if (!hasArg()) {
+            invalidCurrentCommand();
+            throw new Reply501Exception("Need a pathname as argument");
+        }
+        String filename = getArg();
+        FtpFile file = null;
+        try {
+            file = getSession().getDataConn().getFtpTransferControl()
+                    .getExecutingFtpTransfer().getFtpFile();
+        } catch (FtpNoFileException e) {
+        } catch (FtpNoTransferException e) {
+        }
+        if (file != null) {
+            String previousName = file.getFile();
+            if (file.renameTo(filename)) {
+                getSession().setReplyCode(
+                        ReplyCode.REPLY_250_REQUESTED_FILE_ACTION_OKAY,
+                        "\"" + filename + "\" as new file name for \"" +
+                                previousName + "\"");
+                return;
+            }
+        }
+        // FtpFile name not allowed or not found
+        throw new Reply553Exception("Filename not allowed");
+    }
 
 }

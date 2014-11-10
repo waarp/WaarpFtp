@@ -37,55 +37,57 @@ import org.waarp.ftp.core.session.FtpSession;
  * 
  */
 public class FtpInitializer extends ChannelInitializer<SocketChannel> {
-	/**
-	 * CRLF, CRNUL, LF delimiters
-	 */
-	protected static final ByteBuf[] delimiter = new ByteBuf[] {
-	    Unpooled.wrappedBuffer(ReplyCode.CRLF.getBytes(WaarpStringUtils.UTF8)),
-	    Unpooled.wrappedBuffer(ReplyCode.CRNUL.getBytes(WaarpStringUtils.UTF8)),
-	    Unpooled.wrappedBuffer(ReplyCode.LF.getBytes(WaarpStringUtils.UTF8)) };
+    /**
+     * CRLF, CRNUL, LF delimiters
+     */
+    protected static final ByteBuf[] delimiter = new ByteBuf[] {
+            Unpooled.wrappedBuffer(ReplyCode.CRLF.getBytes(WaarpStringUtils.UTF8)),
+            Unpooled.wrappedBuffer(ReplyCode.CRNUL.getBytes(WaarpStringUtils.UTF8)),
+            Unpooled.wrappedBuffer(ReplyCode.LF.getBytes(WaarpStringUtils.UTF8)) };
 
-	protected static final FtpControlStringDecoder ftpControlStringDecoder = new FtpControlStringDecoder(WaarpStringUtils.UTF8);
+    protected static final FtpControlStringDecoder ftpControlStringDecoder = new FtpControlStringDecoder(
+            WaarpStringUtils.UTF8);
 
-	protected static final FtpControlStringEncoder ftpControlStringEncoder = new FtpControlStringEncoder(WaarpStringUtils.UTF8);
+    protected static final FtpControlStringEncoder ftpControlStringEncoder = new FtpControlStringEncoder(
+            WaarpStringUtils.UTF8);
 
-	/**
-	 * Business Handler Class if any (Target Mode only)
-	 */
-	protected final Class<? extends BusinessHandler> businessHandler;
+    /**
+     * Business Handler Class if any (Target Mode only)
+     */
+    protected final Class<? extends BusinessHandler> businessHandler;
 
-	/**
-	 * Configuration
-	 */
-	protected final FtpConfiguration configuration;
+    /**
+     * Configuration
+     */
+    protected final FtpConfiguration configuration;
 
-	/**
-	 * Constructor which Initializes some data for Server only
-	 * 
-	 * @param businessHandler
-	 * @param configuration
-	 */
-	public FtpInitializer(Class<? extends BusinessHandler> businessHandler,
-			FtpConfiguration configuration) {
-		this.businessHandler = businessHandler;
-		this.configuration = configuration;
-	}
+    /**
+     * Constructor which Initializes some data for Server only
+     * 
+     * @param businessHandler
+     * @param configuration
+     */
+    public FtpInitializer(Class<? extends BusinessHandler> businessHandler,
+            FtpConfiguration configuration) {
+        this.businessHandler = businessHandler;
+        this.configuration = configuration;
+    }
 
-	/**
-	 * Create the pipeline with Handler, ObjectDecoder, ObjectEncoder.
-	 */
-	@Override
+    /**
+     * Create the pipeline with Handler, ObjectDecoder, ObjectEncoder.
+     */
+    @Override
     public void initChannel(SocketChannel ch) throws Exception {
-		ChannelPipeline pipeline = ch.pipeline();
-		// Add the text line codec combination first,
-		pipeline.addLast("framer", new DelimiterBasedFrameDecoder(8192, delimiter));
-		pipeline.addLast("decoder", ftpControlStringDecoder);
-		pipeline.addLast("encoder", ftpControlStringEncoder);
-		// Threaded execution for business logic
-		EventExecutorGroup executorGroup = configuration.getFtpInternalConfiguration().getExecutor();
-		// and then business logic. New one on every connection
-		BusinessHandler newbusiness = businessHandler.newInstance();
-		NetworkHandler newNetworkHandler = new NetworkHandler(new FtpSession(configuration, newbusiness));
-		pipeline.addLast(executorGroup, "handler", newNetworkHandler);
-	}
+        ChannelPipeline pipeline = ch.pipeline();
+        // Add the text line codec combination first,
+        pipeline.addLast("framer", new DelimiterBasedFrameDecoder(8192, delimiter));
+        pipeline.addLast("decoder", ftpControlStringDecoder);
+        pipeline.addLast("encoder", ftpControlStringEncoder);
+        // Threaded execution for business logic
+        EventExecutorGroup executorGroup = configuration.getFtpInternalConfiguration().getExecutor();
+        // and then business logic. New one on every connection
+        BusinessHandler newbusiness = businessHandler.newInstance();
+        NetworkHandler newNetworkHandler = new NetworkHandler(new FtpSession(configuration, newbusiness));
+        pipeline.addLast(executorGroup, "handler", newNetworkHandler);
+    }
 }

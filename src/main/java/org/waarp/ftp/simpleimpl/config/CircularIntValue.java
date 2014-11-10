@@ -26,44 +26,44 @@ import java.util.concurrent.atomic.AtomicInteger;
  * 
  */
 public class CircularIntValue {
-	/**
-	 * Min value
-	 */
-	private final int min;
+    /**
+     * Min value
+     */
+    private final int min;
 
-	/**
-	 * Max value
-	 */
-	private final int max;
+    /**
+     * Max value
+     */
+    private final int max;
 
-	/**
-	 * Current Value
-	 */
-	private AtomicInteger current;
+    /**
+     * Current Value
+     */
+    private AtomicInteger current;
 
-	/**
-	 * Create a circular range of values
-	 * 
-	 * @param min
-	 * @param max
-	 */
-	public CircularIntValue(int min, int max) {
-		this.min = min;
-		this.max = max;
-		current = new AtomicInteger(this.min - 1);
-	}
+    /**
+     * Create a circular range of values
+     * 
+     * @param min
+     * @param max
+     */
+    public CircularIntValue(int min, int max) {
+        this.min = min;
+        this.max = max;
+        current = new AtomicInteger(this.min - 1);
+    }
 
-	/**
-	 * Get the next value
-	 * 
-	 * @return the next value
-	 */
-	public int getNext() {
-		synchronized (current) {
-			if (!current.compareAndSet(max, min)) {
-				current.incrementAndGet();
-			}
-			return current.get();
-		}
-	}
+    /**
+     * Get the next value
+     * 
+     * @return the next value
+     */
+    public int getNext() {
+        synchronized (current) {
+            if (!current.compareAndSet(max, min)) {
+                current.incrementAndGet();
+            }
+            return current.get();
+        }
+    }
 }

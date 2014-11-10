@@ -43,92 +43,92 @@ import ch.qos.logback.classic.LoggerContext;
  * 
  */
 public class FtpChannelUtils implements Runnable {
-	/**
-	 * Internal Logger
-	 */
-	private static final WaarpLogger logger = WaarpLoggerFactory
-			.getLogger(FtpChannelUtils.class);
+    /**
+     * Internal Logger
+     */
+    private static final WaarpLogger logger = WaarpLoggerFactory
+            .getLogger(FtpChannelUtils.class);
 
-	/**
-	 * Get the Remote InetAddress
-	 * 
-	 * @param channel
-	 * @return the remote InetAddress
-	 */
-	public static InetAddress getRemoteInetAddress(Channel channel) {
-		InetSocketAddress socketAddress = (InetSocketAddress) channel.remoteAddress();
-		if (socketAddress == null) {
-			socketAddress = new InetSocketAddress(20);
-		}
-		return socketAddress.getAddress();
-	}
+    /**
+     * Get the Remote InetAddress
+     * 
+     * @param channel
+     * @return the remote InetAddress
+     */
+    public static InetAddress getRemoteInetAddress(Channel channel) {
+        InetSocketAddress socketAddress = (InetSocketAddress) channel.remoteAddress();
+        if (socketAddress == null) {
+            socketAddress = new InetSocketAddress(20);
+        }
+        return socketAddress.getAddress();
+    }
 
-	/**
-	 * Get the Local InetAddress
-	 * 
-	 * @param channel
-	 * @return the local InetAddress
-	 */
-	public static InetAddress getLocalInetAddress(Channel channel) {
-		InetSocketAddress socketAddress = (InetSocketAddress) channel.localAddress();
-		return socketAddress.getAddress();
-	}
+    /**
+     * Get the Local InetAddress
+     * 
+     * @param channel
+     * @return the local InetAddress
+     */
+    public static InetAddress getLocalInetAddress(Channel channel) {
+        InetSocketAddress socketAddress = (InetSocketAddress) channel.localAddress();
+        return socketAddress.getAddress();
+    }
 
-	/**
-	 * Get the Remote InetSocketAddress
-	 * 
-	 * @param channel
-	 * @return the remote InetSocketAddress
-	 */
-	public static InetSocketAddress getRemoteInetSocketAddress(Channel channel) {
-		return (InetSocketAddress) channel.remoteAddress();
-	}
+    /**
+     * Get the Remote InetSocketAddress
+     * 
+     * @param channel
+     * @return the remote InetSocketAddress
+     */
+    public static InetSocketAddress getRemoteInetSocketAddress(Channel channel) {
+        return (InetSocketAddress) channel.remoteAddress();
+    }
 
-	/**
-	 * Get the Local InetSocketAddress
-	 * 
-	 * @param channel
-	 * @return the local InetSocketAddress
-	 */
-	public static InetSocketAddress getLocalInetSocketAddress(Channel channel) {
-		return (InetSocketAddress) channel.localAddress();
-	}
+    /**
+     * Get the Local InetSocketAddress
+     * 
+     * @param channel
+     * @return the local InetSocketAddress
+     */
+    public static InetSocketAddress getLocalInetSocketAddress(Channel channel) {
+        return (InetSocketAddress) channel.localAddress();
+    }
 
-	/**
-	 * Get the InetSocketAddress corresponding to the FTP format of address
-	 * 
-	 * @param arg
-	 * @return the InetSocketAddress or null if an error occurs
-	 */
-	public static InetSocketAddress getInetSocketAddress(String arg) {
-		String[] elements = arg.split(",");
-		if (elements.length != 6) {
-			return null;
-		}
-		byte[] address = new byte[4];
-		int[] iElements = new int[6];
-		for (int i = 0; i < 6; i++) {
-			try {
-				iElements[i] = Integer.parseInt(elements[i]);
-			} catch (NumberFormatException e) {
-				return null;
-			}
-			if (iElements[i] < 0 || iElements[i] > 255) {
-				return null;
-			}
-		}
-		for (int i = 0; i < 4; i++) {
-			address[i] = (byte) iElements[i];
-		}
-		int port = iElements[4] << 8 | iElements[5];
-		InetAddress inetAddress;
-		try {
-			inetAddress = InetAddress.getByAddress(address);
-		} catch (UnknownHostException e) {
-			return null;
-		}
-		return new InetSocketAddress(inetAddress, port);
-	}
+    /**
+     * Get the InetSocketAddress corresponding to the FTP format of address
+     * 
+     * @param arg
+     * @return the InetSocketAddress or null if an error occurs
+     */
+    public static InetSocketAddress getInetSocketAddress(String arg) {
+        String[] elements = arg.split(",");
+        if (elements.length != 6) {
+            return null;
+        }
+        byte[] address = new byte[4];
+        int[] iElements = new int[6];
+        for (int i = 0; i < 6; i++) {
+            try {
+                iElements[i] = Integer.parseInt(elements[i]);
+            } catch (NumberFormatException e) {
+                return null;
+            }
+            if (iElements[i] < 0 || iElements[i] > 255) {
+                return null;
+            }
+        }
+        for (int i = 0; i < 4; i++) {
+            address[i] = (byte) iElements[i];
+        }
+        int port = iElements[4] << 8 | iElements[5];
+        InetAddress inetAddress;
+        try {
+            inetAddress = InetAddress.getByAddress(address);
+        } catch (UnknownHostException e) {
+            return null;
+        }
+        return new InetSocketAddress(inetAddress, port);
+    }
 
     /**
      * Return the Address in the format compatible with FTP argument
@@ -142,56 +142,56 @@ public class FtpChannelUtils implements Runnable {
                 (port >> 8) + ',' + (port & 0xFF);
     }
 
-	/**
-	 * Return the Address in the format compatible with FTP argument
-	 * 
-	 * @param address
-	 * @return the String representation of the address
-	 */
-	public static String getAddress(InetSocketAddress address) {
-		InetAddress servAddr = address.getAddress();
-		int servPort = address.getPort();
-		return servAddr.getHostAddress().replace('.', ',') + ',' +
-				(servPort >> 8) + ',' + (servPort & 0xFF);
-	}
+    /**
+     * Return the Address in the format compatible with FTP argument
+     * 
+     * @param address
+     * @return the String representation of the address
+     */
+    public static String getAddress(InetSocketAddress address) {
+        InetAddress servAddr = address.getAddress();
+        int servPort = address.getPort();
+        return servAddr.getHostAddress().replace('.', ',') + ',' +
+                (servPort >> 8) + ',' + (servPort & 0xFF);
+    }
 
-	/**
-	 * Get the (RFC2428) InetSocketAddress corresponding to the FTP format of address (RFC2428)
-	 * 
-	 * @param arg
-	 * @return the InetSocketAddress or null if an error occurs
-	 */
-	public static InetSocketAddress get2428InetSocketAddress(String arg) {
-		// Format: #a#net-addr#tcp-port# where a = 1 IPV4 or 2 IPV6, other will
-		// not be supported
-		if (arg == null || arg.length() == 0) {
-			// bad args
-			return null;
-		}
-		String delim = arg.substring(0, 1);
-		String[] infos = arg.split("\\"+delim);
-		if (infos.length != 3 && infos.length != 4) {
-			// bad format
-		    logger.error("Bad address format: "+infos.length);
-			return null;
-		}
-		int start = 0;
-		if (infos.length == 4) {
-		    start = 1;
-		}
-		boolean isIPV4 = true;
-		if (infos[start].equals("1")) {
-			isIPV4 = true;
-		} else if (infos[start].equals("2")) {
-			isIPV4 = false;
-		} else {
-			// not supported
-		    logger.error("Bad 1 or 2 format in address: "+infos[start]);
-			return null;
-		}
-		start++;
+    /**
+     * Get the (RFC2428) InetSocketAddress corresponding to the FTP format of address (RFC2428)
+     * 
+     * @param arg
+     * @return the InetSocketAddress or null if an error occurs
+     */
+    public static InetSocketAddress get2428InetSocketAddress(String arg) {
+        // Format: #a#net-addr#tcp-port# where a = 1 IPV4 or 2 IPV6, other will
+        // not be supported
+        if (arg == null || arg.length() == 0) {
+            // bad args
+            return null;
+        }
+        String delim = arg.substring(0, 1);
+        String[] infos = arg.split("\\" + delim);
+        if (infos.length != 3 && infos.length != 4) {
+            // bad format
+            logger.error("Bad address format: " + infos.length);
+            return null;
+        }
+        int start = 0;
+        if (infos.length == 4) {
+            start = 1;
+        }
+        boolean isIPV4 = true;
+        if (infos[start].equals("1")) {
+            isIPV4 = true;
+        } else if (infos[start].equals("2")) {
+            isIPV4 = false;
+        } else {
+            // not supported
+            logger.error("Bad 1 or 2 format in address: " + infos[start]);
+            return null;
+        }
+        start++;
         InetAddress inetAddress;
-		if (isIPV4) {
+        if (isIPV4) {
             // IPV4
             try {
                 inetAddress = (Inet4Address) InetAddress.getByName(infos[start]);
@@ -199,212 +199,208 @@ public class FtpChannelUtils implements Runnable {
                 logger.error("Bad IPV4 format", e);
                 return null;
             }
-		} else {
-			// IPV6
+        } else {
+            // IPV6
             try {
                 inetAddress = (Inet6Address) InetAddress.getByName(infos[start]);
             } catch (UnknownHostException e) {
                 logger.error("Bad IPV6 format", e);
                 return null;
             }
-		}
-		start++;
-		int port = 0;
-		try {
-			port = Integer.parseInt(infos[start]);
-		} catch (NumberFormatException e) {
-		    logger.error("Bad port number format: "+infos[start]);
-			return null;
-		}
-		return new InetSocketAddress(inetAddress, port);
-	}
+        }
+        start++;
+        int port = 0;
+        try {
+            port = Integer.parseInt(infos[start]);
+        } catch (NumberFormatException e) {
+            logger.error("Bad port number format: " + infos[start]);
+            return null;
+        }
+        return new InetSocketAddress(inetAddress, port);
+    }
 
-	/**
-	 * Return the (RFC2428) Address in the format compatible with FTP (RFC2428)
-	 * 
-	 * @param address
-	 * @return the String representation of the address
-	 */
-	public static String get2428Address(InetSocketAddress address) {
-		InetAddress servAddr = address.getAddress();
-		int servPort = address.getPort();
-		StringBuilder builder = new StringBuilder();
-		String hostaddress = servAddr.getHostAddress();
-		builder.append('|');
-		if (hostaddress.contains(":")) {
-			builder.append('2'); // IPV6
-		} else {
-			builder.append('1'); // IPV4
-		}
-		builder.append('|');
-		builder.append(hostaddress);
-		builder.append('|');
-		builder.append(servPort);
-		builder.append('|');
-		return builder.toString();
-	}
+    /**
+     * Return the (RFC2428) Address in the format compatible with FTP (RFC2428)
+     * 
+     * @param address
+     * @return the String representation of the address
+     */
+    public static String get2428Address(InetSocketAddress address) {
+        InetAddress servAddr = address.getAddress();
+        int servPort = address.getPort();
+        StringBuilder builder = new StringBuilder();
+        String hostaddress = servAddr.getHostAddress();
+        builder.append('|');
+        if (hostaddress.contains(":")) {
+            builder.append('2'); // IPV6
+        } else {
+            builder.append('1'); // IPV4
+        }
+        builder.append('|').append(hostaddress).append('|').append(servPort).append('|');
+        return builder.toString();
+    }
 
-	/**
-	 * Terminate all registered command channels
-	 * 
-	 * @param configuration
-	 * @return the number of previously registered command channels
-	 */
-	static int terminateCommandChannels(final FtpConfiguration configuration) {
-		int result = configuration.getFtpInternalConfiguration()
-				.getCommandChannelGroup().size();
-		configuration.getFtpInternalConfiguration().getCommandChannelGroup()
-				.close();
-		return result;
-	}
-
-	/**
-	 * Terminate all registered data channels
-	 * 
-	 * @param configuration
-	 * @return the number of previously registered data channels
-	 */
-	private static int terminateDataChannels(final FtpConfiguration configuration) {
-		int result = configuration.getFtpInternalConfiguration()
-				.getDataChannelGroup().size();
-		configuration.getFtpInternalConfiguration().getDataChannelGroup()
+    /**
+     * Terminate all registered command channels
+     * 
+     * @param configuration
+     * @return the number of previously registered command channels
+     */
+    static int terminateCommandChannels(final FtpConfiguration configuration) {
+        int result = configuration.getFtpInternalConfiguration()
+                .getCommandChannelGroup().size();
+        configuration.getFtpInternalConfiguration().getCommandChannelGroup()
                 .close();
-		return result;
-	}
+        return result;
+    }
 
-	/**
-	 * Return the current number of command connections
-	 * 
-	 * @param configuration
-	 * @return the current number of command connections
-	 */
-	public static int nbCommandChannels(FtpConfiguration configuration) {
-		return configuration.getFtpInternalConfiguration()
-				.getCommandChannelGroup().size();
-	}
+    /**
+     * Terminate all registered data channels
+     * 
+     * @param configuration
+     * @return the number of previously registered data channels
+     */
+    private static int terminateDataChannels(final FtpConfiguration configuration) {
+        int result = configuration.getFtpInternalConfiguration()
+                .getDataChannelGroup().size();
+        configuration.getFtpInternalConfiguration().getDataChannelGroup()
+                .close();
+        return result;
+    }
 
-	/**
-	 * Return the current number of data connections
-	 * 
-	 * @param configuration
-	 * @return the current number of data connections
-	 */
-	public static int nbDataChannels(FtpConfiguration configuration) {
-		return configuration.getFtpInternalConfiguration()
-				.getDataChannelGroup().size();
-	}
+    /**
+     * Return the current number of command connections
+     * 
+     * @param configuration
+     * @return the current number of command connections
+     */
+    public static int nbCommandChannels(FtpConfiguration configuration) {
+        return configuration.getFtpInternalConfiguration()
+                .getCommandChannelGroup().size();
+    }
 
-	/**
-	 * Return the number of still positive command connections
-	 * 
-	 * @param configuration
-	 * @return the number of positive command connections
-	 */
-	public static int validCommandChannels(FtpConfiguration configuration) {
-		int result = 0;
-		Channel channel = null;
-		Iterator<Channel> iterator = configuration
-				.getFtpInternalConfiguration().getCommandChannelGroup()
-				.iterator();
-		while (iterator.hasNext()) {
-			channel = iterator.next();
-			if (channel.parent() != null) {
-				// Child Channel
-				if (channel.isActive()) {
-					// Normal channel
-					result++;
-				} else {
-					WaarpSslUtility.closingSslChannel(channel);
-				}
-			} else {
-				// Parent channel
-				result++;
-			}
-		}
-		return result;
-	}
+    /**
+     * Return the current number of data connections
+     * 
+     * @param configuration
+     * @return the current number of data connections
+     */
+    public static int nbDataChannels(FtpConfiguration configuration) {
+        return configuration.getFtpInternalConfiguration()
+                .getDataChannelGroup().size();
+    }
 
-	/**
-	 * Exit global ChannelFactory
-	 * 
-	 * @param configuration
-	 */
-	protected static void exit(FtpConfiguration configuration) {
-		configuration.isShutdown = true;
-		long delay = configuration.TIMEOUTCON/2;
-		logger.warn("Exit: Give a delay of " + delay + " ms");
-		configuration.inShutdownProcess();
-		try {
-			Thread.sleep(delay);
-		} catch (InterruptedException e) {
-		}
-		Timer timer = new Timer(true);
-		FtpTimerTask timerTask = new FtpTimerTask(FtpTimerTask.TIMER_CONTROL);
-		timerTask.configuration = configuration;
-		timer.schedule(timerTask, configuration.TIMEOUTCON / 4);
-		configuration.getFtpInternalConfiguration()
-				.getGlobalTrafficShapingHandler().release();
-		configuration.releaseResources();
-		logger.info("Exit Shutdown Data");
-		terminateDataChannels(configuration);
-		logger.warn("Exit end of Data Shutdown");
-	}
+    /**
+     * Return the number of still positive command connections
+     * 
+     * @param configuration
+     * @return the number of positive command connections
+     */
+    public static int validCommandChannels(FtpConfiguration configuration) {
+        int result = 0;
+        Channel channel = null;
+        Iterator<Channel> iterator = configuration
+                .getFtpInternalConfiguration().getCommandChannelGroup()
+                .iterator();
+        while (iterator.hasNext()) {
+            channel = iterator.next();
+            if (channel.parent() != null) {
+                // Child Channel
+                if (channel.isActive()) {
+                    // Normal channel
+                    result++;
+                } else {
+                    WaarpSslUtility.closingSslChannel(channel);
+                }
+            } else {
+                // Parent channel
+                result++;
+            }
+        }
+        return result;
+    }
 
-	/**
-	 * This function is the top function to be called when the server is to be shutdown.
-	 * 
-	 * @param configuration
-	 */
-	public static void teminateServer(FtpConfiguration configuration) {
-		((FtpShutdownHook) FtpShutdownHook.shutdownHook).configuration = configuration;
-		FtpShutdownHook.terminate(false);
-	}
+    /**
+     * Exit global ChannelFactory
+     * 
+     * @param configuration
+     */
+    protected static void exit(FtpConfiguration configuration) {
+        configuration.isShutdown = true;
+        long delay = configuration.TIMEOUTCON / 2;
+        logger.warn("Exit: Give a delay of " + delay + " ms");
+        configuration.inShutdownProcess();
+        try {
+            Thread.sleep(delay);
+        } catch (InterruptedException e) {
+        }
+        Timer timer = new Timer(true);
+        FtpTimerTask timerTask = new FtpTimerTask(FtpTimerTask.TIMER_CONTROL);
+        timerTask.configuration = configuration;
+        timer.schedule(timerTask, configuration.TIMEOUTCON / 4);
+        configuration.getFtpInternalConfiguration()
+                .getGlobalTrafficShapingHandler().release();
+        configuration.releaseResources();
+        logger.info("Exit Shutdown Data");
+        terminateDataChannels(configuration);
+        logger.warn("Exit end of Data Shutdown");
+    }
 
-	/**
-	 * Add a command channel into the list
-	 * 
-	 * @param channel
-	 * @param configuration
-	 */
-	public static void addCommandChannel(Channel channel,
-			FtpConfiguration configuration) {
-		// logger.debug("Add Command Channel {}", channel);
-		configuration.getFtpInternalConfiguration().getCommandChannelGroup()
-				.add(channel);
-	}
+    /**
+     * This function is the top function to be called when the server is to be shutdown.
+     * 
+     * @param configuration
+     */
+    public static void teminateServer(FtpConfiguration configuration) {
+        ((FtpShutdownHook) FtpShutdownHook.shutdownHook).configuration = configuration;
+        FtpShutdownHook.terminate(false);
+    }
 
-	/**
-	 * Add a data channel into the list
-	 * 
-	 * @param channel
-	 * @param configuration
-	 */
-	public static void addDataChannel(Channel channel,
-			FtpConfiguration configuration) {
-		// logger.debug("Add Data Channel {}", channel);
-		configuration.getFtpInternalConfiguration().getDataChannelGroup().add(
-				channel);
-	}
+    /**
+     * Add a command channel into the list
+     * 
+     * @param channel
+     * @param configuration
+     */
+    public static void addCommandChannel(Channel channel,
+            FtpConfiguration configuration) {
+        // logger.debug("Add Command Channel {}", channel);
+        configuration.getFtpInternalConfiguration().getCommandChannelGroup()
+                .add(channel);
+    }
 
-	/**
-	 * Used to run Exit command
-	 */
-	private FtpConfiguration configuration;
+    /**
+     * Add a data channel into the list
+     * 
+     * @param channel
+     * @param configuration
+     */
+    public static void addDataChannel(Channel channel,
+            FtpConfiguration configuration) {
+        // logger.debug("Add Data Channel {}", channel);
+        configuration.getFtpInternalConfiguration().getDataChannelGroup().add(
+                channel);
+    }
 
-	public FtpChannelUtils(FtpConfiguration configuration) {
-		this.configuration = configuration;
-	}
+    /**
+     * Used to run Exit command
+     */
+    private FtpConfiguration configuration;
 
-	@Override
-	public void run() {
-		exit(configuration);
-	}
+    public FtpChannelUtils(FtpConfiguration configuration) {
+        this.configuration = configuration;
+    }
 
-	public static void stopLogger() {
-		if (WaarpLoggerFactory.getDefaultFactory() instanceof WaarpSlf4JLoggerFactory) {
-			LoggerContext lc = (LoggerContext) LoggerFactory.getILoggerFactory();
-			lc.stop();
-		}
-	}
+    @Override
+    public void run() {
+        exit(configuration);
+    }
+
+    public static void stopLogger() {
+        if (WaarpLoggerFactory.getDefaultFactory() instanceof WaarpSlf4JLoggerFactory) {
+            LoggerContext lc = (LoggerContext) LoggerFactory.getILoggerFactory();
+            lc.stop();
+        }
+    }
 
 }

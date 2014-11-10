@@ -30,59 +30,59 @@ import org.waarp.ftp.core.config.FtpConfiguration;
  * 
  */
 public class FtpTimerTask extends TimerTask {
-	/**
-	 * Internal Logger
-	 */
-	private static final WaarpLogger logger = WaarpLoggerFactory
-			.getLogger(FtpTimerTask.class);
+    /**
+     * Internal Logger
+     */
+    private static final WaarpLogger logger = WaarpLoggerFactory
+            .getLogger(FtpTimerTask.class);
 
-	/**
-	 * EXIT type (System.exit(1))
-	 */
-	public static final int TIMER_EXIT = 1;
-	/**
-	 * Finalize Control connection
-	 */
-	public static final int TIMER_CONTROL = 2;
+    /**
+     * EXIT type (System.exit(1))
+     */
+    public static final int TIMER_EXIT = 1;
+    /**
+     * Finalize Control connection
+     */
+    public static final int TIMER_CONTROL = 2;
 
-	/**
-	 * Type of execution in run() method
-	 */
-	private final int type;
-	/**
-	 * Configuration
-	 */
-	public FtpConfiguration configuration = null;
+    /**
+     * Type of execution in run() method
+     */
+    private final int type;
+    /**
+     * Configuration
+     */
+    public FtpConfiguration configuration = null;
 
-	/**
-	 * Constructor from type
-	 * 
-	 * @param type
-	 */
-	public FtpTimerTask(int type) {
-		super();
-		this.type = type;
-	}
+    /**
+     * Constructor from type
+     * 
+     * @param type
+     */
+    public FtpTimerTask(int type) {
+        super();
+        this.type = type;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * @see java.util.TimerTask#run()
-	 */
-	@Override
-	public void run() {
-		switch (type) {
-			case TIMER_EXIT:
-				logger.error("System will force EXIT");
-				System.exit(0);
-				break;
-			case TIMER_CONTROL:
-				logger.info("Exit Shutdown Command");
-				FtpChannelUtils.terminateCommandChannels(configuration);
-				logger.warn("Exit end of Command Shutdown");
-				//FtpChannelUtils.stopLogger();
-				break;
-			default:
-				logger.info("Type unknown in TimerTask");
-		}
-	}
+    /*
+     * (non-Javadoc)
+     * @see java.util.TimerTask#run()
+     */
+    @Override
+    public void run() {
+        switch (type) {
+            case TIMER_EXIT:
+                logger.error("System will force EXIT");
+                System.exit(0);
+                break;
+            case TIMER_CONTROL:
+                logger.info("Exit Shutdown Command");
+                FtpChannelUtils.terminateCommandChannels(configuration);
+                logger.warn("Exit end of Command Shutdown");
+                //FtpChannelUtils.stopLogger();
+                break;
+            default:
+                logger.info("Type unknown in TimerTask");
+        }
+    }
 }

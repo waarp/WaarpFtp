@@ -39,24 +39,24 @@ import org.waarp.ftp.core.session.FtpSession;
  */
 public class FtpsInitializer extends FtpInitializer {
 
-	public static WaarpSslContextFactory waarpSslContextFactory;
-	public static WaarpSecureKeyStore waarpSecureKeyStore;
+    public static WaarpSslContextFactory waarpSslContextFactory;
+    public static WaarpSecureKeyStore waarpSecureKeyStore;
 
-	/**
-	 * Constructor which Initializes some data for Server only
-	 * 
-	 * @param businessHandler
-	 * @param configuration
-	 */
-	public FtpsInitializer(Class<? extends BusinessHandler> businessHandler,
-			FtpConfiguration configuration) {
-	    super(businessHandler, configuration);
-	}
+    /**
+     * Constructor which Initializes some data for Server only
+     * 
+     * @param businessHandler
+     * @param configuration
+     */
+    public FtpsInitializer(Class<? extends BusinessHandler> businessHandler,
+            FtpConfiguration configuration) {
+        super(businessHandler, configuration);
+    }
 
-	/**
-	 * Create the pipeline with Handler, ObjectDecoder, ObjectEncoder.
-	 * 
-	 */
+    /**
+     * Create the pipeline with Handler, ObjectDecoder, ObjectEncoder.
+     * 
+     */
     @Override
     public void initChannel(SocketChannel ch) throws Exception {
         ChannelPipeline pipeline = ch.pipeline();
@@ -69,12 +69,12 @@ public class FtpsInitializer extends FtpInitializer {
         pipeline.addLast("decoder", ftpControlStringDecoder);
         pipeline.addLast("encoder", ftpControlStringEncoder);
         // Threaded execution for business logic
-        
+
         EventExecutorGroup executorGroup = configuration.getFtpInternalConfiguration().getExecutor();
         // and then business logic. New one on every connection
         BusinessHandler newbusiness = businessHandler.newInstance();
         SslNetworkHandler newNetworkHandler = new SslNetworkHandler(new FtpSession(
                 configuration, newbusiness));
         pipeline.addLast(executorGroup, "handler", newNetworkHandler);
-	}
+    }
 }

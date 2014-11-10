@@ -36,40 +36,40 @@ import org.waarp.ftp.core.utils.FtpChannelUtils;
 public class EPRT extends AbstractCommand {
     private static final WaarpLogger logger = WaarpLoggerFactory.getInstance(EPRT.class);
 
-	/*
-	 * (non-Javadoc)
-	 * @see org.waarp.ftp.core.command.AbstractCommand#exec()
-	 */
-	public void exec() throws Reply501Exception, Reply522Exception {
-		// First Check if any argument
-		if (!hasArg()) {
-			InetSocketAddress inetSocketAddress = getSession().getDataConn().getRemoteAddress();
-			logger.debug("Active connect to "+inetSocketAddress);
-			getSession().getDataConn().setActive(inetSocketAddress);
-			getSession().setReplyCode(
-					ReplyCode.REPLY_200_COMMAND_OKAY,
-					"EPRT command successful on (" +
-							FtpChannelUtils.get2428Address(inetSocketAddress) +
-							")");
-			return;
-		}
-		// Check if Inet Address is OK
+    /*
+     * (non-Javadoc)
+     * @see org.waarp.ftp.core.command.AbstractCommand#exec()
+     */
+    public void exec() throws Reply501Exception, Reply522Exception {
+        // First Check if any argument
+        if (!hasArg()) {
+            InetSocketAddress inetSocketAddress = getSession().getDataConn().getRemoteAddress();
+            logger.debug("Active connect to " + inetSocketAddress);
+            getSession().getDataConn().setActive(inetSocketAddress);
+            getSession().setReplyCode(
+                    ReplyCode.REPLY_200_COMMAND_OKAY,
+                    "EPRT command successful on (" +
+                            FtpChannelUtils.get2428Address(inetSocketAddress) +
+                            ")");
+            return;
+        }
+        // Check if Inet Address is OK
 
-		InetSocketAddress inetSocketAddress = FtpChannelUtils.get2428InetSocketAddress(getArg());
-		if (inetSocketAddress == null) {
-			// ERROR
-			throw new Reply522Exception("Can't get SocketAddress from "+getArg());
-		}
-		// No Check if the Client address is the same as given
-		// OK now try to initialize connection (not open)
-        logger.debug("Active connect to "+inetSocketAddress);
-		getSession().getDataConn().setActive(inetSocketAddress);
-		getSession()
-				.setReplyCode(
-						ReplyCode.REPLY_200_COMMAND_OKAY,
-						"EPRT command successful on (" +
-								FtpChannelUtils
-										.get2428Address(inetSocketAddress) +
-								")");
-	}
+        InetSocketAddress inetSocketAddress = FtpChannelUtils.get2428InetSocketAddress(getArg());
+        if (inetSocketAddress == null) {
+            // ERROR
+            throw new Reply522Exception("Can't get SocketAddress from " + getArg());
+        }
+        // No Check if the Client address is the same as given
+        // OK now try to initialize connection (not open)
+        logger.debug("Active connect to " + inetSocketAddress);
+        getSession().getDataConn().setActive(inetSocketAddress);
+        getSession()
+                .setReplyCode(
+                        ReplyCode.REPLY_200_COMMAND_OKAY,
+                        "EPRT command successful on (" +
+                                FtpChannelUtils
+                                        .get2428Address(inetSocketAddress) +
+                                ")");
+    }
 }
