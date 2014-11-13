@@ -461,6 +461,8 @@ public abstract class FtpConfiguration {
         if (SERVER_THREAD < nb) {
             SERVER_THREAD = nb;
             CLIENT_THREAD = SERVER_THREAD * 10;
+        } else if (CLIENT_THREAD < nb) {
+            CLIENT_THREAD = nb * 10;
         }
     }
 
