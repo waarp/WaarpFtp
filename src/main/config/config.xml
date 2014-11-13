@@ -3,7 +3,7 @@
 	<serverpasswd>abcdef</serverpasswd>
 	<serverport>2021</serverport>
 	<serverhome>/opt/R66/GGFTP</serverhome>
-	<serverthread>0</serverthread>
+	<serverthread>10</serverthread>
 	<sessionlimit2>102400</sessionlimit2>
 	<globallimit2>1024000</globallimit2>
 	<sessionlimit>0</sessionlimit>
