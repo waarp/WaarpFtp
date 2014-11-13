@@ -250,6 +250,9 @@ public class FileBasedConfiguration extends FtpConfiguration {
         if (node != null) {
             CLIENT_THREAD = Integer.parseInt(node.getText());
         }
+        if (SERVER_THREAD == 0 || CLIENT_THREAD == 0) {
+            computeNbThreads();
+        }
         node = document.selectSingleNode(XML_LIMITGLOBAL);
         if (node != null) {
             serverGlobalReadLimit = Long.parseLong(node.getText());
