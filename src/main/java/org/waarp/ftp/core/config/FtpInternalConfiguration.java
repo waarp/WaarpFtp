@@ -226,12 +226,12 @@ public class FtpInternalConfiguration {
         ISUNIX = !DetectionUtils.isWindows();
         configuration.shutdownConfiguration.timeout = configuration.TIMEOUTCON;
         new FtpShutdownHook(configuration.shutdownConfiguration, configuration);
-        execCommandEvent = new NioEventLoopGroup(configuration.CLIENT_THREAD*2, new WaarpThreadFactory("Command"));
+        execCommandEvent = new NioEventLoopGroup(configuration.CLIENT_THREAD * 2, new WaarpThreadFactory("Command"));
         execBoss = new NioEventLoopGroup(configuration.SERVER_THREAD, new WaarpThreadFactory("CommandBoss", false));
         execWorker = new NioEventLoopGroup(configuration.CLIENT_THREAD, new WaarpThreadFactory("CommandWorker"));
-        execPassiveDataBoss = new NioEventLoopGroup(configuration.SERVER_THREAD*2, new WaarpThreadFactory(
+        execPassiveDataBoss = new NioEventLoopGroup(configuration.SERVER_THREAD * 2, new WaarpThreadFactory(
                 "PassiveDataBoss"));
-        execDataWorker = new NioEventLoopGroup(configuration.CLIENT_THREAD*2, new WaarpThreadFactory("DataWorker"));
+        execDataWorker = new NioEventLoopGroup(configuration.CLIENT_THREAD * 2, new WaarpThreadFactory("DataWorker"));
     }
 
     /**
@@ -530,7 +530,6 @@ public class FtpInternalConfiguration {
         execWorker.shutdownGracefully();
         execPassiveDataBoss.shutdownGracefully();
         execDataWorker.shutdownGracefully();
-        //execDataEvent.shutdownGracefully();
         //execCommandEvent.shutdownGracefully();
         globalTrafficShapingHandler.release();
         executorService.shutdown();
