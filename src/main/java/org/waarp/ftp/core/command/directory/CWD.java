@@ -32,36 +32,36 @@ import org.waarp.ftp.core.file.FtpDir;
  * 
  */
 public class CWD extends AbstractCommand {
-	/**
-	 * Internal Logger
-	 */
-	private static final WaarpInternalLogger logger = WaarpInternalLoggerFactory
-			.getLogger(CWD.class);
+    /**
+     * Internal Logger
+     */
+    private static final WaarpInternalLogger logger = WaarpInternalLoggerFactory
+            .getLogger(CWD.class);
 
-	/*
-	 * (non-Javadoc)
-	 * @see org.waarp.ftp.core.command.AbstractCommand#exec()
-	 */
-	public void exec() throws CommandAbstractException {
-		FtpDir current = getSession().getDir();
-		if (current == null) {
-			logger.warn("not identidied");
-			throw new Reply530Exception("Not authentificated");
-		}
-		String nextDir = getArg();
-		if (!hasArg()) {
-			nextDir = "/";
-		}
-		if (current.changeDirectory(nextDir)) {
-			getSession()
-					.setReplyCode(
-							ReplyCode.REPLY_250_REQUESTED_FILE_ACTION_OKAY,
-							"\"" + current.getPwd() +
-									"\" is the new current directory");
-		} else {
-			getSession().setReplyCode(
-					ReplyCode.REPLY_550_REQUESTED_ACTION_NOT_TAKEN, null);
-		}
-	}
+    /*
+     * (non-Javadoc)
+     * @see org.waarp.ftp.core.command.AbstractCommand#exec()
+     */
+    public void exec() throws CommandAbstractException {
+        FtpDir current = getSession().getDir();
+        if (current == null) {
+            logger.warn("not identidied");
+            throw new Reply530Exception("Not authentificated");
+        }
+        String nextDir = getArg();
+        if (!hasArg()) {
+            nextDir = "/";
+        }
+        if (current.changeDirectory(nextDir)) {
+            getSession()
+                    .setReplyCode(
+                            ReplyCode.REPLY_250_REQUESTED_FILE_ACTION_OKAY,
+                            "\"" + current.getPwd() +
+                                    "\" is the new current directory");
+        } else {
+            getSession().setReplyCode(
+                    ReplyCode.REPLY_550_REQUESTED_ACTION_NOT_TAKEN, null);
+        }
+    }
 
 }

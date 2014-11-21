@@ -40,73 +40,73 @@ import org.waarp.ftp.core.session.FtpSession;
 
 /**
  * @author "Frederic Bregier"
- *
+ * 
  */
 public class FtpsPipelineFactory implements ChannelPipelineFactory {
-	/**
-	 * CRLF, CRNUL, LF delimiters
-	 */
-	private static final ChannelBuffer[] delimiter = new ChannelBuffer[] {
-			ChannelBuffers.wrappedBuffer(ReplyCode.CRLF.getBytes(WaarpStringUtils.UTF8)),
-			ChannelBuffers.wrappedBuffer(ReplyCode.CRNUL.getBytes(WaarpStringUtils.UTF8)),
-			ChannelBuffers.wrappedBuffer(ReplyCode.LF.getBytes(WaarpStringUtils.UTF8)) };
+    /**
+     * CRLF, CRNUL, LF delimiters
+     */
+    private static final ChannelBuffer[] delimiter = new ChannelBuffer[] {
+            ChannelBuffers.wrappedBuffer(ReplyCode.CRLF.getBytes(WaarpStringUtils.UTF8)),
+            ChannelBuffers.wrappedBuffer(ReplyCode.CRNUL.getBytes(WaarpStringUtils.UTF8)),
+            ChannelBuffers.wrappedBuffer(ReplyCode.LF.getBytes(WaarpStringUtils.UTF8)) };
 
-	private static final FtpControlStringDecoder ftpControlStringDecoder = new FtpControlStringDecoder();
+    private static final FtpControlStringDecoder ftpControlStringDecoder = new FtpControlStringDecoder();
 
-	private static final FtpControlStringEncoder ftpControlStringEncoder = new FtpControlStringEncoder();
+    private static final FtpControlStringEncoder ftpControlStringEncoder = new FtpControlStringEncoder();
 
-	public static WaarpSslContextFactory waarpSslContextFactory;
-	public static WaarpSecureKeyStore waarpSecureKeyStore;
+    public static WaarpSslContextFactory waarpSslContextFactory;
+    public static WaarpSecureKeyStore waarpSecureKeyStore;
 
-	/**
-	 * Business Handler Class if any (Target Mode only)
-	 */
-	private final Class<? extends BusinessHandler> businessHandler;
+    /**
+     * Business Handler Class if any (Target Mode only)
+     */
+    private final Class<? extends BusinessHandler> businessHandler;
 
-	/**
-	 * Configuration
-	 */
-	private final FtpConfiguration configuration;
+    /**
+     * Configuration
+     */
+    private final FtpConfiguration configuration;
 
-	/**
-	 * Constructor which Initializes some data for Server only
-	 * 
-	 * @param businessHandler
-	 * @param configuration
-	 */
-	public FtpsPipelineFactory(Class<? extends BusinessHandler> businessHandler,
-			FtpConfiguration configuration) {
-		this.businessHandler = businessHandler;
-		this.configuration = configuration;
-	}
+    /**
+     * Constructor which Initializes some data for Server only
+     * 
+     * @param businessHandler
+     * @param configuration
+     */
+    public FtpsPipelineFactory(Class<? extends BusinessHandler> businessHandler,
+            FtpConfiguration configuration) {
+        this.businessHandler = businessHandler;
+        this.configuration = configuration;
+    }
 
-	/**
-	 * Create the pipeline with Handler, ObjectDecoder, ObjectEncoder.
-	 * 
-	 * @see org.jboss.netty.channel.ChannelPipelineFactory#getPipeline()
-	 */
-	public ChannelPipeline getPipeline() throws Exception {
-		ChannelPipeline pipeline = Channels.pipeline();
-		// Server: no renegotiation still, but possible clientAuthent
-		SslHandler handler = waarpSslContextFactory.initPipelineFactory(true,
-				waarpSslContextFactory.needClientAuthentication(),
-				true);
-		// NO since we need to inform through SNMP: handler.setIssueHandshake(true);
-		pipeline.addLast("ssl", handler);
+    /**
+     * Create the pipeline with Handler, ObjectDecoder, ObjectEncoder.
+     * 
+     * @see org.jboss.netty.channel.ChannelPipelineFactory#getPipeline()
+     */
+    public ChannelPipeline getPipeline() throws Exception {
+        ChannelPipeline pipeline = Channels.pipeline();
+        // Server: no renegotiation still, but possible clientAuthent
+        SslHandler handler = waarpSslContextFactory.initPipelineFactory(true,
+                waarpSslContextFactory.needClientAuthentication(),
+                true);
+        // NO since we need to inform through SNMP: handler.setIssueHandshake(true);
+        pipeline.addLast("ssl", handler);
 
-		// Add the text line codec combination first,
-		pipeline.addLast("framer", new DelimiterBasedFrameDecoder(8192,
-				delimiter));
-		pipeline.addLast("decoder", ftpControlStringDecoder);
-		pipeline.addLast("encoder", ftpControlStringEncoder);
-		// Threaded execution for business logic
-		pipeline.addLast("pipelineExecutor", new ExecutionHandler(configuration
-				.getFtpInternalConfiguration().getPipelineExecutor()));
-		// and then business logic. New one on every connection
-		BusinessHandler newbusiness = businessHandler.newInstance();
-		SslNetworkHandler newNetworkHandler = new SslNetworkHandler(new FtpSession(
-				configuration, newbusiness));
-		pipeline.addLast("handler", newNetworkHandler);
-		return pipeline;
-	}
+        // Add the text line codec combination first,
+        pipeline.addLast("framer", new DelimiterBasedFrameDecoder(8192,
+                delimiter));
+        pipeline.addLast("decoder", ftpControlStringDecoder);
+        pipeline.addLast("encoder", ftpControlStringEncoder);
+        // Threaded execution for business logic
+        pipeline.addLast("pipelineExecutor", new ExecutionHandler(configuration
+                .getFtpInternalConfiguration().getPipelineExecutor()));
+        // and then business logic. New one on every connection
+        BusinessHandler newbusiness = businessHandler.newInstance();
+        SslNetworkHandler newNetworkHandler = new SslNetworkHandler(new FtpSession(
+                configuration, newbusiness));
+        pipeline.addLast("handler", newNetworkHandler);
+        return pipeline;
+    }
 }

@@ -30,34 +30,34 @@ import org.waarp.ftp.core.command.AbstractCommand;
  */
 public class NLST extends AbstractCommand {
 
-	/*
-	 * (non-Javadoc)
-	 * @see org.waarp.ftp.core.command.AbstractCommand#exec()
-	 */
-	public void exec() throws CommandAbstractException {
-		String path = null;
-		List<String> files = null;
-		if (!hasArg()) {
-			path = getSession().getDir().getPwd();
-			files = getSession().getDir().list(path);
-		} else {
-			path = getArg();
-			if (path.startsWith("-l") || path.startsWith("-L")) {
-				// This should be a LIST command
-				String[] paths = getArgs();
-				if (paths.length > 1) {
-					files = getSession().getDir().listFull(paths[1], true);
-				} else {
-					files = getSession().getDir().listFull(
-							getSession().getDir().getPwd(), true);
-				}
-			} else {
-				files = getSession().getDir().list(path);
-			}
-		}
-		getSession().openDataConnection();
-		getSession().getDataConn().getFtpTransferControl().setNewFtpTransfer(
-				getCode(), files, path);
-	}
+    /*
+     * (non-Javadoc)
+     * @see org.waarp.ftp.core.command.AbstractCommand#exec()
+     */
+    public void exec() throws CommandAbstractException {
+        String path = null;
+        List<String> files = null;
+        if (!hasArg()) {
+            path = getSession().getDir().getPwd();
+            files = getSession().getDir().list(path);
+        } else {
+            path = getArg();
+            if (path.startsWith("-l") || path.startsWith("-L")) {
+                // This should be a LIST command
+                String[] paths = getArgs();
+                if (paths.length > 1) {
+                    files = getSession().getDir().listFull(paths[1], true);
+                } else {
+                    files = getSession().getDir().listFull(
+                            getSession().getDir().getPwd(), true);
+                }
+            } else {
+                files = getSession().getDir().list(path);
+            }
+        }
+        getSession().openDataConnection();
+        getSession().getDataConn().getFtpTransferControl().setNewFtpTransfer(
+                getCode(), files, path);
+    }
 
 }

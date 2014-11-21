@@ -32,26 +32,26 @@ import org.waarp.ftp.core.file.FtpFile;
  */
 public class RNFR extends AbstractCommand {
 
-	/*
-	 * (non-Javadoc)
-	 * @see org.waarp.ftp.core.command.AbstractCommand#exec()
-	 */
-	public void exec() throws CommandAbstractException {
-		if (!hasArg()) {
-			invalidCurrentCommand();
-			throw new Reply501Exception("Need a pathname as argument");
-		}
-		String filename = getArg();
-		FtpFile file = getSession().getDir().setFile(filename, false);
-		if (file != null && file.exists()) {
-			getSession()
-					.setReplyCode(
-							ReplyCode.REPLY_350_REQUESTED_FILE_ACTION_PENDING_FURTHER_INFORMATION,
-							"Need RNTO command");
-			return;
-		}
-		// FtpFile name not allowed or not found
-		throw new Reply550Exception("Filename not allowed");
-	}
+    /*
+     * (non-Javadoc)
+     * @see org.waarp.ftp.core.command.AbstractCommand#exec()
+     */
+    public void exec() throws CommandAbstractException {
+        if (!hasArg()) {
+            invalidCurrentCommand();
+            throw new Reply501Exception("Need a pathname as argument");
+        }
+        String filename = getArg();
+        FtpFile file = getSession().getDir().setFile(filename, false);
+        if (file != null && file.exists()) {
+            getSession()
+                    .setReplyCode(
+                            ReplyCode.REPLY_350_REQUESTED_FILE_ACTION_PENDING_FURTHER_INFORMATION,
+                            "Need RNTO command");
+            return;
+        }
+        // FtpFile name not allowed or not found
+        throw new Reply550Exception("Filename not allowed");
+    }
 
 }

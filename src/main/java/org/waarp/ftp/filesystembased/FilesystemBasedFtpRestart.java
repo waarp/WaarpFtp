@@ -34,35 +34,35 @@ import org.waarp.ftp.core.session.FtpSession;
  * 
  */
 public class FilesystemBasedFtpRestart extends FilesystemBasedRestartImpl {
-	/**
-	 * @param session
-	 */
-	public FilesystemBasedFtpRestart(FtpSession session) {
-		super(session);
-	}
+    /**
+     * @param session
+     */
+    public FilesystemBasedFtpRestart(FtpSession session) {
+        super(session);
+    }
 
-	@Override
-	public boolean restartMarker(String marker) throws CommandAbstractException {
-		FtpDataAsyncConn dataConn = ((FtpSession) getSession()).getDataConn();
-		if (dataConn.getStructure() == TransferStructure.FILE &&
-				dataConn.getMode() == TransferMode.STREAM &&
-				dataConn.getType() != TransferType.LENGTH) {
-			long newposition = 0;
-			String []args = marker.split(" ");
-			try {
-				newposition = Long.parseLong(args[0]);
-				if (args.length > 1) {
-					limit = Integer.parseInt(args[1]);
-				}
-			} catch (NumberFormatException e) {
-				throw new Reply502Exception(
-						"Marker must be length in byte as a position");
-			}
-			position = newposition;
-			setSet(true);
-			return true;
-		}
-		throw new Reply502Exception(
-				"Marker not implemented for such Mode, Type and Structure");
-	}
+    @Override
+    public boolean restartMarker(String marker) throws CommandAbstractException {
+        FtpDataAsyncConn dataConn = ((FtpSession) getSession()).getDataConn();
+        if (dataConn.getStructure() == TransferStructure.FILE &&
+                dataConn.getMode() == TransferMode.STREAM &&
+                dataConn.getType() != TransferType.LENGTH) {
+            long newposition = 0;
+            String[] args = marker.split(" ");
+            try {
+                newposition = Long.parseLong(args[0]);
+                if (args.length > 1) {
+                    limit = Integer.parseInt(args[1]);
+                }
+            } catch (NumberFormatException e) {
+                throw new Reply502Exception(
+                        "Marker must be length in byte as a position");
+            }
+            position = newposition;
+            setSet(true);
+            return true;
+        }
+        throw new Reply502Exception(
+                "Marker not implemented for such Mode, Type and Structure");
+    }
 }

@@ -25,37 +25,37 @@ import org.waarp.common.file.DirInterface;
  * 
  */
 public interface FtpDir extends DirInterface {
-	/**
-	 * Create a new FtpFile
-	 * 
-	 * @param path
-	 * @param append
-	 * @return the new Ftp FileInterface
-	 * @throws CommandAbstractException
-	 */
-	public abstract FtpFile newFile(String path, boolean append)
-			throws CommandAbstractException;
+    /**
+     * Create a new FtpFile
+     * 
+     * @param path
+     * @param append
+     * @return the new Ftp FileInterface
+     * @throws CommandAbstractException
+     */
+    public abstract FtpFile newFile(String path, boolean append)
+            throws CommandAbstractException;
 
-	/**
-	 * Set a path as the current FileInterface
-	 * 
-	 * @param path
-	 * @param append
-	 *            True if this file is supposed to be in append mode (APPE), False in any other
-	 *            cases
-	 * @return the Ftp FileInterface if it is correctly initiate
-	 * @throws CommandAbstractException
-	 */
-	public abstract FtpFile setFile(String path, boolean append)
-			throws CommandAbstractException;
+    /**
+     * Set a path as the current FileInterface
+     * 
+     * @param path
+     * @param append
+     *            True if this file is supposed to be in append mode (APPE), False in any other
+     *            cases
+     * @return the Ftp FileInterface if it is correctly initiate
+     * @throws CommandAbstractException
+     */
+    public abstract FtpFile setFile(String path, boolean append)
+            throws CommandAbstractException;
 
-	/**
-	 * Set a new unique path as the current FileInterface from the current Directory (STOU)
-	 * 
-	 * @return the Ftp FileInterface if it is correctly initiate
-	 * @throws CommandAbstractException
-	 */
-	public abstract FtpFile setUniqueFile()
-			throws CommandAbstractException;
+    /**
+     * Set a new unique path as the current FileInterface from the current Directory (STOU)
+     * 
+     * @return the Ftp FileInterface if it is correctly initiate
+     * @throws CommandAbstractException
+     */
+    public abstract FtpFile setUniqueFile()
+            throws CommandAbstractException;
 
 }

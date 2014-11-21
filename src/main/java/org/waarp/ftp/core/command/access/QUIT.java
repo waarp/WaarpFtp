@@ -28,15 +28,15 @@ import org.waarp.ftp.core.command.AbstractCommand;
  */
 public class QUIT extends AbstractCommand {
 
-	/*
-	 * (non-Javadoc)
-	 * @see org.waarp.ftp.core.command.AbstractCommand#exec()
-	 */
-	public void exec() {
-		getSession().rein();
-		getSession().setNextCommand(this);
-		getSession().setReplyCode(
-				ReplyCode.REPLY_221_CLOSING_CONTROL_CONNECTION, null);
-	}
+    /*
+     * (non-Javadoc)
+     * @see org.waarp.ftp.core.command.AbstractCommand#exec()
+     */
+    public void exec() {
+        getSession().rein();
+        getSession().setNextCommand(this);
+        getSession().setReplyCode(
+                ReplyCode.REPLY_221_CLOSING_CONTROL_CONNECTION, null);
+    }
 
 }

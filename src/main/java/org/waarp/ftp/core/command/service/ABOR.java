@@ -30,29 +30,29 @@ import org.waarp.ftp.core.exception.FtpNoTransferException;
  */
 public class ABOR extends AbstractCommand {
 
-	/*
-	 * (non-Javadoc)
-	 * @see org.waarp.ftp.core.command.AbstractCommand#exec()
-	 */
-	public void exec() throws CommandAbstractException {
-		// First check if the data connection is opened
-		if (getSession().getDataConn().isConnected()) {
-			// Now check if the data connection is currently used
-			try {
-				getSession().getDataConn().getFtpTransferControl()
-						.getExecutingFtpTransfer();
-			} catch (FtpNoTransferException e) {
-				getSession().getDataConn().getFtpTransferControl().clear();
-				getSession().setReplyCode(
-						ReplyCode.REPLY_226_CLOSING_DATA_CONNECTION, null);
-				return;
-			}
-			getSession().getDataConn().getFtpTransferControl()
-					.setTransferAbortedFromInternal(false);
-			return;
-		}
-		getSession().setReplyCode(ReplyCode.REPLY_226_CLOSING_DATA_CONNECTION,
-				null);
-	}
+    /*
+     * (non-Javadoc)
+     * @see org.waarp.ftp.core.command.AbstractCommand#exec()
+     */
+    public void exec() throws CommandAbstractException {
+        // First check if the data connection is opened
+        if (getSession().getDataConn().isConnected()) {
+            // Now check if the data connection is currently used
+            try {
+                getSession().getDataConn().getFtpTransferControl()
+                        .getExecutingFtpTransfer();
+            } catch (FtpNoTransferException e) {
+                getSession().getDataConn().getFtpTransferControl().clear();
+                getSession().setReplyCode(
+                        ReplyCode.REPLY_226_CLOSING_DATA_CONNECTION, null);
+                return;
+            }
+            getSession().getDataConn().getFtpTransferControl()
+                    .setTransferAbortedFromInternal(false);
+            return;
+        }
+        getSession().setReplyCode(ReplyCode.REPLY_226_CLOSING_DATA_CONNECTION,
+                null);
+    }
 
 }

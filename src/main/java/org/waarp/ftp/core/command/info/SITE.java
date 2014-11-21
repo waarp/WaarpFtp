@@ -38,53 +38,53 @@ import org.waarp.ftp.core.command.internal.IncorrectCommand;
  */
 public class SITE extends AbstractCommand {
 
-	/*
-	 * (non-Javadoc)
-	 * @see org.waarp.ftp.core.command.AbstractCommand#exec()
-	 */
-	public void exec() throws CommandAbstractException {
-		if (!hasArg()) {
-			invalidCurrentCommand();
-			throw new Reply501Exception("Need a command at least as argument");
-		}
-		// First check if this command is a special extension
-		AbstractCommand command = getSession().getBusinessHandler().
-				getSpecializedSiteCommand(getSession(), getArg());
-		boolean special = true;
-		if (command == null) {
-			// Now check what is the command as if we were in the NetworkHandler
-			command = FtpCommandCode.getFromLine(getSession(),
-					getArg());
-			special = false;
-		}
-		// Default message
-		getSession().setReplyCode(ReplyCode.REPLY_200_COMMAND_OKAY, null);
-		// First check if the command is an extension command
-		if (special || FtpCommandCode.isExtensionCommand(command.getCode())) {
-			// Now check if a transfer is on its way: illegal to have at same
-			// time two commands
-			if (getSession().getDataConn().getFtpTransferControl()
-					.isFtpTransferExecuting()) {
-				throw new Reply503Exception(
-						"Previous transfer command is not finished yet");
-			}
-		} else {
-			throw new Reply502Exception("Command not implemented: " + getArg());
-		}
-		// Command is OK, set it as current by first undo current command then
-		// set it as next after testing validity
-		getSession().setPreviousAsCurrentCommand();
-		if (getSession().getCurrentCommand().isNextCommandValid(command)) {
-			getSession().setNextCommand(command);
-			getSession().getBusinessHandler().beforeRunCommand();
-			command.exec();
-		} else {
-			command = new IncorrectCommand();
-			command.setArgs(getSession(), getArg(), null,
-					FtpCommandCode.IncorrectSequence);
-			getSession().setNextCommand(command);
-			getSession().getBusinessHandler().beforeRunCommand();
-			command.exec();
-		}
-	}
+    /*
+     * (non-Javadoc)
+     * @see org.waarp.ftp.core.command.AbstractCommand#exec()
+     */
+    public void exec() throws CommandAbstractException {
+        if (!hasArg()) {
+            invalidCurrentCommand();
+            throw new Reply501Exception("Need a command at least as argument");
+        }
+        // First check if this command is a special extension
+        AbstractCommand command = getSession().getBusinessHandler().
+                getSpecializedSiteCommand(getSession(), getArg());
+        boolean special = true;
+        if (command == null) {
+            // Now check what is the command as if we were in the NetworkHandler
+            command = FtpCommandCode.getFromLine(getSession(),
+                    getArg());
+            special = false;
+        }
+        // Default message
+        getSession().setReplyCode(ReplyCode.REPLY_200_COMMAND_OKAY, null);
+        // First check if the command is an extension command
+        if (special || FtpCommandCode.isExtensionCommand(command.getCode())) {
+            // Now check if a transfer is on its way: illegal to have at same
+            // time two commands
+            if (getSession().getDataConn().getFtpTransferControl()
+                    .isFtpTransferExecuting()) {
+                throw new Reply503Exception(
+                        "Previous transfer command is not finished yet");
+            }
+        } else {
+            throw new Reply502Exception("Command not implemented: " + getArg());
+        }
+        // Command is OK, set it as current by first undo current command then
+        // set it as next after testing validity
+        getSession().setPreviousAsCurrentCommand();
+        if (getSession().getCurrentCommand().isNextCommandValid(command)) {
+            getSession().setNextCommand(command);
+            getSession().getBusinessHandler().beforeRunCommand();
+            command.exec();
+        } else {
+            command = new IncorrectCommand();
+            command.setArgs(getSession(), getArg(), null,
+                    FtpCommandCode.IncorrectSequence);
+            getSession().setNextCommand(command);
+            getSession().getBusinessHandler().beforeRunCommand();
+            command.exec();
+        }
+    }
 }

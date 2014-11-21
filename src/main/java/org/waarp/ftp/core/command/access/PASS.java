@@ -31,31 +31,31 @@ import org.waarp.ftp.core.command.AbstractCommand;
  */
 public class PASS extends AbstractCommand {
 
-	/*
-	 * (non-Javadoc)
-	 * @see org.waarp.ftp.core.command.AbstractCommand#exec()
-	 */
-	public void exec() throws Reply421Exception, Reply501Exception,
-			Reply530Exception {
-		if (!hasArg()) {
-			invalidCurrentCommand();
-			throw new Reply501Exception("Need password as argument");
-		}
-		String password = getArg();
-		if (getSession().getAuth() == null) {
-			getSession().reinitFtpAuth();
-			throw new Reply530Exception("No user specified");
-		}
-		NextCommandReply nextCommandReply = null;
-		try {
-			nextCommandReply = getSession().getAuth().setPassword(password);
-		} catch (Reply530Exception e) {
-			getSession().reinitFtpAuth();
-			throw e;
-		}
-		setExtraNextCommand(nextCommandReply.command);
-		getSession().setReplyCode(nextCommandReply.reply,
-				nextCommandReply.message);
-	}
+    /*
+     * (non-Javadoc)
+     * @see org.waarp.ftp.core.command.AbstractCommand#exec()
+     */
+    public void exec() throws Reply421Exception, Reply501Exception,
+            Reply530Exception {
+        if (!hasArg()) {
+            invalidCurrentCommand();
+            throw new Reply501Exception("Need password as argument");
+        }
+        String password = getArg();
+        if (getSession().getAuth() == null) {
+            getSession().reinitFtpAuth();
+            throw new Reply530Exception("No user specified");
+        }
+        NextCommandReply nextCommandReply = null;
+        try {
+            nextCommandReply = getSession().getAuth().setPassword(password);
+        } catch (Reply530Exception e) {
+            getSession().reinitFtpAuth();
+            throw e;
+        }
+        setExtraNextCommand(nextCommandReply.command);
+        getSession().setReplyCode(nextCommandReply.reply,
+                nextCommandReply.message);
+    }
 
 }

@@ -35,103 +35,103 @@ import org.waarp.ftp.core.config.FtpConfiguration;
  * 
  */
 public class FtpDataPipelineFactory implements ChannelPipelineFactory {
-	/**
-	 * Mode Codec
-	 */
-	public static final String CODEC_MODE = "MODE";
+    /**
+     * Mode Codec
+     */
+    public static final String CODEC_MODE = "MODE";
 
-	/**
-	 * Limit Codec
-	 */
-	public static final String CODEC_LIMIT = "LIMITATION";
+    /**
+     * Limit Codec
+     */
+    public static final String CODEC_LIMIT = "LIMITATION";
 
-	/**
-	 * Type Codec
-	 */
-	public static final String CODEC_TYPE = "TYPE";
+    /**
+     * Type Codec
+     */
+    public static final String CODEC_TYPE = "TYPE";
 
-	/**
-	 * Structure Codec
-	 */
-	public static final String CODEC_STRUCTURE = "STRUCTURE";
+    /**
+     * Structure Codec
+     */
+    public static final String CODEC_STRUCTURE = "STRUCTURE";
 
-	/**
-	 * Pipeline Executor Codec
-	 */
-	public static final String PIPELINE_EXECUTOR = "pipelineExecutor";
+    /**
+     * Pipeline Executor Codec
+     */
+    public static final String PIPELINE_EXECUTOR = "pipelineExecutor";
 
-	/**
-	 * Handler Codec
-	 */
-	public static final String HANDLER = "handler";
+    /**
+     * Handler Codec
+     */
+    public static final String HANDLER = "handler";
 
-	private static final FtpDataTypeCodec ftpDataTypeCodec = new FtpDataTypeCodec(
-			TransferType.ASCII, TransferSubType.NONPRINT);
+    private static final FtpDataTypeCodec ftpDataTypeCodec = new FtpDataTypeCodec(
+            TransferType.ASCII, TransferSubType.NONPRINT);
 
-	private static final FtpDataStructureCodec ftpDataStructureCodec = new FtpDataStructureCodec(
-			TransferStructure.FILE);
+    private static final FtpDataStructureCodec ftpDataStructureCodec = new FtpDataStructureCodec(
+            TransferStructure.FILE);
 
-	/**
-	 * Business Handler Class
-	 */
-	private final Class<? extends DataBusinessHandler> dataBusinessHandler;
+    /**
+     * Business Handler Class
+     */
+    private final Class<? extends DataBusinessHandler> dataBusinessHandler;
 
-	/**
-	 * Configuration
-	 */
-	private final FtpConfiguration configuration;
+    /**
+     * Configuration
+     */
+    private final FtpConfiguration configuration;
 
-	/**
-	 * Is this factory for Active mode
-	 */
-	private final boolean isActive;
+    /**
+     * Is this factory for Active mode
+     */
+    private final boolean isActive;
 
-	/**
-	 * Constructor which Initializes some data
-	 * 
-	 * @param dataBusinessHandler
-	 * @param configuration
-	 * @param active
-	 */
-	public FtpDataPipelineFactory(
-			Class<? extends DataBusinessHandler> dataBusinessHandler,
-			FtpConfiguration configuration, boolean active) {
-		this.dataBusinessHandler = dataBusinessHandler;
-		this.configuration = configuration;
-		isActive = active;
-	}
+    /**
+     * Constructor which Initializes some data
+     * 
+     * @param dataBusinessHandler
+     * @param configuration
+     * @param active
+     */
+    public FtpDataPipelineFactory(
+            Class<? extends DataBusinessHandler> dataBusinessHandler,
+            FtpConfiguration configuration, boolean active) {
+        this.dataBusinessHandler = dataBusinessHandler;
+        this.configuration = configuration;
+        isActive = active;
+    }
 
-	/**
-	 * Create the pipeline with Handler, ObjectDecoder, ObjectEncoder.
-	 * 
-	 * @see org.jboss.netty.channel.ChannelPipelineFactory#getPipeline()
-	 */
-	public ChannelPipeline getPipeline() throws Exception {
-		ChannelPipeline pipeline = Channels.pipeline();
-		// Add default codec but they will change by the channelConnected
-		pipeline.addFirst(CODEC_MODE, new FtpDataModeCodec(TransferMode.STREAM,
-				TransferStructure.FILE));
-		pipeline
-				.addLast(CODEC_LIMIT, configuration
-						.getFtpInternalConfiguration()
-						.getGlobalTrafficShapingHandler());
-		ChannelTrafficShapingHandler limitChannel =
-				configuration
-						.getFtpInternalConfiguration()
-						.newChannelTrafficShapingHandler();
-		if (limitChannel != null) {
-			pipeline.addLast(CODEC_LIMIT + "CHANNEL", limitChannel);
-		}
-		pipeline.addLast(CODEC_TYPE, ftpDataTypeCodec);
-		pipeline.addLast(CODEC_STRUCTURE, ftpDataStructureCodec);
-		// Threaded execution for business logic
-		pipeline.addLast(PIPELINE_EXECUTOR, new ExecutionHandler(configuration
-				.getFtpInternalConfiguration().getDataPipelineExecutor()));
-		// and then business logic. New one on every connection
-		DataBusinessHandler newbusiness = dataBusinessHandler.newInstance();
-		DataNetworkHandler newNetworkHandler = new DataNetworkHandler(
-				configuration, newbusiness, isActive);
-		pipeline.addLast(HANDLER, newNetworkHandler);
-		return pipeline;
-	}
+    /**
+     * Create the pipeline with Handler, ObjectDecoder, ObjectEncoder.
+     * 
+     * @see org.jboss.netty.channel.ChannelPipelineFactory#getPipeline()
+     */
+    public ChannelPipeline getPipeline() throws Exception {
+        ChannelPipeline pipeline = Channels.pipeline();
+        // Add default codec but they will change by the channelConnected
+        pipeline.addFirst(CODEC_MODE, new FtpDataModeCodec(TransferMode.STREAM,
+                TransferStructure.FILE));
+        pipeline
+                .addLast(CODEC_LIMIT, configuration
+                        .getFtpInternalConfiguration()
+                        .getGlobalTrafficShapingHandler());
+        ChannelTrafficShapingHandler limitChannel =
+                configuration
+                        .getFtpInternalConfiguration()
+                        .newChannelTrafficShapingHandler();
+        if (limitChannel != null) {
+            pipeline.addLast(CODEC_LIMIT + "CHANNEL", limitChannel);
+        }
+        pipeline.addLast(CODEC_TYPE, ftpDataTypeCodec);
+        pipeline.addLast(CODEC_STRUCTURE, ftpDataStructureCodec);
+        // Threaded execution for business logic
+        pipeline.addLast(PIPELINE_EXECUTOR, new ExecutionHandler(configuration
+                .getFtpInternalConfiguration().getDataPipelineExecutor()));
+        // and then business logic. New one on every connection
+        DataBusinessHandler newbusiness = dataBusinessHandler.newInstance();
+        DataNetworkHandler newNetworkHandler = new DataNetworkHandler(
+                configuration, newbusiness, isActive);
+        pipeline.addLast(HANDLER, newNetworkHandler);
+        return pipeline;
+    }
 }

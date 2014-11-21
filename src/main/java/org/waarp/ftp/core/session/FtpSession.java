@@ -48,421 +48,421 @@ import org.waarp.ftp.core.file.FtpDir;
  * 
  */
 public class FtpSession implements SessionInterface {
-	/**
-	 * Business Handler
-	 */
-	private final BusinessHandler businessHandler;
+    /**
+     * Business Handler
+     */
+    private final BusinessHandler businessHandler;
 
-	/**
-	 * Associated global configuration
-	 */
-	private final FtpConfiguration configuration;
+    /**
+     * Associated global configuration
+     */
+    private final FtpConfiguration configuration;
 
-	/**
-	 * Associated Binary connection
-	 */
-	private volatile FtpDataAsyncConn dataConn = null;
+    /**
+     * Associated Binary connection
+     */
+    private volatile FtpDataAsyncConn dataConn = null;
 
-	/**
-	 * Ftp Authentication
-	 */
-	private FtpAuth ftpAuth = null;
+    /**
+     * Ftp Authentication
+     */
+    private FtpAuth ftpAuth = null;
 
-	/**
-	 * Ftp DirInterface configuration and access
-	 */
-	private FtpDir ftpDir = null;
+    /**
+     * Ftp DirInterface configuration and access
+     */
+    private FtpDir ftpDir = null;
 
-	/**
-	 * Previous Command
-	 */
-	private AbstractCommand previousCommand = null;
+    /**
+     * Previous Command
+     */
+    private AbstractCommand previousCommand = null;
 
-	/**
-	 * Current Command
-	 */
-	private AbstractCommand currentCommand = null;
-	/**
-	 * Is the current command finished
-	 */
-	private volatile boolean isCurrentCommandFinished = true;
+    /**
+     * Current Command
+     */
+    private AbstractCommand currentCommand = null;
+    /**
+     * Is the current command finished
+     */
+    private volatile boolean isCurrentCommandFinished = true;
 
-	/**
-	 * Associated Reply Code
-	 */
-	private ReplyCode replyCode = null;
+    /**
+     * Associated Reply Code
+     */
+    private ReplyCode replyCode = null;
 
-	/**
-	 * Real text for answer
-	 */
-	private String answer = null;
+    /**
+     * Real text for answer
+     */
+    private String answer = null;
 
-	/**
-	 * Current Restart information
-	 */
-	private Restart restart = null;
+    /**
+     * Current Restart information
+     */
+    private Restart restart = null;
 
-	/**
-	 * Is the control ready to accept command
-	 */
-	private volatile boolean isReady = false;
-	
-	/**
-	 * Is the current session using SSL on Control
-	 */
-	private boolean isSsl = false;
-	/**
-	 * WIll all data be using SSL
-	 */
-	private boolean isDataSsl = false;
+    /**
+     * Is the control ready to accept command
+     */
+    private volatile boolean isReady = false;
 
-	/**
-	 * Constructor
-	 * 
-	 * @param configuration
-	 * @param handler
-	 */
-	public FtpSession(FtpConfiguration configuration, BusinessHandler handler) {
-		this.configuration = configuration;
-		businessHandler = handler;
-		isReady = false;
-	}
+    /**
+     * Is the current session using SSL on Control
+     */
+    private boolean isSsl = false;
+    /**
+     * WIll all data be using SSL
+     */
+    private boolean isDataSsl = false;
 
-	/**
-	 * @return the businessHandler
-	 */
-	public BusinessHandler getBusinessHandler() {
-		return businessHandler;
-	}
+    /**
+     * Constructor
+     * 
+     * @param configuration
+     * @param handler
+     */
+    public FtpSession(FtpConfiguration configuration, BusinessHandler handler) {
+        this.configuration = configuration;
+        businessHandler = handler;
+        isReady = false;
+    }
 
-	/**
-	 * Get the configuration
-	 * 
-	 * @return the configuration
-	 */
-	public FtpConfiguration getConfiguration() {
-		return configuration;
-	}
+    /**
+     * @return the businessHandler
+     */
+    public BusinessHandler getBusinessHandler() {
+        return businessHandler;
+    }
 
-	public FtpDir getDir() {
-		return ftpDir;
-	}
+    /**
+     * Get the configuration
+     * 
+     * @return the configuration
+     */
+    public FtpConfiguration getConfiguration() {
+        return configuration;
+    }
 
-	/**
-	 * @return the Data Connection
-	 */
-	public FtpDataAsyncConn getDataConn() {
-		return dataConn;
-	}
+    public FtpDir getDir() {
+        return ftpDir;
+    }
 
-	public FtpAuth getAuth() {
-		return ftpAuth;
-	}
+    /**
+     * @return the Data Connection
+     */
+    public FtpDataAsyncConn getDataConn() {
+        return dataConn;
+    }
 
-	public Restart getRestart() {
-		return restart;
-	}
+    public FtpAuth getAuth() {
+        return ftpAuth;
+    }
 
-	/**
-	 * This function is called when the Command Channel is connected (from channelConnected of the
-	 * NetworkHandler)
-	 */
-	public void setControlConnected() {
-		dataConn = new FtpDataAsyncConn(this);
-		// AuthInterface must be done before FtpFile
-		ftpAuth = businessHandler.getBusinessNewAuth();
-		ftpDir = businessHandler.getBusinessNewDir();
-		restart = businessHandler.getBusinessNewRestart();
-	}
+    public Restart getRestart() {
+        return restart;
+    }
 
-	/**
-	 * Special initialization (FtpExec with Https session)
-	 * 
-	 * @param auth
-	 * @param dir
-	 * @param restart
-	 */
-	public void setSpecialInit(FtpAuth auth, FtpDir dir, Restart restart) {
-		this.ftpAuth = auth;
-		this.ftpDir = dir;
-		this.restart = restart;
-	}
+    /**
+     * This function is called when the Command Channel is connected (from channelConnected of the
+     * NetworkHandler)
+     */
+    public void setControlConnected() {
+        dataConn = new FtpDataAsyncConn(this);
+        // AuthInterface must be done before FtpFile
+        ftpAuth = businessHandler.getBusinessNewAuth();
+        ftpDir = businessHandler.getBusinessNewDir();
+        restart = businessHandler.getBusinessNewRestart();
+    }
 
-	/**
-	 * @return the Control channel
-	 */
-	public Channel getControlChannel() {
-		return getNetworkHandler().getControlChannel();
-	}
+    /**
+     * Special initialization (FtpExec with Https session)
+     * 
+     * @param auth
+     * @param dir
+     * @param restart
+     */
+    public void setSpecialInit(FtpAuth auth, FtpDir dir, Restart restart) {
+        this.ftpAuth = auth;
+        this.ftpDir = dir;
+        this.restart = restart;
+    }
 
-	/**
-	 * 
-	 * @return The network handler associated with control
-	 */
-	public NetworkHandler getNetworkHandler() {
-		if (businessHandler != null) {
-			return businessHandler.getNetworkHandler();
-		}
-		return null;
-	}
+    /**
+     * @return the Control channel
+     */
+    public Channel getControlChannel() {
+        return getNetworkHandler().getControlChannel();
+    }
 
-	/**
-	 * Set the new current command
-	 * 
-	 * @param command
-	 */
-	public void setNextCommand(CommandInterface command) {
-		previousCommand = currentCommand;
-		currentCommand = (AbstractCommand) command;
-		isCurrentCommandFinished = false;
-	}
+    /**
+     * 
+     * @return The network handler associated with control
+     */
+    public NetworkHandler getNetworkHandler() {
+        if (businessHandler != null) {
+            return businessHandler.getNetworkHandler();
+        }
+        return null;
+    }
 
-	/**
-	 * @return the currentCommand
-	 */
-	public AbstractCommand getCurrentCommand() {
-		return currentCommand;
-	}
+    /**
+     * Set the new current command
+     * 
+     * @param command
+     */
+    public void setNextCommand(CommandInterface command) {
+        previousCommand = currentCommand;
+        currentCommand = (AbstractCommand) command;
+        isCurrentCommandFinished = false;
+    }
 
-	/**
-	 * @return the previousCommand
-	 */
-	public AbstractCommand getPreviousCommand() {
-		return previousCommand;
-	}
+    /**
+     * @return the currentCommand
+     */
+    public AbstractCommand getCurrentCommand() {
+        return currentCommand;
+    }
 
-	/**
-	 * Set the previous command as the new current command (used after a incorrect sequence of
-	 * commands or unknown command)
-	 * 
-	 */
-	public void setPreviousAsCurrentCommand() {
-		currentCommand = previousCommand;
-		isCurrentCommandFinished = true;
-	}
+    /**
+     * @return the previousCommand
+     */
+    public AbstractCommand getPreviousCommand() {
+        return previousCommand;
+    }
 
-	/**
-	 * 
-	 * @return True if the Current Command is already Finished (ready to accept a new one)
-	 */
-	public boolean isCurrentCommandFinished() {
-		return isCurrentCommandFinished;
-	}
+    /**
+     * Set the previous command as the new current command (used after a incorrect sequence of
+     * commands or unknown command)
+     * 
+     */
+    public void setPreviousAsCurrentCommand() {
+        currentCommand = previousCommand;
+        isCurrentCommandFinished = true;
+    }
 
-	/**
-	 * Set the Current Command as finished
-	 */
-	public void setCurrentCommandFinished() {
-		this.isCurrentCommandFinished = true;
-	}
+    /**
+     * 
+     * @return True if the Current Command is already Finished (ready to accept a new one)
+     */
+    public boolean isCurrentCommandFinished() {
+        return isCurrentCommandFinished;
+    }
 
-	/**
-	 * @return the answer
-	 */
-	public String getAnswer() {
-		if (answer == null) {
-			if (replyCode == null) {
-				answer = ReplyCode.REPLY_000_SPECIAL_NOSTATUS.getMesg();
-			} else {
-				answer = replyCode.getMesg();
-			}
-		}
-		return answer;
-	}
+    /**
+     * Set the Current Command as finished
+     */
+    public void setCurrentCommandFinished() {
+        this.isCurrentCommandFinished = true;
+    }
 
-	/**
-	 * @param replyCode
-	 *            the replyCode to set
-	 * @param answer
-	 */
-	public void setReplyCode(ReplyCode replyCode, String answer) {
-		this.replyCode = replyCode;
-		if (answer != null) {
-			this.answer = ReplyCode.getFinalMsg(replyCode.getCode(), answer);
-		} else {
-			this.answer = replyCode.getMesg();
-		}
-	}
+    /**
+     * @return the answer
+     */
+    public String getAnswer() {
+        if (answer == null) {
+            if (replyCode == null) {
+                answer = ReplyCode.REPLY_000_SPECIAL_NOSTATUS.getMesg();
+            } else {
+                answer = replyCode.getMesg();
+            }
+        }
+        return answer;
+    }
 
-	/**
-	 * @param exception
-	 */
-	public void setReplyCode(CommandAbstractException exception) {
-		this.setReplyCode(exception.code, exception.message);
-	}
+    /**
+     * @param replyCode
+     *            the replyCode to set
+     * @param answer
+     */
+    public void setReplyCode(ReplyCode replyCode, String answer) {
+        this.replyCode = replyCode;
+        if (answer != null) {
+            this.answer = ReplyCode.getFinalMsg(replyCode.getCode(), answer);
+        } else {
+            this.answer = replyCode.getMesg();
+        }
+    }
 
-	/**
-	 * Set Exit code after an error
-	 * 
-	 * @param answer
-	 */
-	public void setExitErrorCode(String answer) {
-		this
-				.setReplyCode(
-						ReplyCode.REPLY_421_SERVICE_NOT_AVAILABLE_CLOSING_CONTROL_CONNECTION,
-						answer);
-	}
+    /**
+     * @param exception
+     */
+    public void setReplyCode(CommandAbstractException exception) {
+        this.setReplyCode(exception.code, exception.message);
+    }
 
-	/**
-	 * Set Exit normal code
-	 * 
-	 * @param answer
-	 */
-	public void setExitNormalCode(String answer) {
-		this.setReplyCode(ReplyCode.REPLY_221_CLOSING_CONTROL_CONNECTION,
-				answer);
-	}
+    /**
+     * Set Exit code after an error
+     * 
+     * @param answer
+     */
+    public void setExitErrorCode(String answer) {
+        this
+                .setReplyCode(
+                        ReplyCode.REPLY_421_SERVICE_NOT_AVAILABLE_CLOSING_CONTROL_CONNECTION,
+                        answer);
+    }
 
-	/**
-	 * @return the replyCode
-	 */
-	public ReplyCode getReplyCode() {
-		return replyCode;
-	}
+    /**
+     * Set Exit normal code
+     * 
+     * @param answer
+     */
+    public void setExitNormalCode(String answer) {
+        this.setReplyCode(ReplyCode.REPLY_221_CLOSING_CONTROL_CONNECTION,
+                answer);
+    }
 
-	public void clear() {
-		if (dataConn != null) {
-			dataConn.clear();
-		}
-		if (ftpDir != null) {
-			ftpDir.clear();
-		}
-		if (ftpAuth != null) {
-			ftpAuth.clear();
-		}
-		previousCommand = null;
-		replyCode = null;
-		answer = null;
-		isReady = false;
-	}
+    /**
+     * @return the replyCode
+     */
+    public ReplyCode getReplyCode() {
+        return replyCode;
+    }
 
-	/**
-	 * @return True if the Control is ready to accept command
-	 */
-	public boolean isReady() {
-		return isReady;
-	}
+    public void clear() {
+        if (dataConn != null) {
+            dataConn.clear();
+        }
+        if (ftpDir != null) {
+            ftpDir.clear();
+        }
+        if (ftpAuth != null) {
+            ftpAuth.clear();
+        }
+        previousCommand = null;
+        replyCode = null;
+        answer = null;
+        isReady = false;
+    }
 
-	/**
-	 * @param isReady
-	 *            the isReady to set
-	 */
-	public void setReady(boolean isReady) {
-		this.isReady = isReady;
-	}
+    /**
+     * @return True if the Control is ready to accept command
+     */
+    public boolean isReady() {
+        return isReady;
+    }
 
-	@Override
-	public String toString() {
-		String mesg = "FtpSession: ";
-		if (ftpAuth != null) {
-			mesg += "User: " + ftpAuth.getUser() + "/" + ftpAuth.getAccount() + " ";
-		}
-		if (currentCommand != null) {
-			mesg += "CMD: " + currentCommand.getCommand() + " " +
-					currentCommand.getArg() + " ";
-		}
-		if (replyCode != null) {
-			mesg += "Reply: " + (answer != null ? answer : replyCode.getMesg()) +
-					" ";
-		}
-		if (dataConn != null) {
-			mesg += dataConn.toString();
-		}
-		if (ftpDir != null) {
-			try {
-				mesg += " PWD: " + ftpDir.getPwd();
-			} catch (CommandAbstractException e) {
-			}
-		}
-		return mesg + "\n";
-	}
+    /**
+     * @param isReady
+     *            the isReady to set
+     */
+    public void setReady(boolean isReady) {
+        this.isReady = isReady;
+    }
 
-	public int getBlockSize() {
-		return restart.getMaxSize(configuration.BLOCKSIZE);
-	}
+    @Override
+    public String toString() {
+        String mesg = "FtpSession: ";
+        if (ftpAuth != null) {
+            mesg += "User: " + ftpAuth.getUser() + "/" + ftpAuth.getAccount() + " ";
+        }
+        if (currentCommand != null) {
+            mesg += "CMD: " + currentCommand.getCommand() + " " +
+                    currentCommand.getArg() + " ";
+        }
+        if (replyCode != null) {
+            mesg += "Reply: " + (answer != null ? answer : replyCode.getMesg()) +
+                    " ";
+        }
+        if (dataConn != null) {
+            mesg += dataConn.toString();
+        }
+        if (ftpDir != null) {
+            try {
+                mesg += " PWD: " + ftpDir.getPwd();
+            } catch (CommandAbstractException e) {}
+        }
+        return mesg + "\n";
+    }
 
-	public FileParameterInterface getFileParameter() {
-		return configuration.getFileParameter();
-	}
+    public int getBlockSize() {
+        return restart.getMaxSize(configuration.BLOCKSIZE);
+    }
 
-	/**
-	 * 
-	 * @param path
-	 * @return the basename from the given path
-	 */
-	public static String getBasename(String path) {
-		File file = new File(path);
-		return file.getName();
-	}
+    public FileParameterInterface getFileParameter() {
+        return configuration.getFileParameter();
+    }
 
-	/**
-	 * Reinitialize the authentication to the connection step
-	 * 
-	 */
-	public void reinitFtpAuth() {
-		AbstractCommand connectioncommand = new ConnectionCommand(this);
-		setNextCommand(connectioncommand);
-		getAuth().clear();
-		getDataConn().clear();
-		getDataConn().getFtpTransferControl().resetWaitForOpenedDataChannel();
-	}
-	/**
-	 * Reinitialize all connection parameters, including authentification
-	 */
-	public void rein() {
-		// reset to default
-		if (getDataConn().isPassiveMode()) {
-			// Previous mode was Passive so remove the current configuration
-			InetSocketAddress local = getDataConn()
-					.getLocalAddress();
-			InetAddress remote = getDataConn()
-					.getRemoteAddress().getAddress();
-			getConfiguration().delFtpSession(remote, local);
-		}
-		getDataConn().setMode(
-				FtpArgumentCode.TransferMode.STREAM);
-		getDataConn().setStructure(
-				FtpArgumentCode.TransferStructure.FILE);
-		getDataConn().setType(
-				FtpArgumentCode.TransferType.ASCII);
-		getDataConn().setSubType(TransferSubType.NONPRINT);
-		reinitFtpAuth();
-	}
+    /**
+     * 
+     * @param path
+     * @return the basename from the given path
+     */
+    public static String getBasename(String path) {
+        File file = new File(path);
+        return file.getName();
+    }
 
-	/**
-	 * Try to open a connection. Do the intermediate reply if any (150) and the final one (125)
-	 * 
-	 * @throws Reply425Exception
-	 *             if the connection cannot be opened
-	 */
-	public void openDataConnection() throws Reply425Exception {
-		getDataConn().getFtpTransferControl().openDataConnection();
-		getNetworkHandler().writeIntermediateAnswer();
-	}
+    /**
+     * Reinitialize the authentication to the connection step
+     * 
+     */
+    public void reinitFtpAuth() {
+        AbstractCommand connectioncommand = new ConnectionCommand(this);
+        setNextCommand(connectioncommand);
+        getAuth().clear();
+        getDataConn().clear();
+        getDataConn().getFtpTransferControl().resetWaitForOpenedDataChannel();
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * @see org.waarp.common.file.SessionInterface#getUniqueExtension()
-	 */
-	@Override
-	public String getUniqueExtension() {
-		return configuration.getUniqueExtension();
-	}
+    /**
+     * Reinitialize all connection parameters, including authentification
+     */
+    public void rein() {
+        // reset to default
+        if (getDataConn().isPassiveMode()) {
+            // Previous mode was Passive so remove the current configuration
+            InetSocketAddress local = getDataConn()
+                    .getLocalAddress();
+            InetAddress remote = getDataConn()
+                    .getRemoteAddress().getAddress();
+            getConfiguration().delFtpSession(remote, local);
+        }
+        getDataConn().setMode(
+                FtpArgumentCode.TransferMode.STREAM);
+        getDataConn().setStructure(
+                FtpArgumentCode.TransferStructure.FILE);
+        getDataConn().setType(
+                FtpArgumentCode.TransferType.ASCII);
+        getDataConn().setSubType(TransferSubType.NONPRINT);
+        reinitFtpAuth();
+    }
 
-	public boolean isSsl() {
-		return isSsl;
-	}
+    /**
+     * Try to open a connection. Do the intermediate reply if any (150) and the final one (125)
+     * 
+     * @throws Reply425Exception
+     *             if the connection cannot be opened
+     */
+    public void openDataConnection() throws Reply425Exception {
+        getDataConn().getFtpTransferControl().openDataConnection();
+        getNetworkHandler().writeIntermediateAnswer();
+    }
 
-	public void setSsl(boolean isSsl) {
-		this.isSsl = isSsl;
-	}
+    /*
+     * (non-Javadoc)
+     * @see org.waarp.common.file.SessionInterface#getUniqueExtension()
+     */
+    @Override
+    public String getUniqueExtension() {
+        return configuration.getUniqueExtension();
+    }
 
-	public boolean isDataSsl() {
-		return isDataSsl;
-	}
+    public boolean isSsl() {
+        return isSsl;
+    }
 
-	public void setDataSsl(boolean isDataSsl) {
-		this.isDataSsl = isDataSsl;
-	}
-	
+    public void setSsl(boolean isSsl) {
+        this.isSsl = isSsl;
+    }
+
+    public boolean isDataSsl() {
+        return isDataSsl;
+    }
+
+    public void setDataSsl(boolean isDataSsl) {
+        this.isDataSsl = isDataSsl;
+    }
+
 }

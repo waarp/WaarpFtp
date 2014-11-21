@@ -32,27 +32,27 @@ import org.waarp.ftp.core.command.AbstractCommand;
  */
 public class ACCT extends AbstractCommand {
 
-	/*
-	 * (non-Javadoc)
-	 * @see org.waarp.ftp.core.command.AbstractCommand#exec()
-	 */
-	public void exec() throws Reply501Exception, Reply421Exception,
-			Reply530Exception, Reply502Exception {
-		if (!hasArg()) {
-			invalidCurrentCommand();
-			throw new Reply501Exception("Need an account as argument");
-		}
-		String account = getArg();
-		NextCommandReply nextCommandReply;
-		try {
-			nextCommandReply = getSession().getAuth().setAccount(account);
-		} catch (Reply530Exception e) {
-			getSession().reinitFtpAuth();
-			throw e;
-		}
-		setExtraNextCommand(nextCommandReply.command);
-		getSession().setReplyCode(nextCommandReply.reply,
-				nextCommandReply.message);
-	}
+    /*
+     * (non-Javadoc)
+     * @see org.waarp.ftp.core.command.AbstractCommand#exec()
+     */
+    public void exec() throws Reply501Exception, Reply421Exception,
+            Reply530Exception, Reply502Exception {
+        if (!hasArg()) {
+            invalidCurrentCommand();
+            throw new Reply501Exception("Need an account as argument");
+        }
+        String account = getArg();
+        NextCommandReply nextCommandReply;
+        try {
+            nextCommandReply = getSession().getAuth().setAccount(account);
+        } catch (Reply530Exception e) {
+            getSession().reinitFtpAuth();
+            throw e;
+        }
+        setExtraNextCommand(nextCommandReply.command);
+        getSession().setReplyCode(nextCommandReply.reply,
+                nextCommandReply.message);
+    }
 
 }

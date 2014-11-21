@@ -30,23 +30,23 @@ import org.waarp.ftp.core.command.AbstractCommand;
  * 
  */
 public abstract class UnimplementedCommand extends AbstractCommand {
-	/**
-	 * Internal Logger
-	 */
-	private static final WaarpInternalLogger logger = WaarpInternalLoggerFactory
-			.getLogger(UnimplementedCommand.class);
+    /**
+     * Internal Logger
+     */
+    private static final WaarpInternalLogger logger = WaarpInternalLoggerFactory
+            .getLogger(UnimplementedCommand.class);
 
-	/*
-	 * (non-Javadoc)
-	 * @see org.waarp.ftp.core.command.AbstractCommand#exec()
-	 */
-	public void exec() throws Reply502Exception {
-		getSession().setReplyCode(
-				ReplyCode.REPLY_502_COMMAND_NOT_IMPLEMENTED,
-				"Unimplemented Command: " + getCommand() + " with argument: " +
-						getArg());
-		logger.warn(getSession().getAnswer());
-		invalidCurrentCommand();
-		throw new Reply502Exception(getSession().getReplyCode().getMesg());
-	}
+    /*
+     * (non-Javadoc)
+     * @see org.waarp.ftp.core.command.AbstractCommand#exec()
+     */
+    public void exec() throws Reply502Exception {
+        getSession().setReplyCode(
+                ReplyCode.REPLY_502_COMMAND_NOT_IMPLEMENTED,
+                "Unimplemented Command: " + getCommand() + " with argument: " +
+                        getArg());
+        logger.warn(getSession().getAnswer());
+        invalidCurrentCommand();
+        throw new Reply502Exception(getSession().getReplyCode().getMesg());
+    }
 }

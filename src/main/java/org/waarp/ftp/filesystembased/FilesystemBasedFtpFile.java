@@ -40,157 +40,157 @@ import org.waarp.ftp.core.session.FtpSession;
  * 
  */
 public abstract class FilesystemBasedFtpFile extends FilesystemBasedFileImpl implements FtpFile {
-	/**
-	 * Internal Logger
-	 */
-	private static final WaarpInternalLogger logger = WaarpInternalLoggerFactory
-			.getLogger(FilesystemBasedFtpFile.class);
+    /**
+     * Internal Logger
+     */
+    private static final WaarpInternalLogger logger = WaarpInternalLoggerFactory
+            .getLogger(FilesystemBasedFtpFile.class);
 
-	/**
-	 * Retrieve lock to ensure only one call at a time for one file
-	 */
-	private final ReentrantLock retrieveLock = new ReentrantLock();
+    /**
+     * Retrieve lock to ensure only one call at a time for one file
+     */
+    private final ReentrantLock retrieveLock = new ReentrantLock();
 
-	/**
-	 * @param session
-	 * @param dir
-	 *            It is not necessary the directory that owns this file.
-	 * @param path
-	 * @param append
-	 * @throws CommandAbstractException
-	 */
-	public FilesystemBasedFtpFile(FtpSession session,
-			FilesystemBasedFtpDir dir, String path, boolean append)
-			throws CommandAbstractException {
-		super(session, dir, path, append);
-	}
+    /**
+     * @param session
+     * @param dir
+     *            It is not necessary the directory that owns this file.
+     * @param path
+     * @param append
+     * @throws CommandAbstractException
+     */
+    public FilesystemBasedFtpFile(FtpSession session,
+            FilesystemBasedFtpDir dir, String path, boolean append)
+            throws CommandAbstractException {
+        super(session, dir, path, append);
+    }
 
-	@Override
-	public long length() throws CommandAbstractException {
-		long length = super.length();
-		if (((FtpSession) getSession()).getDataConn()
-				.isFileStreamBlockAsciiImage()) {
-			long block = (long) Math.ceil((double) length /
-					(double) getSession().getBlockSize());
-			length += (block + 3) * 3;
-		}
-		return length;
-	}
+    @Override
+    public long length() throws CommandAbstractException {
+        long length = super.length();
+        if (((FtpSession) getSession()).getDataConn()
+                .isFileStreamBlockAsciiImage()) {
+            long block = (long) Math.ceil((double) length /
+                    (double) getSession().getBlockSize());
+            length += (block + 3) * 3;
+        }
+        return length;
+    }
 
-	/**
-	 * Launch retrieve operation (internal method, should not be called directly)
-	 * 
-	 */
-	public void trueRetrieve() {
-		retrieveLock.lock();
-		try {
-			if (!isReady) {
-				return;
-			}
-			// First check if ready to run from Control
-			try {
-				((FtpSession) session).getDataConn().getFtpTransferControl()
-						.waitForDataNetworkHandlerReady();
-			} catch (InterruptedException e) {
-				// bad thing
-				logger.warn("DataNetworkHandler was not ready", e);
-				return;
-			}
+    /**
+     * Launch retrieve operation (internal method, should not be called directly)
+     * 
+     */
+    public void trueRetrieve() {
+        retrieveLock.lock();
+        try {
+            if (!isReady) {
+                return;
+            }
+            // First check if ready to run from Control
+            try {
+                ((FtpSession) session).getDataConn().getFtpTransferControl()
+                        .waitForDataNetworkHandlerReady();
+            } catch (InterruptedException e) {
+                // bad thing
+                logger.warn("DataNetworkHandler was not ready", e);
+                return;
+            }
 
-			Channel channel = ((FtpSession) session).getDataConn()
-					.getCurrentDataChannel();
-			DataBlock block = null;
-			try {
-				block = readDataBlock();
-			} catch (FileEndOfTransferException e) {
-				// Last block (in fact, previous block was the last one,
-				// but it could be aligned with the block size so not
-				// detected)
-				closeFile();
-				((FtpSession) session).getDataConn().getFtpTransferControl()
-						.setPreEndOfTransfer();
-				return;
-			}
-			if (block == null) {
-				// Last block (in fact, previous block was the last one,
-				// but it could be aligned with the block size so not
-				// detected)
-				closeFile();
-				((FtpSession) session).getDataConn().getFtpTransferControl()
-						.setPreEndOfTransfer();
-				return;
-			}
-			// While not last block
-			ChannelFuture future = null;
-			while (block != null && !block.isEOF()) {
-				future = Channels.write(channel, block);
-				// Test if channel is writable in order to prevent OOM
-				if (channel.isWritable()) {
-					try {
-						block = readDataBlock();
-					} catch (FileEndOfTransferException e) {
-						closeFile();
-						// Wait for last write
-						try {
-							future.await();
-						} catch (InterruptedException e1) {
-							throw new FileTransferException("Interruption catched");
-						}
-						if (future.isSuccess()) {
-							((FtpSession) session).getDataConn()
-									.getFtpTransferControl().setPreEndOfTransfer();
-						} else {
-							throw new FileTransferException("File transfer in error");
-						}
-						return;
-					}
-				} else {
-					return;// Wait for the next InterestChanged
-				}
-				try {
-					future.await();
-				} catch (InterruptedException e) {
-					closeFile();
-					throw new FileTransferException("Interruption catched");
-				}
-				if (!future.isSuccess()) {
-					closeFile();
-					throw new FileTransferException("File transfer in error");
-				}
-			}
-			// Last block
-			closeFile();
-			if (block != null) {
-				future = Channels.write(channel, block);
-			}
-			// Wait for last write
-			if (future != null) {
-				try {
-					future.await();
-				} catch (InterruptedException e) {
-					throw new FileTransferException("Interruption catched");
-				}
-				if (future.isSuccess()) {
-					((FtpSession) session).getDataConn().getFtpTransferControl()
-							.setPreEndOfTransfer();
-				} else {
-					throw new FileTransferException("Write is not successful");
-				}
-			}
-		} catch (FileTransferException e) {
-			// An error occurs!
-			((FtpSession) session).getDataConn().getFtpTransferControl()
-					.setTransferAbortedFromInternal(true);
-		} catch (FtpNoConnectionException e) {
-			logger.error("Should not be", e);
-			((FtpSession) session).getDataConn().getFtpTransferControl()
-					.setTransferAbortedFromInternal(true);
-		} catch (CommandAbstractException e) {
-			logger.error("Should not be", e);
-			((FtpSession) session).getDataConn().getFtpTransferControl()
-					.setTransferAbortedFromInternal(true);
-		} finally {
-			retrieveLock.unlock();
-		}
-	}
+            Channel channel = ((FtpSession) session).getDataConn()
+                    .getCurrentDataChannel();
+            DataBlock block = null;
+            try {
+                block = readDataBlock();
+            } catch (FileEndOfTransferException e) {
+                // Last block (in fact, previous block was the last one,
+                // but it could be aligned with the block size so not
+                // detected)
+                closeFile();
+                ((FtpSession) session).getDataConn().getFtpTransferControl()
+                        .setPreEndOfTransfer();
+                return;
+            }
+            if (block == null) {
+                // Last block (in fact, previous block was the last one,
+                // but it could be aligned with the block size so not
+                // detected)
+                closeFile();
+                ((FtpSession) session).getDataConn().getFtpTransferControl()
+                        .setPreEndOfTransfer();
+                return;
+            }
+            // While not last block
+            ChannelFuture future = null;
+            while (block != null && !block.isEOF()) {
+                future = Channels.write(channel, block);
+                // Test if channel is writable in order to prevent OOM
+                if (channel.isWritable()) {
+                    try {
+                        block = readDataBlock();
+                    } catch (FileEndOfTransferException e) {
+                        closeFile();
+                        // Wait for last write
+                        try {
+                            future.await();
+                        } catch (InterruptedException e1) {
+                            throw new FileTransferException("Interruption catched");
+                        }
+                        if (future.isSuccess()) {
+                            ((FtpSession) session).getDataConn()
+                                    .getFtpTransferControl().setPreEndOfTransfer();
+                        } else {
+                            throw new FileTransferException("File transfer in error");
+                        }
+                        return;
+                    }
+                } else {
+                    return;// Wait for the next InterestChanged
+                }
+                try {
+                    future.await();
+                } catch (InterruptedException e) {
+                    closeFile();
+                    throw new FileTransferException("Interruption catched");
+                }
+                if (!future.isSuccess()) {
+                    closeFile();
+                    throw new FileTransferException("File transfer in error");
+                }
+            }
+            // Last block
+            closeFile();
+            if (block != null) {
+                future = Channels.write(channel, block);
+            }
+            // Wait for last write
+            if (future != null) {
+                try {
+                    future.await();
+                } catch (InterruptedException e) {
+                    throw new FileTransferException("Interruption catched");
+                }
+                if (future.isSuccess()) {
+                    ((FtpSession) session).getDataConn().getFtpTransferControl()
+                            .setPreEndOfTransfer();
+                } else {
+                    throw new FileTransferException("Write is not successful");
+                }
+            }
+        } catch (FileTransferException e) {
+            // An error occurs!
+            ((FtpSession) session).getDataConn().getFtpTransferControl()
+                    .setTransferAbortedFromInternal(true);
+        } catch (FtpNoConnectionException e) {
+            logger.error("Should not be", e);
+            ((FtpSession) session).getDataConn().getFtpTransferControl()
+                    .setTransferAbortedFromInternal(true);
+        } catch (CommandAbstractException e) {
+            logger.error("Should not be", e);
+            ((FtpSession) session).getDataConn().getFtpTransferControl()
+                    .setTransferAbortedFromInternal(true);
+        } finally {
+            retrieveLock.unlock();
+        }
+    }
 }

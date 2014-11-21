@@ -33,27 +33,27 @@ import org.waarp.ftp.core.file.FtpFile;
  */
 public class DELE extends AbstractCommand {
 
-	/*
-	 * (non-Javadoc)
-	 * @see org.waarp.ftp.core.command.AbstractCommand#exec()
-	 */
-	public void exec() throws CommandAbstractException {
-		if (!hasArg()) {
-			invalidCurrentCommand();
-			throw new Reply501Exception("Need a pathname as argument");
-		}
-		String filename = getArg();
-		FtpFile file = getSession().getDir().setFile(filename, false);
-		if (file != null) {
-			if (file.delete()) {
-				getSession().setReplyCode(
-						ReplyCode.REPLY_250_REQUESTED_FILE_ACTION_OKAY,
-						"\"" + file.getFile() + "\" FtpFile is deleted");
-				return;
-			}
-			throw new Reply450Exception("Delete operation not allowed");
-		}
-		throw new Reply550Exception("Filename not allowed");
-	}
+    /*
+     * (non-Javadoc)
+     * @see org.waarp.ftp.core.command.AbstractCommand#exec()
+     */
+    public void exec() throws CommandAbstractException {
+        if (!hasArg()) {
+            invalidCurrentCommand();
+            throw new Reply501Exception("Need a pathname as argument");
+        }
+        String filename = getArg();
+        FtpFile file = getSession().getDir().setFile(filename, false);
+        if (file != null) {
+            if (file.delete()) {
+                getSession().setReplyCode(
+                        ReplyCode.REPLY_250_REQUESTED_FILE_ACTION_OKAY,
+                        "\"" + file.getFile() + "\" FtpFile is deleted");
+                return;
+            }
+            throw new Reply450Exception("Delete operation not allowed");
+        }
+        throw new Reply550Exception("Filename not allowed");
+    }
 
 }

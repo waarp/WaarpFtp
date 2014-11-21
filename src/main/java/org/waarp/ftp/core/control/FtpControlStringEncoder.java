@@ -30,37 +30,37 @@ import org.jboss.netty.handler.codec.string.StringEncoder;
  * 
  */
 public class FtpControlStringEncoder extends StringEncoder {
-	/**
+    /**
 	 *
 	 */
-	public FtpControlStringEncoder() {
-	}
+    public FtpControlStringEncoder() {
+    }
 
-	/**
-	 * @see StringEncoder
-	 * @param arg0
-	 */
-	public FtpControlStringEncoder(String arg0) {
-		super(Charset.forName(arg0));
-	}
+    /**
+     * @see StringEncoder
+     * @param arg0
+     */
+    public FtpControlStringEncoder(String arg0) {
+        super(Charset.forName(arg0));
+    }
 
-	/**
-	 * @see StringEncoder
-	 * @param arg0
-	 */
-	public FtpControlStringEncoder(Charset arg0) {
-		super(arg0);
-	}
+    /**
+     * @see StringEncoder
+     * @param arg0
+     */
+    public FtpControlStringEncoder(Charset arg0) {
+        super(arg0);
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * @see org.jboss.netty.handler.codec.string.StringEncoder#encode(org.jboss.netty
-	 * .channel.ChannelHandlerContext, org.jboss.netty.channel.Channel, java.lang.Object)
-	 */
-	@Override
-	protected Object encode(ChannelHandlerContext arg0, Channel arg1,
-			Object arg2) throws Exception {
-		return super.encode(arg0, arg1, arg2);
-	}
+    /*
+     * (non-Javadoc)
+     * @see org.jboss.netty.handler.codec.string.StringEncoder#encode(org.jboss.netty
+     * .channel.ChannelHandlerContext, org.jboss.netty.channel.Channel, java.lang.Object)
+     */
+    @Override
+    protected Object encode(ChannelHandlerContext arg0, Channel arg1,
+            Object arg2) throws Exception {
+        return super.encode(arg0, arg1, arg2);
+    }
 
 }

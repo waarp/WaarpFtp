@@ -36,83 +36,85 @@ import org.waarp.ftp.core.utils.FtpChannelUtils;
 
 /**
  * @author "Frederic Bregier"
- *
+ * 
  */
 public class SslDataNetworkHandler extends DataNetworkHandler {
-	/**
-	 * Internal Logger
-	 */
-	private static final WaarpInternalLogger logger = WaarpInternalLoggerFactory
-			.getLogger(SslDataNetworkHandler.class);
+    /**
+     * Internal Logger
+     */
+    private static final WaarpInternalLogger logger = WaarpInternalLoggerFactory
+            .getLogger(SslDataNetworkHandler.class);
 
-	/**
-	 * @param configuration
-	 * @param handler
-	 * @param active
-	 */
-	public SslDataNetworkHandler(FtpConfiguration configuration, DataBusinessHandler handler,
-			boolean active) {
-		super(configuration, handler, active);
-	}
+    /**
+     * @param configuration
+     * @param handler
+     * @param active
+     */
+    public SslDataNetworkHandler(FtpConfiguration configuration, DataBusinessHandler handler,
+            boolean active) {
+        super(configuration, handler, active);
+    }
 
-	@Override
-	public void channelOpen(ChannelHandlerContext ctx, ChannelStateEvent e)
-			throws Exception {
-		Channel channel = e.getChannel();
-		logger.debug("Add channel to ssl");
-		super.channelOpen(ctx, e);
-		channel.setReadable(false);
-	}
-	
-	/**
-	 * To be extended to inform of an error to SNMP support
-	 * @param error1
-	 * @param error2
-	 */
-	protected void callForSnmp(String error1, String error2) {
-		// ignore
-	}
+    @Override
+    public void channelOpen(ChannelHandlerContext ctx, ChannelStateEvent e)
+            throws Exception {
+        Channel channel = e.getChannel();
+        logger.debug("Add channel to ssl");
+        super.channelOpen(ctx, e);
+        channel.setReadable(false);
+    }
 
-	@Override
-	public void channelConnected(ChannelHandlerContext ctx, ChannelStateEvent e) {
-		// Get the SslHandler in the current pipeline.
-		Channel channel = e.getChannel();
-		if (session == null) {
-			setSession(channel);
-		}
-		if (session == null) {
-			logger.error("Cannot find session for SSL");
-			Channels.close(channel);
-			return;
-		}
-		// Server: no renegotiation still, but possible clientAuthent
-		SslHandler sslHandler = 
-				FtpsPipelineFactory.waarpSslContextFactory.initPipelineFactory(true,
-						FtpsPipelineFactory.waarpSslContextFactory.needClientAuthentication(),
-						true, FtpChannelUtils.getRemoteInetSocketAddress(session.getControlChannel()).getAddress().getHostAddress(),
-						FtpChannelUtils.getRemoteInetSocketAddress(session.getControlChannel()).getPort());
-		channel.getPipeline().addFirst("ssl", sslHandler);
-		channel.setReadable(true);
-		// Get the SslHandler and begin handshake ASAP.
-		logger.debug("SSL found but need handshake");
-		if (sslHandler.isIssueHandshake()) {
-			// client side
-			WaarpSslUtility.setStatusSslConnectedChannel(ctx.getChannel(), true);
-		} else {
-			// server side
-			// Get the SslHandler and begin handshake ASAP.
-			// Get notified when SSL handshake is done.
-			if (! WaarpSslUtility.runHandshake(ctx.getChannel())) {
-				callForSnmp("SSL Connection Error", "During Ssl Handshake");
-			}
-		}
-		/*ChannelFuture handshakeFuture = sslHandler.handshake();
-		try {
-			handshakeFuture.await();
-		} catch (InterruptedException e1) {
-		}*/
-		super.channelConnected(ctx, e);
-		logger.debug("End of initialization of SSL and data channel");
-	}
+    /**
+     * To be extended to inform of an error to SNMP support
+     * 
+     * @param error1
+     * @param error2
+     */
+    protected void callForSnmp(String error1, String error2) {
+        // ignore
+    }
+
+    @Override
+    public void channelConnected(ChannelHandlerContext ctx, ChannelStateEvent e) {
+        // Get the SslHandler in the current pipeline.
+        Channel channel = e.getChannel();
+        if (session == null) {
+            setSession(channel);
+        }
+        if (session == null) {
+            logger.error("Cannot find session for SSL");
+            Channels.close(channel);
+            return;
+        }
+        // Server: no renegotiation still, but possible clientAuthent
+        SslHandler sslHandler =
+                FtpsPipelineFactory.waarpSslContextFactory.initPipelineFactory(true,
+                        FtpsPipelineFactory.waarpSslContextFactory.needClientAuthentication(),
+                        true, FtpChannelUtils.getRemoteInetSocketAddress(session.getControlChannel()).getAddress()
+                                .getHostAddress(),
+                        FtpChannelUtils.getRemoteInetSocketAddress(session.getControlChannel()).getPort());
+        channel.getPipeline().addFirst("ssl", sslHandler);
+        channel.setReadable(true);
+        // Get the SslHandler and begin handshake ASAP.
+        logger.debug("SSL found but need handshake");
+        if (sslHandler.isIssueHandshake()) {
+            // client side
+            WaarpSslUtility.setStatusSslConnectedChannel(ctx.getChannel(), true);
+        } else {
+            // server side
+            // Get the SslHandler and begin handshake ASAP.
+            // Get notified when SSL handshake is done.
+            if (!WaarpSslUtility.runHandshake(ctx.getChannel())) {
+                callForSnmp("SSL Connection Error", "During Ssl Handshake");
+            }
+        }
+        /*ChannelFuture handshakeFuture = sslHandler.handshake();
+        try {
+        	handshakeFuture.await();
+        } catch (InterruptedException e1) {
+        }*/
+        super.channelConnected(ctx, e);
+        logger.debug("End of initialization of SSL and data channel");
+    }
 
 }

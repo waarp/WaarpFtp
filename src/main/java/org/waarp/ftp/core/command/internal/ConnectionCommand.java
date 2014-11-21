@@ -31,23 +31,23 @@ import org.waarp.ftp.core.session.FtpSession;
  */
 public class ConnectionCommand extends AbstractCommand {
 
-	/**
-	 * Create a ConnectionCommand
-	 * 
-	 * @param session
-	 */
-	public ConnectionCommand(FtpSession session) {
-		super();
-		setArgs(session, "Connection", null, FtpCommandCode.Connection);
-	}
+    /**
+     * Create a ConnectionCommand
+     * 
+     * @param session
+     */
+    public ConnectionCommand(FtpSession session) {
+        super();
+        setArgs(session, "Connection", null, FtpCommandCode.Connection);
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * @see org.waarp.ftp.core.command.AbstractCommand#exec()
-	 */
-	public void exec() throws CommandAbstractException {
-		// Nothing to do except 220
-		getSession().setReplyCode(ReplyCode.REPLY_220_SERVICE_READY, null);
-	}
+    /*
+     * (non-Javadoc)
+     * @see org.waarp.ftp.core.command.AbstractCommand#exec()
+     */
+    public void exec() throws CommandAbstractException {
+        // Nothing to do except 220
+        getSession().setReplyCode(ReplyCode.REPLY_220_SERVICE_READY, null);
+    }
 
 }

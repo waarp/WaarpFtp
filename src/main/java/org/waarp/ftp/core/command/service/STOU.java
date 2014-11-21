@@ -32,28 +32,28 @@ import org.waarp.ftp.core.file.FtpFile;
  */
 public class STOU extends AbstractCommand {
 
-	/*
-	 * (non-Javadoc)
-	 * @see org.waarp.ftp.core.command.AbstractCommand#exec()
-	 */
-	public void exec() throws CommandAbstractException {
-		if (hasArg()) {
-			invalidCurrentCommand();
-			throw new Reply501Exception("No argument is allowed");
-		}
-		FtpFile file = getSession().getDir().setUniqueFile();
-		if (file != null) {
-			if (file.store()) {
-				getSession().openDataConnection();
-				getSession().getDataConn().getFtpTransferControl()
-						.setNewFtpTransfer(getCode(), file);
-				return;
-			}
-			// Cannot find file
-			throw new Reply450Exception("Store unique operation not allowed");
-		}
-		// Filename not allowed
-		throw new Reply553Exception("Filename not allowed");
-	}
+    /*
+     * (non-Javadoc)
+     * @see org.waarp.ftp.core.command.AbstractCommand#exec()
+     */
+    public void exec() throws CommandAbstractException {
+        if (hasArg()) {
+            invalidCurrentCommand();
+            throw new Reply501Exception("No argument is allowed");
+        }
+        FtpFile file = getSession().getDir().setUniqueFile();
+        if (file != null) {
+            if (file.store()) {
+                getSession().openDataConnection();
+                getSession().getDataConn().getFtpTransferControl()
+                        .setNewFtpTransfer(getCode(), file);
+                return;
+            }
+            // Cannot find file
+            throw new Reply450Exception("Store unique operation not allowed");
+        }
+        // Filename not allowed
+        throw new Reply553Exception("Filename not allowed");
+    }
 
 }
