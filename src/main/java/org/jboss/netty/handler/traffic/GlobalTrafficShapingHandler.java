@@ -36,66 +36,42 @@ import org.jboss.netty.util.Timer;
 import org.jboss.netty.util.TimerTask;
 import org.jboss.netty.util.internal.ConcurrentHashMap;
 
+
 /**
- * <p>
- * This implementation of the {@link AbstractTrafficShapingHandler} is for global traffic shaping,
- * that is to say a global limitation of the bandwidth, whatever the number of opened channels.
- * </p>
- * 
+ * <p>This implementation of the {@link AbstractTrafficShapingHandler} is for global
+ * traffic shaping, that is to say a global limitation of the bandwidth, whatever
+ * the number of opened channels.</p>
+ *
  * The general use should be as follow:
  * <ul>
- * <li>
- * <p>
- * Create your unique GlobalTrafficShapingHandler like:
- * </p>
- * <p>
- * <tt>GlobalTrafficShapingHandler myHandler = new GlobalTrafficShapingHandler(timer);</tt>
- * </p>
- * <p>
- * timer could be created using <tt>HashedWheelTimer</tt>
- * </p>
- * <p>
- * <tt>pipeline.addLast("GLOBAL_TRAFFIC_SHAPING", myHandler);</tt>
- * </p>
- * 
- * <p>
- * <b>Note that this handler has a Pipeline Coverage of "all" which means only one such handler must
- * be created and shared among all channels as the counter must be shared among all channels.</b>
- * </p>
- * 
- * <p>
- * Other arguments can be passed like write or read limitation (in bytes/s where 0 means no
- * limitation) or the check interval (in millisecond) that represents the delay between two
- * computations of the bandwidth and so the call back of the doAccounting method (0 means no
- * accounting at all).
- * </p>
- * 
- * <p>
- * A value of 0 means no accounting for checkInterval. If you need traffic shaping but no such
- * accounting, it is recommended to set a positive value, even if it is high since the precision of
- * the Traffic Shaping depends on the period where the traffic is computed. The highest the
- * interval, the less precise the traffic shaping will be. It is suggested as higher value something
- * close to 5 or 10 minutes.
- * </p>
- * 
- * <p>
- * maxTimeToWait, by default set to 15s, allows to specify an upper bound of time shaping.
- * </p>
+ * <li><p>Create your unique GlobalTrafficShapingHandler like:</p>
+ * <p><tt>GlobalTrafficShapingHandler myHandler = new GlobalTrafficShapingHandler(timer);</tt></p>
+ * <p>timer could be created using <tt>HashedWheelTimer</tt></p>
+ * <p><tt>pipeline.addLast("GLOBAL_TRAFFIC_SHAPING", myHandler);</tt></p>
+ *
+ * <p><b>Note that this handler has a Pipeline Coverage of "all" which means only one such handler must be created
+ * and shared among all channels as the counter must be shared among all channels.</b></p>
+ *
+ * <p>Other arguments can be passed like write or read limitation (in bytes/s where 0 means no limitation)
+ * or the check interval (in millisecond) that represents the delay between two computations of the
+ * bandwidth and so the call back of the doAccounting method (0 means no accounting at all).</p>
+ *
+ * <p>A value of 0 means no accounting for checkInterval. If you need traffic shaping but no such accounting,
+ * it is recommended to set a positive value, even if it is high since the precision of the
+ * Traffic Shaping depends on the period where the traffic is computed. The highest the interval,
+ * the less precise the traffic shaping will be. It is suggested as higher value something close
+ * to 5 or 10 minutes.</p>
+ *
+ * <p>maxTimeToWait, by default set to 15s, allows to specify an upper bound of time shaping.</p>
  * </li>
- * <li>
- * <p>
- * Add it in your pipeline, before a recommended {@link ExecutionHandler} (like
- * {@link OrderedMemoryAwareThreadPoolExecutor} or {@link MemoryAwareThreadPoolExecutor}).
- * </p>
- * <p>
- * <tt>pipeline.addLast("GLOBAL_TRAFFIC_SHAPING", myHandler);</tt>
- * </p>
+ * <li><p>Add it in your pipeline, before a recommended {@link ExecutionHandler} (like
+ * {@link OrderedMemoryAwareThreadPoolExecutor} or {@link MemoryAwareThreadPoolExecutor}).</p>
+ * <p><tt>pipeline.addLast("GLOBAL_TRAFFIC_SHAPING", myHandler);</tt></p>
  * </li>
- * <li>
- * <p>
- * When you shutdown your application, release all the external resources by calling:
- * </p>
- * <tt>myHandler.releaseExternalResources();</tt></li>
+ * <li><p>When you shutdown your application, release all the external resources
+ * by calling:</p>
+ * <tt>myHandler.releaseExternalResources();</tt>
+ * </li>
  * </ul>
  */
 @Sharable
@@ -108,8 +84,8 @@ public class GlobalTrafficShapingHandler extends AbstractTrafficShapingHandler {
     private AtomicLong queuesSize = new AtomicLong();
 
     /**
-     * Max size in the list before proposing to stop writing new objects from next handlers for all
-     * channel (global)
+     * Max size in the list before proposing to stop writing new objects from next handlers
+     * for all channel (global)
      */
     long maxGlobalWriteSize = DEFAULT_MAX_SIZE * 100; // default 400MB
 
@@ -121,7 +97,6 @@ public class GlobalTrafficShapingHandler extends AbstractTrafficShapingHandler {
         long lastRead;
         ReentrantLock channelLock;
     }
-
     /**
      * Create the global TrafficCounter
      */
@@ -205,9 +180,9 @@ public class GlobalTrafficShapingHandler extends AbstractTrafficShapingHandler {
     }
 
     /**
-     * @param maxGlobalWriteSize
-     *            the maximum Global Write Size allowed in the buffer globally for all channels
-     *            before write suspended is set, default value being 400 MB
+     * @param maxGlobalWriteSize the maximum Global Write Size allowed in the buffer
+     *            globally for all channels before write suspended is set,
+     *            default value being 400 MB
      */
     public void setMaxGlobalWriteSize(long maxGlobalWriteSize) {
         this.maxGlobalWriteSize = maxGlobalWriteSize;
@@ -239,10 +214,12 @@ public class GlobalTrafficShapingHandler extends AbstractTrafficShapingHandler {
     private static final class ToSend {
         final long relativeTimeAction;
         final MessageEvent toSend;
+        final long size;
 
-        private ToSend(final long delay, final MessageEvent toSend) {
+        private ToSend(final long delay, final MessageEvent toSend, final long size) {
             this.relativeTimeAction = delay;
             this.toSend = toSend;
+            this.size = size;
         }
     }
 
@@ -257,7 +234,6 @@ public class GlobalTrafficShapingHandler extends AbstractTrafficShapingHandler {
         }
         return wait;
     }
-
     @Override
     void informReadOperation(final ChannelHandlerContext ctx, final long now) {
         Integer key = ctx.getChannel().hashCode();
@@ -279,14 +255,14 @@ public class GlobalTrafficShapingHandler extends AbstractTrafficShapingHandler {
         perChannel.channelLock.lock();
         try {
             if (writedelay == 0 && perChannel.messagesQueue.isEmpty()) {
-                if (!channel.isConnected()) {
+                if (! channel.isConnected()) {
                     // ignore
                     return;
                 }
                 if (trafficCounter != null) {
                     trafficCounter.bytesRealWriteFlowControl(size);
                 }
-                internalSubmitWrite(ctx, evt);
+                ctx.sendDownstream(evt);
                 perChannel.lastWrite = now;
                 return;
             }
@@ -297,22 +273,22 @@ public class GlobalTrafficShapingHandler extends AbstractTrafficShapingHandler {
             if (timer == null) {
                 // Sleep since no executor
                 Thread.sleep(delay);
-                if (!ctx.getChannel().isConnected()) {
+                if (! ctx.getChannel().isConnected()) {
                     // ignore
                     return;
                 }
                 if (trafficCounter != null) {
                     trafficCounter.bytesRealWriteFlowControl(size);
                 }
-                internalSubmitWrite(ctx, evt);
+                ctx.sendDownstream(evt);
                 perChannel.lastWrite = now;
                 return;
             }
-            if (!ctx.getChannel().isConnected()) {
+            if (! ctx.getChannel().isConnected()) {
                 // ignore
                 return;
             }
-            newToSend = new ToSend(delay + now, evt);
+            newToSend = new ToSend(delay + now, evt, size);
             perChannel.messagesQueue.add(newToSend);
             perChannel.queueSize += size;
             queuesSize.addAndGet(size);
@@ -338,7 +314,7 @@ public class GlobalTrafficShapingHandler extends AbstractTrafficShapingHandler {
     private void sendAllValid(ChannelHandlerContext ctx, final PerChannel perChannel, final long now)
             throws Exception {
         Channel channel = ctx.getChannel();
-        if (!channel.isConnected()) {
+        if (! channel.isConnected()) {
             // ignore
             return;
         }
@@ -347,17 +323,17 @@ public class GlobalTrafficShapingHandler extends AbstractTrafficShapingHandler {
             while (!perChannel.messagesQueue.isEmpty()) {
                 ToSend newToSend = perChannel.messagesQueue.remove(0);
                 if (newToSend.relativeTimeAction <= now) {
-                    long size = calculateSize(newToSend.toSend.getMessage());
+                    if (! channel.isConnected()) {
+                        // ignore
+                        break;
+                    }
+                    long size = newToSend.size;
                     if (trafficCounter != null) {
                         trafficCounter.bytesRealWriteFlowControl(size);
                     }
                     perChannel.queueSize -= size;
                     queuesSize.addAndGet(-size);
-                    if (!channel.isConnected()) {
-                        // ignore
-                        break;
-                    }
-                    internalSubmitWrite(ctx, newToSend.toSend);
+                    ctx.sendDownstream(newToSend.toSend);
                     perChannel.lastWrite = now;
                 } else {
                     perChannel.messagesQueue.add(0, newToSend);
@@ -387,9 +363,7 @@ public class GlobalTrafficShapingHandler extends AbstractTrafficShapingHandler {
         if (perChannel != null) {
             perChannel.channelLock.lock();
             try {
-                for (ToSend toSend : perChannel.messagesQueue) {
-                    queuesSize.addAndGet(-calculateSize(toSend.toSend.getMessage()));
-                }
+                queuesSize.addAndGet(-perChannel.queueSize);
                 perChannel.messagesQueue.clear();
             } finally {
                 perChannel.channelLock.unlock();
@@ -406,15 +380,11 @@ public class GlobalTrafficShapingHandler extends AbstractTrafficShapingHandler {
                 perChannel.channelLock.lock();
                 try {
                     for (ToSend toSend : perChannel.messagesQueue) {
-                        if (!channel.isConnected()) {
+                        if (! channel.isConnected()) {
                             // ignore
                             break;
                         }
-                        try {
-                            internalSubmitWrite(perChannel.ctx, toSend.toSend);
-                        } catch (Exception e) {
-                            break;
-                        }
+                        perChannel.ctx.sendDownstream(toSend.toSend);
                     }
                     perChannel.messagesQueue.clear();
                 } finally {
@@ -423,6 +393,7 @@ public class GlobalTrafficShapingHandler extends AbstractTrafficShapingHandler {
             }
         }
         channelQueues.clear();
+        queuesSize.set(0);
         super.releaseExternalResources();
     }
 }

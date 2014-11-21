@@ -65,19 +65,18 @@ public abstract class AbstractChannel implements Channel {
     static {
         UNWRITABLE_UPDATER = AtomicIntegerFieldUpdater.newUpdater(AbstractChannel.class, "unwritable");
     }
-
     /**
      * Creates a new instance.
-     * 
+     *
      * @param parent
-     *            the parent of this channel. {@code null} if there's no parent.
+     *        the parent of this channel. {@code null} if there's no parent.
      * @param factory
-     *            the factory which created this channel
+     *        the factory which created this channel
      * @param pipeline
-     *            the pipeline which is going to be attached to this channel
+     *        the pipeline which is going to be attached to this channel
      * @param sink
-     *            the sink which will receive downstream events from the pipeline and send upstream
-     *            events to the pipeline
+     *        the sink which will receive downstream events from the pipeline
+     *        and send upstream events to the pipeline
      */
     protected AbstractChannel(
             Channel parent, ChannelFactory factory,
@@ -93,17 +92,18 @@ public abstract class AbstractChannel implements Channel {
     }
 
     /**
-     * (Internal use only) Creates a new temporary instance with the specified ID.
-     * 
+     * (Internal use only) Creates a new temporary instance with the specified
+     * ID.
+     *
      * @param parent
-     *            the parent of this channel. {@code null} if there's no parent.
+     *        the parent of this channel. {@code null} if there's no parent.
      * @param factory
-     *            the factory which created this channel
+     *        the factory which created this channel
      * @param pipeline
-     *            the pipeline which is going to be attached to this channel
+     *        the pipeline which is going to be attached to this channel
      * @param sink
-     *            the sink which will receive downstream events from the pipeline and send upstream
-     *            events to the pipeline
+     *        the sink which will receive downstream events from the pipeline
+     *        and send upstream events to the pipeline
      */
     protected AbstractChannel(
             Integer id,
@@ -157,8 +157,8 @@ public abstract class AbstractChannel implements Channel {
     }
 
     /**
-     * Returns {@code true} if and only if the specified object is identical with this channel (i.e:
-     * {@code this == o}).
+     * Returns {@code true} if and only if the specified object is identical
+     * with this channel (i.e: {@code this == o}).
      */
     @Override
     public final boolean equals(Object o) {
@@ -177,10 +177,12 @@ public abstract class AbstractChannel implements Channel {
     }
 
     /**
-     * Marks this channel as closed. This method is intended to be called by an internal component -
-     * please do not call it unless you know what you are doing.
-     * 
-     * @return {@code true} if and only if this channel was not marked as closed yet
+     * Marks this channel as closed.  This method is intended to be called by
+     * an internal component - please do not call it unless you know what you
+     * are doing.
+     *
+     * @return {@code true} if and only if this channel was not marked as
+     *                      closed yet
      */
     protected boolean setClosed() {
         // Deallocate the current channel's ID from allChannels so that other
@@ -225,9 +227,9 @@ public abstract class AbstractChannel implements Channel {
     }
 
     /**
-     * Sets the {@link #getInterestOps() interestOps} property of this channel immediately. This
-     * method is intended to be called by an internal component - please do not call it unless you
-     * know what you are doing.
+     * Sets the {@link #getInterestOps() interestOps} property of this channel
+     * immediately.  This method is intended to be called by an internal
+     * component - please do not call it unless you know what you are doing.
      */
     protected void setInterestOpsNow(int interestOps) {
         this.interestOps = interestOps;
@@ -260,7 +262,9 @@ public abstract class AbstractChannel implements Channel {
             final int newValue = oldValue & mask;
             if (UNWRITABLE_UPDATER.compareAndSet(this, oldValue, newValue)) {
                 if (oldValue != 0 && newValue == 0) {
-                    Channels.setInterestOps(this, OP_WRITE);
+                    getPipeline().sendUpstream(
+                            new UpstreamChannelStateEvent(
+                                    this, ChannelState.INTEREST_OPS, getInterestOps() & ~OP_WRITE));
                 }
                 break;
             }
@@ -274,7 +278,9 @@ public abstract class AbstractChannel implements Channel {
             final int newValue = oldValue | mask;
             if (UNWRITABLE_UPDATER.compareAndSet(this, oldValue, newValue)) {
                 if (oldValue == 0 && newValue != 0) {
-                    Channels.setInterestOps(this, OP_READ);
+                    getPipeline().sendUpstream(
+                            new UpstreamChannelStateEvent(
+                                    this, ChannelState.INTEREST_OPS, getInterestOps() | Channel.OP_WRITE));
                 }
                 break;
             }
@@ -311,11 +317,11 @@ public abstract class AbstractChannel implements Channel {
     public void setAttachment(Object attachment) {
         this.attachment = attachment;
     }
-
     /**
-     * Returns the {@link String} representation of this channel. The returned string contains the
-     * {@linkplain #getId() ID}, {@linkplain #getLocalAddress() local address}, and
-     * {@linkplain #getRemoteAddress() remote address} of this channel for easier identification.
+     * Returns the {@link String} representation of this channel.  The returned
+     * string contains the {@linkplain #getId() ID}, {@linkplain #getLocalAddress() local address},
+     * and {@linkplain #getRemoteAddress() remote address} of this channel for
+     * easier identification.
      */
     @Override
     public String toString() {
@@ -334,11 +340,11 @@ public abstract class AbstractChannel implements Channel {
             buf.append(", ");
             if (getParent() == null) {
                 buf.append(localAddress);
-                buf.append(connected ? " => " : " :> ");
+                buf.append(connected? " => " : " :> ");
                 buf.append(remoteAddress);
             } else {
                 buf.append(remoteAddress);
-                buf.append(connected ? " => " : " :> ");
+                buf.append(connected? " => " : " :> ");
                 buf.append(localAddress);
             }
         } else if (localAddress != null) {
@@ -357,30 +363,30 @@ public abstract class AbstractChannel implements Channel {
     private String getIdString() {
         String answer = Integer.toHexString(id.intValue());
         switch (answer.length()) {
-            case 0:
-                answer = "00000000";
-                break;
-            case 1:
-                answer = "0000000" + answer;
-                break;
-            case 2:
-                answer = "000000" + answer;
-                break;
-            case 3:
-                answer = "00000" + answer;
-                break;
-            case 4:
-                answer = "0000" + answer;
-                break;
-            case 5:
-                answer = "000" + answer;
-                break;
-            case 6:
-                answer = "00" + answer;
-                break;
-            case 7:
-                answer = '0' + answer;
-                break;
+        case 0:
+            answer = "00000000";
+            break;
+        case 1:
+            answer = "0000000" + answer;
+            break;
+        case 2:
+            answer = "000000" + answer;
+            break;
+        case 3:
+            answer = "00000" + answer;
+            break;
+        case 4:
+            answer = "0000" + answer;
+            break;
+        case 5:
+            answer = "000" + answer;
+            break;
+        case 6:
+            answer = "00" + answer;
+            break;
+        case 7:
+            answer = '0' + answer;
+            break;
         }
         return answer;
     }

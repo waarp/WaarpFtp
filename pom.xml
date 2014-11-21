@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <artifactId>WaarpFtp</artifactId>
   <name>WaarpFtp</name>
-  <version>1.1.9</version>
+  <version>1.1.10</version>
   <packaging>pom</packaging>
   <description>
 	  The Waarp FTP project is a proposal of a new fresh FTP server implementation,
@@ -77,7 +77,7 @@
     <dependency>
       <groupId>Waarp</groupId>
       <artifactId>WaarpCommon</artifactId>
-      <version>1.2.26</version>
+      <version>1.2.27</version>
     </dependency>
   </dependencies>
   <properties>

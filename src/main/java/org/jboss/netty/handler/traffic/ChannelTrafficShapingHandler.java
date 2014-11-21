@@ -33,80 +33,51 @@ import org.jboss.netty.util.Timer;
 import org.jboss.netty.util.TimerTask;
 
 /**
- * <p>
- * This implementation of the {@link AbstractTrafficShapingHandler} is for channel traffic shaping,
- * that is to say a per channel limitation of the bandwidth.
- * </p>
- * 
+ * <p>This implementation of the {@link AbstractTrafficShapingHandler} is for channel
+ * traffic shaping, that is to say a per channel limitation of the bandwidth.</p>
+ *
  * The general use should be as follow:<br>
  * <ul>
- * <li>
- * <p>
- * Add in your pipeline a new ChannelTrafficShapingHandler, before a recommended
- * {@link ExecutionHandler} (like {@link OrderedMemoryAwareThreadPoolExecutor} or
- * {@link MemoryAwareThreadPoolExecutor}).
- * </p>
- * <p>
- * <tt>ChannelTrafficShapingHandler myHandler = new ChannelTrafficShapingHandler(timer);</tt>
- * </p>
- * <p>
- * timer could be created using <tt>HashedWheelTimer</tt>
- * </p>
- * <p>
- * <tt>pipeline.addLast("CHANNEL_TRAFFIC_SHAPING", myHandler);</tt>
- * </p>
- * 
- * <p>
- * <b>Note that this handler has a Pipeline Coverage of "one" which means a new handler must be
- * created for each new channel as the counter cannot be shared among all channels.</b> For
- * instance, if you have a {@link ChannelPipelineFactory}, you should create a new
- * ChannelTrafficShapingHandler in this {@link ChannelPipelineFactory} each time getPipeline()
- * method is called.
- * </p>
- * 
- * <p>
- * Other arguments can be passed like write or read limitation (in bytes/s where 0 means no
- * limitation) or the check interval (in millisecond) that represents the delay between two
- * computations of the bandwidth and so the call back of the doAccounting method (0 means no
- * accounting at all).
- * </p>
- * 
- * <p>
- * A value of 0 means no accounting for checkInterval. If you need traffic shaping but no such
- * accounting, it is recommended to set a positive value, even if it is high since the precision of
- * the Traffic Shaping depends on the period where the traffic is computed. The highest the
- * interval, the less precise the traffic shaping will be. It is suggested as higher value something
- * close to 5 or 10 minutes.
- * </p>
- * 
- * <p>
- * maxTimeToWait, by default set to 15s, allows to specify an upper bound of time shaping.
- * </p>
+ * <li><p>Add in your pipeline a new ChannelTrafficShapingHandler, before a recommended {@link ExecutionHandler} (like
+ * {@link OrderedMemoryAwareThreadPoolExecutor} or {@link MemoryAwareThreadPoolExecutor}).</p>
+ * <p><tt>ChannelTrafficShapingHandler myHandler = new ChannelTrafficShapingHandler(timer);</tt></p>
+ * <p>timer could be created using <tt>HashedWheelTimer</tt></p>
+ * <p><tt>pipeline.addLast("CHANNEL_TRAFFIC_SHAPING", myHandler);</tt></p>
+ *
+ * <p><b>Note that this handler has a Pipeline Coverage of "one" which means a new handler must be created
+ * for each new channel as the counter cannot be shared among all channels.</b> For instance, if you have a
+ * {@link ChannelPipelineFactory}, you should create a new ChannelTrafficShapingHandler in this
+ * {@link ChannelPipelineFactory} each time getPipeline() method is called.</p>
+ *
+ * <p>Other arguments can be passed like write or read limitation (in bytes/s where 0 means no limitation)
+ * or the check interval (in millisecond) that represents the delay between two computations of the
+ * bandwidth and so the call back of the doAccounting method (0 means no accounting at all).</p>
+ *
+ * <p>A value of 0 means no accounting for checkInterval. If you need traffic shaping but no such accounting,
+ * it is recommended to set a positive value, even if it is high since the precision of the
+ * Traffic Shaping depends on the period where the traffic is computed. The highest the interval,
+ * the less precise the traffic shaping will be. It is suggested as higher value something close
+ * to 5 or 10 minutes.</p>
+ *
+ * <p>maxTimeToWait, by default set to 15s, allows to specify an upper bound of time shaping.</p>
  * </li>
- * <li>When you shutdown your application, release all the external resources (except the timer
- * internal itself) by calling:<br>
+ * <li>When you shutdown your application, release all the external resources (except the timer internal itself)
+ * by calling:<br>
  * <tt>myHandler.releaseExternalResources();</tt><br>
  * </li>
  * <li>In your handler, you should consider to use the <code>channel.isWritable()</code> and
  * <code>channelInterestChanged(ctx, event)</code> to handle writability, or through
  * <code>future.addListener(new ChannelFutureListener())</code> on the future returned by
  * <code>channel.write()</code>.</li>
- * <li>
- * <p>
- * You shall also consider to have object size in read or write operations relatively adapted to the
- * bandwidth you required: for instance having 10 MB objects for 10KB/s will lead to burst effect,
- * while having 100 KB objects for 1 MB/s should be smoothly handle by this TrafficShaping handler.
- * </p>
- * </li>
- * <li>
- * <p>
- * Some configuration methods will be taken as best effort, meaning that all already scheduled
- * traffics will not be changed, but only applied to new traffics.
- * </p>
- * So the expected usage of those methods are to be used not too often, accordingly to the traffic
- * shaping configuration.</li>
- * </ul>
- * <br>
+ * <li><p>You shall also consider to have object size in read or write operations relatively adapted to
+ * the bandwidth you required: for instance having 10 MB objects for 10KB/s will lead to burst effect,
+ * while having 100 KB objects for 1 MB/s should be smoothly handle by this TrafficShaping handler.</p></li>
+ * <li><p>Some configuration methods will be taken as best effort, meaning
+ * that all already scheduled traffics will not be
+ * changed, but only applied to new traffics.</p>
+ * So the expected usage of those methods are to be used not too often,
+ * accordingly to the traffic shaping configuration.</li>
+ * </ul><br>
  */
 public class ChannelTrafficShapingHandler extends AbstractTrafficShapingHandler {
     private final List<ToSend> messagesQueue = new LinkedList<ToSend>();
@@ -188,30 +159,30 @@ public class ChannelTrafficShapingHandler extends AbstractTrafficShapingHandler 
         Channel channel = ctx.getChannel();
         synchronized (this) {
             if (delay == 0 && messagesQueue.isEmpty()) {
-                if (!channel.isConnected()) {
+                if (! channel.isConnected()) {
                     // ignore
                     return;
                 }
                 if (trafficCounter != null) {
                     trafficCounter.bytesRealWriteFlowControl(size);
                 }
-                internalSubmitWrite(ctx, evt);
+                ctx.sendDownstream(evt);
                 return;
             }
             if (timer == null) {
                 // Sleep since no executor
                 Thread.sleep(delay);
-                if (!channel.isConnected()) {
+                if (! channel.isConnected()) {
                     // ignore
                     return;
                 }
                 if (trafficCounter != null) {
                     trafficCounter.bytesRealWriteFlowControl(size);
                 }
-                internalSubmitWrite(ctx, evt);
+                ctx.sendDownstream(evt);
                 return;
             }
-            if (!channel.isConnected()) {
+            if (! channel.isConnected()) {
                 // ignore
                 return;
             }
@@ -230,7 +201,7 @@ public class ChannelTrafficShapingHandler extends AbstractTrafficShapingHandler 
 
     private void sendAllValid(ChannelHandlerContext ctx, final long now) throws Exception {
         Channel channel = ctx.getChannel();
-        if (!channel.isConnected()) {
+        if (! channel.isConnected()) {
             // ignore
             return;
         }
@@ -243,11 +214,11 @@ public class ChannelTrafficShapingHandler extends AbstractTrafficShapingHandler 
                         trafficCounter.bytesRealWriteFlowControl(size);
                     }
                     queueSize -= size;
-                    if (!channel.isConnected()) {
+                    if (! channel.isConnected()) {
                         // ignore
                         break;
                     }
-                    internalSubmitWrite(ctx, newToSend.toSend);
+                    ctx.sendDownstream(newToSend.toSend);
                 } else {
                     messagesQueue.add(0, newToSend);
                     break;
@@ -259,15 +230,15 @@ public class ChannelTrafficShapingHandler extends AbstractTrafficShapingHandler 
         }
     }
 
-    /**
-     * 
-     * @return current size in bytes of the write buffer
-     */
-    public long queueSize() {
-        return queueSize;
-    }
+   /**
+    *
+    * @return current size in bytes of the write buffer
+    */
+   public long queueSize() {
+       return queueSize;
+   }
 
-    @Override
+   @Override
     public void channelClosed(ChannelHandlerContext ctx, ChannelStateEvent e)
             throws Exception {
         if (trafficCounter != null) {
@@ -311,15 +282,11 @@ public class ChannelTrafficShapingHandler extends AbstractTrafficShapingHandler 
         synchronized (this) {
             if (ctx != null && ctx.getChannel().isConnected()) {
                 for (ToSend toSend : messagesQueue) {
-                    if (!channel.isConnected()) {
+                    if (! channel.isConnected()) {
                         // ignore
                         break;
                     }
-                    try {
-                        internalSubmitWrite(ctx, toSend.toSend);
-                    } catch (Exception e) {
-                        break;
-                    }
+                    ctx.sendDownstream(toSend.toSend);
                 }
             }
             messagesQueue.clear();
