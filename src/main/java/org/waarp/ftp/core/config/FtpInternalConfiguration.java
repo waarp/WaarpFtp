@@ -34,8 +34,9 @@ import org.jboss.netty.channel.group.DefaultChannelGroup;
 import org.jboss.netty.channel.socket.nio.NioClientSocketChannelFactory;
 import org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory;
 import org.jboss.netty.handler.execution.OrderedMemoryAwareThreadPoolExecutor;
+import org.jboss.netty.handler.traffic.AbstractTrafficShapingHandler;
 import org.jboss.netty.handler.traffic.ChannelTrafficShapingHandler;
-import org.jboss.netty.handler.traffic.GlobalTrafficShapingHandler;
+import org.jboss.netty.handler.traffic.GlobalChannelTrafficShapingHandler;
 import org.jboss.netty.logging.InternalLoggerFactory;
 import org.jboss.netty.util.HashedWheelTimer;
 import org.jboss.netty.util.ObjectSizeEstimator;
@@ -195,7 +196,7 @@ public class FtpInternalConfiguration {
     /**
      * Global TrafficCounter (set from global configuration)
      */
-    private GlobalTrafficShapingHandler globalTrafficShapingHandler = null;
+    private GlobalChannelTrafficShapingHandler globalTrafficShapingHandler = null;
 
     /**
      * ObjectSizeEstimator
@@ -391,11 +392,11 @@ public class FtpInternalConfiguration {
         FtpShutdownHook.addShutdownHook();
         // Factory for TrafficShapingHandler
         objectSizeEstimator = new DataBlockSizeEstimator();
-        globalTrafficShapingHandler = new GlobalTrafficShapingHandler(
-                objectSizeEstimator, timerTrafficCounter, configuration
-                        .getServerGlobalWriteLimit(), configuration
-                        .getServerGlobalReadLimit(), configuration
-                        .getDelayLimit());
+        globalTrafficShapingHandler = new GlobalChannelTrafficShapingHandler(
+                objectSizeEstimator, timerTrafficCounter, 
+                configuration.getServerGlobalWriteLimit(), configuration.getServerGlobalReadLimit(), 
+                configuration.getServerChannelWriteLimit(), configuration.getServerChannelReadLimit(), 
+                configuration.getDelayLimit());
         pipelineExecutor = new OrderedMemoryAwareThreadPoolExecutor(
                 configuration.CLIENT_THREAD,
                 configuration.maxGlobalMemory / 40,
@@ -622,7 +623,7 @@ public class FtpInternalConfiguration {
      * 
      * @return The TrafficCounterFactory
      */
-    public GlobalTrafficShapingHandler getGlobalTrafficShapingHandler() {
+    public AbstractTrafficShapingHandler getGlobalTrafficShapingHandler() {
         return globalTrafficShapingHandler;
     }
 
@@ -633,6 +634,9 @@ public class FtpInternalConfiguration {
     public ChannelTrafficShapingHandler newChannelTrafficShapingHandler() {
         if (configuration.getServerChannelWriteLimit() == 0 &&
                 configuration.getServerChannelReadLimit() == 0) {
+            return null;
+        }
+        if (globalTrafficShapingHandler instanceof GlobalChannelTrafficShapingHandler) {
             return null;
         }
         return new ChannelTrafficShapingHandler(objectSizeEstimator,

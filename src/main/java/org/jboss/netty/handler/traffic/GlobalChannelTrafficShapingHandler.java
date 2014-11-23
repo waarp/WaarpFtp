@@ -15,14 +15,14 @@
  */
 package org.jboss.netty.handler.traffic;
 
-import java.util.ArrayList;
+import java.util.AbstractCollection;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
-import java.util.concurrent.locks.ReentrantLock;
 
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelStateEvent;
@@ -91,7 +91,7 @@ public class GlobalChannelTrafficShapingHandler extends AbstractTrafficShapingHa
     /**
      * All queues per channel
      */
-    final ConcurrentMap<Integer, MixtePerChannel> channelQueues = new ConcurrentHashMap<Integer, MixtePerChannel>();
+    final ConcurrentMap<Integer, PerChannel> channelQueues = new ConcurrentHashMap<Integer, PerChannel>();
 
     /**
      * Global queues size
@@ -125,19 +125,21 @@ public class GlobalChannelTrafficShapingHandler extends AbstractTrafficShapingHa
     private long readChannelLimit;
 
     private static final float DEFAULT_DEVIATION = 0.1F;
+    private static final float MAX_DEVIATION = 0.4F;
+    private static final float DEFAULT_SLOWDOWN = 0.4F;
+    private static final float DEFAULT_ACCELERATION = -0.1F;
     private float maxDeviation;
-    private float minValueDeviation;
-    private float maxValueDeviation;
+    private float accelerationFactor;
+    private float slowDownFactor;
     private volatile boolean readDeviationActive;
     private volatile boolean writeDeviationActive;
 
-    static class MixtePerChannel {
+    static class PerChannel {
         List<ToSend> messagesQueue;
         TrafficCounter channelTrafficCounter;
-        ReentrantLock lock;
         long queueSize;
-        long lastWrite;
-        long lastRead;
+        long lastWriteTimestamp;
+        long lastReadTimestamp;
     }
 
     /**
@@ -145,9 +147,9 @@ public class GlobalChannelTrafficShapingHandler extends AbstractTrafficShapingHa
      */
     void createGlobalTrafficCounter(Timer timer) {
         // Default
-        setMaxDeviation(DEFAULT_DEVIATION);
+        setMaxDeviation(DEFAULT_DEVIATION, DEFAULT_SLOWDOWN, DEFAULT_ACCELERATION);
         if (timer == null) {
-            throw new NullPointerException("timer");
+            throw new IllegalArgumentException("Timer must not be null");
         }
         TrafficCounter tc = new GlobalChannelTrafficCounter(this, timer, "GlobalTC", checkInterval);
         setTrafficCounter(tc);
@@ -366,18 +368,43 @@ public class GlobalChannelTrafficShapingHandler extends AbstractTrafficShapingHa
     }
 
     /**
-     * @param maxDeviation the maximum deviation to allow during computation of average,
-     *      default deviation being 0.1, so +/-10% of the desired bandwidth. Maximum being 0.4.
+     * @return the current acceleration factor
      */
-    public void setMaxDeviation(float maxDeviation) {
-        if (maxDeviation > 0.4F) {
-            // Ignore
-            return;
+    public float accelerationFactor() {
+        return accelerationFactor;
+    }
+
+    /**
+     * @return the current slow down factor
+     */
+    public float slowDownFactor() {
+        return slowDownFactor;
+    }
+
+    /**
+     * @param maxDeviation
+     *            the maximum deviation to allow during computation of average, default deviation
+     *            being 0.1, so +/-10% of the desired bandwidth. Maximum being 0.4.
+     * @param slowDownFactor
+     *            the factor set as +x% to the too fast client (minimal value being 0, meaning no
+     *            slow down factor), default being 40% (0.4)
+     * @param accelerationFactor
+     *            the factor set as -x% to the too slow client (maximal value being 0, meaning no
+     *            acceleration factor), default being -10% (-0.1)
+     */
+    public void setMaxDeviation(float maxDeviation, float slowDownFactor, float accelerationFactor) {
+        if (maxDeviation > MAX_DEVIATION) {
+            throw new IllegalArgumentException("maxDeviation must be <= " + MAX_DEVIATION);
+        }
+        if (slowDownFactor < 0) {
+            throw new IllegalArgumentException("slowDownFactor must be >= 0");
+        }
+        if (accelerationFactor > 0) {
+            throw new IllegalArgumentException("accelerationFactor must be <= 0");
         }
         this.maxDeviation = maxDeviation;
-        minValueDeviation = 1.0F - maxDeviation;
-        // Penalize more too fast channels
-        maxValueDeviation = 1.0F + maxDeviation * 4;
+        this.accelerationFactor = 1 + accelerationFactor;
+        this.slowDownFactor = 1 + slowDownFactor;
     }
 
     private void computeDeviationCumulativeBytes() {
@@ -386,15 +413,15 @@ public class GlobalChannelTrafficShapingHandler extends AbstractTrafficShapingHa
         long maxReadBytes = 0;
         long minWrittenBytes = Long.MAX_VALUE;
         long minReadBytes = Long.MAX_VALUE;
-        for (MixtePerChannel mixtePerChannel : channelQueues.values()) {
-            long value = mixtePerChannel.channelTrafficCounter.getCumulativeWrittenBytes();
+        for (PerChannel perChannel : channelQueues.values()) {
+            long value = perChannel.channelTrafficCounter.getCumulativeWrittenBytes();
             if (maxWrittenBytes < value) {
                 maxWrittenBytes = value;
             }
             if (minWrittenBytes > value) {
                 minWrittenBytes = value;
             }
-            value = mixtePerChannel.channelTrafficCounter.getCumulativeReadBytes();
+            value = perChannel.channelTrafficCounter.getCumulativeReadBytes();
             if (maxReadBytes < value) {
                 maxReadBytes = value;
             }
@@ -416,19 +443,23 @@ public class GlobalChannelTrafficShapingHandler extends AbstractTrafficShapingHa
     }
 
     private long computeBalancedWait(float maxLocal, float maxGlobal, long wait) {
+        if (maxGlobal == 0) {
+            // no change
+            return wait;
+        }
         float ratio = maxLocal / maxGlobal;
         // if in the boundaries, same value
         if (ratio > maxDeviation) {
-            if (ratio < minValueDeviation) {
+            if (ratio < 1 - maxDeviation) {
                 return wait;
             } else {
-                ratio = maxValueDeviation;
+                ratio = slowDownFactor;
                 if (wait < MINIMAL_WAIT) {
                     wait = MINIMAL_WAIT;
                 }
             }
         } else {
-            ratio = minValueDeviation;
+            ratio = accelerationFactor;
         }
         return (long) (wait * ratio);
     }
@@ -468,9 +499,9 @@ public class GlobalChannelTrafficShapingHandler extends AbstractTrafficShapingHa
     public void configureChannel(long newWriteLimit, long newReadLimit) {
         writeChannelLimit = newWriteLimit;
         readChannelLimit = newReadLimit;
-        long now = TrafficCounter.milliSecondFromNano() + 1;
-        for (MixtePerChannel mixtePerChannel : channelQueues.values()) {
-            mixtePerChannel.channelTrafficCounter.resetAccounting(now);
+        long now = TrafficCounter.milliSecondFromNano();
+        for (PerChannel perChannel : channelQueues.values()) {
+            perChannel.channelTrafficCounter.resetAccounting(now);
         }
     }
 
@@ -486,9 +517,9 @@ public class GlobalChannelTrafficShapingHandler extends AbstractTrafficShapingHa
      */
     public void setWriteChannelLimit(long writeLimit) {
         writeChannelLimit = writeLimit;
-        long now = TrafficCounter.milliSecondFromNano() + 1;
-        for (MixtePerChannel mixtePerChannel : channelQueues.values()) {
-            mixtePerChannel.channelTrafficCounter.resetAccounting(now);
+        long now = TrafficCounter.milliSecondFromNano();
+        for (PerChannel perChannel : channelQueues.values()) {
+            perChannel.channelTrafficCounter.resetAccounting(now);
         }
     }
 
@@ -504,9 +535,9 @@ public class GlobalChannelTrafficShapingHandler extends AbstractTrafficShapingHa
      */
     public void setReadChannelLimit(long readLimit) {
         readChannelLimit = readLimit;
-        long now = TrafficCounter.milliSecondFromNano() + 1;
-        for (MixtePerChannel mixtePerChannel : channelQueues.values()) {
-            mixtePerChannel.channelTrafficCounter.resetAccounting(now);
+        long now = TrafficCounter.milliSecondFromNano();
+        for (PerChannel perChannel : channelQueues.values()) {
+            perChannel.channelTrafficCounter.resetAccounting(now);
         }
     }
 
@@ -517,24 +548,23 @@ public class GlobalChannelTrafficShapingHandler extends AbstractTrafficShapingHa
         trafficCounter.stop();
     }
 
-    private MixtePerChannel getOrSetPerChannel(ChannelHandlerContext ctx) {
+    private PerChannel getOrSetPerChannel(ChannelHandlerContext ctx) {
         // ensure creation is limited to one thread per channel
         Channel channel = ctx.getChannel();
         Integer key = channel.hashCode();
-        MixtePerChannel mixtePerChannel = channelQueues.get(key);
-        if (mixtePerChannel == null) {
-            mixtePerChannel = new MixtePerChannel();
-            mixtePerChannel.messagesQueue = new LinkedList<ToSend>();
+        PerChannel perChannel = channelQueues.get(key);
+        if (perChannel == null) {
+            perChannel = new PerChannel();
+            perChannel.messagesQueue = new LinkedList<ToSend>();
             // Don't start it since managed through the Global one
-            mixtePerChannel.channelTrafficCounter = new TrafficCounter(this, null, "ChannelTC" +
+            perChannel.channelTrafficCounter = new TrafficCounter(this, null, "ChannelTC" +
                     ctx.getChannel().hashCode(), checkInterval);
-            mixtePerChannel.lock = new ReentrantLock(true);
-            mixtePerChannel.queueSize = 0L;
-            mixtePerChannel.lastRead = TrafficCounter.milliSecondFromNano();
-            mixtePerChannel.lastWrite = mixtePerChannel.lastRead;
-            channelQueues.put(key, mixtePerChannel);
+            perChannel.queueSize = 0L;
+            perChannel.lastReadTimestamp = TrafficCounter.milliSecondFromNano();
+            perChannel.lastWriteTimestamp = perChannel.lastReadTimestamp;
+            channelQueues.put(key, perChannel);
         }
-        return mixtePerChannel;
+        return perChannel;
     }
 
     @Override
@@ -549,15 +579,12 @@ public class GlobalChannelTrafficShapingHandler extends AbstractTrafficShapingHa
         trafficCounter.resetCumulativeTime();
         Channel channel = ctx.getChannel();
         Integer key = channel.hashCode();
-        MixtePerChannel mixtePerChannel = channelQueues.remove(key);
-        if (mixtePerChannel != null) {
+        PerChannel perChannel = channelQueues.remove(key);
+        if (perChannel != null) {
             // write operations need synchronization
-            mixtePerChannel.lock.lock();
-            try {
-                queuesSize.addAndGet(-mixtePerChannel.queueSize);
-                mixtePerChannel.messagesQueue.clear();
-            } finally {
-                mixtePerChannel.lock.unlock();
+            synchronized (perChannel) {
+                queuesSize.addAndGet(-perChannel.queueSize);
+                perChannel.messagesQueue.clear();
             }
         }
         releaseWriteSuspended(ctx);
@@ -577,17 +604,17 @@ public class GlobalChannelTrafficShapingHandler extends AbstractTrafficShapingHa
                 // compute the number of ms to wait before reopening the channel
                 long waitGlobal = trafficCounter.readTimeToWait(size, getReadLimit(), maxTime, now);
                 Integer key = ctx.getChannel().hashCode();
-                MixtePerChannel mixtePerChannel = channelQueues.get(key);
+                PerChannel perChannel = channelQueues.get(key);
                 long wait = 0;
-                if (mixtePerChannel != null) {
-                    wait = mixtePerChannel.channelTrafficCounter.readTimeToWait(size, readChannelLimit, maxTime, now);
+                if (perChannel != null) {
+                    wait = perChannel.channelTrafficCounter.readTimeToWait(size, readChannelLimit, maxTime, now);
                     if (readDeviationActive) {
                         // now try to balance between the channels
                         long maxLocalRead = 0;
-                        maxLocalRead = mixtePerChannel.channelTrafficCounter.getCumulativeReadBytes();
+                        maxLocalRead = perChannel.channelTrafficCounter.getCumulativeReadBytes();
                         long maxGlobalRead = cumulativeReadBytes.get();
                         if (maxLocalRead <= 0) {
-                            maxLocalRead = 1;
+                            maxLocalRead = 0;
                         }
                         if (maxGlobalRead < maxLocalRead) {
                             maxGlobalRead = maxLocalRead;
@@ -645,9 +672,9 @@ public class GlobalChannelTrafficShapingHandler extends AbstractTrafficShapingHa
     @Override
     protected long checkWaitReadTime(final ChannelHandlerContext ctx, long wait, final long now) {
         Integer key = ctx.getChannel().hashCode();
-        MixtePerChannel mixtePerChannel = channelQueues.get(key);
-        if (mixtePerChannel != null) {
-            if (wait > maxTime && now + wait - mixtePerChannel.lastRead > maxTime) {
+        PerChannel perChannel = channelQueues.get(key);
+        if (perChannel != null) {
+            if (wait > maxTime && now + wait - perChannel.lastReadTimestamp > maxTime) {
                 wait = maxTime;
             }
         }
@@ -657,9 +684,9 @@ public class GlobalChannelTrafficShapingHandler extends AbstractTrafficShapingHa
     @Override
     protected void informReadOperation(final ChannelHandlerContext ctx, final long now) {
         Integer key = ctx.getChannel().hashCode();
-        MixtePerChannel mixtePerChannel = channelQueues.get(key);
-        if (mixtePerChannel != null) {
-            mixtePerChannel.lastRead = now;
+        PerChannel perChannel = channelQueues.get(key);
+        if (perChannel != null) {
+            perChannel.lastReadTimestamp = now;
         }
     }
 
@@ -683,12 +710,31 @@ public class GlobalChannelTrafficShapingHandler extends AbstractTrafficShapingHa
         return cumulativeReadBytes.get();
     }
 
-    protected Collection<TrafficCounter> channelTrafficCounters() {
-        List<TrafficCounter> list = new ArrayList<TrafficCounter>(channelQueues.size());
-        for (MixtePerChannel mpc : channelQueues.values()) {
-            list.add(mpc.channelTrafficCounter);
-        }
-        return list;
+    /**
+     * To allow for instance doAccounting to use the TrafficCounter per channel
+     * @return the list of TrafficCounters that exists at the time of the call
+     */
+    public Collection<TrafficCounter> channelTrafficCounters() {
+        Collection<TrafficCounter> valueCollection = new AbstractCollection<TrafficCounter>() {
+            public Iterator<TrafficCounter> iterator() {
+                return new Iterator<TrafficCounter>() {
+                    final Iterator<PerChannel> iter = channelQueues.values().iterator();
+                    public boolean hasNext() {
+                        return iter.hasNext();
+                    }
+                    public TrafficCounter next() {
+                        return iter.next().channelTrafficCounter;
+                    }
+                    public void remove() {
+                        throw new UnsupportedOperationException();
+                    }
+                };
+            }
+            public int size() {
+                return channelQueues.size();
+            }
+        };
+        return valueCollection;
     }
 
     @Override
@@ -702,16 +748,16 @@ public class GlobalChannelTrafficShapingHandler extends AbstractTrafficShapingHa
                 // compute the number of ms to wait before continue with the channel
                 long waitGlobal = trafficCounter.writeTimeToWait(size, getWriteLimit(), maxTime, now);
                 Integer key = ctx.getChannel().hashCode();
-                MixtePerChannel mixtePerChannel = channelQueues.get(key);
-                if (mixtePerChannel != null) {
-                    wait = mixtePerChannel.channelTrafficCounter.writeTimeToWait(size, writeChannelLimit, maxTime, now);
+                PerChannel perChannel = channelQueues.get(key);
+                if (perChannel != null) {
+                    wait = perChannel.channelTrafficCounter.writeTimeToWait(size, writeChannelLimit, maxTime, now);
                     if (writeDeviationActive) {
                         // now try to balance between the channels
                         long maxLocalWrite = 0;
-                        maxLocalWrite = mixtePerChannel.channelTrafficCounter.getCumulativeWrittenBytes();
+                        maxLocalWrite = perChannel.channelTrafficCounter.getCumulativeWrittenBytes();
                         long maxGlobalWrite = cumulativeWrittenBytes.get();
                         if (maxLocalWrite <= 0) {
-                            maxLocalWrite = 1;
+                            maxLocalWrite = 0;
                         }
                         if (maxGlobalWrite < maxLocalWrite) {
                             maxGlobalWrite = maxLocalWrite;
@@ -737,30 +783,29 @@ public class GlobalChannelTrafficShapingHandler extends AbstractTrafficShapingHa
             final long size, final long writedelay, final long now) throws Exception {
         Channel channel = ctx.getChannel();
         Integer key = channel.hashCode();
-        MixtePerChannel mixtePerChannel = channelQueues.get(key);
-        if (mixtePerChannel == null) {
+        PerChannel perChannel = channelQueues.get(key);
+        if (perChannel == null) {
             // in case write occurs before handlerAdded is raized for this handler
             // imply a synchronized only if needed
-            mixtePerChannel = getOrSetPerChannel(ctx);
+            perChannel = getOrSetPerChannel(ctx);
         }
-        ToSend newToSend;
+        final ToSend newToSend;
         long delay = writedelay;
         boolean globalSizeExceeded = false;
         // write operations need synchronization
-        mixtePerChannel.lock.lock();
-        try {
-            if (writedelay == 0 && mixtePerChannel.messagesQueue.isEmpty()) {
+        synchronized (perChannel) {
+            if (writedelay == 0 && perChannel.messagesQueue.isEmpty()) {
                 if (!channel.isConnected()) {
                     // ignore
                     return;
                 }
                 trafficCounter.bytesRealWriteFlowControl(size);
-                mixtePerChannel.channelTrafficCounter.bytesRealWriteFlowControl(size);
+                perChannel.channelTrafficCounter.bytesRealWriteFlowControl(size);
                 ctx.sendDownstream(evt);
-                mixtePerChannel.lastWrite = now;
+                perChannel.lastWriteTimestamp = now;
                 return;
             }
-            if (delay > maxTime && now + delay - mixtePerChannel.lastWrite > maxTime) {
+            if (delay > maxTime && now + delay - perChannel.lastWriteTimestamp > maxTime) {
                 delay = maxTime;
             }
             if (timer == null) {
@@ -771,9 +816,9 @@ public class GlobalChannelTrafficShapingHandler extends AbstractTrafficShapingHa
                     return;
                 }
                 trafficCounter.bytesRealWriteFlowControl(size);
-                mixtePerChannel.channelTrafficCounter.bytesRealWriteFlowControl(size);
+                perChannel.channelTrafficCounter.bytesRealWriteFlowControl(size);
                 ctx.sendDownstream(evt);
-                mixtePerChannel.lastWrite = now;
+                perChannel.lastWriteTimestamp = now;
                 return;
             }
             if (!ctx.getChannel().isConnected()) {
@@ -781,21 +826,19 @@ public class GlobalChannelTrafficShapingHandler extends AbstractTrafficShapingHa
                 return;
             }
             newToSend = new ToSend(delay + now, evt, size);
-            mixtePerChannel.messagesQueue.add(newToSend);
-            mixtePerChannel.queueSize += size;
+            perChannel.messagesQueue.add(newToSend);
+            perChannel.queueSize += size;
             queuesSize.addAndGet(size);
-            checkWriteSuspend(ctx, delay, mixtePerChannel.queueSize);
+            checkWriteSuspend(ctx, delay, perChannel.queueSize);
             if (queuesSize.get() > maxGlobalWriteSize) {
                 globalSizeExceeded = true;
             }
-        } finally {
-            mixtePerChannel.lock.unlock();
         }
         if (globalSizeExceeded) {
             setWritable(ctx, false);
         }
         final long futureNow = newToSend.relativeTimeAction;
-        final MixtePerChannel forSchedule = mixtePerChannel;
+        final PerChannel forSchedule = perChannel;
         timer.newTimeout(new TimerTask() {
             public void run(Timeout timeout) throws Exception {
                 sendAllValid(ctx, forSchedule, futureNow);
@@ -803,13 +846,12 @@ public class GlobalChannelTrafficShapingHandler extends AbstractTrafficShapingHa
         }, delay, TimeUnit.MILLISECONDS);
     }
 
-    private void sendAllValid(final ChannelHandlerContext ctx, final MixtePerChannel mixtePerChannel, final long now)
+    private void sendAllValid(final ChannelHandlerContext ctx, final PerChannel perChannel, final long now)
             throws Exception {
         // write operations need synchronization
-        mixtePerChannel.lock.lock();
-        try {
-            while (!mixtePerChannel.messagesQueue.isEmpty()) {
-                ToSend newToSend = mixtePerChannel.messagesQueue.remove(0);
+        synchronized (perChannel) {
+            while (!perChannel.messagesQueue.isEmpty()) {
+                ToSend newToSend = perChannel.messagesQueue.remove(0);
                 if (newToSend.relativeTimeAction <= now) {
                     if (! ctx.getChannel().isConnected()) {
                         // ignore
@@ -817,21 +859,19 @@ public class GlobalChannelTrafficShapingHandler extends AbstractTrafficShapingHa
                     }
                     long size = newToSend.size;
                     trafficCounter.bytesRealWriteFlowControl(size);
-                    mixtePerChannel.channelTrafficCounter.bytesRealWriteFlowControl(size);
-                    mixtePerChannel.queueSize -= size;
+                    perChannel.channelTrafficCounter.bytesRealWriteFlowControl(size);
+                    perChannel.queueSize -= size;
                     queuesSize.addAndGet(-size);
                     ctx.sendDownstream(newToSend.toSend);
-                    mixtePerChannel.lastWrite = now;
+                    perChannel.lastWriteTimestamp = now;
                 } else {
-                    mixtePerChannel.messagesQueue.add(0, newToSend);
+                    perChannel.messagesQueue.add(0, newToSend);
                     break;
                 }
             }
-            if (mixtePerChannel.messagesQueue.isEmpty()) {
+            if (perChannel.messagesQueue.isEmpty()) {
                 releaseWriteSuspended(ctx);
             }
-        } finally {
-            mixtePerChannel.lock.unlock();
         }
     }
 
@@ -841,10 +881,10 @@ public class GlobalChannelTrafficShapingHandler extends AbstractTrafficShapingHa
             // drop it silently if too quick
             if (writeDeviationActive) {
                 Integer key = ctx.getChannel().hashCode();
-                MixtePerChannel mixtePerChannel = channelQueues.get(key);
-                if (mixtePerChannel != null) {
+                PerChannel perChannel = channelQueues.get(key);
+                if (perChannel != null) {
                     double maxLocalWrite = 0.0;
-                    maxLocalWrite = mixtePerChannel.channelTrafficCounter.getCumulativeWrittenBytes();
+                    maxLocalWrite = perChannel.channelTrafficCounter.getCumulativeWrittenBytes();
                     double maxGlobalWrite = cumulativeWrittenBytes.get();
                     if (maxLocalWrite / maxGlobalWrite < maxDeviation) {
                         // try to not drop event for late channels
@@ -862,9 +902,8 @@ public class GlobalChannelTrafficShapingHandler extends AbstractTrafficShapingHa
 
     @Override
     public String toString() {
-        StringBuilder builder = new StringBuilder(super.toString());
-        builder.append(" Write Channel Limit: ").append(writeChannelLimit);
-        builder.append(" Read Channel Limit: ").append(readChannelLimit);
-        return builder.toString();
+        return new StringBuilder(super.toString())
+            .append(" Write Channel Limit: ").append(writeChannelLimit)
+            .append(" Read Channel Limit: ").append(readChannelLimit).toString();
     }
 }
