@@ -34,7 +34,7 @@ import io.netty.channel.group.ChannelGroup;
 import io.netty.channel.group.DefaultChannelGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.handler.traffic.ChannelTrafficShapingHandler;
-import io.netty.handler.traffic.GlobalTrafficShapingHandler;
+import io.netty.handler.traffic.GlobalChannelTrafficShapingHandler;
 import io.netty.util.concurrent.EventExecutorGroup;
 
 import org.waarp.common.command.exception.Reply425Exception;
@@ -157,7 +157,7 @@ public class FtpInternalConfiguration {
     /**
      * Global TrafficCounter (set from global configuration)
      */
-    private GlobalTrafficShapingHandler globalTrafficShapingHandler = null;
+    private FtpGlobalTrafficShapingHandler globalTrafficShapingHandler = null;
 
     /**
      * Does the FTP will be SSL native based (990 989 port)
@@ -314,6 +314,8 @@ public class FtpInternalConfiguration {
         globalTrafficShapingHandler = new FtpGlobalTrafficShapingHandler(executorService,
                 configuration.getServerGlobalWriteLimit(),
                 configuration.getServerGlobalReadLimit(),
+                configuration.getServerChannelWriteLimit(),
+                configuration.getServerChannelReadLimit(),
                 configuration.getDelayLimit());
     }
 
@@ -505,7 +507,7 @@ public class FtpInternalConfiguration {
      * 
      * @return The TrafficCounterFactory
      */
-    public GlobalTrafficShapingHandler getGlobalTrafficShapingHandler() {
+    public FtpGlobalTrafficShapingHandler getGlobalTrafficShapingHandler() {
         return globalTrafficShapingHandler;
     }
 
@@ -516,6 +518,9 @@ public class FtpInternalConfiguration {
     public ChannelTrafficShapingHandler newChannelTrafficShapingHandler() {
         if (configuration.getServerChannelWriteLimit() == 0 &&
                 configuration.getServerChannelReadLimit() == 0) {
+            return null;
+        }
+        if (globalTrafficShapingHandler instanceof GlobalChannelTrafficShapingHandler) {
             return null;
         }
         return new FtpChannelTrafficShapingHandler(

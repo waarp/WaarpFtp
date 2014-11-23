@@ -25,6 +25,7 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 import io.netty.channel.Channel;
+import io.netty.handler.traffic.GlobalChannelTrafficShapingHandler;
 
 import org.waarp.common.file.FileParameterInterface;
 import org.waarp.common.utility.WaarpShutdownHook.ShutdownConfiguration;
@@ -447,10 +448,15 @@ public abstract class FtpConfiguration {
         if (readLimit <= 0) {
             newReadLimit = 0;
         }
-        internalConfiguration.getGlobalTrafficShapingHandler().configure(
+        FtpGlobalTrafficShapingHandler fgts = internalConfiguration.getGlobalTrafficShapingHandler();
+        fgts.configure(
                 newWriteLimit, newReadLimit);
         serverChannelReadLimit = newReadLimit / 10;
         serverChannelWriteLimit = newWriteLimit / 10;
+        if (fgts instanceof GlobalChannelTrafficShapingHandler) {
+            ((GlobalChannelTrafficShapingHandler) fgts)
+                .configureChannel(serverChannelWriteLimit, serverChannelReadLimit);
+        }
     }
 
     /**
