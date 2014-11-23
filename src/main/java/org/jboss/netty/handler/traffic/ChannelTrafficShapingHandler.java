@@ -155,7 +155,7 @@ public class ChannelTrafficShapingHandler extends AbstractTrafficShapingHandler 
         if (ctx == null) {
             this.ctx = ctx;
         }
-        ToSend newToSend;
+        final ToSend newToSend;
         Channel channel = ctx.getChannel();
         synchronized (this) {
             if (delay == 0 && messagesQueue.isEmpty()) {
@@ -231,7 +231,6 @@ public class ChannelTrafficShapingHandler extends AbstractTrafficShapingHandler 
     }
 
    /**
-    *
     * @return current size in bytes of the write buffer
     */
    public long queueSize() {

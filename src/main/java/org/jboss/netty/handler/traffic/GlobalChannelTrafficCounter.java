@@ -17,32 +17,37 @@ package org.jboss.netty.handler.traffic;
 
 import java.util.concurrent.TimeUnit;
 
-import org.jboss.netty.handler.traffic.GlobalChannelTrafficShapingHandler.MixtePerChannel;
+import org.jboss.netty.handler.traffic.GlobalChannelTrafficShapingHandler.PerChannel;
 import org.jboss.netty.util.Timeout;
 import org.jboss.netty.util.Timer;
 import org.jboss.netty.util.TimerTask;
 
 /**
- * Version for {@link GlobalChannelTrafficShapingHandler}
- *
+ * Version for {@link GlobalChannelTrafficShapingHandler}.
+ * This TrafficCounter is the Global one, and its special property is to directly handle
+ * other channel's TrafficCounters. In particular, there are no scheduler for those
+ * channel's TrafficCounters because it is managed by this one.
  */
 public class GlobalChannelTrafficCounter extends TrafficCounter {
     /**
-     * @param trafficShapingHandler
-     * @param executor
-     * @param name
-     * @param checkInterval
+     * @param trafficShapingHandler the associated {@link GlobalChannelTrafficShapingHandler}
+     * @param executor the underlying executor service for scheduling checks (both Global and per Channel)
+     * @param name the name given to this monitor
+     * @param checkInterval the checkInterval in millisecond between two computations
      */
     public GlobalChannelTrafficCounter(GlobalChannelTrafficShapingHandler trafficShapingHandler,
             Timer timer, String name, long checkInterval) {
         super(trafficShapingHandler, timer, name, checkInterval);
+        if (timer == null) {
+            throw new IllegalArgumentException("Timer must not be null");
+        }
     }
 
     /**
-     * Class to implement monitoring at fix delay
-     *
+     * Class to implement monitoring at fix delay.
+     * This version is Mixed in the way it mixes Global and Channel counters.
      */
-    private static class MixteTrafficMonitoringTask implements TimerTask {
+    private static class MixedTrafficMonitoringTask implements TimerTask {
         /**
          * The associated TrafficShapingHandler
          */
@@ -57,7 +62,7 @@ public class GlobalChannelTrafficCounter extends TrafficCounter {
          * @param trafficShapingHandler The parent handler to which this task needs to callback to for accounting
          * @param counter The parent TrafficCounter that we need to reset the statistics for
          */
-        MixteTrafficMonitoringTask(
+        MixedTrafficMonitoringTask(
                 GlobalChannelTrafficShapingHandler trafficShapingHandler,
                 TrafficCounter counter) {
             trafficShapingHandler1 = trafficShapingHandler;
@@ -71,12 +76,10 @@ public class GlobalChannelTrafficCounter extends TrafficCounter {
             }
             long newLastTime = milliSecondFromNano();
             counter.resetAccounting(newLastTime);
-            for (MixtePerChannel mixtePerChannel : trafficShapingHandler1.channelQueues.values()) {
-                mixtePerChannel.channelTrafficCounter.resetAccounting(newLastTime);
+            for (PerChannel perChannel : trafficShapingHandler1.channelQueues.values()) {
+                perChannel.channelTrafficCounter.resetAccounting(newLastTime);
             }
-            if (trafficShapingHandler1 != null) {
-                trafficShapingHandler1.doAccounting(counter);
-            }
+            trafficShapingHandler1.doAccounting(counter);
             counter.timer.newTimeout(this, counter.checkInterval.get(), TimeUnit.MILLISECONDS);
         }
     }
@@ -93,7 +96,7 @@ public class GlobalChannelTrafficCounter extends TrafficCounter {
         if (localCheckInterval > 0) {
             monitorActive = true;
             timerTask =
-                    new MixteTrafficMonitoringTask(
+                    new MixedTrafficMonitoringTask(
                             (GlobalChannelTrafficShapingHandler) trafficShapingHandler, this);
             timeout = timer.newTimeout(timerTask, checkInterval.get(), TimeUnit.MILLISECONDS);
         }
@@ -108,9 +111,7 @@ public class GlobalChannelTrafficCounter extends TrafficCounter {
         }
         monitorActive = false;
         resetAccounting(milliSecondFromNano());
-        if (trafficShapingHandler != null) {
-            trafficShapingHandler.doAccounting(this);
-        }
+        trafficShapingHandler.doAccounting(this);
         if (timeout != null) {
             timeout.cancel();
         }
@@ -118,9 +119,9 @@ public class GlobalChannelTrafficCounter extends TrafficCounter {
 
     @Override
     public void resetCumulativeTime() {
-        for (MixtePerChannel mixtePerChannel :
+        for (PerChannel perChannel :
             ((GlobalChannelTrafficShapingHandler) trafficShapingHandler).channelQueues.values()) {
-            mixtePerChannel.channelTrafficCounter.resetCumulativeTime();
+            perChannel.channelTrafficCounter.resetCumulativeTime();
         }
         super.resetCumulativeTime();
     }

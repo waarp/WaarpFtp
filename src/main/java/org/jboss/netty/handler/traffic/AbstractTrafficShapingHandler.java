@@ -135,6 +135,7 @@ public abstract class AbstractTrafficShapingHandler extends
      * Max size in the list before proposing to stop writing new objects from next handlers
      */
     long maxWriteSize = DEFAULT_MAX_SIZE; // default 4MB
+
     /**
      * Boolean associated with the release of this TrafficShapingHandler.
      * It will be true only once when the releaseExternalRessources is called
@@ -196,7 +197,6 @@ public abstract class AbstractTrafficShapingHandler extends
      }
 
     /**
-     *
      * @param newTrafficCounter the TrafficCounter to set
      */
     void setTrafficCounter(TrafficCounter newTrafficCounter) {
@@ -442,7 +442,7 @@ public abstract class AbstractTrafficShapingHandler extends
         writeLimit = newWriteLimit;
         readLimit = newReadLimit;
         if (trafficCounter != null) {
-            trafficCounter.resetAccounting(TrafficCounter.milliSecondFromNano() + 1);
+            trafficCounter.resetAccounting(TrafficCounter.milliSecondFromNano());
         }
     }
 
@@ -472,7 +472,7 @@ public abstract class AbstractTrafficShapingHandler extends
     public void setWriteLimit(long writeLimit) {
         this.writeLimit = writeLimit;
         if (trafficCounter != null) {
-            trafficCounter.resetAccounting(TrafficCounter.milliSecondFromNano() + 1);
+            trafficCounter.resetAccounting(TrafficCounter.milliSecondFromNano());
         }
     }
 
@@ -495,7 +495,7 @@ public abstract class AbstractTrafficShapingHandler extends
     public void setReadLimit(long readLimit) {
         this.readLimit = readLimit;
         if (trafficCounter != null) {
-            trafficCounter.resetAccounting(TrafficCounter.milliSecondFromNano() + 1);
+            trafficCounter.resetAccounting(TrafficCounter.milliSecondFromNano());
         }
     }
 
@@ -746,6 +746,11 @@ public abstract class AbstractTrafficShapingHandler extends
     }
 
     @Deprecated
+    protected void internalSubmitWrite(ChannelHandlerContext ctx, MessageEvent evt) throws Exception {
+        ctx.sendDownstream(evt);
+    }
+
+    @Deprecated
     protected void submitWrite(final ChannelHandlerContext ctx, final MessageEvent evt,
             final long delay) throws Exception {
         submitWrite(ctx, evt, calculateSize(evt.getMessage()), delay, TrafficCounter.milliSecondFromNano());
@@ -781,7 +786,6 @@ public abstract class AbstractTrafficShapingHandler extends
     }
 
     /**
-     *
      * @return the current TrafficCounter (if
      *         channel is still connected)
      */
@@ -834,12 +838,12 @@ public abstract class AbstractTrafficShapingHandler extends
 
     @Override
     public String toString() {
-        StringBuilder builder = new StringBuilder("TrafficShaping with Write Limit: ").append(writeLimit);
-        builder.append(" Read Limit: ").append(readLimit);
-        builder.append(" CheckInterval: ").append(checkInterval);
-        builder.append(" maxDelay: ").append(maxWriteDelay);
-        builder.append(" maxSize: ").append(maxWriteSize);
-        builder.append(" and Counter: ");
+        StringBuilder builder = new StringBuilder("TrafficShaping with Write Limit: ").append(writeLimit)
+                .append(" Read Limit: ").append(readLimit)
+                .append(" CheckInterval: ").append(checkInterval)
+                .append(" maxDelay: ").append(maxWriteDelay)
+                .append(" maxSize: ").append(maxWriteSize)
+                .append(" and Counter: ");
         if (trafficCounter != null) {
             builder.append(trafficCounter.toString());
         } else {
