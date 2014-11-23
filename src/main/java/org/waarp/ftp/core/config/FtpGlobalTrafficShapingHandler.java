@@ -21,6 +21,7 @@ import java.util.concurrent.ScheduledExecutorService;
 
 import org.waarp.common.file.DataBlock;
 
+import io.netty.handler.traffic.GlobalChannelTrafficShapingHandler;
 import io.netty.handler.traffic.GlobalTrafficShapingHandler;
 import io.netty.util.concurrent.EventExecutor;
 
@@ -28,53 +29,29 @@ import io.netty.util.concurrent.EventExecutor;
  * @author "Frederic Bregier"
  *
  */
-public class FtpGlobalTrafficShapingHandler extends GlobalTrafficShapingHandler {
+public class FtpGlobalTrafficShapingHandler extends GlobalChannelTrafficShapingHandler {
 
-    /**
-     * @param executor
-     */
-    public FtpGlobalTrafficShapingHandler(EventExecutor executor) {
-        super(executor);
+    public FtpGlobalTrafficShapingHandler(ScheduledExecutorService executor, long writeGlobalLimit,
+            long readGlobalLimit, long writeChannelLimit, long readChannelLimit, long checkInterval, long maxTime) {
+        super(executor, writeGlobalLimit, readGlobalLimit, writeChannelLimit, readChannelLimit, checkInterval, maxTime);
     }
 
-    /**
-     * @param executor
-     * @param checkInterval
-     */
+    public FtpGlobalTrafficShapingHandler(ScheduledExecutorService executor, long writeGlobalLimit,
+            long readGlobalLimit, long writeChannelLimit, long readChannelLimit, long checkInterval) {
+        super(executor, writeGlobalLimit, readGlobalLimit, writeChannelLimit, readChannelLimit, checkInterval);
+    }
+
+    public FtpGlobalTrafficShapingHandler(ScheduledExecutorService executor, long writeGlobalLimit,
+            long readGlobalLimit, long writeChannelLimit, long readChannelLimit) {
+        super(executor, writeGlobalLimit, readGlobalLimit, writeChannelLimit, readChannelLimit);
+    }
+
     public FtpGlobalTrafficShapingHandler(ScheduledExecutorService executor, long checkInterval) {
         super(executor, checkInterval);
     }
 
-    /**
-     * @param executor
-     * @param writeLimit
-     * @param readLimit
-     */
-    public FtpGlobalTrafficShapingHandler(ScheduledExecutorService executor, long writeLimit, long readLimit) {
-        super(executor, writeLimit, readLimit);
-    }
-
-    /**
-     * @param executor
-     * @param writeLimit
-     * @param readLimit
-     * @param checkInterval
-     */
-    public FtpGlobalTrafficShapingHandler(ScheduledExecutorService executor, long writeLimit, long readLimit,
-            long checkInterval) {
-        super(executor, writeLimit, readLimit, checkInterval);
-    }
-
-    /**
-     * @param executor
-     * @param writeLimit
-     * @param readLimit
-     * @param checkInterval
-     * @param maxTime
-     */
-    public FtpGlobalTrafficShapingHandler(ScheduledExecutorService executor, long writeLimit, long readLimit,
-            long checkInterval, long maxTime) {
-        super(executor, writeLimit, readLimit, checkInterval, maxTime);
+    public FtpGlobalTrafficShapingHandler(ScheduledExecutorService executor) {
+        super(executor);
     }
 
     @Override
