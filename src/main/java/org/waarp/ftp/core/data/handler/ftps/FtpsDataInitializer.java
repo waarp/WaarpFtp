@@ -44,7 +44,6 @@ public class FtpsDataInitializer extends FtpDataInitializer {
      * @param dataBusinessHandler
      * @param configuration
      * @param active
-     * @param executor
      */
     public FtpsDataInitializer(
             Class<? extends DataBusinessHandler> dataBusinessHandler,
