@@ -265,12 +265,12 @@
 	          <windowtitle>${project.name} ${project.version} API Reference</windowtitle>
 	          <additionalparam>
 	            -link http://java.sun.com/javase/6/docs/api/
-	            -link http://static.netty.io/3.5/api/
-	            -link http://www.slf4j.org/apidocs/
 
 				-group "Waarp FTP Main Core package" "org.waarp.ftp.core*"
 				-group "Waarp FTP Filesystem Implementation package" "org.waarp.ftp.filesystembased*"
 				-group "Waarp Simple FTP Server package" "org.waarp.ftp.simpleimpl*"
+
+                -group "Extra Netty patch package" "io.netty*"
 
 	            -sourceclasspath ${basedir}/core/target/classes
 	            -sourceclasspath ${basedir}/filesystem/target/classes
