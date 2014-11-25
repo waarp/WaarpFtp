@@ -10,6 +10,7 @@
   <artifactId>WaarpFtp-Core</artifactId>
   <properties>
     <filtermodule>core</filtermodule>
+    <filternetty>netty</filternetty>
     <filterexclude>zzz</filterexclude>
   </properties>
   <dependencies>
@@ -29,6 +30,7 @@
 	          <showDeprecations>true</showDeprecations>
 	          <includes>
 	          	<include>**/${filtermodule}/**</include>
+                <include>**/${filternetty}/**</include>
 	          </includes>
 	        </configuration>
   		</plugin>

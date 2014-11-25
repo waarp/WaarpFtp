@@ -513,7 +513,7 @@ public class GlobalChannelTrafficShapingHandler extends AbstractTrafficShapingHa
     }
 
     /**
-     * @param Channel write limit
+     * @param writeLimit Channel write limit
      */
     public void setWriteChannelLimit(long writeLimit) {
         writeChannelLimit = writeLimit;
@@ -531,7 +531,7 @@ public class GlobalChannelTrafficShapingHandler extends AbstractTrafficShapingHa
     }
 
     /**
-     * @return Channel read limit
+     * @param readLimit Channel read limit
      */
     public void setReadChannelLimit(long readLimit) {
         readChannelLimit = readLimit;
