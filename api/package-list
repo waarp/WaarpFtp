@@ -1,4 +1,5 @@
-org.jboss.netty.handler.traffic
+io.netty.channel
+io.netty.handler.traffic
 org.waarp.ftp
 org.waarp.ftp.core.command
 org.waarp.ftp.core.command.access
