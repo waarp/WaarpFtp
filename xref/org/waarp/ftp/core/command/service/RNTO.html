@@ -44,36 +44,36 @@
 <a class="jxr_linenumber" name="34" href="#34">34</a>  <em class="jxr_javadoccomment"> */</em>
 <a class="jxr_linenumber" name="35" href="#35">35</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> <a href="../../../../../../org/waarp/ftp/core/command/service/RNTO.html">RNTO</a> <strong class="jxr_keyword">extends</strong> <a href="../../../../../../org/waarp/ftp/core/command/AbstractCommand.html">AbstractCommand</a> {
 <a class="jxr_linenumber" name="36" href="#36">36</a>  
-<a class="jxr_linenumber" name="37" href="#37">37</a>  	<em class="jxr_comment">/*</em>
-<a class="jxr_linenumber" name="38" href="#38">38</a>  <em class="jxr_comment">	 * (non-Javadoc)</em>
-<a class="jxr_linenumber" name="39" href="#39">39</a>  <em class="jxr_comment">	 * @see org.waarp.ftp.core.command.AbstractCommand#exec()</em>
-<a class="jxr_linenumber" name="40" href="#40">40</a>  <em class="jxr_comment">	 */</em>
-<a class="jxr_linenumber" name="41" href="#41">41</a>  	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> exec() <strong class="jxr_keyword">throws</strong> CommandAbstractException {
-<a class="jxr_linenumber" name="42" href="#42">42</a>  		<strong class="jxr_keyword">if</strong> (!hasArg()) {
-<a class="jxr_linenumber" name="43" href="#43">43</a>  			invalidCurrentCommand();
-<a class="jxr_linenumber" name="44" href="#44">44</a>  			<strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> Reply501Exception(<span class="jxr_string">"Need a pathname as argument"</span>);
-<a class="jxr_linenumber" name="45" href="#45">45</a>  		}
-<a class="jxr_linenumber" name="46" href="#46">46</a>  		String filename = getArg();
-<a class="jxr_linenumber" name="47" href="#47">47</a>  		FtpFile file = <strong class="jxr_keyword">null</strong>;
-<a class="jxr_linenumber" name="48" href="#48">48</a>  		<strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="49" href="#49">49</a>  			file = getSession().getDataConn().getFtpTransferControl()
-<a class="jxr_linenumber" name="50" href="#50">50</a>  					.getExecutingFtpTransfer().getFtpFile();
-<a class="jxr_linenumber" name="51" href="#51">51</a>  		} <strong class="jxr_keyword">catch</strong> (FtpNoFileException e) {
-<a class="jxr_linenumber" name="52" href="#52">52</a>  		} <strong class="jxr_keyword">catch</strong> (FtpNoTransferException e) {
-<a class="jxr_linenumber" name="53" href="#53">53</a>  		}
-<a class="jxr_linenumber" name="54" href="#54">54</a>  		<strong class="jxr_keyword">if</strong> (file != <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="55" href="#55">55</a>  			String previousName = file.getFile();
-<a class="jxr_linenumber" name="56" href="#56">56</a>  			<strong class="jxr_keyword">if</strong> (file.renameTo(filename)) {
-<a class="jxr_linenumber" name="57" href="#57">57</a>  				getSession().setReplyCode(
-<a class="jxr_linenumber" name="58" href="#58">58</a>  						ReplyCode.REPLY_250_REQUESTED_FILE_ACTION_OKAY,
-<a class="jxr_linenumber" name="59" href="#59">59</a>  						<span class="jxr_string">"\&quot;"</span> + filename + <span class="jxr_string">"\&quot; as new file name for \&quot;"</span> +
-<a class="jxr_linenumber" name="60" href="#60">60</a>  								previousName + <span class="jxr_string">"\&quot;"</span>);
-<a class="jxr_linenumber" name="61" href="#61">61</a>  				<strong class="jxr_keyword">return</strong>;
-<a class="jxr_linenumber" name="62" href="#62">62</a>  			}
-<a class="jxr_linenumber" name="63" href="#63">63</a>  		}
-<a class="jxr_linenumber" name="64" href="#64">64</a>  		<em class="jxr_comment">// FtpFile name not allowed or not found</em>
-<a class="jxr_linenumber" name="65" href="#65">65</a>  		<strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> Reply553Exception(<span class="jxr_string">"Filename not allowed"</span>);
-<a class="jxr_linenumber" name="66" href="#66">66</a>  	}
+<a class="jxr_linenumber" name="37" href="#37">37</a>      <em class="jxr_comment">/*</em>
+<a class="jxr_linenumber" name="38" href="#38">38</a>  <em class="jxr_comment">     * (non-Javadoc)</em>
+<a class="jxr_linenumber" name="39" href="#39">39</a>  <em class="jxr_comment">     * @see org.waarp.ftp.core.command.AbstractCommand#exec()</em>
+<a class="jxr_linenumber" name="40" href="#40">40</a>  <em class="jxr_comment">     */</em>
+<a class="jxr_linenumber" name="41" href="#41">41</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> exec() <strong class="jxr_keyword">throws</strong> CommandAbstractException {
+<a class="jxr_linenumber" name="42" href="#42">42</a>          <strong class="jxr_keyword">if</strong> (!hasArg()) {
+<a class="jxr_linenumber" name="43" href="#43">43</a>              invalidCurrentCommand();
+<a class="jxr_linenumber" name="44" href="#44">44</a>              <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> Reply501Exception(<span class="jxr_string">"Need a pathname as argument"</span>);
+<a class="jxr_linenumber" name="45" href="#45">45</a>          }
+<a class="jxr_linenumber" name="46" href="#46">46</a>          String filename = getArg();
+<a class="jxr_linenumber" name="47" href="#47">47</a>          <a href="../../../../../../org/waarp/ftp/core/file/FtpFile.html">FtpFile</a> file = <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="48" href="#48">48</a>          <strong class="jxr_keyword">try</strong> {
+<a class="jxr_linenumber" name="49" href="#49">49</a>              file = getSession().getDataConn().getFtpTransferControl()
+<a class="jxr_linenumber" name="50" href="#50">50</a>                      .getExecutingFtpTransfer().getFtpFile();
+<a class="jxr_linenumber" name="51" href="#51">51</a>          } <strong class="jxr_keyword">catch</strong> (FtpNoFileException e) {
+<a class="jxr_linenumber" name="52" href="#52">52</a>          } <strong class="jxr_keyword">catch</strong> (FtpNoTransferException e) {
+<a class="jxr_linenumber" name="53" href="#53">53</a>          }
+<a class="jxr_linenumber" name="54" href="#54">54</a>          <strong class="jxr_keyword">if</strong> (file != <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="55" href="#55">55</a>              String previousName = file.getFile();
+<a class="jxr_linenumber" name="56" href="#56">56</a>              <strong class="jxr_keyword">if</strong> (file.renameTo(filename)) {
+<a class="jxr_linenumber" name="57" href="#57">57</a>                  getSession().setReplyCode(
+<a class="jxr_linenumber" name="58" href="#58">58</a>                          ReplyCode.REPLY_250_REQUESTED_FILE_ACTION_OKAY,
+<a class="jxr_linenumber" name="59" href="#59">59</a>                          <span class="jxr_string">"\&quot;"</span> + filename + <span class="jxr_string">"\&quot; as new file name for \&quot;"</span> +
+<a class="jxr_linenumber" name="60" href="#60">60</a>                                  previousName + <span class="jxr_string">"\&quot;"</span>);
+<a class="jxr_linenumber" name="61" href="#61">61</a>                  <strong class="jxr_keyword">return</strong>;
+<a class="jxr_linenumber" name="62" href="#62">62</a>              }
+<a class="jxr_linenumber" name="63" href="#63">63</a>          }
+<a class="jxr_linenumber" name="64" href="#64">64</a>          <em class="jxr_comment">// FtpFile name not allowed or not found</em>
+<a class="jxr_linenumber" name="65" href="#65">65</a>          <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> Reply553Exception(<span class="jxr_string">"Filename not allowed"</span>);
+<a class="jxr_linenumber" name="66" href="#66">66</a>      }
 <a class="jxr_linenumber" name="67" href="#67">67</a>  
 <a class="jxr_linenumber" name="68" href="#68">68</a>  }
 </pre>
