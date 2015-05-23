@@ -22,8 +22,6 @@ import java.util.concurrent.ScheduledExecutorService;
 import org.waarp.common.file.DataBlock;
 
 import io.netty.handler.traffic.GlobalChannelTrafficShapingHandler;
-import io.netty.handler.traffic.GlobalTrafficShapingHandler;
-import io.netty.util.concurrent.EventExecutor;
 
 /**
  * @author "Frederic Bregier"
