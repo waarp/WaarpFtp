@@ -452,27 +452,13 @@ public class FtpTransferControl {
      * @throws CommandAbstractException
      * @throws FtpNoFileException
      */
-    private boolean isExecutingRetrLikeTransfer()
+    boolean isExecutingRetrLikeTransfer()
             throws FtpNoTransferException, CommandAbstractException,
             FtpNoFileException {
         return !session.isCurrentCommandFinished() &&
                 FtpCommandCode.isRetrLikeCommand(getExecutingFtpTransfer()
                         .getCommand()) &&
                 getExecutingFtpTransfer().getFtpFile().isInReading();
-    }
-
-    /**
-     * Run the retrieve operation if necessary (called from channelInterestChanged in {@link DataNetworkHandler})
-     */
-    public void runTrueRetrieve() {
-        try {
-            if (isExecutingRetrLikeTransfer()) {
-                getExecutingFtpTransfer().getFtpFile().trueRetrieve();
-            }
-        } catch (CommandAbstractException e) {
-        } catch (FtpNoTransferException e) {
-        } catch (FtpNoFileException e) {
-        }
     }
 
     /**

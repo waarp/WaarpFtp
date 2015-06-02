@@ -94,11 +94,6 @@ public class DataNetworkHandler extends SimpleChannelInboundHandler<DataBlock> {
     private ChannelPipeline channelPipeline = null;
 
     /**
-     * True when the DataNetworkHandler is fully ready (to prevent action before ready)
-     */
-    private volatile boolean isReady = false;
-
-    /**
      * Constructor from DataBusinessHandler
      * 
      * @param configuration
@@ -235,7 +230,6 @@ public class DataNetworkHandler extends SimpleChannelInboundHandler<DataBlock> {
             session.getDataConn().getFtpTransferControl().setOpenedDataChannel(null, this);
             return;
         }
-        isReady = true;
     }
 
     /**
@@ -335,17 +329,6 @@ public class DataNetworkHandler extends SimpleChannelInboundHandler<DataBlock> {
         if (session.getDataConn().checkCorrectChannel(ctx.channel())) {
             session.getDataConn().getFtpTransferControl()
                     .setTransferAbortedFromInternal(true);
-        }
-    }
-
-    /**
-     * To enable continues of Retrieve operation (write) (prevent OOM)
-     * 
-     */
-    @Override
-    public void channelWritabilityChanged(ChannelHandlerContext ctx) throws Exception {
-        if (isReady && ctx.channel().isWritable()) {
-            session.getDataConn().getFtpTransferControl().runTrueRetrieve();
         }
     }
 
