@@ -135,7 +135,6 @@ public abstract class FilesystemBasedFtpFile extends FilesystemBasedFileImpl imp
             // While not last block
             ChannelFuture future = null;
             while (block != null && !block.isEOF()) {
-                block.getBlock().retain();
                 future = channel.writeAndFlush(block);
                 try {
                     future.await();
@@ -163,7 +162,6 @@ public abstract class FilesystemBasedFtpFile extends FilesystemBasedFileImpl imp
             closeFile();
             if (block != null) {
                 logger.debug("Write " + block.getByteCount());
-                block.getBlock().retain();
                 future = channel.writeAndFlush(block);
             }
             // Wait for last write
