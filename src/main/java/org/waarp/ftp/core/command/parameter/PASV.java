@@ -99,6 +99,8 @@ public class PASV extends AbstractCommand {
         // Add the current FtpSession into the reference of session since the
         // client will open the connection
         getConfiguration().setNewFtpSession(remote, local, getSession());
+        // prepare the validation of the next connection
+        getSession().getDataConn().getFtpTransferControl().resetWaitForOpenedDataChannel();
         getSession().setReplyCode(ReplyCode.REPLY_227_ENTERING_PASSIVE_MODE,
                 slocal);
         logger.info("PASV: answer ready on {}", slocal);
