@@ -60,7 +60,7 @@ public class FtpsDataInitializer extends FtpDataInitializer {
         ChannelPipeline pipeline = ch.pipeline();
         // SSL will be added in this handler during channelActive
         pipeline.addLast(new FtpsTemporaryFirstHandler(configuration, isActive));
-        // Add default codec but they will change by the channelActive
+        // Add default codec but they will change during the channelActive
         pipeline.addLast(FtpDataInitializer.CODEC_MODE, new FtpDataModeCodec(TransferMode.STREAM,
                 TransferStructure.FILE));
         pipeline.addLast(FtpDataInitializer.CODEC_LIMIT, configuration
@@ -78,6 +78,7 @@ public class FtpsDataInitializer extends FtpDataInitializer {
         // and then business logic. New one on every connection
         DataBusinessHandler newbusiness = dataBusinessHandler.newInstance();
         DataNetworkHandler newNetworkHandler = new DataNetworkHandler(configuration, newbusiness, isActive);
-        pipeline.addLast(FtpDataInitializer.HANDLER, newNetworkHandler);
+        pipeline.addLast(configuration.getFtpInternalConfiguration().getDataExecutor(),
+                FtpDataInitializer.HANDLER, newNetworkHandler);
     }
 }

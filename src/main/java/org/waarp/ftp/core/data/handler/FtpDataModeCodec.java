@@ -21,6 +21,7 @@ import java.util.List;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
+import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageCodec;
 
@@ -244,18 +245,23 @@ public class FtpDataModeCodec extends ByteToMessageCodec<DataBlock> {
             }
             isReady = true;
         }
+        if (buf.readableBytes() == 0) {
+            return;
+        }
         // If STREAM Mode, no task to do, just next filter
         if (mode == TransferMode.STREAM) {
             dataBlock = new DataBlock();
-            int length = buf.readableBytes();
-            // Except if RECORD Structure!
-            if (structure == TransferStructure.RECORD) {
-                out.add(decodeRecord(buf, length));
+            if (structure != TransferStructure.RECORD) {
+                ByteBuf newbuf = Unpooled.wrappedBuffer(buf);
+                buf.readerIndex(buf.readableBytes());
+                newbuf.retain();
+                dataBlock.setBlock(newbuf);
+                out.add(dataBlock);
                 return;
             }
-
-            dataBlock.setBlock(buf.readBytes(length));
-            out.add(dataBlock);
+            // Except if RECORD Structure!
+            int length = buf.readableBytes();
+            out.add(decodeRecord(buf, length));
             return;
         } else if (mode == TransferMode.BLOCK) {
             // Now we are in BLOCK Mode

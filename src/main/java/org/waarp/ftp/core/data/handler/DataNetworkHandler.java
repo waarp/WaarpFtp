@@ -43,6 +43,7 @@ import org.waarp.common.utility.WaarpStringUtils;
 import org.waarp.ftp.core.config.FtpConfiguration;
 import org.waarp.ftp.core.config.FtpInternalConfiguration;
 import org.waarp.ftp.core.control.NetworkHandler;
+import org.waarp.ftp.core.data.FtpTransfer;
 import org.waarp.ftp.core.data.FtpTransferControl;
 import org.waarp.ftp.core.exception.FtpNoConnectionException;
 import org.waarp.ftp.core.exception.FtpNoFileException;
@@ -94,10 +95,10 @@ public class DataNetworkHandler extends SimpleChannelInboundHandler<DataBlock> {
     private ChannelPipeline channelPipeline = null;
 
     /**
-     * True when the DataNetworkHandler is fully ready (to prevent action before ready)
+     * The associated FtpTransfer
      */
-    private volatile boolean isReady = false;
-
+    private volatile FtpTransfer ftpTransfer = null;
+    
     /**
      * Constructor from DataBusinessHandler
      * 
@@ -148,20 +149,23 @@ public class DataNetworkHandler extends SimpleChannelInboundHandler<DataBlock> {
      */
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
+        logger.debug("Data Channel closed with a session ? "+(session !=null));
         if (session != null) {
             if (session.getDataConn().checkCorrectChannel(ctx.channel())) {
                 session.getDataConn().getFtpTransferControl().setPreEndOfTransfer();
-                session.getDataConn().unbindPassive();
-                try {
-                    getDataBusinessHandler().executeChannelClosed();
-                    // release file and other permanent objects
-                    getDataBusinessHandler().clear();
-                } catch (FtpNoConnectionException e1) {
-                }
-                dataBusinessHandler = null;
-                channelPipeline = null;
-                dataChannel = null;
+            } else {
+                session.getDataConn().getFtpTransferControl().setTransferAbortedFromInternal(true);
             }
+            session.getDataConn().unbindPassive();
+            try {
+                getDataBusinessHandler().executeChannelClosed();
+                // release file and other permanent objects
+                getDataBusinessHandler().clear();
+            } catch (FtpNoConnectionException e1) {
+            }
+            dataBusinessHandler = null;
+            channelPipeline = null;
+            dataChannel = null;
         }
         super.channelInactive(ctx);
     }
@@ -198,10 +202,14 @@ public class DataNetworkHandler extends SimpleChannelInboundHandler<DataBlock> {
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
         Channel channel = ctx.channel();
+        channel.config().setAutoRead(false);
         if (session == null) {
             setSession(channel);
         }
+        logger.debug("Data Channel opened as "+channel);
         if (session == null) {
+            logger.debug("DataChannel immediately closed since no session is assigned");
+            WaarpSslUtility.closingSslChannel(ctx.channel());
             return;
         }
         channelPipeline = ctx.pipeline();
@@ -219,7 +227,7 @@ public class DataNetworkHandler extends SimpleChannelInboundHandler<DataBlock> {
                     // close the data channel immediately
                     logger.debug("DataChannel immediately closed since " + session.getCurrentCommand().getCode()
                             + " is not ok at startup");
-                    ctx.close();
+                    WaarpSslUtility.closingSslChannel(ctx.channel());
                     return;
                 default:
                     break;
@@ -229,13 +237,13 @@ public class DataNetworkHandler extends SimpleChannelInboundHandler<DataBlock> {
             setCorrectCodec();
             unlockModeCodec();
             session.getDataConn().getFtpTransferControl().setOpenedDataChannel(channel, this);
+            logger.debug("DataChannel fully configured");
         } else {
             // Cannot continue
             logger.debug("Connected but no more alive so will disconnect");
             session.getDataConn().getFtpTransferControl().setOpenedDataChannel(null, this);
             return;
         }
-        isReady = true;
     }
 
     /**
@@ -256,6 +264,7 @@ public class DataNetworkHandler extends SimpleChannelInboundHandler<DataBlock> {
         typeCodec.setFullType(session.getDataConn().getType(), session
                 .getDataConn().getSubType());
         structureCodec.setStructure(session.getDataConn().getStructure());
+        logger.debug("codec setup");
     }
 
     /**
@@ -275,7 +284,7 @@ public class DataNetworkHandler extends SimpleChannelInboundHandler<DataBlock> {
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
         if (session == null) {
-            logger.warn("Error without any session active {}", cause);
+            logger.debug("Error without any session active {}", cause);
             return;
         }
         Throwable e1 = cause;
@@ -338,47 +347,52 @@ public class DataNetworkHandler extends SimpleChannelInboundHandler<DataBlock> {
         }
     }
 
-    /**
-     * To enable continues of Retrieve operation (write) (prevent OOM)
-     * 
-     */
-    @Override
-    public void channelWritabilityChanged(ChannelHandlerContext ctx) throws Exception {
-        if (isReady && ctx.channel().isWritable()) {
-            session.getDataConn().getFtpTransferControl().runTrueRetrieve();
-        }
+    public void setFtpTransfer(FtpTransfer ftpTransfer) {
+        this.ftpTransfer = ftpTransfer;
     }
-
     /**
      * Act as needed according to the receive DataBlock message
      * 
      */
     @Override
     public void channelRead0(ChannelHandlerContext ctx, DataBlock dataBlock) {
-        if (isStillAlive()) {
+        if (ftpTransfer == null) {
             try {
-                session.getDataConn().getFtpTransferControl()
-                        .getExecutingFtpTransfer().getFtpFile().writeDataBlock(
-                                dataBlock);
-            } catch (FtpNoFileException e1) {
-                logger.debug(e1);
-                session.getDataConn().getFtpTransferControl()
-                        .setTransferAbortedFromInternal(true);
-                return;
-            } catch (FtpNoTransferException e1) {
-                logger.debug(e1);
-                session.getDataConn().getFtpTransferControl()
-                        .setTransferAbortedFromInternal(true);
-                return;
-            } catch (FileTransferException e1) {
-                logger.debug(e1);
+                ftpTransfer = session.getDataConn().getFtpTransferControl().getExecutingFtpTransfer();
+            } catch (FtpNoTransferException e) {
+                logger.debug(e);
                 session.getDataConn().getFtpTransferControl()
                         .setTransferAbortedFromInternal(true);
             }
-        } else {
-            // Shutdown
-            session.getDataConn().getFtpTransferControl()
+            if (ftpTransfer == null) {
+                logger.debug("No ExecutionFtpTransfer found");
+                session.getDataConn().getFtpTransferControl()
                     .setTransferAbortedFromInternal(true);
+                return;
+            }
+        }
+        try {
+            if (isStillAlive()) {
+                try {
+                    ftpTransfer.getFtpFile().writeDataBlock(dataBlock);
+                } catch (FtpNoFileException e1) {
+                    logger.debug(e1);
+                    session.getDataConn().getFtpTransferControl()
+                            .setTransferAbortedFromInternal(true);
+                    return;
+                } catch (FileTransferException e1) {
+                    logger.debug(e1);
+                    session.getDataConn().getFtpTransferControl()
+                            .setTransferAbortedFromInternal(true);
+                }
+            } else {
+                // Shutdown
+                session.getDataConn().getFtpTransferControl()
+                        .setTransferAbortedFromInternal(true);
+                WaarpSslUtility.closingSslChannel(ctx.channel());
+            }
+        } finally {
+            dataBlock.getBlock().release();
         }
     }
 
