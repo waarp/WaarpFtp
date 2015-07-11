@@ -24,12 +24,14 @@ import org.jboss.netty.channel.ChannelPipeline;
 import org.jboss.netty.channel.ChannelPipelineFactory;
 import org.jboss.netty.channel.Channels;
 import org.jboss.netty.handler.execution.ExecutionHandler;
+import org.jboss.netty.handler.ssl.SslHandler;
 import org.jboss.netty.handler.traffic.ChannelTrafficShapingHandler;
 import org.waarp.ftp.core.command.FtpArgumentCode.TransferMode;
 import org.waarp.ftp.core.command.FtpArgumentCode.TransferStructure;
 import org.waarp.ftp.core.command.FtpArgumentCode.TransferSubType;
 import org.waarp.ftp.core.command.FtpArgumentCode.TransferType;
 import org.waarp.ftp.core.config.FtpConfiguration;
+import org.waarp.ftp.core.control.ftps.FtpsPipelineFactory;
 import org.waarp.ftp.core.data.handler.DataBusinessHandler;
 import org.waarp.ftp.core.data.handler.FtpDataModeCodec;
 import org.waarp.ftp.core.data.handler.FtpDataPipelineFactory;
@@ -86,7 +88,12 @@ public class FtpsDataPipelineFactory implements ChannelPipelineFactory {
      */
     public ChannelPipeline getPipeline() throws Exception {
         ChannelPipeline pipeline = Channels.pipeline();
-        // SSL will be added in final handler in channelConnected
+        // Server: no renegotiation still, but possible clientAuthent
+        SslHandler sslHandler =
+                FtpsPipelineFactory.waarpSslContextFactory.initPipelineFactory(true,
+                        FtpsPipelineFactory.waarpSslContextFactory.needClientAuthentication(),
+                        true);
+        pipeline.addLast("ssl", sslHandler);
         // Add default codec but they will change by the channelConnected
         pipeline.addLast(FtpDataPipelineFactory.CODEC_MODE, new FtpDataModeCodec(TransferMode.STREAM,
                 TransferStructure.FILE));

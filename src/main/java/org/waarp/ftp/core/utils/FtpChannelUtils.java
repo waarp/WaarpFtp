@@ -415,7 +415,7 @@ public class FtpChannelUtils implements Runnable {
      * @param configuration
      */
     public static void teminateServer(FtpConfiguration configuration) {
-        ((FtpShutdownHook) FtpShutdownHook.shutdownHook).configuration = configuration;
+        FtpShutdownHook.configuration = configuration;
         FtpShutdownHook.terminate(false);
     }
 
