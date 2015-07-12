@@ -362,7 +362,7 @@
 <a class="jxr_linenumber" name="352" href="#352">352</a> <em class="jxr_javadoccomment">     * @param configuration</em>
 <a class="jxr_linenumber" name="353" href="#353">353</a> <em class="jxr_javadoccomment">     */</em>
 <a class="jxr_linenumber" name="354" href="#354">354</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">void</strong> teminateServer(<a href="../../../../../org/waarp/ftp/core/config/FtpConfiguration.html">FtpConfiguration</a> configuration) {
-<a class="jxr_linenumber" name="355" href="#355">355</a>         ((<a href="../../../../../org/waarp/ftp/core/utils/FtpShutdownHook.html">FtpShutdownHook</a>) FtpShutdownHook.shutdownHook).configuration = configuration;
+<a class="jxr_linenumber" name="355" href="#355">355</a>         FtpShutdownHook.configuration = configuration;
 <a class="jxr_linenumber" name="356" href="#356">356</a>         FtpShutdownHook.terminate(false);
 <a class="jxr_linenumber" name="357" href="#357">357</a>     }
 <a class="jxr_linenumber" name="358" href="#358">358</a> 
