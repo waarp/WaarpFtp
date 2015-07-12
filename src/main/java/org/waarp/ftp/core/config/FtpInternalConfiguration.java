@@ -129,6 +129,11 @@ public class FtpInternalConfiguration {
     private final EventLoopGroup execCommandEvent;
 
     /**
+     * ExecutorService Data Event Loop
+     */
+    private final EventLoopGroup execDataEvent;
+
+    /**
      * ExecutorService Data Active Worker
      */
     private final EventLoopGroup execDataWorker;
@@ -226,7 +231,8 @@ public class FtpInternalConfiguration {
         ISUNIX = !DetectionUtils.isWindows();
         configuration.shutdownConfiguration.timeout = configuration.TIMEOUTCON;
         new FtpShutdownHook(configuration.shutdownConfiguration, configuration);
-        execCommandEvent = new NioEventLoopGroup(configuration.CLIENT_THREAD * 2, new WaarpThreadFactory("Command"));
+        execCommandEvent = new NioEventLoopGroup(configuration.CLIENT_THREAD, new WaarpThreadFactory("Command"));
+        execDataEvent = new NioEventLoopGroup(configuration.CLIENT_THREAD, new WaarpThreadFactory("Data"));
         execBoss = new NioEventLoopGroup(configuration.SERVER_THREAD, new WaarpThreadFactory("CommandBoss", false));
         execWorker = new NioEventLoopGroup(configuration.CLIENT_THREAD, new WaarpThreadFactory("CommandWorker"));
         execPassiveDataBoss = new NioEventLoopGroup(configuration.SERVER_THREAD * 2, new WaarpThreadFactory(
@@ -469,12 +475,21 @@ public class FtpInternalConfiguration {
     }
 
     /**
-     * Return the associated Executor for Command
+     * Return the associated Executor for Command Event
      * 
-     * @return the Command Executor
+     * @return the Command Event Executor
      */
     public EventExecutorGroup getExecutor() {
         return execCommandEvent;
+    }
+
+    /**
+     * Return the associated Executor for Data Event
+     * 
+     * @return the Data Event Executor
+     */
+    public EventExecutorGroup getDataExecutor() {
+        return execDataEvent;
     }
 
     /**
@@ -536,6 +551,7 @@ public class FtpInternalConfiguration {
         execPassiveDataBoss.shutdownGracefully();
         execDataWorker.shutdownGracefully();
         //execCommandEvent.shutdownGracefully();
+        //execDataEvent.shutdownGracefully();
         globalTrafficShapingHandler.release();
         executorService.shutdown();
     }

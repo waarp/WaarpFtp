@@ -108,7 +108,7 @@ public class FtpDataInitializer extends ChannelInitializer<SocketChannel> {
     @Override
     public void initChannel(SocketChannel ch) throws Exception {
         ChannelPipeline pipeline = ch.pipeline();
-        // Add default codec but they will change by the channelConnected
+        // Add default codec but they will change during the channelConnected
         pipeline.addFirst(CODEC_MODE, new FtpDataModeCodec(TransferMode.STREAM,
                 TransferStructure.FILE));
         pipeline.addLast(CODEC_LIMIT, configuration
@@ -127,6 +127,7 @@ public class FtpDataInitializer extends ChannelInitializer<SocketChannel> {
         DataBusinessHandler newbusiness = dataBusinessHandler.newInstance();
         DataNetworkHandler newNetworkHandler = new DataNetworkHandler(
                 configuration, newbusiness, isActive);
-        pipeline.addLast(HANDLER, newNetworkHandler);
+        pipeline.addLast(configuration.getFtpInternalConfiguration().getDataExecutor(),
+                HANDLER, newNetworkHandler);
     }
 }

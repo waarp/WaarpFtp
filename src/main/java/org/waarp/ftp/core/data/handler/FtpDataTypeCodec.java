@@ -186,13 +186,13 @@ public class FtpDataTypeCodec extends MessageToMessageCodec<DataBlock, DataBlock
 
     @Override
     protected void decode(ChannelHandlerContext ctx, DataBlock msg, List<Object> out) throws Exception {
-        // Is an ASCII or EBCDIC mode
-        if (type == TransferType.ASCII || type == TransferType.EBCDIC) {
-            ByteBuf buffer = msg.getBlock();
-            msg.setBlock(decode(buffer));
+        // Is an ASCII or EBCDIC mode or IMAGE mode
+        if (type == TransferType.IMAGE) {
             out.add(msg);
             return;
-        } else if (type == TransferType.IMAGE) {
+        } else if (type == TransferType.ASCII || type == TransferType.EBCDIC) {
+            ByteBuf buffer = msg.getBlock();
+            msg.setBlock(decode(buffer));
             out.add(msg);
             return;
         }
@@ -215,13 +215,13 @@ public class FtpDataTypeCodec extends MessageToMessageCodec<DataBlock, DataBlock
 
     @Override
     protected void encode(ChannelHandlerContext ctx, DataBlock msg, List<Object> out) throws Exception {
-        // Is an ASCII or EBCDIC mode
-        if (type == TransferType.ASCII || type == TransferType.EBCDIC) {
-            ByteBuf buffer = msg.getBlock();
-            msg.setBlock(encode(buffer));
+        // Is an ASCII or EBCDIC mode or IMAGE mode
+        if (type == TransferType.IMAGE) {
             out.add(msg);
             return;
-        } else if (type == TransferType.IMAGE) {
+        } else if (type == TransferType.ASCII || type == TransferType.EBCDIC) {
+            ByteBuf buffer = msg.getBlock();
+            msg.setBlock(encode(buffer));
             out.add(msg);
             return;
         }
