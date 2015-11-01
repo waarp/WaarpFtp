@@ -326,8 +326,8 @@ public class FtpChannelUtils implements Runnable {
      * @param configuration
      */
     protected static void exit(FtpConfiguration configuration) {
-        configuration.isShutdown = true;
-        long delay = configuration.TIMEOUTCON / 2;
+        configuration.setShutdown(true);
+        long delay = configuration.getTIMEOUTCON() / 2;
         logger.warn("Exit: Give a delay of " + delay + " ms");
         configuration.inShutdownProcess();
         try {
@@ -336,8 +336,8 @@ public class FtpChannelUtils implements Runnable {
         }
         Timer timer = new Timer(true);
         FtpTimerTask timerTask = new FtpTimerTask(FtpTimerTask.TIMER_CONTROL);
-        timerTask.configuration = configuration;
-        timer.schedule(timerTask, configuration.TIMEOUTCON / 4);
+        timerTask.setConfiguration(configuration);
+        timer.schedule(timerTask, configuration.getTIMEOUTCON() / 4);
         configuration.getFtpInternalConfiguration()
                 .getGlobalTrafficShapingHandler().release();
         configuration.releaseResources();

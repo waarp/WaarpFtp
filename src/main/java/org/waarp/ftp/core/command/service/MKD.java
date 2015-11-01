@@ -29,11 +29,7 @@ import org.waarp.ftp.core.command.AbstractCommand;
  * 
  */
 public class MKD extends AbstractCommand {
-
-    /*
-     * (non-Javadoc)
-     * @see org.waarp.ftp.core.command.AbstractCommand#exec()
-     */
+    @Override
     public void exec() throws CommandAbstractException {
         // First Check if any argument
         if (!hasArg()) {

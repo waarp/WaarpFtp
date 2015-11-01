@@ -46,12 +46,17 @@ public abstract class FtpConfiguration {
     /**
      * Default session limit 64Mbit, so up to 8 full simultaneous clients
      */
-    public static long DEFAULT_SESSION_LIMIT = 0x800000L;
+    static long DEFAULT_SESSION_LIMIT = 0x800000L;
 
     /**
      * Default global limit 512Mbit
      */
-    public static long DEFAULT_GLOBAL_LIMIT = 0x4000000L;
+    static long DEFAULT_GLOBAL_LIMIT = 0x4000000L;
+
+    /**
+     * Nb of milliseconds after pending data transfer is in timeout
+     */
+    private static long DATATIMEOUTCON = 5000;
 
     /**
      * PASSWORD for SHUTDOWN
@@ -86,34 +91,34 @@ public abstract class FtpConfiguration {
     /**
      * True if the service is going to shutdown
      */
-    public volatile boolean isShutdown = false;
+    private volatile boolean isShutdown = false;
 
     /**
      * Default number of threads in pool for Server. The default value is for client for Executor in
      * the Pipeline for Business logic. Server will change this value on startup if not set.
      * Default 0 means in proportion of real core number.
      */
-    public int SERVER_THREAD = 0;
+    private int SERVER_THREAD = 0;
 
     /**
      * Default number of threads in pool for Client part.
      */
-    public int CLIENT_THREAD = 80;
+    private int CLIENT_THREAD = 80;
 
     /**
      * Which class owns this configuration
      */
-    public Class<?> fromClass = null;
+    Class<?> fromClass = null;
 
     /**
      * Which class will be used for DataBusinessHandler
      */
-    public Class<? extends DataBusinessHandler> dataBusinessHandler = null;
+    Class<? extends DataBusinessHandler> dataBusinessHandler = null;
 
     /**
      * Which class will be used for BusinessHandler
      */
-    public Class<? extends BusinessHandler> businessHandler = null;
+    Class<? extends BusinessHandler> businessHandler = null;
 
     /**
      * Internal Lock
@@ -123,18 +128,13 @@ public abstract class FtpConfiguration {
     /**
      * Nb of milliseconds after connection is in timeout
      */
-    public long TIMEOUTCON = 30000;
-
-    /**
-     * Nb of milliseconds after pending data transfer is in timeout
-     */
-    public static long DATATIMEOUTCON = 5000;
+    private long TIMEOUTCON = 30000;
 
     /**
      * Size by default of block size for receive/sending files. Should be a multiple of 8192
      * (maximum = 64K due to block limitation to 2 bytes)
      */
-    public int BLOCKSIZE = 0x10000; // 64K
+    private int BLOCKSIZE = 0x10000; // 64K
 
     /**
      * Limit in Write byte/s to apply globally to the FTP Server
@@ -164,12 +164,12 @@ public abstract class FtpConfiguration {
     /**
      * Should the file be deleted when the transfer is aborted on STOR like commands
      */
-    public boolean deleteOnAbort = false;
+    private boolean deleteOnAbort = false;
 
     /**
      * Max global memory limit: default is 4GB
      */
-    public long maxGlobalMemory = 0x100000000L;
+    private long maxGlobalMemory = 0x100000000L;
 
     /**
      * General Configuration Object
@@ -179,7 +179,7 @@ public abstract class FtpConfiguration {
     /**
      * Use by ShutdownHook
      */
-    public final ShutdownConfiguration shutdownConfiguration = new ShutdownConfiguration();
+    private final ShutdownConfiguration shutdownConfiguration = new ShutdownConfiguration();
 
     /**
      * Simple constructor
@@ -469,11 +469,11 @@ public abstract class FtpConfiguration {
         if (nb > 32) {
             nb = Runtime.getRuntime().availableProcessors() + 1;
         }
-        if (SERVER_THREAD < nb) {
-            SERVER_THREAD = nb;
-            CLIENT_THREAD = SERVER_THREAD * 10;
-        } else if (CLIENT_THREAD < nb) {
-            CLIENT_THREAD = nb * 10;
+        if (getSERVER_THREAD() < nb) {
+            setSERVER_THREAD(nb);
+            setCLIENT_THREAD(getSERVER_THREAD() * 10);
+        } else if (getCLIENT_THREAD() < nb) {
+            setCLIENT_THREAD(nb * 10);
         }
     }
 
@@ -585,4 +585,123 @@ public abstract class FtpConfiguration {
      * Shutdown process is on going
      */
     public abstract void inShutdownProcess();
+
+    /**
+     * @return the isShutdown
+     */
+    public boolean isShutdown() {
+        return isShutdown;
+    }
+
+    /**
+     * @param isShutdown the isShutdown to set
+     */
+    public void setShutdown(boolean isShutdown) {
+        this.isShutdown = isShutdown;
+    }
+
+    /**
+     * @return the sERVER_THREAD
+     */
+    public int getSERVER_THREAD() {
+        return SERVER_THREAD;
+    }
+
+    /**
+     * @param sERVER_THREAD the sERVER_THREAD to set
+     */
+    public void setSERVER_THREAD(int sERVER_THREAD) {
+        SERVER_THREAD = sERVER_THREAD;
+    }
+
+    /**
+     * @return the cLIENT_THREAD
+     */
+    public int getCLIENT_THREAD() {
+        return CLIENT_THREAD;
+    }
+
+    /**
+     * @param cLIENT_THREAD the cLIENT_THREAD to set
+     */
+    public void setCLIENT_THREAD(int cLIENT_THREAD) {
+        CLIENT_THREAD = cLIENT_THREAD;
+    }
+
+    /**
+     * @return the tIMEOUTCON
+     */
+    public long getTIMEOUTCON() {
+        return TIMEOUTCON;
+    }
+
+    /**
+     * @param tIMEOUTCON the tIMEOUTCON to set
+     */
+    public void setTIMEOUTCON(long tIMEOUTCON) {
+        TIMEOUTCON = tIMEOUTCON;
+    }
+
+    /**
+     * @return the bLOCKSIZE
+     */
+    public int getBLOCKSIZE() {
+        return BLOCKSIZE;
+    }
+
+    /**
+     * @param bLOCKSIZE the bLOCKSIZE to set
+     */
+    public void setBLOCKSIZE(int bLOCKSIZE) {
+        BLOCKSIZE = bLOCKSIZE;
+    }
+
+    /**
+     * @return the deleteOnAbort
+     */
+    public boolean isDeleteOnAbort() {
+        return deleteOnAbort;
+    }
+
+    /**
+     * @param deleteOnAbort the deleteOnAbort to set
+     */
+    public void setDeleteOnAbort(boolean deleteOnAbort) {
+        this.deleteOnAbort = deleteOnAbort;
+    }
+
+    /**
+     * @return the dATATIMEOUTCON
+     */
+    public static long getDATATIMEOUTCON() {
+        return DATATIMEOUTCON;
+    }
+
+    /**
+     * @param dATATIMEOUTCON the dATATIMEOUTCON to set
+     */
+    public static void setDATATIMEOUTCON(long dATATIMEOUTCON) {
+        DATATIMEOUTCON = dATATIMEOUTCON;
+    }
+
+    /**
+     * @return the maxGlobalMemory
+     */
+    public long getMaxGlobalMemory() {
+        return maxGlobalMemory;
+    }
+
+    /**
+     * @param maxGlobalMemory the maxGlobalMemory to set
+     */
+    public void setMaxGlobalMemory(long maxGlobalMemory) {
+        this.maxGlobalMemory = maxGlobalMemory;
+    }
+
+    /**
+     * @return the shutdownConfiguration
+     */
+    public ShutdownConfiguration getShutdownConfiguration() {
+        return shutdownConfiguration;
+    }
 }

@@ -176,6 +176,6 @@ public class FileBasedAuth extends FilesystemBasedFtpAuth {
     }
 
     public boolean isAdmin() {
-        return currentAuth.isAdmin;
+        return currentAuth.isAdmin();
     }
 }

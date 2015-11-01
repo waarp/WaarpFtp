@@ -244,13 +244,13 @@ public class FileBasedConfiguration extends FtpConfiguration {
         }
         node = document.selectSingleNode(XML_SERVER_THREAD);
         if (node != null) {
-            SERVER_THREAD = Integer.parseInt(node.getText());
+            setSERVER_THREAD(Integer.parseInt(node.getText()));
         }
         node = document.selectSingleNode(XML_CLIENT_THREAD);
         if (node != null) {
-            CLIENT_THREAD = Integer.parseInt(node.getText());
+            setCLIENT_THREAD(Integer.parseInt(node.getText()));
         }
-        if (SERVER_THREAD == 0 || CLIENT_THREAD == 0) {
+        if (getSERVER_THREAD() == 0 || getCLIENT_THREAD() == 0) {
             computeNbThreads();
         }
         node = document.selectSingleNode(XML_LIMITGLOBAL);
@@ -274,11 +274,11 @@ public class FileBasedConfiguration extends FtpConfiguration {
         delayLimit = AbstractTrafficShapingHandler.DEFAULT_CHECK_INTERVAL;
         node = document.selectSingleNode(XML_TIMEOUTCON);
         if (node != null) {
-            TIMEOUTCON = Integer.parseInt(node.getText());
+            setTIMEOUTCON(Integer.parseInt(node.getText()));
         }
         node = document.selectSingleNode(XML_DELETEONABORT);
         if (node != null) {
-            deleteOnAbort = Integer.parseInt(node.getText()) == 1 ? true : false;
+            setDeleteOnAbort(Integer.parseInt(node.getText()) == 1 ? true : false);
         }
         node = document.selectSingleNode(XML_USENIO);
         if (node != null) {
@@ -287,14 +287,14 @@ public class FileBasedConfiguration extends FtpConfiguration {
         }
         node = document.selectSingleNode(XML_USEFASTMD5);
         if (node != null) {
-            FilesystemBasedDigest.useFastMd5 = Integer.parseInt(node.getText()) == 1 ? true
-                    : false;
+            FilesystemBasedDigest.setUseFastMd5(Integer.parseInt(node.getText()) == 1 ? true
+                    : false);
         } else {
-            FilesystemBasedDigest.useFastMd5 = false;
+            FilesystemBasedDigest.setUseFastMd5(false);
         }
         node = document.selectSingleNode(XML_BLOCKSIZE);
         if (node != null) {
-            BLOCKSIZE = Integer.parseInt(node.getText());
+            setBLOCKSIZE(Integer.parseInt(node.getText()));
         }
         node = document.selectSingleNode(XML_RANGE_PORT_MIN);
         int min = 100;
@@ -396,10 +396,6 @@ public class FileBasedConfiguration extends FtpConfiguration {
         RANGE_PORT = rangePort;
     }
 
-    /*
-     * (non-Javadoc)
-     * @see org.waarp.ftp.core.config.FtpConfiguration#inShutdownProcess()
-     */
     @Override
     public void inShutdownProcess() {
         // nothing to do

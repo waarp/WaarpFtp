@@ -40,10 +40,7 @@ public class PORT extends AbstractCommand {
     private static final WaarpLogger logger = WaarpLoggerFactory
             .getLogger(PORT.class);
 
-    /*
-     * (non-Javadoc)
-     * @see org.waarp.ftp.core.command.AbstractCommand#exec()
-     */
+    @Override
     public void exec() throws Reply501Exception {
         // First Check if any argument
         if (!hasArg()) {

@@ -90,10 +90,6 @@ public class FtpSessionReference {
             return ipOnly != null && fullIp != null;
         }
 
-        /*
-         * (non-Javadoc)
-         * @see java.lang.Object#equals(java.lang.Object)
-         */
         @Override
         public boolean equals(Object arg0) {
             if (arg0 == null) {
@@ -109,10 +105,6 @@ public class FtpSessionReference {
             return false;
         }
 
-        /*
-         * (non-Javadoc)
-         * @see java.lang.Object#hashCode()
-         */
         @Override
         public int hashCode() {
             return fullIp.hashCode() + ipOnly.hashCode();

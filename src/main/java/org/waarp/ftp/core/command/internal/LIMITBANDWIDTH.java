@@ -29,10 +29,7 @@ import org.waarp.ftp.core.command.AbstractCommand;
  * 
  */
 public class LIMITBANDWIDTH extends AbstractCommand {
-    /*
-     * (non-Javadoc)
-     * @see org.waarp.ftp.core.command.AbstractCommand#exec()
-     */
+    @Override
     public void exec() throws Reply501Exception, Reply500Exception {
         if (!getSession().getAuth().isAdmin()) {
             // not admin

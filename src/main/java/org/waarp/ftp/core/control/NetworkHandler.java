@@ -175,7 +175,7 @@ public class NetworkHandler extends SimpleChannelInboundHandler<String> {
      * @return True if the service is alive, else False if the system is going down
      */
     private boolean isStillAlive(ChannelHandlerContext ctx) {
-        if (session.getConfiguration().isShutdown) {
+        if (session.getConfiguration().isShutdown()) {
             session.setExitErrorCode("Service is going down: disconnect");
             writeFinalAnswer(ctx);
             return false;

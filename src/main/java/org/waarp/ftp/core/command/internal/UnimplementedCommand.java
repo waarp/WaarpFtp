@@ -36,10 +36,7 @@ public abstract class UnimplementedCommand extends AbstractCommand {
     private static final WaarpLogger logger = WaarpLoggerFactory
             .getLogger(UnimplementedCommand.class);
 
-    /*
-     * (non-Javadoc)
-     * @see org.waarp.ftp.core.command.AbstractCommand#exec()
-     */
+    @Override
     public void exec() throws Reply502Exception {
         getSession().setReplyCode(
                 ReplyCode.REPLY_502_COMMAND_NOT_IMPLEMENTED,

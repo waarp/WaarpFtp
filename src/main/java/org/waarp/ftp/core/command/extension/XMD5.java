@@ -30,11 +30,7 @@ import org.waarp.ftp.core.command.AbstractCommand;
  * 
  */
 public class XMD5 extends AbstractCommand {
-
-    /*
-     * (non-Javadoc)
-     * @see org.waarp.ftp.core.command.AbstractCommand#exec()
-     */
+    @Override
     public void exec() throws CommandAbstractException {
         if (!hasArg()) {
             invalidCurrentCommand();

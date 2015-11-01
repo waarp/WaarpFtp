@@ -30,11 +30,7 @@ import org.waarp.ftp.core.command.AbstractCommand;
  * 
  */
 public class PASS extends AbstractCommand {
-
-    /*
-     * (non-Javadoc)
-     * @see org.waarp.ftp.core.command.AbstractCommand#exec()
-     */
+    @Override
     public void exec() throws Reply421Exception, Reply501Exception,
             Reply530Exception {
         if (!hasArg()) {

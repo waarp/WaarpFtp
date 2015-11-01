@@ -28,11 +28,7 @@ import org.waarp.ftp.core.command.AbstractCommand;
  * 
  */
 public class PWD extends AbstractCommand {
-
-    /*
-     * (non-Javadoc)
-     * @see org.waarp.ftp.core.command.AbstractCommand#exec()
-     */
+    @Override
     public void exec() throws CommandAbstractException {
         getSession().setReplyCode(
                 ReplyCode.REPLY_257_PATHNAME_CREATED,

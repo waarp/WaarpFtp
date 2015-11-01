@@ -38,10 +38,7 @@ public class IncorrectCommand extends AbstractCommand {
     private static final WaarpLogger logger = WaarpLoggerFactory
             .getLogger(IncorrectCommand.class);
 
-    /*
-     * (non-Javadoc)
-     * @see org.waarp.ftp.core.command.AbstractCommand#exec()
-     */
+    @Override
     public void exec() throws Reply503Exception {
         getSession().setReplyCode(
                 ReplyCode.REPLY_503_BAD_SEQUENCE_OF_COMMANDS,
