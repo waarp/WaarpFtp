@@ -707,6 +707,7 @@ public class FtpTransferControl {
         }
         isExecutingCommandFinished = true;
         executingCommand = null;
+        resetWaitForOpenedDataChannel();
     }
 
     // XXX Finalize of Transfer
