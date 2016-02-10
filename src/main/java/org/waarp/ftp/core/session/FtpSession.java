@@ -405,7 +405,7 @@ public class FtpSession implements SessionInterface {
     }
 
     public int getBlockSize() {
-        return restart.getMaxSize(configuration.BLOCKSIZE);
+        return restart.getMaxSize(configuration.getBLOCKSIZE());
     }
 
     public FileParameterInterface getFileParameter() {

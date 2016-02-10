@@ -25,7 +25,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * @author Frederic Bregier
  * 
  */
-public class CircularIntValue {
+class CircularIntValue {
     /**
      * Min value
      */

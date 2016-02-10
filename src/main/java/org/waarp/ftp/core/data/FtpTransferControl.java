@@ -178,7 +178,7 @@ public class FtpTransferControl {
     public Channel waitForOpenedDataChannel() throws InterruptedException {
         Channel channel = null;
         if (waitForOpenedDataChannel.await(
-                session.getConfiguration().TIMEOUTCON + 1000,
+                session.getConfiguration().getTIMEOUTCON() + 1000,
                 TimeUnit.MILLISECONDS)) {
             if (waitForOpenedDataChannel.isSuccess()) {
                 channel = waitForOpenedDataChannel.channel();
@@ -707,6 +707,7 @@ public class FtpTransferControl {
         }
         isExecutingCommandFinished = true;
         executingCommand = null;
+        resetWaitForOpenedDataChannel();
     }
 
     // XXX Finalize of Transfer
@@ -717,7 +718,7 @@ public class FtpTransferControl {
         logger.debug("End Data connection");
         if (isDataNetworkHandlerReady && dataChannel != null) {
             try {
-                WaarpSslUtility.closingSslChannel(dataChannel).await(FtpConfiguration.DATATIMEOUTCON,
+                WaarpSslUtility.closingSslChannel(dataChannel).await(FtpConfiguration.getDATATIMEOUTCON(),
                         TimeUnit.MILLISECONDS);
             } catch (InterruptedException e) {
             }

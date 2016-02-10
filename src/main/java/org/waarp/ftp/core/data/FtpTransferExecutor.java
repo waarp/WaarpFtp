@@ -33,7 +33,7 @@ import org.waarp.ftp.core.session.FtpSession;
  * @author Frederic Bregier
  * 
  */
-public class FtpTransferExecutor implements Runnable {
+class FtpTransferExecutor implements Runnable {
     /**
      * Internal Logger
      */

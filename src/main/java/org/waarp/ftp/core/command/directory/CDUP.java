@@ -30,11 +30,7 @@ import org.waarp.ftp.core.file.FtpDir;
  * 
  */
 public class CDUP extends AbstractCommand {
-
-    /*
-     * (non-Javadoc)
-     * @see org.waarp.ftp.core.command.AbstractCommand#exec()
-     */
+    @Override
     public void exec() throws CommandAbstractException {
         FtpDir current = getSession().getDir();
         if (current == null) {

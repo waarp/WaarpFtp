@@ -43,10 +43,7 @@ public class EPSV extends AbstractCommand {
     private static final WaarpLogger logger = WaarpLoggerFactory
             .getLogger(EPSV.class);
 
-    /*
-     * (non-Javadoc)
-     * @see org.waarp.ftp.core.command.AbstractCommand#exec()
-     */
+    @Override
     public void exec() throws Reply425Exception, Reply501Exception {
         // No Check if any argument
         // Take a new port: 3 attempts

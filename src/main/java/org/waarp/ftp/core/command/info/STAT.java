@@ -34,11 +34,7 @@ import org.waarp.ftp.core.utils.FtpChannelUtils;
  * 
  */
 public class STAT extends AbstractCommand {
-
-    /*
-     * (non-Javadoc)
-     * @see org.waarp.ftp.core.command.AbstractCommand#exec()
-     */
+    @Override
     public void exec() throws CommandAbstractException {
         String path = null;
         String message = null;

@@ -31,11 +31,7 @@ import org.waarp.ftp.core.command.FtpArgumentCode;
  * 
  */
 public class MODE extends AbstractCommand {
-
-    /*
-     * (non-Javadoc)
-     * @see org.waarp.ftp.core.command.AbstractCommand#exec()
-     */
+    @Override
     public void exec() throws Reply501Exception, Reply504Exception {
         // First Check if any argument
         if (!hasArg()) {

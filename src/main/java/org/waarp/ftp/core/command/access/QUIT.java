@@ -27,11 +27,7 @@ import org.waarp.ftp.core.command.AbstractCommand;
  * 
  */
 public class QUIT extends AbstractCommand {
-
-    /*
-     * (non-Javadoc)
-     * @see org.waarp.ftp.core.command.AbstractCommand#exec()
-     */
+    @Override
     public void exec() {
         getSession().rein();
         getSession().setNextCommand(this);

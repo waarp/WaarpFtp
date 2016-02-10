@@ -63,6 +63,7 @@ public class INTERNALSHUTDOWN extends AbstractCommand {
 
     }
 
+    @Override
     public void exec() throws Reply501Exception, Reply500Exception {
         if (!getSession().getAuth().isAdmin()) {
             // not admin

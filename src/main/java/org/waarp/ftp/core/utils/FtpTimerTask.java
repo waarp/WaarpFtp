@@ -52,7 +52,7 @@ public class FtpTimerTask extends TimerTask {
     /**
      * Configuration
      */
-    public FtpConfiguration configuration = null;
+    private FtpConfiguration configuration = null;
 
     /**
      * Constructor from type
@@ -64,10 +64,6 @@ public class FtpTimerTask extends TimerTask {
         this.type = type;
     }
 
-    /*
-     * (non-Javadoc)
-     * @see java.util.TimerTask#run()
-     */
     @Override
     public void run() {
         switch (type) {
@@ -77,12 +73,26 @@ public class FtpTimerTask extends TimerTask {
                 break;
             case TIMER_CONTROL:
                 logger.info("Exit Shutdown Command");
-                FtpChannelUtils.terminateCommandChannels(configuration);
+                FtpChannelUtils.terminateCommandChannels(getConfiguration());
                 logger.warn("Exit end of Command Shutdown");
                 //FtpChannelUtils.stopLogger();
                 break;
             default:
                 logger.info("Type unknown in TimerTask");
         }
+    }
+
+    /**
+     * @return the configuration
+     */
+    public FtpConfiguration getConfiguration() {
+        return configuration;
+    }
+
+    /**
+     * @param configuration the configuration to set
+     */
+    public void setConfiguration(FtpConfiguration configuration) {
+        this.configuration = configuration;
     }
 }

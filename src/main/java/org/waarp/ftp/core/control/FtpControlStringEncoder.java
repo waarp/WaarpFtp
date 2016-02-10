@@ -27,7 +27,7 @@ import io.netty.handler.codec.string.StringEncoder;
  * @author Frederic Bregier
  * 
  */
-public class FtpControlStringEncoder extends StringEncoder {
+class FtpControlStringEncoder extends StringEncoder {
     /**
 	 *
 	 */

@@ -29,11 +29,7 @@ import org.waarp.ftp.core.exception.FtpNoTransferException;
  * 
  */
 public class ABOR extends AbstractCommand {
-
-    /*
-     * (non-Javadoc)
-     * @see org.waarp.ftp.core.command.AbstractCommand#exec()
-     */
+    @Override
     public void exec() throws CommandAbstractException {
         // First check if the data connection is opened
         if (getSession().getDataConn().isActive()) {

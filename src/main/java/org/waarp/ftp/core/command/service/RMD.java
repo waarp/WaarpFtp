@@ -30,11 +30,7 @@ import org.waarp.ftp.core.command.AbstractCommand;
  * 
  */
 public class RMD extends AbstractCommand {
-
-    /*
-     * (non-Javadoc)
-     * @see org.waarp.ftp.core.command.AbstractCommand#exec()
-     */
+    @Override
     public void exec() throws Reply550Exception, CommandAbstractException {
         // First Check if any argument
         if (!hasArg()) {

@@ -38,10 +38,7 @@ import org.waarp.ftp.core.command.internal.IncorrectCommand;
  */
 public class SITE extends AbstractCommand {
 
-    /*
-     * (non-Javadoc)
-     * @see org.waarp.ftp.core.command.AbstractCommand#exec()
-     */
+    @Override
     public void exec() throws CommandAbstractException {
         if (!hasArg()) {
             invalidCurrentCommand();

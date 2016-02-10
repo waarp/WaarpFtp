@@ -37,7 +37,7 @@ import io.netty.util.concurrent.GenericFutureListener;
  * @author "Frederic Bregier"
  *
  */
-public class FtpsTemporaryFirstHandler extends ChannelDuplexHandler {
+class FtpsTemporaryFirstHandler extends ChannelDuplexHandler {
     /**
      * Internal Logger
      */

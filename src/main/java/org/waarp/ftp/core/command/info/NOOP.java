@@ -43,10 +43,7 @@ public class NOOP extends AbstractCommand {
         setArgs(session, FtpCommandCode.NOOP.name(), null, FtpCommandCode.NOOP);
     }
 
-    /*
-     * (non-Javadoc)
-     * @see org.waarp.ftp.core.command.AbstractCommand#exec()
-     */
+    @Override
     public void exec() {
         getSession().setReplyCode(ReplyCode.REPLY_200_COMMAND_OKAY, null);
     }

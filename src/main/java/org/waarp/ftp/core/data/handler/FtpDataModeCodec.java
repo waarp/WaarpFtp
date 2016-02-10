@@ -240,7 +240,7 @@ public class FtpDataModeCodec extends ByteToMessageCodec<DataBlock> {
         // transfered
         // by client before connection is ready)
         if (!isReady) {
-            if (!codecLocked.await(FtpConfiguration.DATATIMEOUTCON)) {
+            if (!codecLocked.await(FtpConfiguration.getDATATIMEOUTCON())) {
                 throw new InvalidArgumentException("Codec not unlocked while should be");
             }
             isReady = true;
@@ -504,7 +504,7 @@ public class FtpDataModeCodec extends ByteToMessageCodec<DataBlock> {
         // transfered
         // by client before connection is ready)
         if (!isReady) {
-            if (!codecLocked.await(FtpConfiguration.DATATIMEOUTCON)) {
+            if (!codecLocked.await(FtpConfiguration.getDATATIMEOUTCON())) {
                 throw new InvalidArgumentException("Codec not unlocked while should be");
             }
             isReady = true;

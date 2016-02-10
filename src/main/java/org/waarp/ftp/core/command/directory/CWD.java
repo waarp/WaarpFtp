@@ -38,10 +38,7 @@ public class CWD extends AbstractCommand {
     private static final WaarpLogger logger = WaarpLoggerFactory
             .getLogger(CWD.class);
 
-    /*
-     * (non-Javadoc)
-     * @see org.waarp.ftp.core.command.AbstractCommand#exec()
-     */
+    @Override
     public void exec() throws CommandAbstractException {
         FtpDir current = getSession().getDir();
         if (current == null) {

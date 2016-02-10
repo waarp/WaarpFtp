@@ -36,10 +36,7 @@ public class UnknownCommand extends AbstractCommand {
     private static final WaarpLogger logger = WaarpLoggerFactory
             .getLogger(UnknownCommand.class);
 
-    /*
-     * (non-Javadoc)
-     * @see org.waarp.ftp.core.command.AbstractCommand#exec()
-     */
+    @Override
     public void exec() throws Reply500Exception {
         getSession().setReplyCode(
                 ReplyCode.REPLY_500_SYNTAX_ERROR_COMMAND_UNRECOGNIZED,
