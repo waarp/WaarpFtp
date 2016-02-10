@@ -25,7 +25,7 @@ import io.netty.buffer.ByteBuf;
  * @author Frederic Bregier
  * 
  */
-public class FtpSeekAheadData {
+class FtpSeekAheadData {
     /**
      * Exception when NO Backend Array is found
      */

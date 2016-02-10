@@ -85,7 +85,7 @@ public class FtpInternalConfiguration {
     /**
      * Hack to say Windows or Unix (USR1 not OK on Windows)
      */
-    public static Boolean ISUNIX = null;
+    static Boolean ISUNIX = null;
 
     /**
      * Default size for buffers (NIO)
@@ -229,15 +229,15 @@ public class FtpInternalConfiguration {
     public FtpInternalConfiguration(FtpConfiguration configuration) {
         this.configuration = configuration;
         ISUNIX = !DetectionUtils.isWindows();
-        configuration.shutdownConfiguration.timeout = configuration.TIMEOUTCON;
-        new FtpShutdownHook(configuration.shutdownConfiguration, configuration);
-        execCommandEvent = new NioEventLoopGroup(configuration.CLIENT_THREAD, new WaarpThreadFactory("Command"));
-        execDataEvent = new NioEventLoopGroup(configuration.CLIENT_THREAD, new WaarpThreadFactory("Data"));
-        execBoss = new NioEventLoopGroup(configuration.SERVER_THREAD, new WaarpThreadFactory("CommandBoss", false));
-        execWorker = new NioEventLoopGroup(configuration.CLIENT_THREAD, new WaarpThreadFactory("CommandWorker"));
-        execPassiveDataBoss = new NioEventLoopGroup(configuration.SERVER_THREAD * 2, new WaarpThreadFactory(
+        configuration.getShutdownConfiguration().timeout = configuration.getTIMEOUTCON();
+        new FtpShutdownHook(configuration.getShutdownConfiguration(), configuration);
+        execCommandEvent = new NioEventLoopGroup(configuration.getCLIENT_THREAD(), new WaarpThreadFactory("Command"));
+        execDataEvent = new NioEventLoopGroup(configuration.getCLIENT_THREAD(), new WaarpThreadFactory("Data"));
+        execBoss = new NioEventLoopGroup(configuration.getSERVER_THREAD(), new WaarpThreadFactory("CommandBoss", false));
+        execWorker = new NioEventLoopGroup(configuration.getCLIENT_THREAD(), new WaarpThreadFactory("CommandWorker"));
+        execPassiveDataBoss = new NioEventLoopGroup(configuration.getSERVER_THREAD() * 2, new WaarpThreadFactory(
                 "PassiveDataBoss"));
-        execDataWorker = new NioEventLoopGroup(configuration.CLIENT_THREAD * 2, new WaarpThreadFactory("DataWorker"));
+        execDataWorker = new NioEventLoopGroup(configuration.getCLIENT_THREAD() * 2, new WaarpThreadFactory("DataWorker"));
     }
 
     /**
@@ -257,7 +257,7 @@ public class FtpInternalConfiguration {
         // Passive Data Connections
         passiveBootstrap = new ServerBootstrap();
         WaarpNettyUtil.setServerBootstrap(passiveBootstrap, execPassiveDataBoss, execDataWorker,
-                (int) configuration.TIMEOUTCON);
+                (int) configuration.getTIMEOUTCON());
         if (usingNativeSsl) {
             passiveBootstrap.childHandler(new FtpsDataInitializer(
                     configuration.dataBusinessHandler, configuration, false));
@@ -268,7 +268,7 @@ public class FtpInternalConfiguration {
         if (acceptAuthProt) {
             passiveSslBootstrap = new ServerBootstrap();
             WaarpNettyUtil.setServerBootstrap(passiveSslBootstrap, execPassiveDataBoss, execDataWorker,
-                    (int) configuration.TIMEOUTCON);
+                    (int) configuration.getTIMEOUTCON());
             passiveSslBootstrap.childHandler(new FtpsDataInitializer(
                     configuration.dataBusinessHandler, configuration, false));
         } else {
@@ -277,7 +277,7 @@ public class FtpInternalConfiguration {
 
         // Active Data Connections
         activeBootstrap = new Bootstrap();
-        WaarpNettyUtil.setBootstrap(activeBootstrap, execDataWorker, (int) configuration.TIMEOUTCON);
+        WaarpNettyUtil.setBootstrap(activeBootstrap, execDataWorker, (int) configuration.getTIMEOUTCON());
         if (usingNativeSsl) {
             activeBootstrap.handler(new FtpsDataInitializer(
                     configuration.dataBusinessHandler, configuration, true));
@@ -287,7 +287,7 @@ public class FtpInternalConfiguration {
         }
         if (acceptAuthProt) {
             activeSslBootstrap = new Bootstrap();
-            WaarpNettyUtil.setBootstrap(activeSslBootstrap, execDataWorker, (int) configuration.TIMEOUTCON);
+            WaarpNettyUtil.setBootstrap(activeSslBootstrap, execDataWorker, (int) configuration.getTIMEOUTCON());
             activeSslBootstrap.handler(new FtpsDataInitializer(
                     configuration.dataBusinessHandler, configuration, true));
         } else {
@@ -296,7 +296,7 @@ public class FtpInternalConfiguration {
 
         // Main Command server
         serverBootstrap = new ServerBootstrap();
-        WaarpNettyUtil.setServerBootstrap(serverBootstrap, execBoss, execWorker, (int) configuration.TIMEOUTCON);
+        WaarpNettyUtil.setServerBootstrap(serverBootstrap, execBoss, execWorker, (int) configuration.getTIMEOUTCON());
         if (usingNativeSsl) {
             serverBootstrap.childHandler(new FtpsInitializer(
                     configuration.businessHandler, configuration));
@@ -314,7 +314,7 @@ public class FtpInternalConfiguration {
         }
 
         // Init Shutdown Hook handler
-        configuration.shutdownConfiguration.timeout = configuration.TIMEOUTCON;
+        configuration.getShutdownConfiguration().timeout = configuration.getTIMEOUTCON();
         FtpShutdownHook.addShutdownHook();
         // Factory for TrafficShapingHandler
         globalTrafficShapingHandler = new FtpGlobalTrafficShapingHandler(executorService,
@@ -411,7 +411,7 @@ public class FtpInternalConfiguration {
                     } else {
                         future = passiveBootstrap.bind(address);
                     }
-                    if (future.await(configuration.TIMEOUTCON)) {
+                    if (future.await(configuration.getTIMEOUTCON())) {
                         parentChannel = future.sync().channel();
                     } else {
                         logger.warn("Cannot open passive connection due to Timeout");

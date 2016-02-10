@@ -24,6 +24,7 @@ import org.waarp.common.file.DataBlock;
 import io.netty.handler.traffic.GlobalChannelTrafficShapingHandler;
 
 /**
+ * Global Traffic Shaping Handler for FTP
  * @author "Frederic Bregier"
  *
  */

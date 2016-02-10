@@ -43,10 +43,7 @@ public class PASV extends AbstractCommand {
     private static final WaarpLogger logger = WaarpLoggerFactory
             .getLogger(PASV.class);
 
-    /*
-     * (non-Javadoc)
-     * @see org.waarp.ftp.core.command.AbstractCommand#exec()
-     */
+    @Override
     public void exec() throws Reply425Exception, Reply501Exception {
         // First Check if any argument
         if (hasArg()) {

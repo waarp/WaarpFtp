@@ -175,7 +175,7 @@ public class NetworkHandler extends SimpleChannelInboundHandler<String> {
      * @return True if the service is alive, else False if the system is going down
      */
     private boolean isStillAlive(ChannelHandlerContext ctx) {
-        if (session.getConfiguration().isShutdown) {
+        if (session.getConfiguration().isShutdown()) {
             session.setExitErrorCode("Service is going down: disconnect");
             writeFinalAnswer(ctx);
             return false;
@@ -427,9 +427,6 @@ public class NetworkHandler extends SimpleChannelInboundHandler<String> {
                     WaarpSslUtility.addSslHandler(future, ctx.pipeline(), sslHandler,
                             new GenericFutureListener<Future<? super Channel>>() {
                                 public void operationComplete(Future<? super Channel> future) throws Exception {
-                                    logger.debug(
-                                            "Handshake: " + future.isSuccess() + ":"
-                                                    + ((Channel) future.get()).toString(), future.cause());
                                     if (!future.isSuccess()) {
                                         String error2 = future.cause() != null ?
                                                 future.cause().getMessage() : "During Handshake";

@@ -39,7 +39,7 @@ import org.waarp.ftp.core.command.FtpArgumentCode.TransferStructure;
  * 
  */
 @Sharable
-public class FtpDataStructureCodec extends MessageToMessageCodec<DataBlock, DataBlock> {
+class FtpDataStructureCodec extends MessageToMessageCodec<DataBlock, DataBlock> {
     /*
      * 3.1.2. DATA STRUCTURES In addition to different representation types, FTP allows the
      * structure of a file to be specified. Three file structures are defined in FTP:

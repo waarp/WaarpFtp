@@ -41,7 +41,7 @@ import org.waarp.ftp.core.command.FtpArgumentCode.TransferType;
  * 
  */
 @Sharable
-public class FtpDataTypeCodec extends MessageToMessageCodec<DataBlock, DataBlock> {
+class FtpDataTypeCodec extends MessageToMessageCodec<DataBlock, DataBlock> {
     /*
      * 3.1.1. DATA TYPES Data representations are handled in FTP by a user specifying a
      * representation type. This type may implicitly (as in ASCII or EBCDIC) or explicitly (as in

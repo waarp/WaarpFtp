@@ -60,11 +60,7 @@ public abstract class AbstractCommand implements CommandInterface {
      */
     private FtpCommandCode extraNextCommand = null;
 
-    /*
-     * (non-Javadoc)
-     * @see org.waarp.common.command.CommandInterface#setArgs(org.waarp.common. session.Session,
-     * java.lang.String, java.lang.String, java.lang.Enum)
-     */
+    @Override
     public void setArgs(SessionInterface session, String command, String arg,
             @SuppressWarnings("rawtypes") Enum code) {
         this.session = (FtpSession) session;
@@ -73,11 +69,7 @@ public abstract class AbstractCommand implements CommandInterface {
         this.code = (FtpCommandCode) code;
     }
 
-    /*
-     * (non-Javadoc)
-     * @see org.waarp.common.command.CommandInterface#setExtraNextCommand(java.lang .Enum)
-     */
-
+    @Override
     public void setExtraNextCommand(@SuppressWarnings("rawtypes") Enum extraNextCommand) {
         if (extraNextCommand != FtpCommandCode.NOOP) {
             this.extraNextCommand = (FtpCommandCode) extraNextCommand;
@@ -86,11 +78,7 @@ public abstract class AbstractCommand implements CommandInterface {
         }
     }
 
-    /*
-     * (non-Javadoc)
-     * @see org.waarp.common.command.CommandInterface#isNextCommandValid(goldengate
-     * .common.command.CommandInterface)
-     */
+    @Override
     public boolean isNextCommandValid(CommandInterface newCommandArg) {
         AbstractCommand newCommand = (AbstractCommand) newCommandArg;
         Class<? extends AbstractCommand> newClass = newCommand.getClass();

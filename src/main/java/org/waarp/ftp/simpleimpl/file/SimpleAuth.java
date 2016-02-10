@@ -36,22 +36,22 @@ public class SimpleAuth {
     /**
      * User name
      */
-    public String user = null;
+    private String user = null;
 
     /**
      * Password
      */
-    public String password = null;
+    private String password = null;
 
     /**
      * Multiple accounts
      */
-    public String[] accounts = null;
+    private String[] accounts = null;
 
     /**
      * Is the current user an administrator (which can shutdown or change bandwidth limitation)
      */
-    public boolean isAdmin = false;
+    private boolean isAdmin = false;
 
     /**
      * @param user
@@ -112,5 +112,19 @@ public class SimpleAuth {
      */
     public void setAdmin(boolean isAdmin) {
         this.isAdmin = isAdmin;
+    }
+
+    /**
+     * @return the isAdmin
+     */
+    public boolean isAdmin() {
+        return isAdmin;
+    }
+
+    /**
+     * @return the user
+     */
+    public String getUser() {
+        return user;
     }
 }

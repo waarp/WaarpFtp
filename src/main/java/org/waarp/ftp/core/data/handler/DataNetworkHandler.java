@@ -411,7 +411,7 @@ public class DataNetworkHandler extends SimpleChannelInboundHandler<DataBlock> {
         logger.debug("Will write: " + buffer.toString(WaarpStringUtils.UTF8));
         try {
             future = dataChannel.writeAndFlush(dataBlock);
-            future.await(FtpConfiguration.DATATIMEOUTCON);
+            future.await(FtpConfiguration.getDATATIMEOUTCON());
         } catch (InterruptedException e) {
             logger.debug("Interrupted", e);
             return false;
@@ -426,7 +426,7 @@ public class DataNetworkHandler extends SimpleChannelInboundHandler<DataBlock> {
      * @return True if the service is alive, else False if the system is going down
      */
     private boolean isStillAlive() {
-        if (session.getConfiguration().isShutdown) {
+        if (session.getConfiguration().isShutdown()) {
             session.setExitErrorCode("Service is going down: disconnect");
             return false;
         }
