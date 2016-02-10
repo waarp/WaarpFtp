@@ -254,13 +254,13 @@
 <a class="jxr_linenumber" name="244" href="#244">244</a>         }
 <a class="jxr_linenumber" name="245" href="#245">245</a>         node = document.selectSingleNode(XML_SERVER_THREAD);
 <a class="jxr_linenumber" name="246" href="#246">246</a>         <strong class="jxr_keyword">if</strong> (node != <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="247" href="#247">247</a>             SERVER_THREAD = Integer.parseInt(node.getText());
+<a class="jxr_linenumber" name="247" href="#247">247</a>             setSERVER_THREAD(Integer.parseInt(node.getText()));
 <a class="jxr_linenumber" name="248" href="#248">248</a>         }
 <a class="jxr_linenumber" name="249" href="#249">249</a>         node = document.selectSingleNode(XML_CLIENT_THREAD);
 <a class="jxr_linenumber" name="250" href="#250">250</a>         <strong class="jxr_keyword">if</strong> (node != <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="251" href="#251">251</a>             CLIENT_THREAD = Integer.parseInt(node.getText());
+<a class="jxr_linenumber" name="251" href="#251">251</a>             setCLIENT_THREAD(Integer.parseInt(node.getText()));
 <a class="jxr_linenumber" name="252" href="#252">252</a>         }
-<a class="jxr_linenumber" name="253" href="#253">253</a>         <strong class="jxr_keyword">if</strong> (SERVER_THREAD == 0 || CLIENT_THREAD == 0) {
+<a class="jxr_linenumber" name="253" href="#253">253</a>         <strong class="jxr_keyword">if</strong> (getSERVER_THREAD() == 0 || getCLIENT_THREAD() == 0) {
 <a class="jxr_linenumber" name="254" href="#254">254</a>             computeNbThreads();
 <a class="jxr_linenumber" name="255" href="#255">255</a>         }
 <a class="jxr_linenumber" name="256" href="#256">256</a>         node = document.selectSingleNode(XML_LIMITGLOBAL);
@@ -284,11 +284,11 @@
 <a class="jxr_linenumber" name="274" href="#274">274</a>         delayLimit = AbstractTrafficShapingHandler.DEFAULT_CHECK_INTERVAL;
 <a class="jxr_linenumber" name="275" href="#275">275</a>         node = document.selectSingleNode(XML_TIMEOUTCON);
 <a class="jxr_linenumber" name="276" href="#276">276</a>         <strong class="jxr_keyword">if</strong> (node != <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="277" href="#277">277</a>             TIMEOUTCON = Integer.parseInt(node.getText());
+<a class="jxr_linenumber" name="277" href="#277">277</a>             setTIMEOUTCON(Integer.parseInt(node.getText()));
 <a class="jxr_linenumber" name="278" href="#278">278</a>         }
 <a class="jxr_linenumber" name="279" href="#279">279</a>         node = document.selectSingleNode(XML_DELETEONABORT);
 <a class="jxr_linenumber" name="280" href="#280">280</a>         <strong class="jxr_keyword">if</strong> (node != <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="281" href="#281">281</a>             deleteOnAbort = Integer.parseInt(node.getText()) == 1 ? <strong class="jxr_keyword">true</strong> : false;
+<a class="jxr_linenumber" name="281" href="#281">281</a>             setDeleteOnAbort(Integer.parseInt(node.getText()) == 1 ? <strong class="jxr_keyword">true</strong> : false);
 <a class="jxr_linenumber" name="282" href="#282">282</a>         }
 <a class="jxr_linenumber" name="283" href="#283">283</a>         node = document.selectSingleNode(XML_USENIO);
 <a class="jxr_linenumber" name="284" href="#284">284</a>         <strong class="jxr_keyword">if</strong> (node != <strong class="jxr_keyword">null</strong>) {
@@ -297,14 +297,14 @@
 <a class="jxr_linenumber" name="287" href="#287">287</a>         }
 <a class="jxr_linenumber" name="288" href="#288">288</a>         node = document.selectSingleNode(XML_USEFASTMD5);
 <a class="jxr_linenumber" name="289" href="#289">289</a>         <strong class="jxr_keyword">if</strong> (node != <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="290" href="#290">290</a>             FilesystemBasedDigest.useFastMd5 = Integer.parseInt(node.getText()) == 1 ? <strong class="jxr_keyword">true</strong>
-<a class="jxr_linenumber" name="291" href="#291">291</a>                     : false;
+<a class="jxr_linenumber" name="290" href="#290">290</a>             FilesystemBasedDigest.setUseFastMd5(Integer.parseInt(node.getText()) == 1 ? <strong class="jxr_keyword">true</strong>
+<a class="jxr_linenumber" name="291" href="#291">291</a>                     : false);
 <a class="jxr_linenumber" name="292" href="#292">292</a>         } <strong class="jxr_keyword">else</strong> {
-<a class="jxr_linenumber" name="293" href="#293">293</a>             FilesystemBasedDigest.useFastMd5 = false;
+<a class="jxr_linenumber" name="293" href="#293">293</a>             FilesystemBasedDigest.setUseFastMd5(false);
 <a class="jxr_linenumber" name="294" href="#294">294</a>         }
 <a class="jxr_linenumber" name="295" href="#295">295</a>         node = document.selectSingleNode(XML_BLOCKSIZE);
 <a class="jxr_linenumber" name="296" href="#296">296</a>         <strong class="jxr_keyword">if</strong> (node != <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="297" href="#297">297</a>             BLOCKSIZE = Integer.parseInt(node.getText());
+<a class="jxr_linenumber" name="297" href="#297">297</a>             setBLOCKSIZE(Integer.parseInt(node.getText()));
 <a class="jxr_linenumber" name="298" href="#298">298</a>         }
 <a class="jxr_linenumber" name="299" href="#299">299</a>         node = document.selectSingleNode(XML_RANGE_PORT_MIN);
 <a class="jxr_linenumber" name="300" href="#300">300</a>         <strong class="jxr_keyword">int</strong> min = 100;
@@ -406,15 +406,11 @@
 <a class="jxr_linenumber" name="396" href="#396">396</a>         RANGE_PORT = rangePort;
 <a class="jxr_linenumber" name="397" href="#397">397</a>     }
 <a class="jxr_linenumber" name="398" href="#398">398</a> 
-<a class="jxr_linenumber" name="399" href="#399">399</a>     <em class="jxr_comment">/*</em>
-<a class="jxr_linenumber" name="400" href="#400">400</a> <em class="jxr_comment">     * (non-Javadoc)</em>
-<a class="jxr_linenumber" name="401" href="#401">401</a> <em class="jxr_comment">     * @see org.waarp.ftp.core.config.FtpConfiguration#inShutdownProcess()</em>
-<a class="jxr_linenumber" name="402" href="#402">402</a> <em class="jxr_comment">     */</em>
-<a class="jxr_linenumber" name="403" href="#403">403</a>     @Override
-<a class="jxr_linenumber" name="404" href="#404">404</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> inShutdownProcess() {
-<a class="jxr_linenumber" name="405" href="#405">405</a>         <em class="jxr_comment">// nothing to do</em>
-<a class="jxr_linenumber" name="406" href="#406">406</a>     }
-<a class="jxr_linenumber" name="407" href="#407">407</a> }
+<a class="jxr_linenumber" name="399" href="#399">399</a>     @Override
+<a class="jxr_linenumber" name="400" href="#400">400</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> inShutdownProcess() {
+<a class="jxr_linenumber" name="401" href="#401">401</a>         <em class="jxr_comment">// nothing to do</em>
+<a class="jxr_linenumber" name="402" href="#402">402</a>     }
+<a class="jxr_linenumber" name="403" href="#403">403</a> }
 </pre>
 <hr/><div id="footer">This page was automatically generated by <a href="http://maven.apache.org/">Maven</a></div></body>
 </html>

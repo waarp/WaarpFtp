@@ -95,7 +95,7 @@
 <a class="jxr_linenumber" name="85" href="#85">85</a>      <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="86" href="#86">86</a>  <em class="jxr_javadoccomment">     * Hack to say Windows or Unix (USR1 not OK on Windows)</em>
 <a class="jxr_linenumber" name="87" href="#87">87</a>  <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="88" href="#88">88</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> Boolean ISUNIX = <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="88" href="#88">88</a>      <strong class="jxr_keyword">static</strong> Boolean ISUNIX = <strong class="jxr_keyword">null</strong>;
 <a class="jxr_linenumber" name="89" href="#89">89</a>  
 <a class="jxr_linenumber" name="90" href="#90">90</a>      <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="91" href="#91">91</a>  <em class="jxr_javadoccomment">     * Default size for buffers (NIO)</em>
@@ -239,15 +239,15 @@
 <a class="jxr_linenumber" name="229" href="#229">229</a>     <strong class="jxr_keyword">public</strong> <a href="../../../../../org/waarp/ftp/core/config/FtpInternalConfiguration.html">FtpInternalConfiguration</a>(<a href="../../../../../org/waarp/ftp/core/config/FtpConfiguration.html">FtpConfiguration</a> configuration) {
 <a class="jxr_linenumber" name="230" href="#230">230</a>         <strong class="jxr_keyword">this</strong>.configuration = configuration;
 <a class="jxr_linenumber" name="231" href="#231">231</a>         ISUNIX = !DetectionUtils.isWindows();
-<a class="jxr_linenumber" name="232" href="#232">232</a>         configuration.shutdownConfiguration.timeout = configuration.TIMEOUTCON;
-<a class="jxr_linenumber" name="233" href="#233">233</a>         <strong class="jxr_keyword">new</strong> <a href="../../../../../org/waarp/ftp/core/utils/FtpShutdownHook.html">FtpShutdownHook</a>(configuration.shutdownConfiguration, configuration);
-<a class="jxr_linenumber" name="234" href="#234">234</a>         execCommandEvent = <strong class="jxr_keyword">new</strong> NioEventLoopGroup(configuration.CLIENT_THREAD, <strong class="jxr_keyword">new</strong> WaarpThreadFactory(<span class="jxr_string">"Command"</span>));
-<a class="jxr_linenumber" name="235" href="#235">235</a>         execDataEvent = <strong class="jxr_keyword">new</strong> NioEventLoopGroup(configuration.CLIENT_THREAD, <strong class="jxr_keyword">new</strong> WaarpThreadFactory(<span class="jxr_string">"Data"</span>));
-<a class="jxr_linenumber" name="236" href="#236">236</a>         execBoss = <strong class="jxr_keyword">new</strong> NioEventLoopGroup(configuration.SERVER_THREAD, <strong class="jxr_keyword">new</strong> WaarpThreadFactory(<span class="jxr_string">"CommandBoss"</span>, false));
-<a class="jxr_linenumber" name="237" href="#237">237</a>         execWorker = <strong class="jxr_keyword">new</strong> NioEventLoopGroup(configuration.CLIENT_THREAD, <strong class="jxr_keyword">new</strong> WaarpThreadFactory(<span class="jxr_string">"CommandWorker"</span>));
-<a class="jxr_linenumber" name="238" href="#238">238</a>         execPassiveDataBoss = <strong class="jxr_keyword">new</strong> NioEventLoopGroup(configuration.SERVER_THREAD * 2, <strong class="jxr_keyword">new</strong> WaarpThreadFactory(
+<a class="jxr_linenumber" name="232" href="#232">232</a>         configuration.getShutdownConfiguration().timeout = configuration.getTIMEOUTCON();
+<a class="jxr_linenumber" name="233" href="#233">233</a>         <strong class="jxr_keyword">new</strong> <a href="../../../../../org/waarp/ftp/core/utils/FtpShutdownHook.html">FtpShutdownHook</a>(configuration.getShutdownConfiguration(), configuration);
+<a class="jxr_linenumber" name="234" href="#234">234</a>         execCommandEvent = <strong class="jxr_keyword">new</strong> NioEventLoopGroup(configuration.getCLIENT_THREAD(), <strong class="jxr_keyword">new</strong> WaarpThreadFactory(<span class="jxr_string">"Command"</span>));
+<a class="jxr_linenumber" name="235" href="#235">235</a>         execDataEvent = <strong class="jxr_keyword">new</strong> NioEventLoopGroup(configuration.getCLIENT_THREAD(), <strong class="jxr_keyword">new</strong> WaarpThreadFactory(<span class="jxr_string">"Data"</span>));
+<a class="jxr_linenumber" name="236" href="#236">236</a>         execBoss = <strong class="jxr_keyword">new</strong> NioEventLoopGroup(configuration.getSERVER_THREAD(), <strong class="jxr_keyword">new</strong> WaarpThreadFactory(<span class="jxr_string">"CommandBoss"</span>, false));
+<a class="jxr_linenumber" name="237" href="#237">237</a>         execWorker = <strong class="jxr_keyword">new</strong> NioEventLoopGroup(configuration.getCLIENT_THREAD(), <strong class="jxr_keyword">new</strong> WaarpThreadFactory(<span class="jxr_string">"CommandWorker"</span>));
+<a class="jxr_linenumber" name="238" href="#238">238</a>         execPassiveDataBoss = <strong class="jxr_keyword">new</strong> NioEventLoopGroup(configuration.getSERVER_THREAD() * 2, <strong class="jxr_keyword">new</strong> WaarpThreadFactory(
 <a class="jxr_linenumber" name="239" href="#239">239</a>                 <span class="jxr_string">"PassiveDataBoss"</span>));
-<a class="jxr_linenumber" name="240" href="#240">240</a>         execDataWorker = <strong class="jxr_keyword">new</strong> NioEventLoopGroup(configuration.CLIENT_THREAD * 2, <strong class="jxr_keyword">new</strong> WaarpThreadFactory(<span class="jxr_string">"DataWorker"</span>));
+<a class="jxr_linenumber" name="240" href="#240">240</a>         execDataWorker = <strong class="jxr_keyword">new</strong> NioEventLoopGroup(configuration.getCLIENT_THREAD() * 2, <strong class="jxr_keyword">new</strong> WaarpThreadFactory(<span class="jxr_string">"DataWorker"</span>));
 <a class="jxr_linenumber" name="241" href="#241">241</a>     }
 <a class="jxr_linenumber" name="242" href="#242">242</a> 
 <a class="jxr_linenumber" name="243" href="#243">243</a>     <em class="jxr_javadoccomment">/**</em>
@@ -267,7 +267,7 @@
 <a class="jxr_linenumber" name="257" href="#257">257</a>         <em class="jxr_comment">// Passive Data Connections</em>
 <a class="jxr_linenumber" name="258" href="#258">258</a>         passiveBootstrap = <strong class="jxr_keyword">new</strong> ServerBootstrap();
 <a class="jxr_linenumber" name="259" href="#259">259</a>         WaarpNettyUtil.setServerBootstrap(passiveBootstrap, execPassiveDataBoss, execDataWorker,
-<a class="jxr_linenumber" name="260" href="#260">260</a>                 (<strong class="jxr_keyword">int</strong>) configuration.TIMEOUTCON);
+<a class="jxr_linenumber" name="260" href="#260">260</a>                 (<strong class="jxr_keyword">int</strong>) configuration.getTIMEOUTCON());
 <a class="jxr_linenumber" name="261" href="#261">261</a>         <strong class="jxr_keyword">if</strong> (usingNativeSsl) {
 <a class="jxr_linenumber" name="262" href="#262">262</a>             passiveBootstrap.childHandler(<strong class="jxr_keyword">new</strong> <a href="../../../../../org/waarp/ftp/core/data/handler/ftps/FtpsDataInitializer.html">FtpsDataInitializer</a>(
 <a class="jxr_linenumber" name="263" href="#263">263</a>                     configuration.dataBusinessHandler, configuration, false));
@@ -278,7 +278,7 @@
 <a class="jxr_linenumber" name="268" href="#268">268</a>         <strong class="jxr_keyword">if</strong> (acceptAuthProt) {
 <a class="jxr_linenumber" name="269" href="#269">269</a>             passiveSslBootstrap = <strong class="jxr_keyword">new</strong> ServerBootstrap();
 <a class="jxr_linenumber" name="270" href="#270">270</a>             WaarpNettyUtil.setServerBootstrap(passiveSslBootstrap, execPassiveDataBoss, execDataWorker,
-<a class="jxr_linenumber" name="271" href="#271">271</a>                     (<strong class="jxr_keyword">int</strong>) configuration.TIMEOUTCON);
+<a class="jxr_linenumber" name="271" href="#271">271</a>                     (<strong class="jxr_keyword">int</strong>) configuration.getTIMEOUTCON());
 <a class="jxr_linenumber" name="272" href="#272">272</a>             passiveSslBootstrap.childHandler(<strong class="jxr_keyword">new</strong> <a href="../../../../../org/waarp/ftp/core/data/handler/ftps/FtpsDataInitializer.html">FtpsDataInitializer</a>(
 <a class="jxr_linenumber" name="273" href="#273">273</a>                     configuration.dataBusinessHandler, configuration, false));
 <a class="jxr_linenumber" name="274" href="#274">274</a>         } <strong class="jxr_keyword">else</strong> {
@@ -287,7 +287,7 @@
 <a class="jxr_linenumber" name="277" href="#277">277</a> 
 <a class="jxr_linenumber" name="278" href="#278">278</a>         <em class="jxr_comment">// Active Data Connections</em>
 <a class="jxr_linenumber" name="279" href="#279">279</a>         activeBootstrap = <strong class="jxr_keyword">new</strong> Bootstrap();
-<a class="jxr_linenumber" name="280" href="#280">280</a>         WaarpNettyUtil.setBootstrap(activeBootstrap, execDataWorker, (<strong class="jxr_keyword">int</strong>) configuration.TIMEOUTCON);
+<a class="jxr_linenumber" name="280" href="#280">280</a>         WaarpNettyUtil.setBootstrap(activeBootstrap, execDataWorker, (<strong class="jxr_keyword">int</strong>) configuration.getTIMEOUTCON());
 <a class="jxr_linenumber" name="281" href="#281">281</a>         <strong class="jxr_keyword">if</strong> (usingNativeSsl) {
 <a class="jxr_linenumber" name="282" href="#282">282</a>             activeBootstrap.handler(<strong class="jxr_keyword">new</strong> <a href="../../../../../org/waarp/ftp/core/data/handler/ftps/FtpsDataInitializer.html">FtpsDataInitializer</a>(
 <a class="jxr_linenumber" name="283" href="#283">283</a>                     configuration.dataBusinessHandler, configuration, <strong class="jxr_keyword">true</strong>));
@@ -297,7 +297,7 @@
 <a class="jxr_linenumber" name="287" href="#287">287</a>         }
 <a class="jxr_linenumber" name="288" href="#288">288</a>         <strong class="jxr_keyword">if</strong> (acceptAuthProt) {
 <a class="jxr_linenumber" name="289" href="#289">289</a>             activeSslBootstrap = <strong class="jxr_keyword">new</strong> Bootstrap();
-<a class="jxr_linenumber" name="290" href="#290">290</a>             WaarpNettyUtil.setBootstrap(activeSslBootstrap, execDataWorker, (<strong class="jxr_keyword">int</strong>) configuration.TIMEOUTCON);
+<a class="jxr_linenumber" name="290" href="#290">290</a>             WaarpNettyUtil.setBootstrap(activeSslBootstrap, execDataWorker, (<strong class="jxr_keyword">int</strong>) configuration.getTIMEOUTCON());
 <a class="jxr_linenumber" name="291" href="#291">291</a>             activeSslBootstrap.handler(<strong class="jxr_keyword">new</strong> <a href="../../../../../org/waarp/ftp/core/data/handler/ftps/FtpsDataInitializer.html">FtpsDataInitializer</a>(
 <a class="jxr_linenumber" name="292" href="#292">292</a>                     configuration.dataBusinessHandler, configuration, <strong class="jxr_keyword">true</strong>));
 <a class="jxr_linenumber" name="293" href="#293">293</a>         } <strong class="jxr_keyword">else</strong> {
@@ -306,7 +306,7 @@
 <a class="jxr_linenumber" name="296" href="#296">296</a> 
 <a class="jxr_linenumber" name="297" href="#297">297</a>         <em class="jxr_comment">// Main Command server</em>
 <a class="jxr_linenumber" name="298" href="#298">298</a>         serverBootstrap = <strong class="jxr_keyword">new</strong> ServerBootstrap();
-<a class="jxr_linenumber" name="299" href="#299">299</a>         WaarpNettyUtil.setServerBootstrap(serverBootstrap, execBoss, execWorker, (<strong class="jxr_keyword">int</strong>) configuration.TIMEOUTCON);
+<a class="jxr_linenumber" name="299" href="#299">299</a>         WaarpNettyUtil.setServerBootstrap(serverBootstrap, execBoss, execWorker, (<strong class="jxr_keyword">int</strong>) configuration.getTIMEOUTCON());
 <a class="jxr_linenumber" name="300" href="#300">300</a>         <strong class="jxr_keyword">if</strong> (usingNativeSsl) {
 <a class="jxr_linenumber" name="301" href="#301">301</a>             serverBootstrap.childHandler(<strong class="jxr_keyword">new</strong> <a href="../../../../../org/waarp/ftp/core/control/ftps/FtpsInitializer.html">FtpsInitializer</a>(
 <a class="jxr_linenumber" name="302" href="#302">302</a>                     configuration.businessHandler, configuration));
@@ -324,7 +324,7 @@
 <a class="jxr_linenumber" name="314" href="#314">314</a>         }
 <a class="jxr_linenumber" name="315" href="#315">315</a> 
 <a class="jxr_linenumber" name="316" href="#316">316</a>         <em class="jxr_comment">// Init Shutdown Hook handler</em>
-<a class="jxr_linenumber" name="317" href="#317">317</a>         configuration.shutdownConfiguration.timeout = configuration.TIMEOUTCON;
+<a class="jxr_linenumber" name="317" href="#317">317</a>         configuration.getShutdownConfiguration().timeout = configuration.getTIMEOUTCON();
 <a class="jxr_linenumber" name="318" href="#318">318</a>         FtpShutdownHook.addShutdownHook();
 <a class="jxr_linenumber" name="319" href="#319">319</a>         <em class="jxr_comment">// Factory for TrafficShapingHandler</em>
 <a class="jxr_linenumber" name="320" href="#320">320</a>         globalTrafficShapingHandler = <strong class="jxr_keyword">new</strong> <a href="../../../../../org/waarp/ftp/core/config/FtpGlobalTrafficShapingHandler.html">FtpGlobalTrafficShapingHandler</a>(executorService,
@@ -421,7 +421,7 @@
 <a class="jxr_linenumber" name="411" href="#411">411</a>                     } <strong class="jxr_keyword">else</strong> {
 <a class="jxr_linenumber" name="412" href="#412">412</a>                         future = passiveBootstrap.bind(address);
 <a class="jxr_linenumber" name="413" href="#413">413</a>                     }
-<a class="jxr_linenumber" name="414" href="#414">414</a>                     <strong class="jxr_keyword">if</strong> (future.await(configuration.TIMEOUTCON)) {
+<a class="jxr_linenumber" name="414" href="#414">414</a>                     <strong class="jxr_keyword">if</strong> (future.await(configuration.getTIMEOUTCON())) {
 <a class="jxr_linenumber" name="415" href="#415">415</a>                         parentChannel = future.sync().channel();
 <a class="jxr_linenumber" name="416" href="#416">416</a>                     } <strong class="jxr_keyword">else</strong> {
 <a class="jxr_linenumber" name="417" href="#417">417</a>                         logger.warn(<span class="jxr_string">"Cannot open passive connection due to Timeout"</span>);

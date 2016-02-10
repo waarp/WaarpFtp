@@ -336,8 +336,8 @@
 <a class="jxr_linenumber" name="326" href="#326">326</a> <em class="jxr_javadoccomment">     * @param configuration</em>
 <a class="jxr_linenumber" name="327" href="#327">327</a> <em class="jxr_javadoccomment">     */</em>
 <a class="jxr_linenumber" name="328" href="#328">328</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">void</strong> exit(<a href="../../../../../org/waarp/ftp/core/config/FtpConfiguration.html">FtpConfiguration</a> configuration) {
-<a class="jxr_linenumber" name="329" href="#329">329</a>         configuration.isShutdown = <strong class="jxr_keyword">true</strong>;
-<a class="jxr_linenumber" name="330" href="#330">330</a>         <strong class="jxr_keyword">long</strong> delay = configuration.TIMEOUTCON / 2;
+<a class="jxr_linenumber" name="329" href="#329">329</a>         configuration.setShutdown(<strong class="jxr_keyword">true</strong>);
+<a class="jxr_linenumber" name="330" href="#330">330</a>         <strong class="jxr_keyword">long</strong> delay = configuration.getTIMEOUTCON() / 2;
 <a class="jxr_linenumber" name="331" href="#331">331</a>         logger.warn(<span class="jxr_string">"Exit: Give a delay of "</span> + delay + <span class="jxr_string">" ms"</span>);
 <a class="jxr_linenumber" name="332" href="#332">332</a>         configuration.inShutdownProcess();
 <a class="jxr_linenumber" name="333" href="#333">333</a>         <strong class="jxr_keyword">try</strong> {
@@ -346,8 +346,8 @@
 <a class="jxr_linenumber" name="336" href="#336">336</a>         }
 <a class="jxr_linenumber" name="337" href="#337">337</a>         Timer timer = <strong class="jxr_keyword">new</strong> Timer(<strong class="jxr_keyword">true</strong>);
 <a class="jxr_linenumber" name="338" href="#338">338</a>         <a href="../../../../../org/waarp/ftp/core/utils/FtpTimerTask.html">FtpTimerTask</a> timerTask = <strong class="jxr_keyword">new</strong> <a href="../../../../../org/waarp/ftp/core/utils/FtpTimerTask.html">FtpTimerTask</a>(FtpTimerTask.TIMER_CONTROL);
-<a class="jxr_linenumber" name="339" href="#339">339</a>         timerTask.configuration = configuration;
-<a class="jxr_linenumber" name="340" href="#340">340</a>         timer.schedule(timerTask, configuration.TIMEOUTCON / 4);
+<a class="jxr_linenumber" name="339" href="#339">339</a>         timerTask.setConfiguration(configuration);
+<a class="jxr_linenumber" name="340" href="#340">340</a>         timer.schedule(timerTask, configuration.getTIMEOUTCON() / 4);
 <a class="jxr_linenumber" name="341" href="#341">341</a>         configuration.getFtpInternalConfiguration()
 <a class="jxr_linenumber" name="342" href="#342">342</a>                 .getGlobalTrafficShapingHandler().release();
 <a class="jxr_linenumber" name="343" href="#343">343</a>         configuration.releaseResources();

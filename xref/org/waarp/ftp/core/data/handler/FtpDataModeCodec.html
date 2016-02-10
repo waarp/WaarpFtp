@@ -250,7 +250,7 @@
 <a class="jxr_linenumber" name="240" href="#240">240</a>         <em class="jxr_comment">// transfered</em>
 <a class="jxr_linenumber" name="241" href="#241">241</a>         <em class="jxr_comment">// by client before connection is ready)</em>
 <a class="jxr_linenumber" name="242" href="#242">242</a>         <strong class="jxr_keyword">if</strong> (!isReady) {
-<a class="jxr_linenumber" name="243" href="#243">243</a>             <strong class="jxr_keyword">if</strong> (!codecLocked.await(FtpConfiguration.DATATIMEOUTCON)) {
+<a class="jxr_linenumber" name="243" href="#243">243</a>             <strong class="jxr_keyword">if</strong> (!codecLocked.await(FtpConfiguration.getDATATIMEOUTCON())) {
 <a class="jxr_linenumber" name="244" href="#244">244</a>                 <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> InvalidArgumentException(<span class="jxr_string">"Codec not unlocked while should be"</span>);
 <a class="jxr_linenumber" name="245" href="#245">245</a>             }
 <a class="jxr_linenumber" name="246" href="#246">246</a>             isReady = <strong class="jxr_keyword">true</strong>;
@@ -514,7 +514,7 @@
 <a class="jxr_linenumber" name="504" href="#504">504</a>         <em class="jxr_comment">// transfered</em>
 <a class="jxr_linenumber" name="505" href="#505">505</a>         <em class="jxr_comment">// by client before connection is ready)</em>
 <a class="jxr_linenumber" name="506" href="#506">506</a>         <strong class="jxr_keyword">if</strong> (!isReady) {
-<a class="jxr_linenumber" name="507" href="#507">507</a>             <strong class="jxr_keyword">if</strong> (!codecLocked.await(FtpConfiguration.DATATIMEOUTCON)) {
+<a class="jxr_linenumber" name="507" href="#507">507</a>             <strong class="jxr_keyword">if</strong> (!codecLocked.await(FtpConfiguration.getDATATIMEOUTCON())) {
 <a class="jxr_linenumber" name="508" href="#508">508</a>                 <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> InvalidArgumentException(<span class="jxr_string">"Codec not unlocked while should be"</span>);
 <a class="jxr_linenumber" name="509" href="#509">509</a>             }
 <a class="jxr_linenumber" name="510" href="#510">510</a>             isReady = <strong class="jxr_keyword">true</strong>;

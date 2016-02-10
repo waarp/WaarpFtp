@@ -39,43 +39,40 @@
 <a class="jxr_linenumber" name="29" href="#29">29</a>  <em class="jxr_javadoccomment"> * </em>
 <a class="jxr_linenumber" name="30" href="#30">30</a>  <em class="jxr_javadoccomment"> */</em>
 <a class="jxr_linenumber" name="31" href="#31">31</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> <a href="../../../../../../org/waarp/ftp/core/command/internal/LIMITBANDWIDTH.html">LIMITBANDWIDTH</a> <strong class="jxr_keyword">extends</strong> <a href="../../../../../../org/waarp/ftp/core/command/AbstractCommand.html">AbstractCommand</a> {
-<a class="jxr_linenumber" name="32" href="#32">32</a>      <em class="jxr_comment">/*</em>
-<a class="jxr_linenumber" name="33" href="#33">33</a>  <em class="jxr_comment">     * (non-Javadoc)</em>
-<a class="jxr_linenumber" name="34" href="#34">34</a>  <em class="jxr_comment">     * @see org.waarp.ftp.core.command.AbstractCommand#exec()</em>
-<a class="jxr_linenumber" name="35" href="#35">35</a>  <em class="jxr_comment">     */</em>
-<a class="jxr_linenumber" name="36" href="#36">36</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> exec() <strong class="jxr_keyword">throws</strong> Reply501Exception, Reply500Exception {
-<a class="jxr_linenumber" name="37" href="#37">37</a>          <strong class="jxr_keyword">if</strong> (!getSession().getAuth().isAdmin()) {
-<a class="jxr_linenumber" name="38" href="#38">38</a>              <em class="jxr_comment">// not admin</em>
-<a class="jxr_linenumber" name="39" href="#39">39</a>              <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> Reply500Exception(<span class="jxr_string">"Command Not Allowed"</span>);
-<a class="jxr_linenumber" name="40" href="#40">40</a>          }
-<a class="jxr_linenumber" name="41" href="#41">41</a>          <strong class="jxr_keyword">if</strong> (!hasArg()) {
-<a class="jxr_linenumber" name="42" href="#42">42</a>              <em class="jxr_comment">// reset to default</em>
-<a class="jxr_linenumber" name="43" href="#43">43</a>              getConfiguration().changeNetworkLimit(0, 0);
-<a class="jxr_linenumber" name="44" href="#44">44</a>              getSession().setReplyCode(ReplyCode.REPLY_200_COMMAND_OKAY,
-<a class="jxr_linenumber" name="45" href="#45">45</a>                      <span class="jxr_string">"Limit reset to default"</span>);
-<a class="jxr_linenumber" name="46" href="#46">46</a>              <strong class="jxr_keyword">return</strong>;
-<a class="jxr_linenumber" name="47" href="#47">47</a>          }
-<a class="jxr_linenumber" name="48" href="#48">48</a>          String[] limits = getArgs();
-<a class="jxr_linenumber" name="49" href="#49">49</a>          <strong class="jxr_keyword">long</strong> writeLimit = 0;
-<a class="jxr_linenumber" name="50" href="#50">50</a>          <strong class="jxr_keyword">long</strong> readLimit = 0;
-<a class="jxr_linenumber" name="51" href="#51">51</a>          <strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="52" href="#52">52</a>              <strong class="jxr_keyword">if</strong> (limits.length == 1) {
+<a class="jxr_linenumber" name="32" href="#32">32</a>      @Override
+<a class="jxr_linenumber" name="33" href="#33">33</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> exec() <strong class="jxr_keyword">throws</strong> Reply501Exception, Reply500Exception {
+<a class="jxr_linenumber" name="34" href="#34">34</a>          <strong class="jxr_keyword">if</strong> (!getSession().getAuth().isAdmin()) {
+<a class="jxr_linenumber" name="35" href="#35">35</a>              <em class="jxr_comment">// not admin</em>
+<a class="jxr_linenumber" name="36" href="#36">36</a>              <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> Reply500Exception(<span class="jxr_string">"Command Not Allowed"</span>);
+<a class="jxr_linenumber" name="37" href="#37">37</a>          }
+<a class="jxr_linenumber" name="38" href="#38">38</a>          <strong class="jxr_keyword">if</strong> (!hasArg()) {
+<a class="jxr_linenumber" name="39" href="#39">39</a>              <em class="jxr_comment">// reset to default</em>
+<a class="jxr_linenumber" name="40" href="#40">40</a>              getConfiguration().changeNetworkLimit(0, 0);
+<a class="jxr_linenumber" name="41" href="#41">41</a>              getSession().setReplyCode(ReplyCode.REPLY_200_COMMAND_OKAY,
+<a class="jxr_linenumber" name="42" href="#42">42</a>                      <span class="jxr_string">"Limit reset to default"</span>);
+<a class="jxr_linenumber" name="43" href="#43">43</a>              <strong class="jxr_keyword">return</strong>;
+<a class="jxr_linenumber" name="44" href="#44">44</a>          }
+<a class="jxr_linenumber" name="45" href="#45">45</a>          String[] limits = getArgs();
+<a class="jxr_linenumber" name="46" href="#46">46</a>          <strong class="jxr_keyword">long</strong> writeLimit = 0;
+<a class="jxr_linenumber" name="47" href="#47">47</a>          <strong class="jxr_keyword">long</strong> readLimit = 0;
+<a class="jxr_linenumber" name="48" href="#48">48</a>          <strong class="jxr_keyword">try</strong> {
+<a class="jxr_linenumber" name="49" href="#49">49</a>              <strong class="jxr_keyword">if</strong> (limits.length == 1) {
+<a class="jxr_linenumber" name="50" href="#50">50</a>                  writeLimit = Long.parseLong(limits[0]);
+<a class="jxr_linenumber" name="51" href="#51">51</a>                  readLimit = writeLimit;
+<a class="jxr_linenumber" name="52" href="#52">52</a>              } <strong class="jxr_keyword">else</strong> {
 <a class="jxr_linenumber" name="53" href="#53">53</a>                  writeLimit = Long.parseLong(limits[0]);
-<a class="jxr_linenumber" name="54" href="#54">54</a>                  readLimit = writeLimit;
-<a class="jxr_linenumber" name="55" href="#55">55</a>              } <strong class="jxr_keyword">else</strong> {
-<a class="jxr_linenumber" name="56" href="#56">56</a>                  writeLimit = Long.parseLong(limits[0]);
-<a class="jxr_linenumber" name="57" href="#57">57</a>                  readLimit = Long.parseLong(limits[1]);
-<a class="jxr_linenumber" name="58" href="#58">58</a>              }
-<a class="jxr_linenumber" name="59" href="#59">59</a>          } <strong class="jxr_keyword">catch</strong> (NumberFormatException e) {
-<a class="jxr_linenumber" name="60" href="#60">60</a>              <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> Reply501Exception(getCommand() +
-<a class="jxr_linenumber" name="61" href="#61">61</a>                      <span class="jxr_string">" ([write and read limits in b/s] | [write limit in b/s] [read limit in b/s]"</span>);
-<a class="jxr_linenumber" name="62" href="#62">62</a>          }
-<a class="jxr_linenumber" name="63" href="#63">63</a>          getConfiguration().changeNetworkLimit(writeLimit, readLimit);
-<a class="jxr_linenumber" name="64" href="#64">64</a>          getSession().setReplyCode(ReplyCode.REPLY_200_COMMAND_OKAY,
-<a class="jxr_linenumber" name="65" href="#65">65</a>                  <span class="jxr_string">"Limit set to new values"</span>);
-<a class="jxr_linenumber" name="66" href="#66">66</a>      }
-<a class="jxr_linenumber" name="67" href="#67">67</a>  
-<a class="jxr_linenumber" name="68" href="#68">68</a>  }
+<a class="jxr_linenumber" name="54" href="#54">54</a>                  readLimit = Long.parseLong(limits[1]);
+<a class="jxr_linenumber" name="55" href="#55">55</a>              }
+<a class="jxr_linenumber" name="56" href="#56">56</a>          } <strong class="jxr_keyword">catch</strong> (NumberFormatException e) {
+<a class="jxr_linenumber" name="57" href="#57">57</a>              <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> Reply501Exception(getCommand() +
+<a class="jxr_linenumber" name="58" href="#58">58</a>                      <span class="jxr_string">" ([write and read limits in b/s] | [write limit in b/s] [read limit in b/s]"</span>);
+<a class="jxr_linenumber" name="59" href="#59">59</a>          }
+<a class="jxr_linenumber" name="60" href="#60">60</a>          getConfiguration().changeNetworkLimit(writeLimit, readLimit);
+<a class="jxr_linenumber" name="61" href="#61">61</a>          getSession().setReplyCode(ReplyCode.REPLY_200_COMMAND_OKAY,
+<a class="jxr_linenumber" name="62" href="#62">62</a>                  <span class="jxr_string">"Limit set to new values"</span>);
+<a class="jxr_linenumber" name="63" href="#63">63</a>      }
+<a class="jxr_linenumber" name="64" href="#64">64</a>  
+<a class="jxr_linenumber" name="65" href="#65">65</a>  }
 </pre>
 <hr/><div id="footer">This page was automatically generated by <a href="http://maven.apache.org/">Maven</a></div></body>
 </html>

@@ -421,7 +421,7 @@
 <a class="jxr_linenumber" name="411" href="#411">411</a>         logger.debug(<span class="jxr_string">"Will write: "</span> + buffer.toString(WaarpStringUtils.UTF8));
 <a class="jxr_linenumber" name="412" href="#412">412</a>         <strong class="jxr_keyword">try</strong> {
 <a class="jxr_linenumber" name="413" href="#413">413</a>             future = dataChannel.writeAndFlush(dataBlock);
-<a class="jxr_linenumber" name="414" href="#414">414</a>             future.await(FtpConfiguration.DATATIMEOUTCON);
+<a class="jxr_linenumber" name="414" href="#414">414</a>             future.await(FtpConfiguration.getDATATIMEOUTCON());
 <a class="jxr_linenumber" name="415" href="#415">415</a>         } <strong class="jxr_keyword">catch</strong> (InterruptedException e) {
 <a class="jxr_linenumber" name="416" href="#416">416</a>             logger.debug(<span class="jxr_string">"Interrupted"</span>, e);
 <a class="jxr_linenumber" name="417" href="#417">417</a>             <strong class="jxr_keyword">return</strong> false;
@@ -436,7 +436,7 @@
 <a class="jxr_linenumber" name="426" href="#426">426</a> <em class="jxr_javadoccomment">     * @return True if the service is alive, else False if the system is going down</em>
 <a class="jxr_linenumber" name="427" href="#427">427</a> <em class="jxr_javadoccomment">     */</em>
 <a class="jxr_linenumber" name="428" href="#428">428</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">boolean</strong> isStillAlive() {
-<a class="jxr_linenumber" name="429" href="#429">429</a>         <strong class="jxr_keyword">if</strong> (session.getConfiguration().isShutdown) {
+<a class="jxr_linenumber" name="429" href="#429">429</a>         <strong class="jxr_keyword">if</strong> (session.getConfiguration().isShutdown()) {
 <a class="jxr_linenumber" name="430" href="#430">430</a>             session.setExitErrorCode(<span class="jxr_string">"Service is going down: disconnect"</span>);
 <a class="jxr_linenumber" name="431" href="#431">431</a>             <strong class="jxr_keyword">return</strong> false;
 <a class="jxr_linenumber" name="432" href="#432">432</a>         }
