@@ -49,7 +49,7 @@ public enum FtpCommandCode {
     Connection(
             ConnectionCommand.class,
             null,
-            org.waarp.ftp.core.command.access.USER.class),
+            org.waarp.ftp.core.command.access.USER.class, org.waarp.ftp.core.command.rfc2389.FEAT.class),
     // XXX ACCESS CONTROL COMMAND
     /**
      * The argument field is a Telnet string identifying the user. The user identification is that
