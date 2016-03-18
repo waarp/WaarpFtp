@@ -183,21 +183,31 @@ public abstract class BusinessHandler {
      * @return the string to return to the client for the FEAT command for the MLSx argument
      */
     protected String getMLSxOptsMessage(String[] args) {
+        String[] properties = new String[0];
+        if (args.length >= 2) {
+            properties = args[1].split(";");
+        }
+
         FilesystemBasedOptsMLSxImpl optsMLSx = (FilesystemBasedOptsMLSxImpl) getFtpSession()
                 .getDir().getOptsMLSx();
         optsMLSx.setOptsModify((byte) 0);
         optsMLSx.setOptsPerm((byte) 0);
         optsMLSx.setOptsSize((byte) 0);
         optsMLSx.setOptsType((byte) 0);
-        for (int i = 1; i < args.length; i++) {
-            if (args[i].equalsIgnoreCase("modify")) {
-                optsMLSx.setOptsModify((byte) 1);
-            } else if (args[i].equalsIgnoreCase("perm")) {
-                optsMLSx.setOptsModify((byte) 1);
-            } else if (args[i].equalsIgnoreCase("size")) {
-                optsMLSx.setOptsModify((byte) 1);
-            } else if (args[i].equalsIgnoreCase("type")) {
-                optsMLSx.setOptsModify((byte) 1);
+        for (int i = 0; i < properties.length; i++) {
+            switch (properties[i].toLowerCase()) {
+                case "modify":
+                    optsMLSx.setOptsModify((byte) 1);
+                    break;
+                case "perm":
+                    optsMLSx.setOptsPerm((byte) 1);
+                    break;
+                case "size":
+                    optsMLSx.setOptsSize((byte) 1);
+                    break;
+                case "type":
+                    optsMLSx.setOptsType((byte) 1);
+                    break;
             }
         }
         return args[0] + " " + FtpCommandCode.OPTS.name() + optsMLSx.getFeat();
