@@ -54,13 +54,13 @@
   		</snapshots>
   	</repository>
   </repositories>
-  
+
   <modules>
   	<module>core</module>
   	<module>filesystem</module>
   	<module>simpleimpl</module>
   </modules>
-  
+
   <dependencies>
     <dependency>
       <groupId>Waarp</groupId>
@@ -87,6 +87,27 @@
   </properties>
   <build>
     <plugins>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>animal-sniffer-maven-plugin</artifactId>
+        <configuration>
+          <signature>
+            <groupId>org.codehaus.mojo.signature</groupId>
+            <artifactId>java17</artifactId>
+            <version>1.0</version>
+          </signature>
+        </configuration>
+      </plugin>
+      <plugin>
+        <artifactId>maven-compiler-plugin</artifactId>
+          <configuration>
+            <encoding>UTF-8</encoding>
+            <source>1.7</source>
+            <target>1.7</target>
+            <optimize>true</optimize>
+            <showDeprecations>true</showDeprecations>
+          </configuration>
+      </plugin>
       <plugin>
         <artifactId>maven-antrun-plugin</artifactId>
         <executions>
@@ -185,7 +206,7 @@
   </build>
   <reporting>
   	<plugins>
-  	
+
   	<plugin>
       <!-- Do NOT upgrade -->
       	<groupId>org.apache.maven.plugins</groupId>
@@ -201,7 +222,7 @@
           <aggregate>true</aggregate>
         </configuration>
       </plugin>
-      
+
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>findbugs-maven-plugin</artifactId>
@@ -218,7 +239,7 @@
       	<artifactId>maven-pmd-plugin</artifactId>
       	<version>3.0.1</version>
       	<configuration>
-      		<targetJdk>1.6</targetJdk>
+      		<targetJdk>1.7</targetJdk>
       		<rulesets>
       			<ruleset>rulesets/java/basic.xml</ruleset>
       			<!-- <ruleset>rulesets/java/design.xml</ruleset>
@@ -232,7 +253,7 @@
       		<aggregate>true</aggregate>
       	</configuration>
       </plugin>
-      
+
 	  <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
