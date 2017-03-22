@@ -195,20 +195,15 @@ public abstract class BusinessHandler {
         optsMLSx.setOptsSize((byte) 0);
         optsMLSx.setOptsType((byte) 0);
         for (int i = 0; i < properties.length; i++) {
-            switch (properties[i].toLowerCase()) {
-                case "modify":
-                    optsMLSx.setOptsModify((byte) 1);
-                    break;
-                case "perm":
-                    optsMLSx.setOptsPerm((byte) 1);
-                    break;
-                case "size":
-                    optsMLSx.setOptsSize((byte) 1);
-                    break;
-                case "type":
-                    optsMLSx.setOptsType((byte) 1);
-                    break;
-            }
+            if (properties[i].toLowerCase() == "modify") {
+                optsMLSx.setOptsModify((byte) 1);
+            }            else if (properties[i].toLowerCase() == "perm") {
+                optsMLSx.setOptsPerm((byte) 1);
+            }            else if (properties[i].toLowerCase() == "size") {
+                optsMLSx.setOptsSize((byte) 1);
+            }            else if (properties[i].toLowerCase() == "type") {
+                optsMLSx.setOptsType((byte) 1);
+            }        
         }
         return args[0] + " " + FtpCommandCode.OPTS.name() + optsMLSx.getFeat();
     }
