@@ -3,7 +3,7 @@
   <parent>
 	  <groupId>Waarp</groupId>
 	  <artifactId>WaarpFtp</artifactId>
-	  <version>3.0.3</version>
+	  <version>3.0.4</version>
 	  <relativePath>../pom.xml</relativePath>
   </parent>
   <name>WaarpFtp-Core</name>
@@ -26,7 +26,7 @@
         <configuration>
           <signature>
             <groupId>org.codehaus.mojo.signature</groupId>
-            <artifactId>java17</artifactId>
+            <artifactId>java16</artifactId>
             <version>1.0</version>
           </signature>
         </configuration>
@@ -35,8 +35,8 @@
   			<artifactId>maven-compiler-plugin</artifactId>
 	        <configuration>
 	          <encoding>UTF-8</encoding>
-	          <source>1.7</source>
-	          <target>1.7</target>
+	          <source>1.6</source>
+	          <target>1.6</target>
 	          <optimize>true</optimize>
 	          <showDeprecations>true</showDeprecations>
 	          <includes>
