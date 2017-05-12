@@ -9,4 +9,45 @@
     <ignoreVersion type="regex">(?i).*CR(?:-?\d+)?</ignoreVersion>
     <ignoreVersion type="regex">(?i).*M(?:-?\d+)?</ignoreVersion>
   </ignoreVersions>
+  <rules>
+    <rule groupId="dom4j" artifactId="dom4j">
+      <ignoreVersions>
+        <ignoreVersion type="exact">20040902.021138</ignoreVersion>
+        <ignoreVersion type="exact">1.6.1-jboss</ignoreVersion>
+        <ignoreVersion type="exact">1.6.1-brew</ignoreVersion>
+      </ignoreVersions>
+    </rule>
+    <rule groupId="mysql" artifactId="mysql-connector-java">
+      <ignoreVersions>
+        <ignoreVersion type="regex">6\.0\..+</ignoreVersion>
+      </ignoreVersions>
+    </rule>
+    <rule groupId="org.mariadb.jdbc" artifactId="*">
+      <ignoreVersions>
+        <ignoreVersion type="regex">1\.2\..+</ignoreVersion>
+        <ignoreVersion type="regex">1\.3\..+</ignoreVersion>
+        <ignoreVersion type="regex">1\.4\..+</ignoreVersion>
+        <ignoreVersion type="regex">1\.5\..+</ignoreVersion>
+        <ignoreVersion type="regex">1\.6\..+</ignoreVersion>
+        <ignoreVersion type="regex">2\..+</ignoreVersion>
+      </ignoreVersions>
+    </rule>
+    <rule groupId="org.postgresql" artifactId="postgresql">
+      <ignoreVersions>
+        <ignoreVersion type="regex">.+jre7$</ignoreVersion>
+      </ignoreVersions>
+    </rule>
+    <rule groupId="com.fasterxml.jackson.core" artifactId="*">
+      <ignoreVersions>
+        <ignoreVersion type="regex">^2\.8\..+</ignoreVersion>
+        <ignoreVersion type="regex">^2\.9\..+</ignoreVersion>
+      </ignoreVersions>
+    </rule>
+    <rule groupId="com.fasterxml.jackson.jaxrs" artifactId="*">
+      <ignoreVersions>
+        <ignoreVersion type="regex">^2\.8\..+</ignoreVersion>
+        <ignoreVersion type="regex">^2\.9\..+</ignoreVersion>
+      </ignoreVersions>
+    </rule>
+  </rules>
 </ruleset>
