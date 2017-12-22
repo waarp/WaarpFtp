@@ -20,6 +20,12 @@
     <rule groupId="mysql" artifactId="mysql-connector-java">
       <ignoreVersions>
         <ignoreVersion type="regex">6\.0\..+</ignoreVersion>
+        <ignoreVersion type="regex">8\.0\..+</ignoreVersion>
+      </ignoreVersions>
+    </rule>
+    <rule groupId="commons-io" artifactId="commons-io">
+      <ignoreVersions>
+        <ignoreVersion type="regex">2\.6\..+</ignoreVersion>
       </ignoreVersions>
     </rule>
     <rule groupId="org.mariadb.jdbc" artifactId="*">
