@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <artifactId>WaarpFtp</artifactId>
   <name>WaarpFtp</name>
-  <version>3.0.4</version>
+  <version>3.0.5</version>
   <packaging>pom</packaging>
   <description>
 	  The Waarp FTP project is a proposal of a new fresh FTP server implementation,
