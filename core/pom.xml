@@ -3,7 +3,7 @@
   <parent>
 	  <groupId>Waarp</groupId>
 	  <artifactId>WaarpFtp</artifactId>
-	  <version>3.0.6</version>
+	  <version>3.0.7</version>
 	  <relativePath>../pom.xml</relativePath>
   </parent>
   <name>WaarpFtp-Core</name>
