@@ -1,0 +1,10 @@
+<config>
+  <ssl>
+    <keypath>/opt/R66/GGFTP/certs/testsslnocert.jks</keypath>
+    <keystorepass>testsslnocert</keystorepass>
+    <keypass>testalias</keypass>
+    <trustkeypath>/opt/R66/GGFTP/certs/testcert.jks</trustkeypath>
+    <trustkeystorepass>testcert</trustkeystorepass>
+    <trustuseclientauthenticate>False</trustuseclientauthenticate>
+  </ssl>
+</config>
