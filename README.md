@@ -1,3 +1,15 @@
+Archived repository
+===================
+
+All Waarp modules have been regrouped in a new repository:
+[Waarp-All](https://github.com/waarp/Waarp-All).
+
+Development continues there.
+
+This repository is outdated and will not be maintained anymore.
+
+
+
 Waarp FTP
 =============
 
