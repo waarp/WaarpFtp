@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <artifactId>WaarpFtp</artifactId>
   <name>WaarpFtp</name>
-  <version>3.0.8</version>
+  <version>3.1.0</version>
   <packaging>pom</packaging>
   <description>
 	  The Waarp FTP project is a proposal of a new fresh FTP server implementation,
@@ -65,7 +65,7 @@
     <dependency>
       <groupId>Waarp</groupId>
       <artifactId>WaarpCommon</artifactId>
-      <version>3.1.0</version>
+      <version>3.1.1</version>
     </dependency>
     <dependency>
       <groupId>ch.qos.logback</groupId>
@@ -78,6 +78,18 @@
       <artifactId>logback-core</artifactId>
       <version>1.2.3</version>
       <optional>true</optional>
+    </dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.12</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>it.sauronsoftware</groupId>
+      <artifactId>ftp4j</artifactId>
+      <version>1.7.2</version>
+      <scope>test</scope>
     </dependency>
   </dependencies>
   <properties>
@@ -106,7 +118,7 @@
             <source>1.6</source>
             <target>1.6</target>
             <optimize>true</optimize>
-            <showDeprecations>true</showDeprecations>
+            <showDeprecation>true</showDeprecation>
           </configuration>
       </plugin>
       <plugin>
@@ -241,7 +253,6 @@
           <xmlOutputDirectory>target/site</xmlOutputDirectory>
           <failOnError>false</failOnError>
           <effort>Default</effort>
-          <aggregate>true</aggregate>
         </configuration>
       </plugin>
       <plugin>

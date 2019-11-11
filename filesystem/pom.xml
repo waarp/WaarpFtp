@@ -3,7 +3,7 @@
   <parent>
 	  <groupId>Waarp</groupId>
 	  <artifactId>WaarpFtp</artifactId>
-	  <version>3.0.8</version>
+	  <version>3.1.0</version>
 	  <relativePath>../pom.xml</relativePath>
   </parent>
   <name>WaarpFtp-Filesystem</name>
@@ -21,7 +21,6 @@
   </dependencies>
 
   <build>
-  	<sourceDirectory>../src/main/java</sourceDirectory>
 
   	<plugins>
   		<plugin>
@@ -42,7 +41,7 @@
             <source>1.6</source>
             <target>1.6</target>
             <optimize>true</optimize>
-            <showDeprecations>true</showDeprecations>
+            <showDeprecation>true</showDeprecation>
             <includes>
               <include>**/${filtermodule}/**</include>
             </includes>

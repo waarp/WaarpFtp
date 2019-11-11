@@ -1,0 +1,21 @@
+<config>
+  <comment>Example of config file: change its as your need.</comment>
+  <serverpasswd>abcdef</serverpasswd>
+  <serverport>2022</serverport>
+  <serverhome>/tmp/GGFTP</serverhome>
+  <serverthread>10</serverthread>
+  <sessionlimit2>102400</sessionlimit2>
+  <globallimit2>1024000</globallimit2>
+  <sessionlimit>0</sessionlimit>
+  <globallimit>0</globallimit>
+  <timeoutcon>10000</timeoutcon>
+  <deleteonabort>0</deleteonabort>
+  <usenio>0</usenio>
+  <usefastmd5>0</usefastmd5>
+  <blocksize>65536</blocksize>
+  <rangeport>
+    <min>3001</min>
+    <max>32000</max>
+  </rangeport>
+  <authentfile>src/test/resources/authent.xml</authentfile>
+</config>
